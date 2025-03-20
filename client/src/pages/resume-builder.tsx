@@ -440,21 +440,21 @@ export default function ResumeBuilder() {
         </div>
         
         {/* Resume Builder Interface */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Left Sidebar - Section Navigation */}
-          <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm lg:col-span-1">
-            <div className="space-y-1">
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm mb-6">
+          {/* Horizontal Tab Navigation */}
+          <div className="border-b border-gray-200">
+            <div className="flex overflow-x-auto px-4 py-2 space-x-2">
               <Button
                 variant={activeSection === "profile" ? "default" : "ghost"}
-                className="w-full justify-start"
+                className="flex items-center px-4 py-2 rounded-md"
                 onClick={() => setActiveSection("profile")}
               >
                 <FileText className="h-4 w-4 mr-2" />
-                Personal Information
+                Personal Info
               </Button>
               <Button
                 variant={activeSection === "experience" ? "default" : "ghost"}
-                className="w-full justify-start"
+                className="flex items-center px-4 py-2 rounded-md"
                 onClick={() => setActiveSection("experience")}
               >
                 <Briefcase className="h-4 w-4 mr-2" />
@@ -462,7 +462,7 @@ export default function ResumeBuilder() {
               </Button>
               <Button
                 variant={activeSection === "education" ? "default" : "ghost"}
-                className="w-full justify-start"
+                className="flex items-center px-4 py-2 rounded-md"
                 onClick={() => setActiveSection("education")}
               >
                 <GraduationCap className="h-4 w-4 mr-2" />
@@ -470,7 +470,7 @@ export default function ResumeBuilder() {
               </Button>
               <Button
                 variant={activeSection === "skills" ? "default" : "ghost"}
-                className="w-full justify-start"
+                className="flex items-center px-4 py-2 rounded-md"
                 onClick={() => setActiveSection("skills")}
               >
                 <Code className="h-4 w-4 mr-2" />
@@ -478,7 +478,7 @@ export default function ResumeBuilder() {
               </Button>
               <Button
                 variant={activeSection === "projects" ? "default" : "ghost"}
-                className="w-full justify-start"
+                className="flex items-center px-4 py-2 rounded-md"
                 onClick={() => setActiveSection("projects")}
               >
                 <FolderKanban className="h-4 w-4 mr-2" />
@@ -486,150 +486,109 @@ export default function ResumeBuilder() {
               </Button>
               <Button
                 variant={activeSection === "preview" ? "default" : "ghost"}
-                className="w-full justify-start"
+                className="flex items-center px-4 py-2 rounded-md"
                 onClick={() => setActiveSection("preview")}
               >
                 <Maximize2 className="h-4 w-4 mr-2" />
                 Preview
               </Button>
             </div>
-            
-            {/* Job targeting section */}
-            <div className="mt-8 border-t pt-4 border-gray-200">
-              <Collapsible
-                open={showJobTargeting}
-                onOpenChange={setShowJobTargeting}
-              >
-                <CollapsibleTrigger asChild>
-                  <Button variant="ghost" className="flex w-full justify-between items-center">
-                    <div className="flex items-center">
-                      <Cpu className="h-4 w-4 mr-2" />
-                      <span>Target Specific Job</span>
-                    </div>
-                    <ChevronDown className={`h-4 w-4 transition-transform ${showJobTargeting ? 'transform rotate-180' : ''}`} />
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="mt-2 space-y-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="job-title">Job Title</Label>
-                    <Input
-                      id="job-title"
-                      value={jobTitle}
-                      onChange={(e) => setJobTitle(e.target.value)}
-                      placeholder="e.g., Software Engineer"
-                    />
-                    <p className="text-xs text-gray-500">
-                      Enter a job title to tailor AI suggestions
-                    </p>
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-            </div>
+          </div>
+          
+          {/* Job targeting section - moved to right side of tabs */}
+          <div className="border-b border-gray-200 px-4 py-2 flex justify-end">
+            <Collapsible
+              open={showJobTargeting}
+              onOpenChange={setShowJobTargeting}
+              className="w-64"
+            >
+              <CollapsibleTrigger asChild>
+                <Button variant="outline" size="sm" className="flex items-center gap-1">
+                  <Cpu className="h-4 w-4" />
+                  <span>Target Job</span>
+                  <ChevronDown className={`h-4 w-4 transition-transform ${showJobTargeting ? 'transform rotate-180' : ''}`} />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-2 p-3 bg-white rounded-md border border-gray-200 shadow-sm absolute right-0 z-10">
+                <div className="space-y-2">
+                  <Label htmlFor="job-title">Job Title</Label>
+                  <Input
+                    id="job-title"
+                    value={jobTitle}
+                    onChange={(e) => setJobTitle(e.target.value)}
+                    placeholder="e.g., Software Engineer"
+                  />
+                  <p className="text-xs text-gray-500">
+                    Enter a job title to tailor AI suggestions
+                  </p>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
           
           {/* Main Content Area */}
-          <div className="lg:col-span-3">
-            <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-              {/* Personal Information Section */}
-              {activeSection === "profile" && (
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-semibold text-gray-900">Personal Information</h2>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <Label htmlFor="firstName">First Name</Label>
-                      <Input
-                        id="firstName"
-                        value={resume.personalInfo.firstName}
-                        onChange={(e) => updatePersonalInfo("firstName", e.target.value)}
-                        placeholder="John"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="lastName">Last Name</Label>
-                      <Input
-                        id="lastName"
-                        value={resume.personalInfo.lastName}
-                        onChange={(e) => updatePersonalInfo("lastName", e.target.value)}
-                        placeholder="Doe"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={resume.personalInfo.email}
-                        onChange={(e) => updatePersonalInfo("email", e.target.value)}
-                        placeholder="john.doe@example.com"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="phone">Phone</Label>
-                      <Input
-                        id="phone"
-                        value={resume.personalInfo.phone}
-                        onChange={(e) => updatePersonalInfo("phone", e.target.value)}
-                        placeholder="(123) 456-7890"
-                      />
-                    </div>
-                  </div>
-                  
+          <div className="p-6">
+            {/* Personal Information Section */}
+            {activeSection === "profile" && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-semibold text-gray-900">Personal Information</h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <Label htmlFor="headline">Professional Headline</Label>
+                    <Label htmlFor="firstName">First Name</Label>
                     <Input
-                      id="headline"
-                      value={resume.personalInfo.headline}
-                      onChange={(e) => updatePersonalInfo("headline", e.target.value)}
-                      placeholder="Senior Software Engineer"
+                      id="firstName"
+                      value={resume.personalInfo.firstName}
+                      onChange={(e) => updatePersonalInfo("firstName", e.target.value)}
+                      placeholder="John"
                     />
                   </div>
-                  
                   <div className="space-y-1">
-                    <div className="flex justify-between items-center">
-                      <Label htmlFor="summary">Professional Summary</Label>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="sm" className="flex items-center gap-1">
-                            <Sparkles className="h-3 w-3" />
-                            AI Assist
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-md">
-                          <DialogHeader>
-                            <DialogTitle>AI Summary Suggestions</DialogTitle>
-                            <DialogDescription>
-                              Select an AI-generated professional summary to use in your resume.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="mt-4 max-h-[60vh] overflow-y-auto">
-                            <SummarySuggestions 
-                              resumeId={resumeId ? String(resumeId) : "new"} 
-                              onApply={handleApplySummary} 
-                            />
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
-                    <EnhancedTextarea
-                      id="summary-textarea"
-                      value={resume.personalInfo.summary}
-                      onChange={(e) => updatePersonalInfo("summary", e.target.value)}
-                      placeholder="Write a professional summary that highlights your experience, skills, and career goals..."
-                      className="h-32"
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Input
+                      id="lastName"
+                      value={resume.personalInfo.lastName}
+                      onChange={(e) => updatePersonalInfo("lastName", e.target.value)}
+                      placeholder="Doe"
                     />
                   </div>
                 </div>
-              )}
-              
-              {/* Experience Section */}
-              {activeSection === "experience" && (
-                <div className="space-y-6">
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={resume.personalInfo.email}
+                      onChange={(e) => updatePersonalInfo("email", e.target.value)}
+                      placeholder="john.doe@example.com"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="phone">Phone</Label>
+                    <Input
+                      id="phone"
+                      value={resume.personalInfo.phone}
+                      onChange={(e) => updatePersonalInfo("phone", e.target.value)}
+                      placeholder="(123) 456-7890"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-1">
+                  <Label htmlFor="headline">Professional Headline</Label>
+                  <Input
+                    id="headline"
+                    value={resume.personalInfo.headline}
+                    onChange={(e) => updatePersonalInfo("headline", e.target.value)}
+                    placeholder="Senior Software Engineer"
+                  />
+                </div>
+                
+                <div className="space-y-1">
                   <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-semibold text-gray-900">Work Experience</h2>
+                    <Label htmlFor="summary">Professional Summary</Label>
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button variant="outline" size="sm" className="flex items-center gap-1">
@@ -639,115 +598,153 @@ export default function ResumeBuilder() {
                       </DialogTrigger>
                       <DialogContent className="max-w-md">
                         <DialogHeader>
-                          <DialogTitle>AI Experience Suggestions</DialogTitle>
+                          <DialogTitle>AI Summary Suggestions</DialogTitle>
                           <DialogDescription>
-                            Select ATS-optimized bullet points to highlight your achievements.
+                            Select an AI-generated professional summary to use in your resume.
                           </DialogDescription>
                         </DialogHeader>
                         <div className="mt-4 max-h-[60vh] overflow-y-auto">
-                          <ExperienceSuggestions 
+                          <SummarySuggestions 
                             resumeId={resumeId ? String(resumeId) : "new"} 
-                            jobTitle={jobTitle}
-                            onApply={handleApplyBulletPoint}
-                            previewTargetId="experience-textarea"
+                            onApply={handleApplySummary} 
                           />
                         </div>
                       </DialogContent>
                     </Dialog>
                   </div>
-                  
-                  <ResumeExperienceSection
-                    experiences={resume.experience}
-                    onUpdate={(experiences) => {
-                      setResume({
-                        ...resume,
-                        experience: experiences
-                      });
-                    }}
+                  <EnhancedTextarea
+                    id="summary-textarea"
+                    value={resume.personalInfo.summary}
+                    onChange={(e) => updatePersonalInfo("summary", e.target.value)}
+                    placeholder="Write a professional summary that highlights your experience, skills, and career goals..."
+                    className="h-32"
                   />
                 </div>
-              )}
-              
-              {/* Education Section */}
-              {activeSection === "education" && (
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-semibold text-gray-900">Education</h2>
-                  <ResumeEducationSection
-                    education={resume.education}
-                    onUpdate={(education) => {
-                      setResume({
-                        ...resume,
-                        education
-                      });
-                    }}
-                  />
+              </div>
+            )}
+            
+            {/* Experience Section */}
+            {activeSection === "experience" && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-semibold text-gray-900">Work Experience</h2>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="flex items-center gap-1">
+                        <Sparkles className="h-3 w-3" />
+                        AI Assist
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>AI Experience Suggestions</DialogTitle>
+                        <DialogDescription>
+                          Select ATS-optimized bullet points to highlight your achievements.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="mt-4 max-h-[60vh] overflow-y-auto">
+                        <ExperienceSuggestions 
+                          resumeId={resumeId ? String(resumeId) : "new"} 
+                          jobTitle={jobTitle}
+                          onApply={handleApplyBulletPoint}
+                          previewTargetId="experience-textarea"
+                        />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
-              )}
-              
-              {/* Skills Section */}
-              {activeSection === "skills" && (
-                <div className="space-y-6">
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-semibold text-gray-900">Skills</h2>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" size="sm" className="flex items-center gap-1">
-                          <Sparkles className="h-3 w-3" />
-                          AI Assist
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-md">
-                        <DialogHeader>
-                          <DialogTitle>AI Skill Suggestions</DialogTitle>
-                          <DialogDescription>
-                            Add in-demand skills that match your profile.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="mt-4 max-h-[60vh] overflow-y-auto">
-                          <SkillSuggestions 
-                            resumeId={resumeId ? String(resumeId) : "new"} 
-                            jobTitle={jobTitle}
-                            onApply={handleApplySkill}
-                          />
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                  <ResumeSkillsSection
-                    skills={resume.skills}
-                    onUpdate={(skills) => {
-                      setResume({
-                        ...resume,
-                        skills
-                      });
-                    }}
-                  />
+                
+                <ResumeExperienceSection
+                  experiences={resume.experience}
+                  onUpdate={(experiences) => {
+                    setResume({
+                      ...resume,
+                      experience: experiences
+                    });
+                  }}
+                />
+              </div>
+            )}
+            
+            {/* Education Section */}
+            {activeSection === "education" && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-semibold text-gray-900">Education</h2>
+                <ResumeEducationSection
+                  education={resume.education}
+                  onUpdate={(education) => {
+                    setResume({
+                      ...resume,
+                      education
+                    });
+                  }}
+                />
+              </div>
+            )}
+            
+            {/* Skills Section */}
+            {activeSection === "skills" && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-semibold text-gray-900">Skills</h2>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="flex items-center gap-1">
+                        <Sparkles className="h-3 w-3" />
+                        AI Assist
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>AI Skill Suggestions</DialogTitle>
+                        <DialogDescription>
+                          Add in-demand skills that match your profile.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="mt-4 max-h-[60vh] overflow-y-auto">
+                        <SkillSuggestions 
+                          resumeId={resumeId ? String(resumeId) : "new"} 
+                          jobTitle={jobTitle}
+                          onApply={handleApplySkill}
+                        />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
-              )}
-              
-              {/* Projects Section */}
-              {activeSection === "projects" && (
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-semibold text-gray-900">Projects</h2>
-                  <ResumeProjectsSection
-                    projects={resume.projects}
-                    onUpdate={(projects) => {
-                      setResume({
-                        ...resume,
-                        projects
-                      });
-                    }}
-                  />
-                </div>
-              )}
-              
-              {/* Preview Section */}
-              {activeSection === "preview" && (
-                <div>
-                  <ResumePreview resume={resume} />
-                </div>
-              )}
-            </div>
+                <ResumeSkillsSection
+                  skills={resume.skills}
+                  onUpdate={(skills) => {
+                    setResume({
+                      ...resume,
+                      skills
+                    });
+                  }}
+                />
+              </div>
+            )}
+            
+            {/* Projects Section */}
+            {activeSection === "projects" && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-semibold text-gray-900">Projects</h2>
+                <ResumeProjectsSection
+                  projects={resume.projects}
+                  onUpdate={(projects) => {
+                    setResume({
+                      ...resume,
+                      projects
+                    });
+                  }}
+                />
+              </div>
+            )}
+            
+            {/* Preview Section */}
+            {activeSection === "preview" && (
+              <div>
+                <ResumePreview resume={resume} />
+              </div>
+            )}
           </div>
         </div>
       </main>

@@ -613,23 +613,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Job Routes
   app.get("/api/jobs", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+    // Support for guest mode - allow access to job listings without authentication
     try {
-      const userId = req.user!.id;
-      
       // Get filter parameters
       const title = req.query.title as string | undefined;
       const location = req.query.location as string | undefined;
       const type = req.query.type as string | undefined;
       const experience = req.query.experience as string | undefined;
-      
-      // Get user's primary resume for matching
-      const resumes = await storage.getResumes(userId);
-      const primaryResume = resumes.length > 0 ? resumes[0] : null;
+      const isGuest = req.query.guest === 'true';
       
       // Get jobs with filtering
       let jobs = await storage.getJobs({ title, location, type, experience });
+      
+      // If user is authenticated, get their resume for matching
+      let primaryResume = null;
+      let userId: number | undefined;
+      
+      if (req.isAuthenticated()) {
+        userId = req.user!.id;
+        const resumes = await storage.getResumes(userId);
+        primaryResume = resumes.length > 0 ? resumes[0] : null;
+      }
       
       // If user has a resume, match jobs with it
       if (primaryResume) {
@@ -647,8 +651,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // Mark saved jobs
-      const savedJobIds = await storage.getSavedJobIds(userId);
+      // Mark saved jobs if user is authenticated
+      let savedJobIds: number[] = [];
+      if (req.isAuthenticated() && userId !== undefined) {
+        savedJobIds = await storage.getSavedJobIds(userId);
+      }
+      
       jobs = jobs.map(job => ({
         ...job,
         saved: savedJobIds.includes(job.id)

@@ -22,7 +22,7 @@ export interface IStorage {
   getJobs(filters?: { title?: string, location?: string, type?: string, experience?: string }): Promise<Job[]>;
   getJob(id: number): Promise<Job | undefined>;
   getSavedJobs(userId: number): Promise<Job[]>;
-  getSavedJobIds(userId: number): Promise<number[]>;
+  getSavedJobIds(userId?: number): Promise<number[]>;
   toggleSavedJob(userId: number, jobId: number): Promise<boolean>;
   
   // Application operations
@@ -250,7 +250,12 @@ export class MemStorage implements IStorage {
     return savedJobs;
   }
 
-  async getSavedJobIds(userId: number): Promise<number[]> {
+  async getSavedJobIds(userId?: number): Promise<number[]> {
+    // If userId is undefined, return an empty array (for guest mode)
+    if (userId === undefined) {
+      return [];
+    }
+    
     const savedJobIds: number[] = [];
     
     for (const [key, isSaved] of this.savedJobs.entries()) {

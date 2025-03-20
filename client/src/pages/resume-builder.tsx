@@ -29,6 +29,10 @@ import {
   Save,
   Upload,
   Loader2,
+  Cpu,
+  Check,
+  RefreshCw,
+  Sparkles,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -37,6 +41,108 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+
+// Component for professional summary AI suggestions
+interface SummarySuggestionsProps {
+  resumeId: string;
+  onApply: (summary: string) => void;
+}
+
+function SummarySuggestions({ resumeId, onApply }: SummarySuggestionsProps) {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [summaries, setSummaries] = useState<string[]>([]);
+  
+  // Generate AI summaries
+  const handleGenerateSummaries = async () => {
+    if (!resumeId) {
+      return;
+    }
+    
+    setIsGenerating(true);
+    try {
+      const res = await apiRequest("GET", `/api/resumes/${resumeId}/suggestions`);
+      const data = await res.json();
+      
+      if (data.success && data.suggestions && Array.isArray(data.suggestions)) {
+        // Get a few of the suggestions that would work well as summaries (the longer ones)
+        const possibleSummaries = data.suggestions
+          .filter((s: string) => s.length > 50)
+          .slice(0, 3);
+        
+        if (possibleSummaries.length > 0) {
+          setSummaries(possibleSummaries);
+        } else {
+          setSummaries([
+            "Accomplished software professional with a proven track record of delivering innovative solutions. Adept at leveraging technical expertise to drive business outcomes and optimize processes.",
+            "Results-driven professional combining technical expertise with strong communication skills. Committed to continuous improvement and delivering high-quality work that exceeds expectations.",
+            "Versatile and dedicated professional with strong problem-solving abilities. Effectively balances technical excellence with business requirements to create impactful solutions."
+          ]);
+        }
+      }
+    } catch (error) {
+      console.error("Error generating summaries:", error);
+    }
+    setIsGenerating(false);
+  };
+  
+  return (
+    <div>
+      {summaries.length === 0 ? (
+        <div className="text-center py-3">
+          <Button
+            onClick={handleGenerateSummaries}
+            disabled={isGenerating}
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generating summaries...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                Generate AI summaries
+              </>
+            )}
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {summaries.map((summary, index) => (
+            <div 
+              key={index} 
+              className="bg-white p-3 rounded-md border border-secondary-200 text-sm relative group"
+            >
+              <p className="text-secondary-600">{summary}</p>
+              <Button
+                onClick={() => onApply(summary)}
+                size="sm"
+                className="mt-2 w-full flex items-center justify-center gap-1"
+              >
+                <Check className="h-3 w-3" />
+                Use this summary
+              </Button>
+            </div>
+          ))}
+          <Button
+            onClick={() => {
+              setSummaries([]);
+              handleGenerateSummaries();
+            }}
+            variant="ghost"
+            size="sm"
+            className="w-full flex items-center justify-center gap-1 mt-2"
+          >
+            <RefreshCw className="h-3 w-3" />
+            Generate different suggestions
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function ResumeBuilder() {
   const { toast } = useToast();
@@ -635,21 +741,38 @@ export default function ResumeBuilder() {
                     )}
                     
                     {activeSection === "summary" && (
-                      <div className="sm:col-span-6">
-                        <Label htmlFor="summary">Professional Summary</Label>
-                        <div className="mt-1">
-                          <Textarea
-                            id="summary"
-                            value={resume.personalInfo.summary}
-                            onChange={(e) => handlePersonalInfoChange("summary", e.target.value)}
-                            rows={5}
-                            className="resize-none"
-                            placeholder="Passionate software engineer with expertise in JavaScript, React, and Node.js. Proven track record of delivering high-quality web applications with a focus on user experience and performance optimization."
-                          />
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="summary">Professional Summary</Label>
+                          <div className="mt-1">
+                            <Textarea
+                              id="summary"
+                              value={resume.personalInfo.summary}
+                              onChange={(e) => handlePersonalInfoChange("summary", e.target.value)}
+                              rows={5}
+                              className="resize-none"
+                              placeholder="Passionate software engineer with expertise in JavaScript, React, and Node.js. Proven track record of delivering high-quality web applications with a focus on user experience and performance optimization."
+                            />
+                          </div>
+                          <p className="mt-2 text-sm text-secondary-500">
+                            Write a 2-3 sentence summary highlighting your experience and strengths.
+                          </p>
                         </div>
-                        <p className="mt-2 text-sm text-secondary-500">
-                          Write a 2-3 sentence summary highlighting your experience and strengths.
-                        </p>
+                        
+                        {/* AI Summary Suggestions */}
+                        <div className="bg-secondary-50 p-4 rounded-lg border border-secondary-200">
+                          <div className="flex items-center mb-3">
+                            <Cpu className="h-5 w-5 text-primary-500 mr-2" />
+                            <h3 className="font-medium text-secondary-900">AI Summary Suggestions</h3>
+                          </div>
+                          
+                          <div className="space-y-3">
+                            <SummarySuggestions 
+                              resumeId={resumeId?.toString() || resume.id} 
+                              onApply={handleApplySummary}
+                            />
+                          </div>
+                        </div>
                       </div>
                     )}
                     

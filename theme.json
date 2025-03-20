@@ -2,5 +2,11 @@
   "variant": "professional",
   "primary": "hsl(221.2 83.2% 53.3%)",
   "appearance": "light",
-  "radius": 0.5
+  "radius": 0.5,
+  "colors": {
+    "jobFinderBackground": "linear-gradient(to bottom right, hsl(219, 90%, 10%), hsl(260, 90%, 10%))",
+    "resumeHighlight1": "bg-blue-500",
+    "resumeHighlight2": "bg-purple-500",
+    "resumeHighlight3": "bg-emerald-500"
+  }
 }

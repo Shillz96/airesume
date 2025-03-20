@@ -28,6 +28,7 @@ export default function Navbar() {
 
   const navItems = [
     { path: "/", label: "Dashboard" },
+    { path: "/resumes", label: "Resumes" },
     { path: "/resume-builder", label: "Resume Builder" },
     { path: "/job-finder", label: "Job Finder" },
   ];

@@ -711,16 +711,16 @@ export default function ResumeBuilder() {
   };
   
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black cosmic-background">
       <Navbar />
       
-      <main className="container mx-auto pt-16 pb-20 px-4">
+      <main className="container mx-auto pt-24 pb-20 px-4">
         {/* Page Header */}
         <div className="mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-primary-800 mb-2">Resume Builder</h1>
-            <p className="text-secondary-600">
-              Create a professional resume that gets you hired.
+            <h1 className="text-3xl font-bold cosmic-text-gradient mb-2">Resume Builder</h1>
+            <p className="text-gray-300">
+              Create a professional resume that passes ATS systems and gets you hired.
             </p>
           </div>
           
@@ -728,7 +728,7 @@ export default function ResumeBuilder() {
             <Button
               onClick={handleSaveResume}
               disabled={isSaving}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0"
             >
               {isSaving ? (
                 <>
@@ -747,7 +747,7 @@ export default function ResumeBuilder() {
               variant="outline"
               onClick={handleFileInputClick}
               disabled={isUploading}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 border-white/10 text-gray-200 hover:bg-white/10 hover:text-white"
             >
               {isUploading ? (
                 <>
@@ -756,7 +756,7 @@ export default function ResumeBuilder() {
                 </>
               ) : (
                 <>
-                  <Upload className="h-4 w-4" />
+                  <Upload className="h-4 w-4 text-blue-400" />
                   <span>Upload Resume</span>
                 </>
               )}
@@ -773,50 +773,68 @@ export default function ResumeBuilder() {
         </div>
         
         {/* Main content area */}
-        <div className="bg-white rounded-xl shadow-lg">
+        <div className="cosmic-card border border-white/10 rounded-xl shadow-lg backdrop-blur-md overflow-hidden">
           {/* Horizontal Tab Navigation */}
           <div className="relative">
-            <div className="bg-primary-700 rounded-t-xl px-6 py-3">
+            <div className="bg-gradient-to-r from-blue-900/80 to-purple-900/80 rounded-t-xl px-6 py-4 border-b border-white/10">
               <Tabs 
                 value={activeSection} 
                 onValueChange={setActiveSection} 
-                className="w-full"
+                className="w-full cosmic-tabs"
               >
-                <TabsList className="bg-transparent border-b border-white/20 w-full justify-start mb-1 p-0">
+                <TabsList className="bg-transparent w-full justify-start mb-1 p-0 space-x-1">
                   <TabsTrigger 
                     value="profile" 
-                    className={`${activeSection === "profile" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                    className={`${activeSection === "profile" 
+                      ? "bg-blue-600/50 text-white border-b-2 border-blue-400" 
+                      : "text-gray-300 hover:text-white hover:bg-white/5"} font-medium transition-all duration-200`}
                   >
+                    <FileText className="h-4 w-4 mr-2" />
                     PROFILE
                   </TabsTrigger>
                   <TabsTrigger 
                     value="experience" 
-                    className={`${activeSection === "experience" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                    className={`${activeSection === "experience" 
+                      ? "bg-blue-600/50 text-white border-b-2 border-blue-400" 
+                      : "text-gray-300 hover:text-white hover:bg-white/5"} font-medium transition-all duration-200`}
                   >
+                    <Briefcase className="h-4 w-4 mr-2" />
                     EXPERIENCE
                   </TabsTrigger>
                   <TabsTrigger 
                     value="education" 
-                    className={`${activeSection === "education" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                    className={`${activeSection === "education" 
+                      ? "bg-blue-600/50 text-white border-b-2 border-blue-400" 
+                      : "text-gray-300 hover:text-white hover:bg-white/5"} font-medium transition-all duration-200`}
                   >
+                    <GraduationCap className="h-4 w-4 mr-2" />
                     EDUCATION
                   </TabsTrigger>
                   <TabsTrigger 
                     value="skills" 
-                    className={`${activeSection === "skills" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                    className={`${activeSection === "skills" 
+                      ? "bg-blue-600/50 text-white border-b-2 border-blue-400" 
+                      : "text-gray-300 hover:text-white hover:bg-white/5"} font-medium transition-all duration-200`}
                   >
+                    <Code className="h-4 w-4 mr-2" />
                     SKILLS
                   </TabsTrigger>
                   <TabsTrigger 
                     value="projects" 
-                    className={`${activeSection === "projects" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                    className={`${activeSection === "projects" 
+                      ? "bg-blue-600/50 text-white border-b-2 border-blue-400" 
+                      : "text-gray-300 hover:text-white hover:bg-white/5"} font-medium transition-all duration-200`}
                   >
+                    <FolderKanban className="h-4 w-4 mr-2" />
                     PROJECTS
                   </TabsTrigger>
                   <TabsTrigger 
                     value="preview" 
-                    className={`${activeSection === "preview" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                    className={`${activeSection === "preview" 
+                      ? "bg-blue-600/50 text-white border-b-2 border-blue-400" 
+                      : "text-gray-300 hover:text-white hover:bg-white/5"} font-medium transition-all duration-200`}
                   >
+                    <Maximize2 className="h-4 w-4 mr-2" />
                     PREVIEW
                   </TabsTrigger>
                 </TabsList>
@@ -830,66 +848,69 @@ export default function ResumeBuilder() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="md:col-span-2 space-y-6">
                     <div>
-                      <h2 className="text-xl font-semibold mb-4 text-secondary-900">Personal Information</h2>
+                      <h2 className="text-xl font-semibold mb-4 text-white flex items-center">
+                        <User className="h-5 w-5 mr-2 text-blue-400" />
+                        Personal Information
+                      </h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <Label htmlFor="firstName">First Name</Label>
+                          <Label htmlFor="firstName" className="text-gray-300">First Name</Label>
                           <Input 
                             id="firstName"
                             value={resume.personalInfo.firstName}
                             onChange={e => updatePersonalInfo("firstName", e.target.value)}
-                            className="mt-1"
+                            className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
                           />
                         </div>
                         <div>
-                          <Label htmlFor="lastName">Last Name</Label>
+                          <Label htmlFor="lastName" className="text-gray-300">Last Name</Label>
                           <Input 
                             id="lastName"
                             value={resume.personalInfo.lastName}
                             onChange={e => updatePersonalInfo("lastName", e.target.value)}
-                            className="mt-1"
+                            className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
                           />
                         </div>
                         <div>
-                          <Label htmlFor="email">Email</Label>
+                          <Label htmlFor="email" className="text-gray-300">Email</Label>
                           <Input 
                             id="email"
                             type="email"
                             value={resume.personalInfo.email}
                             onChange={e => updatePersonalInfo("email", e.target.value)}
-                            className="mt-1"
+                            className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
                           />
                         </div>
                         <div>
-                          <Label htmlFor="phone">Phone</Label>
+                          <Label htmlFor="phone" className="text-gray-300">Phone</Label>
                           <Input 
                             id="phone"
                             value={resume.personalInfo.phone}
                             onChange={e => updatePersonalInfo("phone", e.target.value)}
-                            className="mt-1"
+                            className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
                           />
                         </div>
                       </div>
                     </div>
                     
                     <div>
-                      <Label htmlFor="headline">Professional Headline</Label>
+                      <Label htmlFor="headline" className="text-gray-300">Professional Headline</Label>
                       <Input 
                         id="headline"
                         value={resume.personalInfo.headline}
                         onChange={e => updatePersonalInfo("headline", e.target.value)}
-                        className="mt-1"
+                        className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
                         placeholder="e.g., Senior Software Engineer | Front-End Specialist | React & TypeScript Expert"
                       />
                     </div>
                     
                     <div>
-                      <Label htmlFor="summary">Professional Summary</Label>
+                      <Label htmlFor="summary" className="text-gray-300">Professional Summary</Label>
                       <Textarea 
                         id="summary"
                         value={resume.personalInfo.summary}
                         onChange={e => updatePersonalInfo("summary", e.target.value)}
-                        className="mt-1 min-h-32"
+                        className="mt-1 min-h-32 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
                         placeholder="Write a concise summary of your professional background, key skills, and career achievements."
                       />
                     </div>
@@ -897,39 +918,42 @@ export default function ResumeBuilder() {
                   
                   {/* AI Assistant Section */}
                   <div className="md:col-span-1">
-                    <div className="bg-secondary-50 p-5 rounded-lg border border-secondary-200">
-                      <div className="flex items-center mb-4 text-primary-800">
-                        <Cpu className="h-5 w-5 mr-2" />
-                        <h3 className="font-medium">AI Resume Assistant</h3>
-                      </div>
-                      
-                      <Collapsible className="mb-4">
-                        <div className="flex justify-between items-center">
-                          <h4 className="text-sm font-medium text-secondary-700 mb-2">
-                            Generate Professional Summary
-                          </h4>
-                          <CollapsibleTrigger className="text-xs text-secondary-500 hover:text-secondary-800">
-                            <ChevronDown className="h-4 w-4" />
-                          </CollapsibleTrigger>
+                    <div className="cosmic-card border border-white/10 bg-black/40 p-5 rounded-lg relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+                      <div className="relative z-10">
+                        <div className="flex items-center mb-4">
+                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
+                          <h3 className="font-medium text-white">AI Resume Assistant</h3>
                         </div>
-                        <CollapsibleContent>
-                          <div className="mt-2">
-                            <SummarySuggestions 
-                              resumeId={resumeId?.toString() || "new"}
-                              onApply={handleApplySummary}
-                            />
+                        
+                        <Collapsible className="mb-4">
+                          <div className="flex justify-between items-center">
+                            <h4 className="text-sm font-medium text-blue-300 mb-2">
+                              Generate Professional Summary
+                            </h4>
+                            <CollapsibleTrigger className="text-xs text-gray-400 hover:text-gray-200">
+                              <ChevronDown className="h-4 w-4" />
+                            </CollapsibleTrigger>
                           </div>
-                        </CollapsibleContent>
-                      </Collapsible>
-                      
-                      <div className="text-xs text-secondary-500 mt-3">
-                        <p className="mb-2">Tips for a great summary:</p>
-                        <ul className="list-disc pl-4 space-y-1">
-                          <li>Keep it concise (3-5 sentences)</li>
-                          <li>Highlight your most relevant experience</li>
-                          <li>Focus on achievements rather than responsibilities</li>
-                          <li>Include keywords relevant to your target position</li>
-                        </ul>
+                          <CollapsibleContent>
+                            <div className="mt-2">
+                              <SummarySuggestions 
+                                resumeId={resumeId?.toString() || "new"}
+                                onApply={handleApplySummary}
+                              />
+                            </div>
+                          </CollapsibleContent>
+                        </Collapsible>
+                        
+                        <div className="text-xs text-gray-300 mt-3 bg-white/5 p-3 rounded-lg">
+                          <p className="mb-2 text-blue-300 font-medium">Tips for a great summary:</p>
+                          <ul className="list-disc pl-4 space-y-1">
+                            <li>Keep it concise (3-5 sentences)</li>
+                            <li>Highlight your most relevant experience</li>
+                            <li>Focus on achievements rather than responsibilities</li>
+                            <li>Include keywords relevant to your target position</li>
+                          </ul>
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -60,27 +60,28 @@ function SummarySuggestions({ resumeId, onApply }: SummarySuggestionsProps) {
     
     setIsGenerating(true);
     try {
-      const res = await apiRequest("GET", `/api/resumes/${resumeId}/suggestions`);
+      // Use the summaryOnly parameter to get complete summary rewrites
+      const res = await apiRequest("GET", `/api/resumes/${resumeId}/suggestions?summaryOnly=true`);
       const data = await res.json();
       
       if (data.success && data.suggestions && Array.isArray(data.suggestions)) {
-        // Get a few of the suggestions that would work well as summaries (the longer ones)
-        const possibleSummaries = data.suggestions
-          .filter((s: string) => s.length > 50)
-          .slice(0, 3);
-        
-        if (possibleSummaries.length > 0) {
-          setSummaries(possibleSummaries);
-        } else {
-          setSummaries([
-            "Accomplished software professional with a proven track record of delivering innovative solutions. Adept at leveraging technical expertise to drive business outcomes and optimize processes.",
-            "Results-driven professional combining technical expertise with strong communication skills. Committed to continuous improvement and delivering high-quality work that exceeds expectations.",
-            "Versatile and dedicated professional with strong problem-solving abilities. Effectively balances technical excellence with business requirements to create impactful solutions."
-          ]);
-        }
+        setSummaries(data.suggestions.slice(0, 3));
+      } else {
+        // Fallback summaries if the API call fails
+        setSummaries([
+          "Accomplished software professional with a proven track record of delivering innovative solutions. Adept at leveraging technical expertise to drive business outcomes and optimize processes.",
+          "Results-driven professional combining technical expertise with strong communication skills. Committed to continuous improvement and delivering high-quality work that exceeds expectations.",
+          "Versatile and dedicated professional with strong problem-solving abilities. Effectively balances technical excellence with business requirements to create impactful solutions."
+        ]);
       }
     } catch (error) {
       console.error("Error generating summaries:", error);
+      // Fallback summaries if the API call fails
+      setSummaries([
+        "Accomplished software professional with a proven track record of delivering innovative solutions. Adept at leveraging technical expertise to drive business outcomes and optimize processes.",
+        "Results-driven professional combining technical expertise with strong communication skills. Committed to continuous improvement and delivering high-quality work that exceeds expectations.",
+        "Versatile and dedicated professional with strong problem-solving abilities. Effectively balances technical excellence with business requirements to create impactful solutions."
+      ]);
     }
     setIsGenerating(false);
   };

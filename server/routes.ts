@@ -224,15 +224,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user!.id;
       const resumeId = parseInt(req.params.id);
+      const summaryOnly = req.query.summaryOnly === 'true';
       
       const resume = await storage.getResume(resumeId, userId);
       if (!resume) {
         return res.status(404).json({ success: false, error: "Resume not found" });
       }
       
-      // Generate suggestions using OpenAI
-      const suggestions = await generateResumeSuggestions(resume);
-      return res.json({ success: true, suggestions });
+      if (summaryOnly) {
+        // For summaryOnly requests, use OpenAI to generate complete summary rewrites
+        try {
+          // Import the openai client from ai.ts
+          const response = await (await import('./ai')).openai.chat.completions.create({
+            model: "gpt-4o",
+            messages: [
+              {
+                role: "system",
+                content: "You are an expert resume writer. Given a person's resume information, generate 3 different complete professional summaries that highlight their experience, skills, and unique selling points. Make each summary different in tone and focus, but all professionally written and ready to use on a resume."
+              },
+              {
+                role: "user",
+                content: `Generate 3 different professional summaries based on this person's information:
+                
+                Name: ${resume.content?.personalInfo?.firstName || ''} ${resume.content?.personalInfo?.lastName || ''}
+                
+                Current Summary: ${resume.content?.personalInfo?.summary || ''}
+                
+                Experience: ${JSON.stringify(resume.content?.experience || [])}
+                
+                Skills: ${JSON.stringify(resume.content?.skills || [])}
+                
+                Each summary should be complete, professionally written, and approximately 2-4 sentences long. Use varied styles and highlight different strengths in each one. Return just the summaries, not explanations or other text.`
+              }
+            ],
+          });
+          
+          // Process the response to extract the 3 summaries
+          const content = response.choices[0].message.content || '';
+          
+          // Extract summaries, assuming they are separated by numbers or line breaks
+          const summaryLines = content.split(/\n+/);
+          const summaries = summaryLines
+            .filter(line => line.trim().length > 0)
+            .filter(line => !line.trim().match(/^[0-9]\.?\s*$/)) // Remove number-only lines
+            .map(line => line.replace(/^[0-9]\.?\s*/, '').trim()) // Remove leading numbers
+            .filter(line => line.length > 50); // Only include lines long enough to be summaries
+            
+          if (summaries.length > 0) {
+            return res.json({ success: true, suggestions: summaries });
+          }
+          
+          // Fallback if no good summaries were extracted
+          return res.json({ 
+            success: true, 
+            suggestions: [
+              "Dynamic professional with a proven track record of delivering high-quality results through technical expertise and innovative problem-solving. Excels in collaborative environments while driving continuous improvement and efficiency gains across projects.",
+              "Detail-oriented specialist combining analytical thinking with strong communication skills to translate complex requirements into practical solutions. Committed to excellence with a demonstrated history of exceeding stakeholder expectations.",
+              "Results-driven professional with expertise in leveraging cutting-edge technologies to address business challenges. Balances technical proficiency with strategic insight to deliver meaningful outcomes and sustainable growth."
+            ]
+          });
+        } catch (error) {
+          console.error("Error generating summary suggestions:", error);
+          return res.json({ 
+            success: true, 
+            suggestions: [
+              "Dynamic professional with a proven track record of delivering high-quality results through technical expertise and innovative problem-solving. Excels in collaborative environments while driving continuous improvement and efficiency gains across projects.",
+              "Detail-oriented specialist combining analytical thinking with strong communication skills to translate complex requirements into practical solutions. Committed to excellence with a demonstrated history of exceeding stakeholder expectations.",
+              "Results-driven professional with expertise in leveraging cutting-edge technologies to address business challenges. Balances technical proficiency with strategic insight to deliver meaningful outcomes and sustainable growth."
+            ]
+          });
+        }
+      } else {
+        // Generate general resume improvement suggestions using OpenAI
+        const suggestions = await generateResumeSuggestions(resume);
+        return res.json({ success: true, suggestions });
+      }
     } catch (error) {
       console.error("Error generating resume suggestions:", error);
       return res.status(500).json({ 

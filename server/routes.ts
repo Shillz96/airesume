@@ -294,7 +294,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // If user has a resume, match jobs with it
       if (primaryResume) {
-        jobs = await matchJobsWithResume(jobs, primaryResume);
+        try {
+          // Verify API key is configured
+          if (!process.env.OPENAI_API_KEY) {
+            console.warn("OpenAI API key not configured for job matching");
+            // Continue without job matching but don't return an error
+          } else {
+            jobs = await matchJobsWithResume(jobs, primaryResume);
+          }
+        } catch (matchError: any) {
+          console.error("Error matching jobs with resume:", matchError);
+          // Continue without AI matching if there's an API error
+        }
       }
       
       // Mark saved jobs
@@ -306,7 +317,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(jobs);
     } catch (error) {
-      res.status(500).json({ message: (error as Error).message });
+      console.error("Job listing error:", error);
+      res.status(500).json({ 
+        success: false, 
+        error: "Failed to retrieve job listings" 
+      });
     }
   });
 

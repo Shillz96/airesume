@@ -22,8 +22,22 @@ export default function AIAssistant({ resumeId, onApplySuggestions }: AIAssistan
       return await res.json();
     },
     onSuccess: (data) => {
-      if (data && data.suggestions) {
+      if (data?.success && data.suggestions) {
         setSuggestions(data.suggestions);
+      } else if (data?.fallbackSuggestions) {
+        // Use fallback suggestions if available (in case of API limitations)
+        setSuggestions(data.fallbackSuggestions);
+        toast({
+          title: "Using generic suggestions",
+          description: data.error || "AI service unavailable. Using general resume tips.",
+          variant: "default",
+        });
+      } else if (!data?.success) {
+        toast({
+          title: "Could not generate suggestions",
+          description: data?.error || "Something went wrong. Please try again later.",
+          variant: "destructive",
+        });
       }
     },
     onError: (error: Error) => {

@@ -50,6 +50,20 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { ChevronDown } from "lucide-react";
 
 // Component for professional summary AI suggestions
 interface SummarySuggestionsProps {
@@ -936,109 +950,303 @@ export default function ResumeBuilder() {
               </Tabs>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Left column with AI assistant for relevant sections */}
-              <div className="lg:col-span-1">
-                {activeSection === "preview" ? (
-                  <div className="bg-white shadow rounded-lg overflow-hidden mb-6">
-                    <div className="p-4 border-b border-secondary-200">
-                      <div className="flex items-center">
-                        <Cpu className="h-5 w-5 text-primary-500 mr-2" />
-                        <h2 className="text-lg font-medium text-secondary-900">Resume Optimization Tips</h2>
+            {/* Main Resume Content - Centered Under Tab Navigation */}
+            <div className="max-w-5xl mx-auto space-y-6">
+              {/* Main resume editor section */}
+              <div className="bg-white shadow rounded-lg overflow-hidden">
+                <div className="border-b border-secondary-200 px-6 py-4">
+                  <h2 className="text-lg font-medium text-secondary-900">
+                    {activeSection === "personal" && "Personal Information"}
+                    {activeSection === "summary" && "Professional Summary"}
+                    {activeSection === "experience" && "Work Experience"}
+                    {activeSection === "education" && "Education"}
+                    {activeSection === "skills" && "Skills"}
+                    {activeSection === "projects" && "Projects"}
+                    {activeSection === "preview" && "Resume Preview & Final Touches"}
+                  </h2>
+                </div>
+                
+                <div className="p-6">
+                  {activeSection === "personal" && (
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-6">
+                      <div className="sm:col-span-3">
+                        <Label htmlFor="first-name">First name</Label>
+                        <Input
+                          id="first-name"
+                          value={resume.personalInfo.firstName}
+                          onChange={(e) => handlePersonalInfoChange("firstName", e.target.value)}
+                          className="mt-1"
+                          placeholder="John"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-3">
+                        <Label htmlFor="last-name">Last name</Label>
+                        <Input
+                          id="last-name"
+                          value={resume.personalInfo.lastName}
+                          onChange={(e) => handlePersonalInfoChange("lastName", e.target.value)}
+                          className="mt-1"
+                          placeholder="Doe"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-4">
+                        <Label htmlFor="email">Email address</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={resume.personalInfo.email}
+                          onChange={(e) => handlePersonalInfoChange("email", e.target.value)}
+                          className="mt-1"
+                          placeholder="john.doe@example.com"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <Label htmlFor="phone">Phone</Label>
+                        <Input
+                          id="phone"
+                          value={resume.personalInfo.phone}
+                          onChange={(e) => handlePersonalInfoChange("phone", e.target.value)}
+                          className="mt-1"
+                          placeholder="(555) 123-4567"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-6">
+                        <Label htmlFor="headline">Professional Headline</Label>
+                        <Input
+                          id="headline"
+                          value={resume.personalInfo.headline}
+                          onChange={(e) => handlePersonalInfoChange("headline", e.target.value)}
+                          className="mt-1"
+                          placeholder="Software Engineer with 5+ years of experience"
+                        />
                       </div>
                     </div>
-                    <div className="p-4">
-                      <ul className="space-y-2 text-sm text-secondary-700">
-                        <li className="flex items-start">
-                          <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-                          <span>Keep resume length to 1-2 pages for best readability</span>
-                        </li>
-                        <li className="flex items-start">
-                          <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-                          <span>Use the "Auto-Adjust" feature to fit content on page</span>
-                        </li>
-                        <li className="flex items-start">
-                          <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-                          <span>Include keywords from job descriptions to pass ATS scans</span>
-                        </li>
-                        <li className="flex items-start">
-                          <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-                          <span>Quantify achievements with numbers and percentages</span>
-                        </li>
-                        <li className="flex items-start">
-                          <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-                          <span>Review for spelling and grammar errors before saving</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                ) : activeSection === "summary" ? (
-                  <div className="bg-white shadow rounded-lg overflow-hidden mb-6">
-                    <div className="p-4 border-b border-secondary-200">
-                      <div className="flex items-center">
-                        <Cpu className="h-5 w-5 text-primary-500 mr-2" />
-                        <h2 className="text-lg font-medium text-secondary-900">AI Summary Generator</h2>
+                  )}
+                  
+                  {activeSection === "summary" && (
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="summary">Professional Summary</Label>
+                        <div className="mt-1">
+                          <Textarea
+                            id="summary"
+                            value={resume.personalInfo.summary}
+                            onChange={(e) => handlePersonalInfoChange("summary", e.target.value)}
+                            rows={5}
+                            className="resize-none"
+                            placeholder="Passionate software engineer with expertise in JavaScript, React, and Node.js. Proven track record of delivering high-quality web applications with a focus on user experience and performance optimization."
+                          />
+                        </div>
+                        <p className="mt-2 text-sm text-secondary-500">
+                          Write a 2-3 sentence summary highlighting your experience and strengths.
+                        </p>
+                      </div>
+                      
+                      {/* Compact AI Summary Suggestions */}
+                      <div className="bg-secondary-50 p-4 rounded-lg border border-secondary-200">
+                        <Collapsible className="w-full">
+                          <CollapsibleTrigger asChild>
+                            <Button variant="ghost" className="flex items-center justify-between w-full p-0 h-auto">
+                              <div className="flex items-center">
+                                <Cpu className="h-4 w-4 text-primary-500 mr-2" />
+                                <span className="font-medium text-sm text-secondary-900">AI Summary Suggestions</span>
+                              </div>
+                              <ChevronDown className="h-4 w-4" />
+                            </Button>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className="mt-2">
+                            <SummarySuggestions 
+                              resumeId={resumeId?.toString() || resume.id} 
+                              onApply={handleApplySummary}
+                            />
+                          </CollapsibleContent>
+                        </Collapsible>
                       </div>
                     </div>
-                    <div className="p-4">
-                      <p className="text-sm text-secondary-600 mb-4">
-                        Generate professional summaries optimized for ATS systems with keywords that match your experience.
-                      </p>
-                      <SummarySuggestions 
-                        resumeId={resumeId?.toString() || resume.id} 
-                        onApply={handleApplySummary}
+                  )}
+                  
+                  {activeSection === "experience" && (
+                    <div>
+                      <ResumeExperienceSection
+                        experiences={resume.experience}
+                        onUpdate={(experience) => setResume({ ...resume, experience })}
                       />
-                    </div>
-                  </div>
-                ) : activeSection === "experience" ? (
-                  <div className="bg-white shadow rounded-lg overflow-hidden mb-6">
-                    <div className="p-4 border-b border-secondary-200">
-                      <div className="flex items-center">
-                        <Cpu className="h-5 w-5 text-primary-500 mr-2" />
-                        <h2 className="text-lg font-medium text-secondary-900">AI Bullet Point Generator</h2>
+                      
+                      {/* Compact AI Experience Suggestions */}
+                      <div className="mt-6 bg-secondary-50 p-4 rounded-lg border border-secondary-200">
+                        <Collapsible className="w-full">
+                          <CollapsibleTrigger asChild>
+                            <Button variant="ghost" className="flex items-center justify-between w-full p-0 h-auto">
+                              <div className="flex items-center">
+                                <Cpu className="h-4 w-4 text-primary-500 mr-2" />
+                                <span className="font-medium text-sm text-secondary-900">AI Bullet Point Generator</span>
+                              </div>
+                              <ChevronDown className="h-4 w-4" />
+                            </Button>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className="mt-2">
+                            <ExperienceSuggestions 
+                              resumeId={resumeId?.toString() || resume.id} 
+                              onApply={handleAddExperienceWithAI}
+                            />
+                          </CollapsibleContent>
+                        </Collapsible>
                       </div>
                     </div>
-                    <div className="p-4">
-                      <p className="text-sm text-secondary-600 mb-4">
-                        Generate professional, achievement-focused bullet points that highlight your impact and include keywords for ATS systems.
-                      </p>
-                      <ExperienceSuggestions 
-                        resumeId={resumeId?.toString() || resume.id} 
-                        onApply={handleAddExperienceWithAI}
+                  )}
+                  
+                  {activeSection === "education" && (
+                    <ResumeEducationSection
+                      education={resume.education}
+                      onUpdate={(education) => setResume({ ...resume, education })}
+                    />
+                  )}
+                  
+                  {activeSection === "skills" && (
+                    <div>
+                      <ResumeSkillsSection
+                        skills={resume.skills}
+                        onUpdate={(skills) => setResume({ ...resume, skills })}
                       />
-                    </div>
-                  </div>
-                ) : activeSection === "skills" ? (
-                  <div className="bg-white shadow rounded-lg overflow-hidden mb-6">
-                    <div className="p-4 border-b border-secondary-200">
-                      <div className="flex items-center">
-                        <Cpu className="h-5 w-5 text-primary-500 mr-2" />
-                        <h2 className="text-lg font-medium text-secondary-900">AI Skill Suggestions</h2>
+                      
+                      {/* Compact AI Skills Suggestions */}
+                      <div className="mt-6 bg-secondary-50 p-4 rounded-lg border border-secondary-200">
+                        <Collapsible className="w-full">
+                          <CollapsibleTrigger asChild>
+                            <Button variant="ghost" className="flex items-center justify-between w-full p-0 h-auto">
+                              <div className="flex items-center">
+                                <Cpu className="h-4 w-4 text-primary-500 mr-2" />
+                                <span className="font-medium text-sm text-secondary-900">AI Skill Suggestions</span>
+                              </div>
+                              <ChevronDown className="h-4 w-4" />
+                            </Button>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className="mt-2">
+                            <SkillSuggestions 
+                              resumeId={resumeId?.toString() || resume.id} 
+                              onApply={handleAddSkill}
+                            />
+                          </CollapsibleContent>
+                        </Collapsible>
                       </div>
                     </div>
-                    <div className="p-4">
-                      <p className="text-sm text-secondary-600 mb-4">
-                        Get recommendations for in-demand skills based on your experience that will help your resume pass through ATS systems.
-                      </p>
-                      <SkillSuggestions 
-                        resumeId={resumeId?.toString() || resume.id} 
-                        onApply={handleAddSkill}
-                      />
+                  )}
+                  
+                  {activeSection === "projects" && (
+                    <ResumeProjectsSection
+                      projects={resume.projects}
+                      onUpdate={(projects) => setResume({ ...resume, projects })}
+                    />
+                  )}
+                  
+                  {activeSection === "preview" && (
+                    <div className="space-y-4">
+                      {/* Resume Optimization Tips */}
+                      <div className="bg-secondary-50 p-4 rounded-lg border border-secondary-200 mb-6">
+                        <div className="flex items-center mb-3">
+                          <Cpu className="h-5 w-5 text-primary-500 mr-2" />
+                          <h3 className="font-medium text-secondary-900">Resume Optimization Tips</h3>
+                        </div>
+                        <ul className="space-y-2 text-sm text-secondary-700">
+                          <li className="flex items-start">
+                            <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
+                            <span>Keep resume length to 1-2 pages for best readability</span>
+                          </li>
+                          <li className="flex items-start">
+                            <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
+                            <span>Use the "Auto-Adjust" feature to fit content on page</span>
+                          </li>
+                          <li className="flex items-start">
+                            <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
+                            <span>Include keywords from job descriptions to pass ATS scans</span>
+                          </li>
+                          <li className="flex items-start">
+                            <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
+                            <span>Quantify achievements with numbers and percentages</span>
+                          </li>
+                          <li className="flex items-start">
+                            <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
+                            <span>Review for spelling and grammar errors before saving</span>
+                          </li>
+                        </ul>
+                      </div>
+                      
+                      {/* Templates selection and preview */}
+                      <div className="bg-white p-6 border border-secondary-200 rounded-lg">
+                        <h3 className="text-lg font-medium mb-4">Select a Template</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div 
+                            className={`border rounded-lg p-4 cursor-pointer ${resume.template === 'professional' ? 'border-primary-500 bg-primary-50' : 'border-secondary-200'}`}
+                            onClick={() => handleTemplateChange('professional')}
+                          >
+                            <h4 className="font-medium mb-2">Professional</h4>
+                            <p className="text-sm text-secondary-600">Clean, traditional layout ideal for conservative industries</p>
+                          </div>
+                          <div 
+                            className={`border rounded-lg p-4 cursor-pointer ${resume.template === 'creative' ? 'border-primary-500 bg-primary-50' : 'border-secondary-200'}`}
+                            onClick={() => handleTemplateChange('creative')}
+                          >
+                            <h4 className="font-medium mb-2">Creative</h4>
+                            <p className="text-sm text-secondary-600">Modern design with accent colors for creative fields</p>
+                          </div>
+                          <div 
+                            className={`border rounded-lg p-4 cursor-pointer ${resume.template === 'executive' ? 'border-primary-500 bg-primary-50' : 'border-secondary-200'}`}
+                            onClick={() => handleTemplateChange('executive')}
+                          >
+                            <h4 className="font-medium mb-2">Executive</h4>
+                            <p className="text-sm text-secondary-600">Sophisticated layout highlighting leadership experience</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <AIAssistant 
-                    resumeId={resumeId?.toString() || resume.id} 
-                    resume={resume}
-                    onApplySuggestions={handleApplySuggestions}
-                    onApplySummary={handleApplySummary}
-                    onApplyTailoredContent={handleApplyTailoredContent}
-                  />
-                )}
+                  )}
+                </div>
               </div>
               
-              {/* Main resume editor and preview */}
-              <div className="lg:col-span-2 space-y-6">
+              {/* Resume Preview */}
+              {activeSection !== "preview" && (
+                <div className="bg-white shadow rounded-lg overflow-hidden p-6">
+                  <h3 className="text-lg font-medium mb-4 border-b pb-2">Live Preview</h3>
+                  <ResumeTemplate 
+                    resume={resume} 
+                    onTemplateChange={handleTemplateChange} 
+                  />
+                </div>
+              )}
+              
+              {/* Alternative AI Assistant placement for future reference */}
+              {/* Commented for now - could be used as a drawer or floating assistant 
+              <div className="fixed bottom-4 right-4 z-10">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="rounded-full h-12 w-12 p-0">
+                      <Cpu className="h-6 w-6" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>AI Resume Assistant</DialogTitle>
+                      <DialogDescription>
+                        Get AI-powered suggestions to improve your resume
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                      <AIAssistant 
+                        resumeId={resumeId?.toString() || resume.id} 
+                        resume={resume}
+                        onApplySuggestions={handleApplySuggestions}
+                        onApplySummary={handleApplySummary}
+                        onApplyTailoredContent={handleApplyTailoredContent}
+                      />
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+              */}>
                 {/* Temporarily removing sidebar with Accordion structure */}
                 {/* 
                 <div className="bg-white shadow rounded-lg overflow-hidden mb-6">

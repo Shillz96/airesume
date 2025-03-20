@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { Resume, Job } from "@shared/schema";
 import fs from "fs";
 import path from "path";
+import pdfParse from "pdf-parse";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ 
@@ -248,7 +249,6 @@ export async function parseResumeFile(filePath: string, fileName: string): Promi
       try {
         // For PDF files, use pdf-parse to extract the text
         if (fileExtension === '.pdf') {
-          const pdfParse = require('pdf-parse');
           try {
             console.log("Parsing PDF file using pdf-parse...");
             const pdfData = await pdfParse(fileBuffer);

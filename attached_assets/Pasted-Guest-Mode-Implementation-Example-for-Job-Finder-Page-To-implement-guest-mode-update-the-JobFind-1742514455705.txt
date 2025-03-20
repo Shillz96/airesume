@@ -1,0 +1,55 @@
+Guest Mode Implementation (Example for Job Finder Page)
+To implement guest mode, update the JobFinder page (or any other page) to check for guest status and show the modal when actions are attempted:
+jsx
+import { useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
+// Example JobFinder Component with Guest Mode
+export default function JobFinder() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
+  const isGuest = location.state?.isGuest || false;
+
+  const handleAction = (action) => {
+    if (isGuest) {
+      setIsGuestModalOpen(true);
+    } else {
+      // Perform the action (e.g., apply to a job)
+      console.log(action);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)] text-white">
+      {/* Job Finder content */}
+      <Button onClick={() => handleAction("Apply to job")} className="bg-[hsl(221.2,83.2%,53.3%)] hover:bg-[hsl(221.2,83.2%,63.3%)] text-black">
+        Apply Now
+      </Button>
+
+      <Dialog open={isGuestModalOpen} onOpenChange={setIsGuestModalOpen}>
+        <DialogContent className="sm:max-w-[425px] bg-gray-900 text-white">
+          <DialogHeader>
+            <DialogTitle style={{ fontFamily: "'Montserrat', sans-serif" }}>
+              Create an Account to Continue
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-gray-300" style={{ fontFamily: "'Inter', sans-serif" }}>
+            You’re in guest mode. To perform actions like applying to jobs, please create an account.
+          </p>
+          <div className="flex gap-3 mt-4">
+            <Button onClick={() => navigate("/register")} className="bg-[hsl(221.2,83.2%,53.3%)] hover:bg-[hsl(221.2,83.2%,63.3%)] text-black w-full">
+              Register
+            </Button>
+            <Button onClick={() => navigate("/login")} variant="outline" className="border-[hsl(221.2,83.2%,53.3%)] text-[hsl(221.2,83.2%,53.3%)] w-full">
+              Login
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+

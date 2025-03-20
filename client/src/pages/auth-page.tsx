@@ -130,7 +130,7 @@ export default function AuthPage() {
           </div>
           <div>
             <Button
-              onClick={() => window.location.href = "/"}
+              onClick={() => window.location.href = "/?guest=true"}
               variant="outline"
               className="border-[hsl(221.2,83.2%,53.3%)] text-[hsl(221.2,83.2%,53.3%)] mr-3"
             >
@@ -216,8 +216,8 @@ export default function AuthPage() {
                           <Button
                             type="button"
                             variant="outline"
-                            className="flex-1 border-[hsl(221.2,83.2%,53.3%)] text-[hsl(221.2,83.2%,53.3%)] text-base py-6"
-                            onClick={() => window.location.href = "/"}
+                            className="flex-1 border-[hsl(221.2,83.2%,53.3%)] text-[hsl(221.2,83.2%,53.3%)] text-base py-6 login-guest-button"
+                            onClick={() => window.location.href = "/?guest=true"}
                           >
                             Try Now
                           </Button>
@@ -303,8 +303,8 @@ export default function AuthPage() {
                           <Button
                             type="button"
                             variant="outline"
-                            className="flex-1 border-[hsl(221.2,83.2%,53.3%)] text-[hsl(221.2,83.2%,53.3%)] text-base py-6"
-                            onClick={() => window.location.href = "/"}
+                            className="flex-1 border-[hsl(221.2,83.2%,53.3%)] text-[hsl(221.2,83.2%,53.3%)] text-base py-6 register-guest-button"
+                            onClick={() => window.location.href = "/?guest=true"}
                           >
                             Try Now
                           </Button>

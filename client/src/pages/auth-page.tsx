@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,8 +9,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertUserSchema } from "@shared/schema";
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect } from "wouter";
-import { FileText, Briefcase, User } from "lucide-react";
+import { FileText, Briefcase, User, Rocket, Database, Cpu } from "lucide-react";
 import { z } from "zod";
+import gsap from "gsap";
 
 export default function AuthPage() {
   const { user, registerMutation, loginMutation } = useAuth();
@@ -63,169 +65,258 @@ export default function AuthPage() {
     registerMutation.mutate(userData);
   }
 
+  // Create refs for animations
+  const featureIconsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const authPanelRef = useRef<HTMLDivElement>(null);
+  
+  // Animation effects
+  useEffect(() => {
+    // Animate feature icons
+    featureIconsRef.current.forEach((icon, index) => {
+      if (!icon) return;
+      
+      gsap.fromTo(
+        icon,
+        { 
+          y: 20, 
+          opacity: 0 
+        },
+        { 
+          y: 0, 
+          opacity: 1, 
+          duration: 0.6, 
+          delay: 0.2 + (index * 0.1),
+          ease: "power2.out" 
+        }
+      );
+    });
+    
+    // Animate auth panel
+    if (authPanelRef.current) {
+      gsap.fromTo(
+        authPanelRef.current,
+        { x: -20, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.8, ease: "power2.out" }
+      );
+    }
+  }, []);
+  
   return (
-    <div className="min-h-screen bg-secondary-50 flex">
-      <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
-        <div className="mx-auto w-full max-w-sm lg:w-96">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-extrabold text-primary-600">ResumeAI</h1>
-            <p className="mt-2 text-sm text-secondary-600">Your AI-powered resume builder and job finder</p>
-          </div>
-          
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="register">Register</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="login">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Login to your account</CardTitle>
-                  <CardDescription>
-                    Enter your credentials to access your account
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Form {...loginForm}>
-                    <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
-                      <FormField
-                        control={loginForm.control}
-                        name="username"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Username</FormLabel>
-                            <FormControl>
-                              <Input placeholder="johndoe" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={loginForm.control}
-                        name="password"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Password</FormLabel>
-                            <FormControl>
-                              <Input type="password" placeholder="••••••••" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button 
-                        type="submit" 
-                        className="w-full" 
-                        disabled={loginMutation.isPending}
-                      >
-                        {loginMutation.isPending ? 'Logging in...' : 'Login'}
-                      </Button>
-                    </form>
-                  </Form>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="register">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Create an account</CardTitle>
-                  <CardDescription>
-                    Join ResumeAI to create professional resumes and find jobs
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Form {...registerForm}>
-                    <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
-                      <FormField
-                        control={registerForm.control}
-                        name="username"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Username</FormLabel>
-                            <FormControl>
-                              <Input placeholder="johndoe" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={registerForm.control}
-                        name="password"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Password</FormLabel>
-                            <FormControl>
-                              <Input type="password" placeholder="••••••••" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={registerForm.control}
-                        name="confirmPassword"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Confirm Password</FormLabel>
-                            <FormControl>
-                              <Input type="password" placeholder="••••••••" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button 
-                        type="submit" 
-                        className="w-full" 
-                        disabled={registerMutation.isPending}
-                      >
-                        {registerMutation.isPending ? 'Creating account...' : 'Register'}
-                      </Button>
-                    </form>
-                  </Form>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </div>
+    <div className="min-h-screen overflow-hidden bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)] text-white">
+      {/* Starfield Background */}
+      <div className="starfield absolute inset-0 pointer-events-none">
+        {[...Array(80)].map((_, i) => (
+          <div
+            key={i}
+            className="star absolute bg-white rounded-full"
+            style={{
+              width: `${Math.random() * 2 + 1}px`,
+              height: `${Math.random() * 2 + 1}px`,
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              opacity: Math.random() * 0.5 + 0.2,
+              animation: `twinkle ${Math.random() * 3 + 2}s infinite`,
+            }}
+          />
+        ))}
       </div>
       
-      <div className="hidden lg:block relative w-0 flex-1 bg-gradient-to-r from-primary-600 to-primary-800">
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-16 text-white">
-          <h2 className="text-4xl font-bold mb-8">All-in-One Resume & Job Solution</h2>
-          
-          <div className="grid grid-cols-1 gap-8 max-w-lg">
-            <div className="flex items-start space-x-4">
-              <div className="bg-white bg-opacity-10 p-3 rounded-lg">
-                <FileText size={24} />
-              </div>
-              <div>
-                <h3 className="font-semibold text-xl mb-2">AI-Powered Resume Builder</h3>
-                <p className="text-white text-opacity-80">Create professional resumes with AI suggestions that highlight your strengths.</p>
-              </div>
+      <div className="flex flex-col lg:flex-row relative z-10">
+        <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24" ref={authPanelRef}>
+          <div className="mx-auto w-full max-w-sm lg:w-96">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-extrabold cosmic-text-gradient">AIreHire</h1>
+              <p className="mt-2 text-sm text-gray-300">Your AI-powered resume builder and job finder</p>
             </div>
             
-            <div className="flex items-start space-x-4">
-              <div className="bg-white bg-opacity-10 p-3 rounded-lg">
-                <Briefcase size={24} />
-              </div>
-              <div>
-                <h3 className="font-semibold text-xl mb-2">Smart Job Matching</h3>
-                <p className="text-white text-opacity-80">Our AI matches your skills with job opportunities for the perfect career fit.</p>
-              </div>
-            </div>
+            <Tabs defaultValue="login" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-6 bg-white/10 border border-white/20">
+                <TabsTrigger 
+                  value="login" 
+                  className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white"
+                >
+                  Login
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="register"
+                  className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white"
+                >
+                  Register
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="login">
+                <Card className="cosmic-card">
+                  <CardHeader>
+                    <CardTitle className="text-white">Login to your account</CardTitle>
+                    <CardDescription className="text-gray-300">
+                      Enter your credentials to access your account
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Form {...loginForm}>
+                      <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+                        <FormField
+                          control={loginForm.control}
+                          name="username"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-gray-200">Username</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  placeholder="johndoe" 
+                                  {...field} 
+                                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage className="text-red-400" />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={loginForm.control}
+                          name="password"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-gray-200">Password</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="password" 
+                                  placeholder="••••••••" 
+                                  {...field} 
+                                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage className="text-red-400" />
+                            </FormItem>
+                          )}
+                        />
+                        <Button 
+                          type="submit" 
+                          className="w-full bg-[hsl(221.2,83.2%,53.3%)] hover:bg-[hsl(221.2,83.2%,43.3%)] text-white" 
+                          disabled={loginMutation.isPending}
+                        >
+                          {loginMutation.isPending ? 'Logging in...' : 'Login'}
+                        </Button>
+                      </form>
+                    </Form>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="register">
+                <Card className="cosmic-card">
+                  <CardHeader>
+                    <CardTitle className="text-white">Create an account</CardTitle>
+                    <CardDescription className="text-gray-300">
+                      Join AIreHire to create professional resumes and find jobs
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Form {...registerForm}>
+                      <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+                        <FormField
+                          control={registerForm.control}
+                          name="username"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-gray-200">Username</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  placeholder="johndoe" 
+                                  {...field}
+                                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage className="text-red-400" />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={registerForm.control}
+                          name="password"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-gray-200">Password</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="password" 
+                                  placeholder="••••••••" 
+                                  {...field}
+                                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage className="text-red-400" />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={registerForm.control}
+                          name="confirmPassword"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-gray-200">Confirm Password</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="password" 
+                                  placeholder="••••••••" 
+                                  {...field}
+                                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                                />
+                              </FormControl>
+                              <FormMessage className="text-red-400" />
+                            </FormItem>
+                          )}
+                        />
+                        <Button 
+                          type="submit" 
+                          className="w-full bg-[hsl(221.2,83.2%,53.3%)] hover:bg-[hsl(221.2,83.2%,43.3%)] text-white" 
+                          disabled={registerMutation.isPending}
+                        >
+                          {registerMutation.isPending ? 'Creating account...' : 'Register'}
+                        </Button>
+                      </form>
+                    </Form>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </div>
+        
+        <div className="hidden lg:block relative lg:flex-1">
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-16 text-white">
+            <h2 className="text-5xl font-bold mb-8 cosmic-text-gradient">Navigate Your Career</h2>
             
-            <div className="flex items-start space-x-4">
-              <div className="bg-white bg-opacity-10 p-3 rounded-lg">
-                <User size={24} />
+            <div className="grid grid-cols-1 gap-8 max-w-lg">
+              <div className="flex items-start space-x-4" ref={el => featureIconsRef.current[0] = el}>
+                <div className="bg-[hsl(210,100%,60%)] bg-opacity-20 p-3 rounded-lg shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                  <Cpu size={28} />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-xl mb-2">AI-Powered Resume Builder</h3>
+                  <p className="text-gray-300">Create professional resumes with AI suggestions that highlight your strengths and target specific job requirements.</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-xl mb-2">Career Management</h3>
-                <p className="text-white text-opacity-80">Track applications, manage multiple resumes, and advance your career.</p>
+              
+              <div className="flex items-start space-x-4" ref={el => featureIconsRef.current[1] = el}>
+                <div className="bg-[hsl(260,100%,60%)] bg-opacity-20 p-3 rounded-lg shadow-[0_0_15px_rgba(147,51,234,0.5)]">
+                  <Briefcase size={28} />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-xl mb-2">Smart Job Matching</h3>
+                  <p className="text-gray-300">Our AI matches your skills with job opportunities for the perfect career fit and suggests tailored resume improvements.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-4" ref={el => featureIconsRef.current[2] = el}>
+                <div className="bg-[hsl(170,100%,60%)] bg-opacity-20 p-3 rounded-lg shadow-[0_0_15px_rgba(20,184,166,0.5)]">
+                  <Rocket size={28} />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-xl mb-2">Career Navigation</h3>
+                  <p className="text-gray-300">Track applications, manage multiple resumes, and receive guidance to navigate your career journey successfully.</p>
+                </div>
               </div>
             </div>
           </div>

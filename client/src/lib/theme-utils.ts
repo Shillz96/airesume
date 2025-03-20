@@ -3,7 +3,7 @@
  */
 
 // Define theme variant types to ensure type safety
-export type ThemeVariant = 'professional' | 'vibrant' | 'tint';
+export type ThemeVariant = 'professional' | 'vibrant' | 'tint' | string;
 export const THEME_VARIANTS = ['professional', 'vibrant', 'tint'] as const;
 export type ThemeAppearance = 'light' | 'dark' | 'system';
 
@@ -54,11 +54,11 @@ export function getVariantClasses(
 ): string {
   // In a real implementation, this would detect the current theme variant
   // from theme.json or CSS variables. For now, we'll default to professional.
-  const currentVariant = "professional";
+  const currentVariant: ThemeVariant = "professional";
   
-  if (currentVariant === "vibrant") {
+  if (currentVariant === "vibrant" as ThemeVariant) {
     return vibrantClasses;
-  } else if (currentVariant === "tint") {
+  } else if (currentVariant === "tint" as ThemeVariant) {
     return tintClasses;
   } else {
     // Default to professional

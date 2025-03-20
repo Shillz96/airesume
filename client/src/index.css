@@ -31,6 +31,29 @@
   50% { opacity: 0.2; }
 }
 
+/* Shooting stars */
+@keyframes shoot {
+  0% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(var(--tx)) translateY(var(--ty)) rotate(var(--r));
+    opacity: 0;
+  }
+}
+
+.shooting-star {
+  position: absolute;
+  width: 2px;
+  height: 50px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
+  animation: shoot 1.5s linear forwards;
+  transform-origin: bottom center;
+  opacity: 0;
+}
+
+/* Particle trail effect */
 .trail-particle {
   position: absolute;
   width: 5px;
@@ -43,11 +66,21 @@
   z-index: 100;
 }
 
+/* Glow effect */
+.cosmic-glow {
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+  transition: box-shadow 0.3s ease;
+}
+
+.cosmic-glow:hover {
+  box-shadow: 0 0 25px rgba(59, 130, 246, 0.7);
+}
+
 /* Gradient text animation */
 .cosmic-text-gradient {
-  @apply text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500;
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-cyan-400;
   background-size: 200% 200%;
-  animation: gradientFlow 4s ease infinite;
+  animation: gradientFlow 8s ease infinite;
 }
 
 @keyframes gradientFlow {
@@ -56,28 +89,81 @@
   100% { background-position: 0% 50% }
 }
 
+/* Nebula background effect */
+.cosmic-nebula {
+  background: 
+    radial-gradient(circle at 20% 35%, rgba(76, 29, 149, 0.15) 0%, rgba(76, 29, 149, 0) 50%),
+    radial-gradient(circle at 75% 44%, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0) 50%),
+    radial-gradient(circle at 50% 80%, rgba(6, 182, 212, 0.1) 0%, rgba(6, 182, 212, 0) 50%);
+}
+
 /* Cosmic Navigator Page Layout */
 .cosmic-page {
-  @apply min-h-screen bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)] text-white pt-20;
+  @apply min-h-screen bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)] text-white pt-20 cosmic-nebula;
+  position: relative;
+  overflow: hidden;
 }
 
 .cosmic-card {
   @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300;
+  position: relative;
+  overflow: hidden;
+}
+
+.cosmic-card::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+  filter: blur(10px);
+  z-index: -1;
 }
 
 .cosmic-page-title {
-  @apply text-2xl font-bold mb-2 cosmic-text-gradient;
+  @apply text-3xl font-bold mb-4 cosmic-text-gradient;
 }
 
 .cosmic-section {
   @apply p-6 rounded-lg bg-white/5 backdrop-blur-md border border-white/10 mb-6;
 }
 
+.cosmic-button {
+  @apply bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 
+    text-white font-medium py-2 px-4 rounded-md transition-all duration-300 
+    shadow-[0_0_10px_rgba(59,130,246,0.5)] hover:shadow-[0_0_15px_rgba(59,130,246,0.7)];
+}
+
+/* Animated border effect */
+.cosmic-border-glow {
+  position: relative;
+}
+
+.cosmic-border-glow::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: inherit;
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4);
+  background-size: 200% 200%;
+  animation: gradientFlow 5s ease infinite;
+  z-index: -1;
+  opacity: 0.5;
+}
+
 /* Error page styles */
 .cosmic-error-page {
-  @apply flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)] text-white p-4 text-center;
+  @apply flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)] text-white p-4 text-center cosmic-nebula;
+  position: relative;
+  overflow: hidden;
 }
 
 .cosmic-error-code {
   @apply text-9xl font-bold mb-6 cosmic-text-gradient;
+  text-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
 }

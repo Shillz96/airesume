@@ -130,7 +130,7 @@ export default function AuthPage() {
           </div>
           <div>
             <Button
-              onClick={() => window.location.href = "/job-finder"}
+              onClick={() => window.location.href = "/"}
               variant="outline"
               className="border-[hsl(221.2,83.2%,53.3%)] text-[hsl(221.2,83.2%,53.3%)] mr-3"
             >
@@ -142,7 +142,7 @@ export default function AuthPage() {
       
       <div className="flex flex-col lg:flex-row relative z-10 min-h-[calc(100vh-80px)] items-center">
         <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24" ref={authPanelRef}>
-          <div className="mx-auto w-full max-w-sm lg:w-96">
+          <div className="mx-auto w-full max-w-md lg:max-w-lg">
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6 bg-white/10 border border-white/20">
                 <TabsTrigger 
@@ -161,26 +161,26 @@ export default function AuthPage() {
               
               <TabsContent value="login">
                 <Card className="cosmic-card">
-                  <CardHeader>
-                    <CardTitle className="text-white">Login to your account</CardTitle>
-                    <CardDescription className="text-gray-300">
+                  <CardHeader className="pb-6">
+                    <CardTitle className="text-white text-2xl">Login to your account</CardTitle>
+                    <CardDescription className="text-gray-300 text-base">
                       Enter your credentials to access your account
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="pb-6">
                     <Form {...loginForm}>
-                      <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+                      <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-5">
                         <FormField
                           control={loginForm.control}
                           name="username"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-200">Username</FormLabel>
+                              <FormLabel className="text-gray-200 text-base">Username</FormLabel>
                               <FormControl>
                                 <Input 
                                   placeholder="johndoe" 
                                   {...field} 
-                                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 py-6"
                                 />
                               </FormControl>
                               <FormMessage className="text-red-400" />
@@ -192,23 +192,23 @@ export default function AuthPage() {
                           name="password"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-200">Password</FormLabel>
+                              <FormLabel className="text-gray-200 text-base">Password</FormLabel>
                               <FormControl>
                                 <Input 
                                   type="password" 
                                   placeholder="••••••••" 
                                   {...field} 
-                                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 py-6"
                                 />
                               </FormControl>
                               <FormMessage className="text-red-400" />
                             </FormItem>
                           )}
                         />
-                        <div className="flex space-x-3">
+                        <div className="flex space-x-3 pt-2">
                           <Button 
                             type="submit" 
-                            className="flex-1 bg-[hsl(221.2,83.2%,53.3%)] hover:bg-[hsl(221.2,83.2%,43.3%)] text-white" 
+                            className="flex-1 bg-[hsl(221.2,83.2%,53.3%)] hover:bg-[hsl(221.2,83.2%,43.3%)] text-white text-base py-6" 
                             disabled={loginMutation.isPending}
                           >
                             {loginMutation.isPending ? 'Logging in...' : 'Login'}
@@ -216,8 +216,8 @@ export default function AuthPage() {
                           <Button
                             type="button"
                             variant="outline"
-                            className="flex-1 border-[hsl(221.2,83.2%,53.3%)] text-[hsl(221.2,83.2%,53.3%)]"
-                            onClick={() => window.location.href = "/job-finder"}
+                            className="flex-1 border-[hsl(221.2,83.2%,53.3%)] text-[hsl(221.2,83.2%,53.3%)] text-base py-6"
+                            onClick={() => window.location.href = "/"}
                           >
                             Try Now
                           </Button>
@@ -230,26 +230,26 @@ export default function AuthPage() {
               
               <TabsContent value="register">
                 <Card className="cosmic-card">
-                  <CardHeader>
-                    <CardTitle className="text-white">Create an account</CardTitle>
-                    <CardDescription className="text-gray-300">
+                  <CardHeader className="pb-6">
+                    <CardTitle className="text-white text-2xl">Create an account</CardTitle>
+                    <CardDescription className="text-gray-300 text-base">
                       Join AIreHire to create professional resumes and find jobs
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="pb-6">
                     <Form {...registerForm}>
-                      <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+                      <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-5">
                         <FormField
                           control={registerForm.control}
                           name="username"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-200">Username</FormLabel>
+                              <FormLabel className="text-gray-200 text-base">Username</FormLabel>
                               <FormControl>
                                 <Input 
                                   placeholder="johndoe" 
                                   {...field}
-                                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 py-6"
                                 />
                               </FormControl>
                               <FormMessage className="text-red-400" />
@@ -261,13 +261,13 @@ export default function AuthPage() {
                           name="password"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-200">Password</FormLabel>
+                              <FormLabel className="text-gray-200 text-base">Password</FormLabel>
                               <FormControl>
                                 <Input 
                                   type="password" 
                                   placeholder="••••••••" 
                                   {...field}
-                                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 py-6"
                                 />
                               </FormControl>
                               <FormMessage className="text-red-400" />
@@ -279,23 +279,23 @@ export default function AuthPage() {
                           name="confirmPassword"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-200">Confirm Password</FormLabel>
+                              <FormLabel className="text-gray-200 text-base">Confirm Password</FormLabel>
                               <FormControl>
                                 <Input 
                                   type="password" 
                                   placeholder="••••••••" 
                                   {...field}
-                                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 py-6"
                                 />
                               </FormControl>
                               <FormMessage className="text-red-400" />
                             </FormItem>
                           )}
                         />
-                        <div className="flex space-x-3">
+                        <div className="flex space-x-3 pt-2">
                           <Button 
                             type="submit" 
-                            className="flex-1 bg-[hsl(221.2,83.2%,53.3%)] hover:bg-[hsl(221.2,83.2%,43.3%)] text-white" 
+                            className="flex-1 bg-[hsl(221.2,83.2%,53.3%)] hover:bg-[hsl(221.2,83.2%,43.3%)] text-white text-base py-6" 
                             disabled={registerMutation.isPending}
                           >
                             {registerMutation.isPending ? 'Creating account...' : 'Register'}
@@ -303,8 +303,8 @@ export default function AuthPage() {
                           <Button
                             type="button"
                             variant="outline"
-                            className="flex-1 border-[hsl(221.2,83.2%,53.3%)] text-[hsl(221.2,83.2%,53.3%)]"
-                            onClick={() => window.location.href = "/job-finder"}
+                            className="flex-1 border-[hsl(221.2,83.2%,53.3%)] text-[hsl(221.2,83.2%,53.3%)] text-base py-6"
+                            onClick={() => window.location.href = "/"}
                           >
                             Try Now
                           </Button>

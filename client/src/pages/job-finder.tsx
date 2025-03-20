@@ -17,8 +17,13 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useGuestMode } from "@/hooks/use-guest-mode";
+import { useAuth } from "@/hooks/use-auth";
+import { getQueryFn } from "@/lib/queryClient";
 
 export default function JobFinder() {
+  const { isGuestMode } = useGuestMode();
+  const { user } = useAuth();
   const [filterValues, setFilterValues] = useState<JobFilterValues>({
     title: "",
     location: "",
@@ -30,8 +35,14 @@ export default function JobFinder() {
   
   const [statusFilter, setStatusFilter] = useState("all");
   
+  // Modified to support guest mode access to jobs
   const { data: jobs, isLoading, error } = useQuery({
-    queryKey: ["/api/jobs", filterValues, statusFilter],
+    queryKey: ["/api/jobs", filterValues, statusFilter, isGuestMode],
+    queryFn: isGuestMode && !user 
+      ? () => getQueryFn({ on401: "returnNull" })({
+          queryKey: ["/api/jobs", { ...filterValues, guest: true }],
+        })
+      : undefined,
     refetchInterval: false,
   });
   

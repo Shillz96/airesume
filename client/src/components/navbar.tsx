@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { Menu, X, Moon, Sun, User, LogOut, Rocket, FileText, Briefcase, Home } from "lucide-react";
+import { useGuestMode } from "@/hooks/use-guest-mode";
+import { Menu, X, Moon, Sun, User, LogOut, Rocket, FileText, Briefcase, Home, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,

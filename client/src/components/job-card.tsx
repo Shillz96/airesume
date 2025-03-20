@@ -5,6 +5,8 @@ import { Bookmark, ExternalLink, Building, MapPin, Briefcase, Clock, Star, Heart
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useGuestMode } from "@/hooks/use-guest-mode";
+import { useAuth } from "@/hooks/use-auth";
 
 export interface Job {
   id: string;
@@ -27,6 +29,8 @@ interface JobCardProps {
 
 export default function JobCard({ job }: JobCardProps) {
   const { toast } = useToast();
+  const { isGuestMode, showGuestModal } = useGuestMode();
+  const { user } = useAuth();
   
   const { mutate: toggleSaveJob } = useMutation({
     mutationFn: async () => {
@@ -54,6 +58,15 @@ export default function JobCard({ job }: JobCardProps) {
       });
     },
   });
+  
+  // Handler for actions that require authentication
+  const handleAuthRequiredAction = (action: () => void) => {
+    if (isGuestMode && !user) {
+      showGuestModal();
+    } else {
+      action();
+    }
+  };
 
   const getMatchColor = () => {
     if (job.match >= 85) return "bg-green-500";
@@ -175,7 +188,7 @@ export default function JobCard({ job }: JobCardProps) {
           <Button 
             variant="ghost" 
             size="sm" 
-            onClick={() => toggleSaveJob()}
+            onClick={() => handleAuthRequiredAction(toggleSaveJob)}
             className="text-gray-300 hover:text-white hover:bg-white/10"
           >
             <Heart className={`h-4 w-4 mr-1.5 ${job.saved ? "fill-red-500 text-red-500" : "text-red-400"}`} />
@@ -195,7 +208,7 @@ export default function JobCard({ job }: JobCardProps) {
           <Button 
             variant="outline" 
             size="sm"
-            onClick={() => tailorResume()}
+            onClick={() => handleAuthRequiredAction(tailorResume)}
             className="border-blue-500/30 text-blue-300 hover:bg-blue-900/30 hover:border-blue-500/50"
           >
             <Cpu className="h-4 w-4 mr-1.5 animate-pulse" />
@@ -204,7 +217,7 @@ export default function JobCard({ job }: JobCardProps) {
           <Button 
             variant="default" 
             size="sm" 
-            onClick={() => window.open(job.applyUrl, "_blank")}
+            onClick={() => handleAuthRequiredAction(() => window.open(job.applyUrl, "_blank"))}
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
           >
             <ExternalLink className="h-4 w-4 mr-1.5" />

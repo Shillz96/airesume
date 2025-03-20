@@ -114,7 +114,7 @@ export default function HomePage() {
       
       <Navbar />
       
-      <main className="pt-16 relative z-10 cosmic-nebula">
+      <main className="pt-24 relative z-10 cosmic-nebula">
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <div className="px-4 py-6 sm:px-0">
             <div className="mb-8 flex items-center" ref={welcomeRef}>

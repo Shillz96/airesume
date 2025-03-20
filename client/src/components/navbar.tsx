@@ -137,7 +137,7 @@ export default function Navbar() {
 
   return (
     <nav 
-      className="bg-black/30 backdrop-blur-md border-b border-white/10 fixed w-full z-50 shadow-lg"
+      className="cosmic-navbar"
       ref={navbarRef}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

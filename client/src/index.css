@@ -135,9 +135,23 @@
   @apply bg-blue-600/50 text-white border-b-2 border-blue-400;
 }
 
+/* Navbar styles */
+.cosmic-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 50;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
 /* Cosmic Navigator Page Layout */
 .cosmic-page {
-  @apply min-h-screen bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)] text-white pt-20 cosmic-nebula;
+  @apply min-h-screen bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)] text-white pt-24 cosmic-nebula;
   position: relative;
   overflow: hidden;
 }

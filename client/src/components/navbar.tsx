@@ -48,20 +48,25 @@ export default function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link href="/">
-                <span className="text-primary-600 font-bold text-xl cursor-pointer">ResumeAI</span>
+              <Link 
+                href="/" 
+                className="text-primary-600 font-bold text-xl cursor-pointer"
+              >
+                ResumeAI
               </Link>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               {navItems.map((item) => (
-                <Link key={item.path} href={item.path}>
-                  <a className={`${
+                <Link 
+                  key={item.path} 
+                  href={item.path}
+                  className={`${
                     location === item.path
                       ? "border-primary-500 text-primary-600"
                       : "border-transparent text-secondary-500 hover:border-secondary-300 hover:text-secondary-700"
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium cursor-pointer`}>
-                    {item.label}
-                  </a>
+                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium cursor-pointer`}
+                >
+                  {item.label}
                 </Link>
               ))}
             </div>
@@ -122,17 +127,17 @@ export default function Navbar() {
         <div className="sm:hidden">
           <div className="pt-2 pb-3 space-y-1">
             {navItems.map((item) => (
-              <Link key={item.path} href={item.path}>
-                <a
-                  className={`${
-                    location === item.path
-                      ? "bg-primary-50 border-primary-500 text-primary-700"
-                      : "border-transparent text-secondary-600 hover:bg-secondary-50 hover:border-secondary-300 hover:text-secondary-700"
-                  } block pl-3 pr-4 py-2 border-l-4 text-base font-medium cursor-pointer`}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {item.label}
-                </a>
+              <Link 
+                key={item.path} 
+                href={item.path}
+                className={`${
+                  location === item.path
+                    ? "bg-primary-50 border-primary-500 text-primary-700"
+                    : "border-transparent text-secondary-600 hover:bg-secondary-50 hover:border-secondary-300 hover:text-secondary-700"
+                } block pl-3 pr-4 py-2 border-l-4 text-base font-medium cursor-pointer`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {item.label}
               </Link>
             ))}
           </div>

@@ -160,11 +160,22 @@ export default function ResumeBuilder() {
           projects: parsedData.projects || resume.projects,
         });
         
-        // Show success message
-        toast({
-          title: "Resume uploaded successfully",
-          description: "Your resume has been parsed and loaded into the builder.",
-        });
+        // Check if there's a warning (likely due to API quota issue)
+        if (data.warning) {
+          toast({
+            title: "Resume uploaded",
+            description: data.warning,
+            variant: "destructive",
+          });
+          // Switch to personal section for editing
+          setActiveSection("personal");
+        } else {
+          // Show success message
+          toast({
+            title: "Resume uploaded successfully",
+            description: "Your resume has been parsed and loaded into the builder.",
+          });
+        }
       } else {
         toast({
           title: "Resume parsing incomplete",

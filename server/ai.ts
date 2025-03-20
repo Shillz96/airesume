@@ -206,6 +206,22 @@ function getSampleResumeSuggestions(resume: Resume): string[] {
  * Parse a resume file (PDF, DOCX, TXT) and extract structured information
  */
 export async function parseResumeFile(filePath: string, fileName: string): Promise<any> {
+  // Define a fallback structure to return in case of API errors
+  const fallbackResumeData = {
+    personalInfo: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      headline: "",
+      summary: ""
+    },
+    experience: [],
+    education: [],
+    skills: [],
+    projects: []
+  };
+  
   try {
     // If no API key is provided, return empty data structure
     if (!process.env.OPENAI_API_KEY) {
@@ -333,8 +349,19 @@ export async function parseResumeFile(filePath: string, fileName: string): Promi
     } else {
       return { success: false, error: "Unsupported file format. Please upload PDF, DOCX, or TXT files." };
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error parsing resume file:", error);
+    
+    // Check if this is a quota or rate limit error
+    if (error?.status === 429 || error?.code === 'insufficient_quota' || 
+        (error?.message && error.message.includes('quota'))) {
+      return { 
+        success: true, // Return success but with minimal data
+        data: fallbackResumeData,
+        warning: "Using simplified resume format due to API quota limitations. Manual editing required."
+      };
+    }
+    
     return { success: false, error: "Failed to parse resume file" };
   }
 }

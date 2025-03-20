@@ -17,6 +17,7 @@ import gsap from "gsap";
 export default function Navbar() {
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
+  const { isGuestMode } = useGuestMode();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(true); // Set to true for cosmic theme
   
@@ -106,21 +107,26 @@ export default function Navbar() {
     };
   }, []);
 
-  if (!user) return null;
+  // Remove the conditional rendering check so navbar shows for both guests and logged-in users
 
-  const initials = user.username
-    .split(' ')
-    .map(name => name[0])
-    .join('')
-    .toUpperCase()
-    .substring(0, 2);
-
+  // Always show the navbar - for both logged in users and guests
   const navItems = [
     { path: "/", label: "Dashboard", icon: <Home className="h-4 w-4 mr-1" /> },
     { path: "/resumes", label: "Resumes", icon: <FileText className="h-4 w-4 mr-1" /> },
     { path: "/resume-builder", label: "Resume Builder", icon: <FileText className="h-4 w-4 mr-1" /> },
     { path: "/job-finder", label: "Job Finder", icon: <Briefcase className="h-4 w-4 mr-1" /> },
   ];
+
+  // For Guest Mode or authenticated users
+  let initials = "GU"; // Default Guest User
+  if (user) {
+    initials = user.username
+      .split(' ')
+      .map(name => name[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  }
 
   function toggleDarkMode() {
     setDarkMode(!darkMode);
@@ -199,21 +205,45 @@ export default function Navbar() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="cosmic-card border-white/10 py-2">
-                <div className="px-4 py-2 text-sm text-gray-300 font-medium border-b border-white/10 mb-1">
-                  {user.username}
-                </div>
-                <DropdownMenuItem className="cursor-pointer text-gray-200 hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white">
-                  <User className="mr-2 h-4 w-4 text-blue-400" /> 
-                  Profile
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-white/10" />
-                <DropdownMenuItem 
-                  onClick={handleLogout} 
-                  className="cursor-pointer text-red-400 hover:bg-red-900/20 hover:text-red-300 focus:bg-red-900/20 focus:text-red-300"
-                >
-                  <LogOut className="mr-2 h-4 w-4" /> 
-                  Logout
-                </DropdownMenuItem>
+                {user ? (
+                  <>
+                    <div className="px-4 py-2 text-sm text-gray-300 font-medium border-b border-white/10 mb-1">
+                      {user.username}
+                    </div>
+                    <DropdownMenuItem className="cursor-pointer text-gray-200 hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white">
+                      <User className="mr-2 h-4 w-4 text-blue-400" /> 
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-white/10" />
+                    <DropdownMenuItem 
+                      onClick={handleLogout} 
+                      className="cursor-pointer text-red-400 hover:bg-red-900/20 hover:text-red-300 focus:bg-red-900/20 focus:text-red-300"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" /> 
+                      Logout
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <div className="px-4 py-2 text-sm text-gray-300 font-medium border-b border-white/10 mb-1">
+                      Guest Mode
+                    </div>
+                    <DropdownMenuItem 
+                      onClick={() => window.location.href = "/auth?tab=login"}
+                      className="cursor-pointer text-blue-400 hover:bg-blue-900/20 hover:text-blue-300 focus:bg-blue-900/20 focus:text-blue-300"
+                    >
+                      <LogIn className="mr-2 h-4 w-4" /> 
+                      Log In
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => window.location.href = "/auth?tab=register"}
+                      className="cursor-pointer text-green-400 hover:bg-green-900/20 hover:text-green-300 focus:bg-green-900/20 focus:text-green-300"
+                    >
+                      <User className="mr-2 h-4 w-4" /> 
+                      Sign Up
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -266,7 +296,9 @@ export default function Navbar() {
                 </Avatar>
               </div>
               <div className="ml-3">
-                <div className="text-base font-medium text-gray-200">{user.username}</div>
+                <div className="text-base font-medium text-gray-200">
+                  {user ? user.username : "Guest Mode"}
+                </div>
               </div>
               <Button
                 variant="ghost"
@@ -279,21 +311,44 @@ export default function Navbar() {
               </Button>
             </div>
             <div className="mt-3 space-y-1">
-              <Button
-                variant="ghost"
-                className="flex w-full items-center text-left px-4 py-2 text-base font-medium text-gray-300 hover:text-white hover:bg-white/10"
-              >
-                <User className="mr-3 h-5 w-5 text-blue-400" />
-                Your Profile
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={handleLogout}
-                className="flex w-full items-center text-left px-4 py-2 text-base font-medium text-red-400 hover:text-red-300 hover:bg-red-900/20"
-              >
-                <LogOut className="mr-3 h-5 w-5" />
-                Sign out
-              </Button>
+              {user ? (
+                <>
+                  <Button
+                    variant="ghost"
+                    className="flex w-full items-center text-left px-4 py-2 text-base font-medium text-gray-300 hover:text-white hover:bg-white/10"
+                  >
+                    <User className="mr-3 h-5 w-5 text-blue-400" />
+                    Your Profile
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={handleLogout}
+                    className="flex w-full items-center text-left px-4 py-2 text-base font-medium text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                  >
+                    <LogOut className="mr-3 h-5 w-5" />
+                    Sign out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="ghost"
+                    onClick={() => window.location.href = "/auth?tab=login"}
+                    className="flex w-full items-center text-left px-4 py-2 text-base font-medium text-blue-400 hover:text-blue-300 hover:bg-blue-900/20"
+                  >
+                    <LogIn className="mr-3 h-5 w-5" />
+                    Log In
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => window.location.href = "/auth?tab=register"}
+                    className="flex w-full items-center text-left px-4 py-2 text-base font-medium text-green-400 hover:text-green-300 hover:bg-green-900/20"
+                  >
+                    <User className="mr-3 h-5 w-5" />
+                    Sign Up
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>

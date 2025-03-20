@@ -12,6 +12,8 @@ import ResumesPage from "@/pages/resumes-page";
 import JobFinder from "@/pages/job-finder";
 import { ProtectedRoute } from "./lib/protected-route";
 
+import Navbar from "@/components/navbar";
+
 function Router() {
   return (
     <Switch>
@@ -30,7 +32,12 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <GuestModeProvider>
-          <Router />
+          <div className="min-h-screen bg-black cosmic-background">
+            <Navbar />
+            <div className="pt-16">
+              <Router />
+            </div>
+          </div>
           <Toaster />
         </GuestModeProvider>
       </AuthProvider>

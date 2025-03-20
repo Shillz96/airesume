@@ -101,9 +101,9 @@
 .cosmic-background {
   background-color: #050A18;
   background-image: 
-    radial-gradient(circle at 20% 35%, rgba(76, 29, 149, 0.15) 0%, rgba(76, 29, 149, 0) 50%),
-    radial-gradient(circle at 75% 44%, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0) 50%),
-    radial-gradient(circle at 50% 80%, rgba(6, 182, 212, 0.1) 0%, rgba(6, 182, 212, 0) 50%);
+    radial-gradient(circle at 20% 35%, rgba(76, 29, 149, 0.2) 0%, rgba(76, 29, 149, 0) 50%),
+    radial-gradient(circle at 75% 44%, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0) 50%),
+    radial-gradient(circle at 50% 80%, rgba(6, 182, 212, 0.15) 0%, rgba(6, 182, 212, 0) 50%);
   position: relative;
   overflow: hidden;
 }
@@ -115,9 +115,19 @@
   height: 100%;
   top: 0;
   left: 0;
-  background-image: radial-gradient(white, rgba(255, 255, 255, 0.2) 2px, transparent 2px);
-  background-size: 50px 50px;
+  background: 
+    radial-gradient(1px 1px at 25% 5%, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(1px 1px at 50% 25%, rgba(255, 255, 255, 0.4), transparent),
+    radial-gradient(1px 1px at 75% 45%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(2px 2px at 10% 65%, rgba(255, 255, 255, 0.4), transparent),
+    radial-gradient(2px 2px at 35% 85%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(2px 2px at 60% 10%, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(2px 2px at 80% 30%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(2px 2px at 90% 75%, rgba(255, 255, 255, 0.4), transparent);
+  background-size: 100% 100%;
+  opacity: 0.15;
   z-index: 0;
+  pointer-events: none;
 }
 
 /* Style overrides for tabs in cosmic theme */

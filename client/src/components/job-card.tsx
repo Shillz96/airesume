@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Bookmark, ExternalLink, Building, MapPin, Briefcase, Clock, Star, Heart, Share2 } from "lucide-react";
+import { Bookmark, ExternalLink, Building, MapPin, Briefcase, Clock, Star, Heart, Share2, Cpu } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -96,86 +96,97 @@ export default function JobCard({ job }: JobCardProps) {
   });
 
   return (
-    <div className="bg-[rgba(255,255,255,0.1)] backdrop-blur-md border border-[rgba(255,255,255,0.2)] rounded-lg p-4 m-2 transition-all hover:shadow-[0_0_10px_rgba(0,212,255,0.2)] hover:scale-[1.01]">
-      <div className="flex justify-between items-start">
+    <div className="cosmic-card border border-white/10 p-6 transition-all hover:border-blue-500/50 relative overflow-hidden group">
+      {/* Background highlight effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 -translate-x-full group-hover:translate-x-full transition-all duration-1000 ease-in-out"></div>
+      
+      <div className="flex justify-between items-start relative z-10">
         <div>
-          <h3 className="text-lg font-semibold text-secondary-900">{job.title}</h3>
+          <h3 className="text-xl font-semibold text-white mb-2">{job.title}</h3>
           <div className="flex items-center mt-1">
-            <Building className="h-4 w-4 text-secondary-400 mr-1.5" />
-            <span className="text-sm text-secondary-500">{job.company}</span>
-            <MapPin className="h-4 w-4 text-secondary-400 ml-3 mr-1.5" />
-            <span className="text-sm text-secondary-500">{job.location}</span>
+            <Building className="h-4 w-4 text-blue-400 mr-1.5" />
+            <span className="text-sm text-gray-300">{job.company}</span>
+            <MapPin className="h-4 w-4 text-purple-400 ml-3 mr-1.5" />
+            <span className="text-sm text-gray-300">{job.location}</span>
           </div>
         </div>
         <div className="flex flex-col items-end">
           <div className="flex items-center">
-            {job.match >= 90 && <Star className="h-5 w-5 text-yellow-400 mr-1" />}
+            {job.match >= 90 && <Star className="h-5 w-5 text-yellow-400 mr-1 animate-pulse" />}
             <Badge className={`${
-              job.match >= 85 ? "bg-green-100 text-green-800" : 
-              job.match >= 75 ? "bg-blue-100 text-blue-800" : 
-              job.match >= 60 ? "bg-yellow-100 text-yellow-800" : 
-              "bg-red-100 text-red-800"
+              job.match >= 85 ? "bg-gradient-to-r from-green-700/80 to-green-600/80 text-green-100 border-0" : 
+              job.match >= 75 ? "bg-gradient-to-r from-blue-700/80 to-blue-600/80 text-blue-100 border-0" : 
+              job.match >= 60 ? "bg-gradient-to-r from-yellow-700/80 to-yellow-600/80 text-yellow-100 border-0" : 
+              "bg-gradient-to-r from-red-700/80 to-red-600/80 text-red-100 border-0"
             }`}>
               {job.match}% Match
             </Badge>
           </div>
           {job.isNew && (
-            <Badge variant="outline" className="mt-1 bg-blue-100 text-blue-800 border-blue-200">
+            <Badge variant="outline" className="mt-1 bg-blue-900/30 text-blue-300 border-blue-500/30">
               New
             </Badge>
           )}
         </div>
       </div>
       
-      <div className="mt-3">
-        <p className="text-sm text-secondary-600 line-clamp-2 mb-2">{job.description}</p>
+      <div className="mt-4 relative z-10">
+        <p className="text-sm text-gray-300 line-clamp-2 mb-3">{job.description}</p>
         
-        <div className="flex flex-wrap gap-1.5 mt-3 mb-3">
+        <div className="flex flex-wrap gap-1.5 mt-4 mb-4">
           {job.skills.slice(0, 5).map((skill, index) => (
-            <Badge key={index} variant="outline" className="bg-secondary-100 text-secondary-800 text-xs">
+            <Badge key={index} variant="outline" className="bg-blue-900/20 text-blue-300 border-blue-500/30 text-xs">
               {skill}
             </Badge>
           ))}
           {job.skills.length > 5 && (
-            <Badge variant="outline" className="bg-secondary-100 text-secondary-700 text-xs">
+            <Badge variant="outline" className="bg-purple-900/20 text-purple-300 border-purple-500/30 text-xs">
               +{job.skills.length - 5} more
             </Badge>
           )}
         </div>
         
-        <div className="grid grid-cols-2 gap-2 text-xs text-secondary-600 mt-3">
-          <div>
-            <span className="font-medium">Posted:</span> {job.postedAt}
+        <div className="grid grid-cols-2 gap-3 text-xs text-gray-300 mt-4">
+          <div className="flex items-center">
+            <Clock className="h-3.5 w-3.5 mr-1.5 text-blue-400" />
+            <span className="font-medium text-gray-200">Posted:</span> 
+            <span className="ml-1">{job.postedAt}</span>
           </div>
-          <div>
-            <span className="font-medium">Type:</span> {job.type}
+          <div className="flex items-center">
+            <Briefcase className="h-3.5 w-3.5 mr-1.5 text-blue-400" />
+            <span className="font-medium text-gray-200">Type:</span> 
+            <span className="ml-1">{job.type}</span>
           </div>
-          <div>
-            <span className="font-medium">Success Chance:</span> {successChance}%
+          <div className="flex items-center">
+            <Star className="h-3.5 w-3.5 mr-1.5 text-yellow-400" />
+            <span className="font-medium text-gray-200">Success:</span> 
+            <span className="ml-1 text-green-400">{successChance}%</span>
           </div>
-          <div>
-            <span className="font-medium">Est. Salary:</span> {salaryRange}
+          <div className="flex items-center">
+            <Bookmark className="h-3.5 w-3.5 mr-1.5 text-purple-400" />
+            <span className="font-medium text-gray-200">Salary:</span> 
+            <span className="ml-1">{salaryRange}</span>
           </div>
         </div>
       </div>
       
-      <div className="flex justify-between items-center mt-4 pt-3 border-t border-secondary-200">
+      <div className="flex justify-between items-center mt-5 pt-4 border-t border-white/10 relative z-10">
         <div className="flex space-x-2">
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={() => toggleSaveJob()}
-            className="text-secondary-600 hover:text-secondary-900"
+            className="text-gray-300 hover:text-white hover:bg-white/10"
           >
-            <Heart className={`h-4 w-4 mr-1.5 ${job.saved ? "fill-red-500 text-red-500" : ""}`} />
+            <Heart className={`h-4 w-4 mr-1.5 ${job.saved ? "fill-red-500 text-red-500" : "text-red-400"}`} />
             {job.saved ? "Saved" : "Save"}
           </Button>
           <Button 
             variant="ghost" 
             size="sm"
-            className="text-secondary-600 hover:text-secondary-900" 
+            className="text-gray-300 hover:text-white hover:bg-white/10" 
           >
-            <Share2 className="h-4 w-4 mr-1.5" />
+            <Share2 className="h-4 w-4 mr-1.5 text-blue-400" />
             Share
           </Button>
         </div>
@@ -185,16 +196,18 @@ export default function JobCard({ job }: JobCardProps) {
             variant="outline" 
             size="sm"
             onClick={() => tailorResume()}
-            className="border-accent-300 text-accent-700 hover:bg-accent-50"
+            className="border-blue-500/30 text-blue-300 hover:bg-blue-900/30 hover:border-blue-500/50"
           >
+            <Cpu className="h-4 w-4 mr-1.5 animate-pulse" />
             AI-Tailor Resume
           </Button>
           <Button 
             variant="default" 
             size="sm" 
             onClick={() => window.open(job.applyUrl, "_blank")}
-            className="bg-accent-600 hover:bg-accent-700"
+            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
           >
+            <ExternalLink className="h-4 w-4 mr-1.5" />
             Apply Now
           </Button>
         </div>

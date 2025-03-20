@@ -2,6 +2,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useGuestMode } from "@/hooks/use-guest-mode";
 import { Loader2 } from "lucide-react";
 import { Redirect, Route } from "wouter";
+import { useEffect } from "react";
 
 export function ProtectedRoute({
   path,
@@ -12,6 +13,20 @@ export function ProtectedRoute({
 }) {
   const { user, isLoading } = useAuth();
   const { isGuestMode } = useGuestMode();
+
+  // If not logged in, enable guest mode via URL parameter
+  useEffect(() => {
+    if (!user && !isGuestMode && !isLoading) {
+      // Only modify the URL if we're not already on the auth page
+      if (!window.location.pathname.includes('/auth')) {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('guest', 'true');
+        window.history.replaceState({}, '', currentUrl.toString());
+        // Force a page reload to apply the guest mode
+        window.location.reload();
+      }
+    }
+  }, [user, isGuestMode, isLoading]);
 
   if (isLoading) {
     return (

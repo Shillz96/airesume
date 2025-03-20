@@ -42,6 +42,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 // Component for professional summary AI suggestions
 interface SummarySuggestionsProps {
@@ -379,6 +380,57 @@ export default function ResumeBuilder() {
   const [activeSection, setActiveSection] = useState<string>("personal");
   const [isUploading, setIsUploading] = useState(false);
   const [resumeId, setResumeId] = useState<number | null>(null);
+  
+  // Function to add a new experience entry with an AI-generated bullet point
+  const handleAddExperienceWithAI = (bulletPoint: string) => {
+    const newExperience: ExperienceItem = {
+      id: `exp-${Date.now()}`,
+      title: "New Position",
+      company: "Company Name",
+      startDate: "2022-01",
+      endDate: "Present",
+      description: bulletPoint
+    };
+    
+    setResume({
+      ...resume,
+      experience: [...resume.experience, newExperience]
+    });
+    
+    toast({
+      title: "Experience added",
+      description: "New experience with AI-generated bullet point has been added.",
+    });
+  };
+  
+  // Function to add a new skill with AI suggestion
+  const handleAddSkill = (skillName: string) => {
+    // Check if skill already exists
+    if (resume.skills.some(skill => skill.name.toLowerCase() === skillName.toLowerCase())) {
+      toast({
+        title: "Skill already exists",
+        description: `"${skillName}" is already in your skills list.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const newSkill: SkillItem = {
+      id: `skill-${Date.now()}`,
+      name: skillName,
+      proficiency: 3 // Default to medium proficiency
+    };
+    
+    setResume({
+      ...resume,
+      skills: [...resume.skills, newSkill]
+    });
+    
+    toast({
+      title: "Skill added",
+      description: `"${skillName}" has been added to your skills.`,
+    });
+  };
   
   const [resume, setResume] = useState({
     id: "1", // In a real app, this would be assigned by the backend

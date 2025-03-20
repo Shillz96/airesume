@@ -1,21 +1,109 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { Menu, X, Moon, Sun, User } from "lucide-react";
+import { Menu, X, Moon, Sun, User, LogOut, Rocket, FileText, Briefcase, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import gsap from "gsap";
 
 export default function Navbar() {
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true); // Set to true for cosmic theme
+  
+  const navbarRef = useRef<HTMLDivElement>(null);
+  const logoRef = useRef<HTMLDivElement>(null);
+  const navItemsRef = useRef<(HTMLAnchorElement | null)[]>([]);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    // Logo animation
+    if (logoRef.current) {
+      gsap.fromTo(
+        logoRef.current,
+        { opacity: 0, y: -10 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
+      );
+    }
+    
+    // Nav items staggered animation
+    if (navItemsRef.current.length > 0) {
+      gsap.fromTo(
+        navItemsRef.current,
+        { opacity: 0, y: -15 },
+        { 
+          opacity: 1, 
+          y: 0, 
+          duration: 0.4, 
+          stagger: 0.1, 
+          ease: "power2.out",
+          delay: 0.2
+        }
+      );
+    }
+    
+    // User menu animation
+    if (userMenuRef.current) {
+      gsap.fromTo(
+        userMenuRef.current,
+        { opacity: 0, scale: 0.9 },
+        { opacity: 1, scale: 1, duration: 0.5, delay: 0.4, ease: "back.out(1.7)" }
+      );
+    }
+    
+    // Create a mouse trail effect on navbar
+    const createTrailParticle = (e: MouseEvent) => {
+      if (!navbarRef.current) return;
+      
+      const particle = document.createElement('div');
+      particle.className = 'trail-particle';
+      
+      // Set position at mouse cursor
+      particle.style.left = `${e.clientX}px`;
+      particle.style.top = `${e.clientY}px`;
+      
+      document.body.appendChild(particle);
+      
+      // Animate and remove
+      gsap.to(particle, {
+        opacity: 0,
+        scale: 0,
+        duration: 0.8,
+        onComplete: () => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }
+      });
+    };
+    
+    // Add mouse trail only when moving within the navbar
+    const handleMouseMove = (e: MouseEvent) => {
+      // Only create particles occasionally to avoid performance issues
+      if (Math.random() > 0.8) {
+        createTrailParticle(e);
+      }
+    };
+    
+    const navbar = navbarRef.current;
+    if (navbar) {
+      navbar.addEventListener('mousemove', handleMouseMove);
+    }
+    
+    return () => {
+      if (navbar) {
+        navbar.removeEventListener('mousemove', handleMouseMove);
+      }
+    };
+  }, []);
 
   if (!user) return null;
 
@@ -27,10 +115,10 @@ export default function Navbar() {
     .substring(0, 2);
 
   const navItems = [
-    { path: "/", label: "Dashboard" },
-    { path: "/resumes", label: "Resumes" },
-    { path: "/resume-builder", label: "Resume Builder" },
-    { path: "/job-finder", label: "Job Finder" },
+    { path: "/", label: "Dashboard", icon: <Home className="h-4 w-4 mr-1" /> },
+    { path: "/resumes", label: "Resumes", icon: <FileText className="h-4 w-4 mr-1" /> },
+    { path: "/resume-builder", label: "Resume Builder", icon: <FileText className="h-4 w-4 mr-1" /> },
+    { path: "/job-finder", label: "Job Finder", icon: <Briefcase className="h-4 w-4 mr-1" /> },
   ];
 
   function toggleDarkMode() {
@@ -41,42 +129,59 @@ export default function Navbar() {
   function handleLogout() {
     logoutMutation.mutate();
   }
+  
+  // Get icon color based on active state
+  function getIconColor(isActive: boolean) {
+    return isActive ? "text-blue-400" : "text-gray-400"; 
+  }
 
   return (
-    <nav className="bg-white border-b border-secondary-200 fixed w-full z-10">
+    <nav 
+      className="bg-black/30 backdrop-blur-md border-b border-white/10 fixed w-full z-50 shadow-lg"
+      ref={navbarRef}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
+            <div 
+              className="flex-shrink-0 flex items-center"
+              ref={logoRef}
+            >
               <Link 
                 href="/" 
-                className="text-primary-600 font-bold text-xl cursor-pointer"
+                className="flex items-center cosmic-text-gradient font-bold text-xl cursor-pointer"
               >
-                ResumeAI
+                <Rocket className="mr-2 h-5 w-5" />
+                AIreHire
               </Link>
             </div>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              {navItems.map((item) => (
+            <div className="hidden sm:ml-6 sm:flex sm:space-x-6">
+              {navItems.map((item, index) => (
                 <Link 
                   key={item.path} 
                   href={item.path}
+                  ref={el => navItemsRef.current[index] = el}
                   className={`${
                     location === item.path
-                      ? "border-primary-500 text-primary-600"
-                      : "border-transparent text-secondary-500 hover:border-secondary-300 hover:text-secondary-700"
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium cursor-pointer`}
+                      ? "border-blue-500 text-blue-400"
+                      : "border-transparent text-gray-300 hover:border-gray-500 hover:text-gray-100"
+                  } inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium cursor-pointer transition-colors duration-200`}
                 >
+                  <span className={getIconColor(location === item.path)}>{item.icon}</span>
                   {item.label}
                 </Link>
               ))}
             </div>
           </div>
-          <div className="hidden sm:ml-6 sm:flex sm:items-center">
+          <div 
+            className="hidden sm:ml-6 sm:flex sm:items-center"
+            ref={userMenuRef}
+          >
             <Button
               variant="ghost"
               size="icon"
               onClick={toggleDarkMode}
-              className="ml-3"
+              className="ml-3 text-gray-300 hover:text-white hover:bg-white/10"
               aria-label="Toggle dark mode"
             >
               {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -85,19 +190,27 @@ export default function Navbar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="ml-3 relative">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-primary-500 text-white">{initials}</AvatarFallback>
+                  <Avatar className="h-8 w-8 cosmic-glow">
+                    <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold">
+                      {initials}
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem className="cursor-pointer">
-                  <User className="mr-2 h-4 w-4" /> Profile
+              <DropdownMenuContent align="end" className="cosmic-card border-white/10 py-2">
+                <div className="px-4 py-2 text-sm text-gray-300 font-medium border-b border-white/10 mb-1">
+                  {user.username}
+                </div>
+                <DropdownMenuItem className="cursor-pointer text-gray-200 hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white">
+                  <User className="mr-2 h-4 w-4 text-blue-400" /> 
+                  Profile
                 </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-white/10" />
                 <DropdownMenuItem 
                   onClick={handleLogout} 
-                  className="cursor-pointer text-destructive focus:text-destructive"
+                  className="cursor-pointer text-red-400 hover:bg-red-900/20 hover:text-red-300 focus:bg-red-900/20 focus:text-red-300"
                 >
+                  <LogOut className="mr-2 h-4 w-4" /> 
                   Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -109,7 +222,7 @@ export default function Navbar() {
               variant="ghost"
               size="icon"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="inline-flex items-center justify-center"
+              className="inline-flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/10"
               aria-label="Open main menu"
             >
               {mobileMenuOpen ? (
@@ -124,7 +237,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="sm:hidden">
+        <div className="sm:hidden bg-black/50 backdrop-blur-lg cosmic-nebula shadow-lg">
           <div className="pt-2 pb-3 space-y-1">
             {navItems.map((item) => (
               <Link 
@@ -132,30 +245,33 @@ export default function Navbar() {
                 href={item.path}
                 className={`${
                   location === item.path
-                    ? "bg-primary-50 border-primary-500 text-primary-700"
-                    : "border-transparent text-secondary-600 hover:bg-secondary-50 hover:border-secondary-300 hover:text-secondary-700"
-                } block pl-3 pr-4 py-2 border-l-4 text-base font-medium cursor-pointer`}
+                    ? "bg-blue-900/30 border-blue-500 text-blue-300"
+                    : "border-transparent text-gray-300 hover:bg-white/5 hover:border-gray-400 hover:text-gray-100"
+                } flex items-center pl-3 pr-4 py-3 border-l-4 text-base font-medium cursor-pointer`}
                 onClick={() => setMobileMenuOpen(false)}
               >
+                <span className={`${getIconColor(location === item.path)} mr-3`}>{item.icon}</span>
                 {item.label}
               </Link>
             ))}
           </div>
-          <div className="pt-4 pb-3 border-t border-secondary-200">
-            <div className="flex items-center px-4">
+          <div className="pt-4 pb-3 border-t border-white/10">
+            <div className="flex items-center px-4 py-2">
               <div className="flex-shrink-0">
-                <Avatar className="h-10 w-10">
-                  <AvatarFallback className="bg-primary-500 text-white">{initials}</AvatarFallback>
+                <Avatar className="h-10 w-10 cosmic-glow">
+                  <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold">
+                    {initials}
+                  </AvatarFallback>
                 </Avatar>
               </div>
               <div className="ml-3">
-                <div className="text-base font-medium text-secondary-800">{user.username}</div>
+                <div className="text-base font-medium text-gray-200">{user.username}</div>
               </div>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={toggleDarkMode}
-                className="ml-auto"
+                className="ml-auto text-gray-300 hover:text-white hover:bg-white/10"
                 aria-label="Toggle dark mode"
               >
                 {darkMode ? <Sun className="h-6 w-6" /> : <Moon className="h-6 w-6" />}
@@ -164,15 +280,17 @@ export default function Navbar() {
             <div className="mt-3 space-y-1">
               <Button
                 variant="ghost"
-                className="block w-full text-left px-4 py-2 text-base font-medium text-secondary-500 hover:text-secondary-800 hover:bg-secondary-100"
+                className="flex w-full items-center text-left px-4 py-2 text-base font-medium text-gray-300 hover:text-white hover:bg-white/10"
               >
+                <User className="mr-3 h-5 w-5 text-blue-400" />
                 Your Profile
               </Button>
               <Button
                 variant="ghost"
                 onClick={handleLogout}
-                className="block w-full text-left px-4 py-2 text-base font-medium text-secondary-500 hover:text-secondary-800 hover:bg-secondary-100"
+                className="flex w-full items-center text-left px-4 py-2 text-base font-medium text-red-400 hover:text-red-300 hover:bg-red-900/20"
               >
+                <LogOut className="mr-3 h-5 w-5" />
                 Sign out
               </Button>
             </div>

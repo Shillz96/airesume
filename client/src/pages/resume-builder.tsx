@@ -45,6 +45,7 @@ export default function ResumeBuilder() {
   const [resumeSaved, setResumeSaved] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("personal");
   const [isUploading, setIsUploading] = useState(false);
+  const [resumeId, setResumeId] = useState<number | null>(null);
   
   const [resume, setResume] = useState({
     id: "1", // In a real app, this would be assigned by the backend
@@ -128,6 +129,72 @@ export default function ResumeBuilder() {
     }
   };
   
+  const handleApplySummary = (summary: string) => {
+    if (summary) {
+      setResume({
+        ...resume,
+        personalInfo: {
+          ...resume.personalInfo,
+          summary: summary
+        }
+      });
+      // Switch to summary section to show the user the updated content
+      setActiveSection("summary");
+      toast({
+        title: "Summary updated",
+        description: "AI-generated summary has been applied to your resume.",
+      });
+    }
+  };
+  
+  const handleApplyTailoredContent = (content: any) => {
+    const updatedResume = { ...resume };
+    
+    // Apply summary if available
+    if (content.summary) {
+      updatedResume.personalInfo = {
+        ...updatedResume.personalInfo,
+        summary: content.summary
+      };
+    }
+    
+    // Apply skill updates if available
+    if (content.skills && Array.isArray(content.skills)) {
+      // Add any new skills that don't already exist
+      const existingSkills = new Set(updatedResume.skills.map(s => s.name.toLowerCase()));
+      const newSkills = content.skills
+        .filter(skill => !existingSkills.has(skill.toLowerCase()))
+        .map((skill, index) => ({
+          id: `new-${index}`,
+          name: skill,
+          proficiency: 3
+        }));
+      
+      if (newSkills.length > 0) {
+        updatedResume.skills = [...updatedResume.skills, ...newSkills];
+      }
+    }
+    
+    // Apply experience improvements if available
+    if (content.experienceImprovements && Array.isArray(content.experienceImprovements)) {
+      content.experienceImprovements.forEach(improvement => {
+        const index = updatedResume.experience.findIndex(exp => exp.id === improvement.id);
+        if (index !== -1) {
+          updatedResume.experience[index] = {
+            ...updatedResume.experience[index],
+            description: improvement.improvedDescription
+          };
+        }
+      });
+    }
+    
+    setResume(updatedResume);
+    toast({
+      title: "Resume tailored",
+      description: "Your resume has been tailored for the target job.",
+    });
+  };
+  
   // Upload resume file and parse it
   const { mutate: uploadResume } = useMutation({
     mutationFn: async (formData: FormData) => {
@@ -150,6 +217,12 @@ export default function ResumeBuilder() {
         // Update the resume state with the parsed data
         const parsedData = data.data;
         console.log("Resume parsed data:", parsedData);
+        
+        // Store the resumeId if present
+        if (data.resumeId) {
+          console.log("Resume ID received:", data.resumeId);
+          setResumeId(data.resumeId);
+        }
         
         // Create new arrays with proper IDs and casting
         let experiences = [];
@@ -477,8 +550,11 @@ export default function ResumeBuilder() {
                 
                 {/* AI Assistant */}
                 <AIAssistant 
-                  resumeId={resume.id} 
-                  onApplySuggestions={handleApplySuggestions} 
+                  resumeId={resumeId?.toString() || resume.id} 
+                  resume={resume}
+                  onApplySuggestions={handleApplySuggestions}
+                  onApplySummary={handleApplySummary}
+                  onApplyTailoredContent={handleApplyTailoredContent}
                 />
               </div>
               

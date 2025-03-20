@@ -114,21 +114,35 @@ export default function AuthPage() {
               height: `${Math.random() * 2 + 1}px`,
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
-              opacity: Math.random() * 0.5 + 0.2,
+              opacity: Math.random() * 0.15,
               animation: `twinkle ${Math.random() * 3 + 2}s infinite`,
             }}
           />
         ))}
       </div>
       
-      <div className="flex flex-col lg:flex-row relative z-10">
+      {/* Top Navigation */}
+      <nav className="cosmic-navbar py-4 relative z-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight cosmic-text-gradient">AIreHire</h1>
+            <p className="text-sm text-gray-300">Your AI-powered resume builder and job finder</p>
+          </div>
+          <div>
+            <Button
+              onClick={() => window.location.href = "/job-finder"}
+              variant="outline"
+              className="border-[hsl(221.2,83.2%,53.3%)] text-[hsl(221.2,83.2%,53.3%)] mr-3"
+            >
+              Try Now
+            </Button>
+          </div>
+        </div>
+      </nav>
+      
+      <div className="flex flex-col lg:flex-row relative z-10 min-h-[calc(100vh-80px)] items-center">
         <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24" ref={authPanelRef}>
           <div className="mx-auto w-full max-w-sm lg:w-96">
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-extrabold cosmic-text-gradient">AIreHire</h1>
-              <p className="mt-2 text-sm text-gray-300">Your AI-powered resume builder and job finder</p>
-            </div>
-            
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6 bg-white/10 border border-white/20">
                 <TabsTrigger 
@@ -191,13 +205,23 @@ export default function AuthPage() {
                             </FormItem>
                           )}
                         />
-                        <Button 
-                          type="submit" 
-                          className="w-full bg-[hsl(221.2,83.2%,53.3%)] hover:bg-[hsl(221.2,83.2%,43.3%)] text-white" 
-                          disabled={loginMutation.isPending}
-                        >
-                          {loginMutation.isPending ? 'Logging in...' : 'Login'}
-                        </Button>
+                        <div className="flex space-x-3">
+                          <Button 
+                            type="submit" 
+                            className="flex-1 bg-[hsl(221.2,83.2%,53.3%)] hover:bg-[hsl(221.2,83.2%,43.3%)] text-white" 
+                            disabled={loginMutation.isPending}
+                          >
+                            {loginMutation.isPending ? 'Logging in...' : 'Login'}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="flex-1 border-[hsl(221.2,83.2%,53.3%)] text-[hsl(221.2,83.2%,53.3%)]"
+                            onClick={() => window.location.href = "/job-finder"}
+                          >
+                            Try Now
+                          </Button>
+                        </div>
                       </form>
                     </Form>
                   </CardContent>
@@ -268,13 +292,23 @@ export default function AuthPage() {
                             </FormItem>
                           )}
                         />
-                        <Button 
-                          type="submit" 
-                          className="w-full bg-[hsl(221.2,83.2%,53.3%)] hover:bg-[hsl(221.2,83.2%,43.3%)] text-white" 
-                          disabled={registerMutation.isPending}
-                        >
-                          {registerMutation.isPending ? 'Creating account...' : 'Register'}
-                        </Button>
+                        <div className="flex space-x-3">
+                          <Button 
+                            type="submit" 
+                            className="flex-1 bg-[hsl(221.2,83.2%,53.3%)] hover:bg-[hsl(221.2,83.2%,43.3%)] text-white" 
+                            disabled={registerMutation.isPending}
+                          >
+                            {registerMutation.isPending ? 'Creating account...' : 'Register'}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="flex-1 border-[hsl(221.2,83.2%,53.3%)] text-[hsl(221.2,83.2%,53.3%)]"
+                            onClick={() => window.location.href = "/job-finder"}
+                          >
+                            Try Now
+                          </Button>
+                        </div>
                       </form>
                     </Form>
                   </CardContent>
@@ -284,18 +318,44 @@ export default function AuthPage() {
           </div>
         </div>
         
-        <div className="hidden lg:block relative lg:flex-1">
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-16 text-white">
-            <h2 className="text-5xl font-bold mb-8 cosmic-text-gradient">Navigate Your Career</h2>
+        <div className="hidden lg:block relative lg:flex-1 h-full">
+          <div className="flex flex-col items-center justify-center h-full p-16 text-white">
+            <h2 className="text-4xl lg:text-5xl font-bold mb-8 cosmic-text-gradient">Navigate Your Career</h2>
             
-            <div className="grid grid-cols-1 gap-8 max-w-lg">
+            {/* Stats Section */}
+            <div className="grid grid-cols-3 gap-4 w-full max-w-lg mb-8">
+              <div className="bg-[rgba(255,255,255,0.1)] backdrop-blur-md border border-[rgba(255,255,255,0.2)] rounded-lg p-4 text-center">
+                <p className="text-3xl font-bold text-[hsl(221.2,83.2%,53.3%)]">10,000+</p>
+                <p className="text-sm text-gray-300">Users Helped</p>
+              </div>
+              <div className="bg-[rgba(255,255,255,0.1)] backdrop-blur-md border border-[rgba(255,255,255,0.2)] rounded-lg p-4 text-center">
+                <p className="text-3xl font-bold text-[hsl(221.2,83.2%,53.3%)]">95%</p>
+                <p className="text-sm text-gray-300">Resume Score</p>
+              </div>
+              <div className="bg-[rgba(255,255,255,0.1)] backdrop-blur-md border border-[rgba(255,255,255,0.2)] rounded-lg p-4 text-center">
+                <p className="text-3xl font-bold text-[hsl(221.2,83.2%,53.3%)]">50,000+</p>
+                <p className="text-sm text-gray-300">Job Matches</p>
+              </div>
+            </div>
+            
+            {/* Testimonial */}
+            <div className="bg-[rgba(255,255,255,0.05)] p-6 rounded-lg mb-8 max-w-lg w-full">
+              <p className="text-sm text-gray-300 italic">
+                "AIreHire helped me land my dream job in just two weeks! The AI resume builder made my application stand out."
+              </p>
+              <p className="text-sm font-medium text-white mt-2">
+                — Sarah M., Software Engineer
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 gap-8 max-w-lg w-full">
               <div className="flex items-start space-x-4" ref={el => featureIconsRef.current[0] = el}>
                 <div className="bg-[hsl(210,100%,60%)] bg-opacity-20 p-3 rounded-lg shadow-[0_0_15px_rgba(59,130,246,0.5)]">
                   <Cpu size={28} />
                 </div>
                 <div>
                   <h3 className="font-semibold text-xl mb-2">AI-Powered Resume Builder</h3>
-                  <p className="text-gray-300">Create professional resumes with AI suggestions that highlight your strengths and target specific job requirements.</p>
+                  <p className="text-gray-300">Create professional resumes with AI suggestions that highlight your strengths.</p>
                 </div>
               </div>
               
@@ -305,7 +365,7 @@ export default function AuthPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-xl mb-2">Smart Job Matching</h3>
-                  <p className="text-gray-300">Our AI matches your skills with job opportunities for the perfect career fit and suggests tailored resume improvements.</p>
+                  <p className="text-gray-300">Our AI matches your skills with job opportunities for the perfect career fit.</p>
                 </div>
               </div>
               
@@ -315,7 +375,7 @@ export default function AuthPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-xl mb-2">Career Navigation</h3>
-                  <p className="text-gray-300">Track applications, manage multiple resumes, and receive guidance to navigate your career journey successfully.</p>
+                  <p className="text-gray-300">Track applications, manage multiple resumes, and navigate your career journey.</p>
                 </div>
               </div>
             </div>

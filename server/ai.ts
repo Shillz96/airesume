@@ -243,39 +243,56 @@ export async function parseResumeFile(filePath: string, fileName: string): Promi
     
     let fileContent = "";
     
-    // For simplicity, we're treating all files as text for processing
-    // In a production app, you'd want to use specific libraries to parse different file types
+    // Process files based on their extension using appropriate libraries
     if (fileExtension === '.pdf' || fileExtension === '.docx' || fileExtension === '.txt') {
-      // For PDFs and DOCXs, we'll simulate text extraction
-      // In a real application, you would use libraries like pdf-parse or mammoth for PDFs and DOCXs
-      if (fileExtension === '.pdf') {
-        // Just read the buffer as text for now - this won't work well for real PDFs
-        // but serves as a temporary solution until proper PDF parsing is implemented
-        fileContent = "This is a placeholder for PDF content extraction. In a production environment, you would use a PDF parsing library.";
-        
-        // Add a simulated resume text to allow for testing
-        fileContent += "\n\nJohn Smith\nSenior Software Developer\njohn.smith@example.com | (555) 123-4567\n\n";
-        fileContent += "SUMMARY\nExperienced software developer with 8 years of experience in full-stack development.\n\n";
-        fileContent += "EXPERIENCE\nSenior Developer at Tech Corp, 2020-Present\n- Led development of enterprise applications\n- Managed team of 5 developers\n\n";
-        fileContent += "Developer at StartUp Inc, 2018-2020\n- Built and maintained web applications\n\n";
-        fileContent += "EDUCATION\nB.S. Computer Science, State University, 2014-2018\n\n";
-        fileContent += "SKILLS\nJavaScript, TypeScript, React, Node.js, Python, SQL, MongoDB, AWS";
-      } 
-      else if (fileExtension === '.docx') {
-        // Similar placeholder for DOCX files
-        fileContent = "This is a placeholder for DOCX content extraction. In a production environment, you would use a DOCX parsing library.";
-        
-        // Add a simulated resume text to allow for testing
-        fileContent += "\n\nJane Doe\nUX/UI Designer\njane.doe@example.com | (555) 987-6543\n\n";
-        fileContent += "SUMMARY\nCreative designer with 5 years of experience creating user-centered digital experiences.\n\n";
-        fileContent += "EXPERIENCE\nSenior Designer at Design Agency, 2021-Present\n- Created UI designs for mobile and web applications\n- Conducted user research and testing\n\n";
-        fileContent += "Designer at Creative Co, 2019-2021\n- Designed user interfaces for client projects\n\n";
-        fileContent += "EDUCATION\nB.A. Design, Art Institute, 2015-2019\n\n";
-        fileContent += "SKILLS\nFigma, Adobe XD, Sketch, Photoshop, Illustrator, HTML/CSS, Prototyping";
-      } 
-      else {
-        // Text files can be read directly
-        fileContent = fileBuffer.toString('utf-8');
+      try {
+        // For PDF files, use pdf-parse to extract the text
+        if (fileExtension === '.pdf') {
+          const pdfParse = require('pdf-parse');
+          try {
+            console.log("Parsing PDF file using pdf-parse...");
+            const pdfData = await pdfParse(fileBuffer);
+            fileContent = pdfData.text || "";
+            console.log("PDF text extracted successfully, length:", fileContent.length);
+            
+            // If extraction failed or returned empty content, provide feedback
+            if (!fileContent || fileContent.trim().length < 10) {
+              console.log("PDF extraction returned minimal content, may need OCR for scanned documents");
+              return { 
+                success: true,
+                data: fallbackResumeData,
+                warning: "Could not extract text from this PDF. It may be a scanned document that requires OCR. Please try a different file format or enter your details manually." 
+              };
+            }
+          } catch (pdfError) {
+            console.error("PDF parsing failed:", pdfError);
+            return { 
+              success: true,
+              data: fallbackResumeData,
+              warning: "This PDF file could not be parsed. Please try a different format or enter your details manually." 
+            };
+          }
+        } 
+        else if (fileExtension === '.docx') {
+          // For DOCX, we'd use a library like mammoth, but for now use a placeholder
+          console.log("DOCX support requires additional libraries. Using fallback.");
+          return { 
+            success: true,
+            data: fallbackResumeData,
+            warning: "DOCX parsing is currently in development. Please upload a PDF or TXT file instead, or enter your details manually." 
+          };
+        } 
+        else {
+          // Text files can be read directly
+          fileContent = fileBuffer.toString('utf-8');
+        }
+      } catch (extractionError) {
+        console.error("Text extraction error:", extractionError);
+        return { 
+          success: true,
+          data: fallbackResumeData,
+          warning: "Could not extract text from the file. Please try a different format or enter details manually." 
+        };
       }
       
       // Now parse the extracted text to structure the resume data

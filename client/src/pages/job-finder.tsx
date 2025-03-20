@@ -52,7 +52,7 @@ export default function JobFinder() {
             <div className="my-6 p-4 bg-white shadow rounded-lg border-l-4 border-accent-500">
               <div className="flex">
                 <div className="flex-shrink-0">
-                  <Robot className="h-5 w-5 text-accent-500" />
+                  <Cpu className="h-5 w-5 text-accent-500" />
                 </div>
                 <div className="ml-3">
                   <h3 className="text-sm font-medium text-secondary-900">AI-Powered Job Matching</h3>

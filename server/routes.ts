@@ -134,6 +134,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const filePath = req.file.path;
       const fileName = req.file.originalname;
       
+      // Double-check file format (in addition to multer filter)
+      const fileExtension = path.extname(fileName).toLowerCase();
+      if (!['.pdf', '.docx', '.txt'].includes(fileExtension)) {
+        fs.unlink(filePath, (err) => {
+          if (err) console.error("Error deleting invalid file:", err);
+        });
+        return res.status(400).json({ 
+          success: false, 
+          error: "Invalid file format. Please upload a PDF, DOCX, or TXT file." 
+        });
+      }
+      
       // Verify API key is configured
       if (!process.env.OPENAI_API_KEY) {
         console.warn("OpenAI API key not configured for resume parsing");
@@ -144,6 +156,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Parse the resume file
+      console.log(`Processing resume upload: ${fileName} (${fileExtension})`);
       const parsedResume = await parseResumeFile(filePath, fileName);
       
       // Clean up the uploaded file

@@ -190,6 +190,127 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get AI suggestions for improving a resume
+  app.get("/api/resumes/:id/suggestions", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const userId = req.user!.id;
+      const resumeId = parseInt(req.params.id);
+      
+      const resume = await storage.getResume(resumeId, userId);
+      if (!resume) {
+        return res.status(404).json({ success: false, error: "Resume not found" });
+      }
+      
+      // Generate suggestions using OpenAI
+      const suggestions = await generateResumeSuggestions(resume);
+      return res.json({ success: true, suggestions });
+    } catch (error) {
+      console.error("Error generating resume suggestions:", error);
+      return res.status(500).json({ 
+        success: false, 
+        error: "Failed to generate suggestions", 
+        fallbackSuggestions: [
+          "Add measurable achievements with specific numbers and results",
+          "Tailor your skills section to match job requirements",
+          "Use powerful action verbs to begin bullet points",
+          "Ensure your summary highlights your most relevant qualifications",
+          "Include relevant keywords from the job posting"
+        ]
+      });
+    }
+  });
+  
+  // Tailor resume for specific company or job posting
+  app.post("/api/resumes/:id/tailor", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const userId = req.user!.id;
+      const resumeId = parseInt(req.params.id);
+      const { company, jobDescription } = req.body;
+      
+      if (!company && !jobDescription) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "Either company name or job description is required"
+        });
+      }
+      
+      const resume = await storage.getResume(resumeId, userId);
+      if (!resume) {
+        return res.status(404).json({ success: false, error: "Resume not found" });
+      }
+      
+      // Verify API key is configured
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "AI service is not properly configured."
+        });
+      }
+      
+      // Use OpenAI to tailor the resume content
+      const personalInfo = resume.content?.personalInfo || {};
+      const experience = resume.content?.experience || [];
+      const skills = resume.content?.skills || [];
+      
+      // Use the existing openai client from server/ai.ts
+      
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert resume tailoring assistant. You will receive a resume and information about a target company or job description. Your task is to suggest specific modifications to the resume to better align it with the target opportunity. Focus on the summary, skills, and experience sections."
+          },
+          {
+            role: "user",
+            content: `Tailor this resume for ${company ? 'a position at ' + company : 'this job description'}.
+            
+            ${jobDescription ? 'Job Description: ' + jobDescription : ''}
+            
+            Resume Information:
+            Summary: ${personalInfo.summary || ''}
+            Skills: ${JSON.stringify(skills)}
+            Experience: ${JSON.stringify(experience)}
+            
+            Provide suggestions in JSON format with these sections:
+            {
+              "summary": "Improved professional summary",
+              "skills": ["skill1", "skill2", "skill3"],
+              "experienceImprovements": [
+                { "id": "1", "improvedDescription": "text" }
+              ]
+            }`
+          }
+        ],
+        response_format: { type: "json_object" }
+      });
+      
+      try {
+        const tailoredContent = JSON.parse(response.choices[0].message.content);
+        return res.json({ 
+          success: true, 
+          tailoredContent,
+          originalResume: resume
+        });
+      } catch (error) {
+        return res.status(500).json({ 
+          success: false, 
+          error: "Failed to process tailored content" 
+        });
+      }
+    } catch (error) {
+      console.error("Error tailoring resume:", error);
+      return res.status(500).json({ 
+        success: false, 
+        error: "Failed to tailor resume" 
+      });
+    }
+  });
+
   app.post("/api/resumes/:id", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     
@@ -227,63 +348,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI Resume Suggestions Route
-  app.get("/api/resumes/:id/suggestions", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    
-    try {
-      const userId = req.user!.id;
-      const resumeId = parseInt(req.params.id);
-      
-      const resume = await storage.getResume(resumeId, userId);
-      if (!resume) {
-        return res.status(404).json({ success: false, error: "Resume not found" });
-      }
-      
-      // Verify API key is configured
-      if (!process.env.OPENAI_API_KEY) {
-        console.warn("OpenAI API key not configured for resume suggestions");
-        return res.status(400).json({ 
-          success: false, 
-          error: "AI service is not properly configured. Please contact the administrator." 
-        });
-      }
-
-      const suggestions = await generateResumeSuggestions(resume);
-      res.json({ success: true, suggestions });
-    } catch (error: any) {
-      console.error("Resume suggestions error:", error);
-      
-      // Check for common OpenAI API errors
-      if (error?.status === 429) {
-        return res.status(429).json({ 
-          success: false, 
-          error: "The AI service is currently experiencing high demand. Please try again later.",
-          fallbackSuggestions: ["Update your professional summary to highlight key achievements.", 
-                              "Add specific metrics and results to your work experience.", 
-                              "Include relevant skills that match your target job."] 
-        });
-      }
-      
-      if (error?.code === 'insufficient_quota') {
-        return res.status(402).json({ 
-          success: false, 
-          error: "AI service quota exceeded. Please try again later.",
-          fallbackSuggestions: ["Ensure your resume uses action verbs to describe responsibilities.", 
-                              "Tailor your resume to include keywords from the job description.", 
-                              "Make sure your most recent experience is detailed and comprehensive."] 
-        });
-      }
-      
-      res.status(500).json({ 
-        success: false, 
-        error: "Failed to generate resume suggestions. Please try again later.",
-        fallbackSuggestions: ["Keep your resume concise and focused on relevant experiences.", 
-                            "Quantify your achievements with numbers when possible.", 
-                            "Ensure your contact information is up-to-date and professional."]
-      });
-    }
-  });
+  // The API Resume Suggestions Route is defined above
 
   // Job Routes
   app.get("/api/jobs", async (req, res) => {

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -174,17 +174,15 @@ export default function ResumeBuilder() {
   });
   
   // Fetch resume data if resumeId exists
-  const { data: fetchedResume } = useQuery({
+  useQuery({
     queryKey: ["/api/resumes", resumeId],
-    enabled: !!resumeId
-  });
-  
-  // Update resume state when data is fetched
-  React.useEffect(() => {
-    if (fetchedResume) {
-      setResume(fetchedResume as Resume);
+    enabled: !!resumeId,
+    onSuccess: (data: any) => {
+      if (data) {
+        setResume(data as Resume);
+      }
     }
-  }, [fetchedResume]);
+  });
   
   // Save resume mutation
   const saveResumeMutation = useMutation({

@@ -149,15 +149,51 @@ export default function ResumeBuilder() {
       if (data.success && data.data) {
         // Update the resume state with the parsed data
         const parsedData = data.data;
+        console.log("Resume parsed data:", parsedData);
+        
+        // Create new arrays with proper IDs and casting
+        let experiences = [];
+        if (Array.isArray(parsedData.experience)) {
+          experiences = parsedData.experience.map((exp, index) => ({
+            ...exp,
+            id: exp.id || String(index + 1)
+          }));
+        }
+        
+        let educations = [];
+        if (Array.isArray(parsedData.education)) {
+          educations = parsedData.education.map((edu, index) => ({
+            ...edu,
+            id: edu.id || String(index + 1)
+          }));
+        }
+        
+        let skills = [];
+        if (Array.isArray(parsedData.skills)) {
+          skills = parsedData.skills.map((skill, index) => ({
+            ...skill,
+            id: skill.id || String(index + 1),
+            proficiency: typeof skill.proficiency === 'number' ? skill.proficiency : 3
+          }));
+        }
+        
+        let projects = [];
+        if (Array.isArray(parsedData.projects)) {
+          projects = parsedData.projects.map((project, index) => ({
+            ...project,
+            id: project.id || String(index + 1),
+            technologies: Array.isArray(project.technologies) ? project.technologies : []
+          }));
+        }
         
         // Map the parsed data to our resume structure
         setResume({
           ...resume,
           personalInfo: parsedData.personalInfo || resume.personalInfo,
-          experience: parsedData.experience || resume.experience,
-          education: parsedData.education || resume.education,
-          skills: parsedData.skills || resume.skills,
-          projects: parsedData.projects || resume.projects,
+          experience: experiences,
+          education: educations,
+          skills: skills,
+          projects: projects,
         });
         
         // Check if there's a warning (likely due to API quota issue)

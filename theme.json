@@ -1,12 +1,19 @@
 {
   "variant": "professional",
   "primary": "hsl(221.2 83.2% 53.3%)",
-  "appearance": "light",
+  "appearance": "dark",
   "radius": 0.5,
   "colors": {
-    "jobFinderBackground": "linear-gradient(to bottom right, hsl(219, 90%, 10%), hsl(260, 90%, 10%))",
-    "resumeHighlight1": "bg-blue-500",
-    "resumeHighlight2": "bg-purple-500",
-    "resumeHighlight3": "bg-emerald-500"
+    "cosmicBackground": "linear-gradient(to bottom right, hsl(219, 90%, 10%), hsl(260, 90%, 10%))",
+    "cosmicPrimary": "hsl(221.2, 83.2%, 53.3%)",
+    "cosmicHighlight1": "hsl(210, 100%, 60%)",
+    "cosmicHighlight2": "hsl(260, 100%, 60%)",
+    "cosmicHighlight3": "hsl(170, 100%, 60%)",
+    "cosmicText": "hsl(0, 0%, 100%)",
+    "cosmicTextSecondary": "hsl(220, 30%, 80%)",
+    "cosmicBorderGlow": "0 0 10px rgba(59, 130, 246, 0.5)",
+    "cosmicCardBg": "rgba(255, 255, 255, 0.05)",
+    "cosmicCardBorder": "rgba(255, 255, 255, 0.1)",
+    "cosmicOverlayBg": "rgba(0, 0, 0, 0.7)"
   }
 }

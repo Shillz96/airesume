@@ -2,6 +2,11 @@
  * Theme utility functions for consistent theme handling throughout the application
  */
 
+// Define theme variant types to ensure type safety
+export type ThemeVariant = 'professional' | 'vibrant' | 'tint';
+export const THEME_VARIANTS = ['professional', 'vibrant', 'tint'] as const;
+export type ThemeAppearance = 'light' | 'dark' | 'system';
+
 /**
  * Get a CSS variable from the theme
  * @param variableName The name of the CSS variable without the leading --
@@ -12,24 +17,27 @@ export function getThemeVar(variableName: string): string {
 }
 
 /**
- * Get a custom color from the theme.json colors object
- * These are additional colors defined in theme.json beyond the primary color
+ * Get a cosmic theme color from theme.json colors object
  * @param colorName The name of the color from theme.json colors object
  * @returns The color value or a fallback
  */
-export function getCustomColor(colorName: string): string {
-  // Access any custom colors defined in theme.json
-  // This is a simplified implementation and would need to be enhanced
-  // for real production use to actually read from theme.json
-  
-  const customColors: Record<string, string> = {
-    jobFinderBackground: "linear-gradient(to bottom right, hsl(219, 90%, 10%), hsl(260, 90%, 10%))",
-    resumeHighlight1: "bg-blue-500",
-    resumeHighlight2: "bg-purple-500",
-    resumeHighlight3: "bg-emerald-500",
+export function getCosmicColor(colorName: string): string {
+  // Access cosmic colors defined in theme.json
+  const cosmicColors: Record<string, string> = {
+    cosmicBackground: "linear-gradient(to bottom right, hsl(219, 90%, 10%), hsl(260, 90%, 10%))",
+    cosmicPrimary: "hsl(221.2, 83.2%, 53.3%)",
+    cosmicHighlight1: "hsl(210, 100%, 60%)",
+    cosmicHighlight2: "hsl(260, 100%, 60%)",
+    cosmicHighlight3: "hsl(170, 100%, 60%)",
+    cosmicText: "hsl(0, 0%, 100%)",
+    cosmicTextSecondary: "hsl(220, 30%, 80%)",
+    cosmicBorderGlow: "0 0 10px rgba(59, 130, 246, 0.5)",
+    cosmicCardBg: "rgba(255, 255, 255, 0.05)",
+    cosmicCardBorder: "rgba(255, 255, 255, 0.1)",
+    cosmicOverlayBg: "rgba(0, 0, 0, 0.7)"
   };
   
-  return customColors[colorName] || "";
+  return cosmicColors[colorName] || "";
 }
 
 /**
@@ -48,14 +56,13 @@ export function getVariantClasses(
   // from theme.json or CSS variables. For now, we'll default to professional.
   const currentVariant = "professional";
   
-  switch (currentVariant) {
-    case "vibrant":
-      return vibrantClasses;
-    case "tint":
-      return tintClasses;
-    case "professional":
-    default:
-      return professionalClasses;
+  if (currentVariant === "vibrant") {
+    return vibrantClasses;
+  } else if (currentVariant === "tint") {
+    return tintClasses;
+  } else {
+    // Default to professional
+    return professionalClasses;
   }
 }
 
@@ -64,7 +71,35 @@ export function getVariantClasses(
  * @returns true if the theme is in dark mode
  */
 export function isDarkMode(): boolean {
-  // In a real implementation, we would check the actual theme setting
-  // For now, we'll return false (light mode) as a default
-  return false;
+  // In a real implementation, we would check the actual theme setting from theme.json
+  // We're now defaulting to true for dark mode since our theme is "Cosmic Navigator"
+  return true;
+}
+
+/**
+ * Get appropriate text color based on current theme appearance
+ * @returns CSS class for text color
+ */
+export function getTextColorClass(): string {
+  return isDarkMode() ? "text-white" : "text-gray-900";
+}
+
+/**
+ * Get appropriate background color based on current theme appearance
+ * @returns CSS class for background
+ */
+export function getBackgroundClass(): string {
+  return isDarkMode() 
+    ? "bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)]" 
+    : "bg-white";
+}
+
+/**
+ * Get appropriate card background color based on current theme appearance
+ * @returns CSS class for card background
+ */
+export function getCardBackgroundClass(): string {
+  return isDarkMode() 
+    ? "bg-opacity-10 bg-white backdrop-blur-md border border-white/10" 
+    : "bg-white border border-gray-200";
 }

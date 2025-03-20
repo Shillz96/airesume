@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -496,14 +496,15 @@ export default function ResumeBuilder() {
   // Fetch resume data if resumeId exists
   const { data: fetchedResume } = useQuery({
     queryKey: ["/api/resumes", resumeId],
-    enabled: !!resumeId,
-    // Make sure the onSuccess uses correct type inference
-    onSuccess: (data) => {
-      if (data) {
-        setResume(data as Resume);
-      }
-    }
+    enabled: !!resumeId
   });
+  
+  // Use useEffect to handle the data instead of onSuccess
+  useEffect(() => {
+    if (fetchedResume) {
+      setResume(fetchedResume as Resume);
+    }
+  }, [fetchedResume]);
   
   // Save resume mutation
   const saveResumeMutation = useMutation({
@@ -776,7 +777,11 @@ export default function ResumeBuilder() {
           {/* Horizontal Tab Navigation */}
           <div className="relative">
             <div className="bg-primary-700 rounded-t-xl px-6 py-3">
-              <Tabs value={activeSection} onValueChange={setActiveSection} className="w-full">
+              <Tabs 
+                value={activeSection} 
+                onValueChange={setActiveSection} 
+                className="w-full"
+              >
                 <TabsList className="bg-transparent border-b border-white/20 w-full justify-start mb-1 p-0">
                   <TabsTrigger 
                     value="profile" 

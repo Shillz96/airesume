@@ -164,7 +164,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (err) console.error("Error deleting temporary file:", err);
       });
       
-      res.json(parsedResume);
+      // Create a resume in the database with the parsed data
+      if (parsedResume.success && parsedResume.data) {
+        try {
+          // Generate a title based on the parsed data
+          const personalInfo = parsedResume.data.personalInfo || {};
+          const resumeTitle = `${personalInfo.firstName || ''} ${personalInfo.lastName || ''} Resume`.trim();
+          
+          // Create the resume entry in database
+          const resume = await storage.createResume(userId, {
+            title: resumeTitle || 'My Resume',
+            content: parsedResume.data,
+            template: 'professional'
+          });
+          
+          // Return both the parsed data and the created resume
+          res.json({
+            ...parsedResume,
+            resumeId: resume.id
+          });
+        } catch (dbError) {
+          console.error("Error saving resume to database:", dbError);
+          // Still return the parsed data even if saving to DB failed
+          res.json(parsedResume);
+        }
+      } else {
+        // Just return the parsed data if there was an issue
+        res.json(parsedResume);
+      }
     } catch (error: any) {
       console.error("Resume upload error:", error);
       
@@ -256,9 +283,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const experience = resume.content?.experience || [];
       const skills = resume.content?.skills || [];
       
-      // Use the existing openai client from server/ai.ts
-      
-      const response = await openai.chat.completions.create({
+      // Import the openai client from ai.ts
+      const response = await (await import('./ai')).openai.chat.completions.create({
         model: "gpt-4o",
         messages: [
           {

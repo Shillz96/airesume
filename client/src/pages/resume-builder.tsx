@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -27,6 +27,8 @@ import {
   Award, 
   FolderKanban,
   Save,
+  Upload,
+  Loader2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -38,9 +40,11 @@ import {
 
 export default function ResumeBuilder() {
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [resumeSaved, setResumeSaved] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("personal");
+  const [isUploading, setIsUploading] = useState(false);
   
   const [resume, setResume] = useState({
     id: "1", // In a real app, this would be assigned by the backend
@@ -124,6 +128,100 @@ export default function ResumeBuilder() {
     }
   };
   
+  // Upload resume file and parse it
+  const { mutate: uploadResume } = useMutation({
+    mutationFn: async (formData: FormData) => {
+      const response = await fetch('/api/resume-upload', {
+        method: 'POST',
+        body: formData,
+        // Don't set Content-Type header, let the browser set it with the boundary
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to upload resume');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data.success && data.data) {
+        // Update the resume state with the parsed data
+        const parsedData = data.data;
+        
+        // Map the parsed data to our resume structure
+        setResume({
+          ...resume,
+          personalInfo: parsedData.personalInfo || resume.personalInfo,
+          experience: parsedData.experience || resume.experience,
+          education: parsedData.education || resume.education,
+          skills: parsedData.skills || resume.skills,
+          projects: parsedData.projects || resume.projects,
+        });
+        
+        // Show success message
+        toast({
+          title: "Resume uploaded successfully",
+          description: "Your resume has been parsed and loaded into the builder.",
+        });
+      } else {
+        toast({
+          title: "Resume parsing incomplete",
+          description: "Some resume sections could not be parsed. Please review and edit manually.",
+          variant: "default",
+        });
+      }
+      setIsUploading(false);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Failed to upload resume",
+        description: error.message,
+        variant: "destructive",
+      });
+      setIsUploading(false);
+    },
+  });
+  
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    // Check file type
+    const fileType = file.name.split('.').pop()?.toLowerCase();
+    if (!['pdf', 'docx', 'txt'].includes(fileType || '')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a PDF, DOCX, or TXT file.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Check file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please upload a file smaller than 10MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsUploading(true);
+    
+    // Create form data and append file
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    // Upload the file
+    uploadResume(formData);
+    
+    // Reset the file input
+    event.target.value = '';
+  };
+  
   return (
     <div className="min-h-screen bg-secondary-50">
       <Navbar />
@@ -166,7 +264,27 @@ export default function ResumeBuilder() {
                   Create and edit your professional resume with AI assistance.
                 </p>
               </div>
-              <div>
+              <div className="flex items-center gap-3">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept=".pdf,.docx,.txt"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+                <Button 
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  {isUploading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Upload className="h-4 w-4" />
+                  )}
+                  {isUploading ? "Uploading..." : "Upload Resume"}
+                </Button>
                 <Button 
                   onClick={() => saveResume()} 
                   disabled={isSaving} 

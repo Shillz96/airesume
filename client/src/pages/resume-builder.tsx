@@ -4,7 +4,11 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/navbar";
 import AIAssistant from "@/components/ai-assistant";
-import ResumeTemplate from "@/components/resume-template";
+import ResumeTemplate, { 
+  ProfessionalTemplate, 
+  CreativeTemplate, 
+  ExecutiveTemplate 
+} from "@/components/resume-template";
 import { 
   ResumeExperienceSection, 
   ResumeEducationSection, 
@@ -15,6 +19,7 @@ import {
   SkillItem,
   ProjectItem,
 } from "@/components/resume-section";
+import { Resume } from "@/components/resume-template";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -34,6 +39,8 @@ import {
   RefreshCw,
   Sparkles,
   Plus,
+  Maximize2,
+  Printer,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -368,6 +375,68 @@ function SkillSuggestions({ resumeId, jobTitle, onApply }: SkillSuggestionsProps
           </Button>
         </div>
       )}
+    </div>
+  );
+}
+
+// Preview component for the "Finish Up & Preview" section
+function ResumePreview({ resume }: { resume: Resume }) {
+  const [scale, setScale] = useState(1);
+  
+  // Function to auto-adjust content to fit on page
+  const handleAutoAdjust = () => {
+    // Simplified auto-adjust logic
+    // In a real implementation, this would analyze content length and adjust scale/font sizes
+    if (resume.experience.length + resume.education.length + resume.skills.length > 10) {
+      setScale(0.9); // Reduce scale for longer resumes
+    } else {
+      setScale(1); // Use normal scale for shorter resumes
+    }
+  };
+  
+  // Get the appropriate template component based on resume.template
+  const TemplateComponent = 
+    resume.template === "creative" ? CreativeTemplate :
+    resume.template === "executive" ? ExecutiveTemplate :
+    ProfessionalTemplate; // Default to professional
+  
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h3 className="text-lg font-medium text-secondary-900">Resume Preview</h3>
+          <p className="text-sm text-secondary-500">Final review before saving</p>
+        </div>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleAutoAdjust}
+            className="flex items-center gap-1"
+          >
+            <Maximize2 className="h-4 w-4" />
+            Auto-Adjust
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => window.print()}
+            className="flex items-center gap-1"
+          >
+            <Printer className="h-4 w-4" />
+            Print
+          </Button>
+        </div>
+      </div>
+      
+      <div className="bg-white border border-secondary-200 rounded-lg overflow-hidden shadow-lg p-8">
+        <div 
+          className="transition-all duration-300 origin-top"
+          style={{ transform: `scale(${scale})` }}
+        >
+          <TemplateComponent resume={resume} />
+        </div>
+      </div>
     </div>
   );
 }
@@ -801,9 +870,177 @@ export default function ResumeBuilder() {
               </div>
             </div>
 
+            {/* Horizontal Tab Navigation */}
+            <div className="bg-background border border-border rounded-lg overflow-hidden mb-8">
+              <Tabs 
+                defaultValue="contact" 
+                value={activeSection === "personal" ? "contact" :
+                       activeSection === "summary" ? "summary" :
+                       activeSection === "experience" ? "experience" :
+                       activeSection === "education" ? "education" :
+                       activeSection === "skills" ? "skills" :
+                       activeSection === "projects" ? "project" :
+                       activeSection === "preview" ? "preview" : "contact"}
+                onValueChange={(value) => {
+                  if (value === "contact") setActiveSection("personal");
+                  else if (value === "project") setActiveSection("projects");
+                  else if (value === "preview") setActiveSection("preview");
+                  else setActiveSection(value);
+                }}
+                className="w-full"
+              >
+                <TabsList className="w-full grid grid-cols-7 h-12 bg-secondary-900">
+                  <TabsTrigger 
+                    value="contact" 
+                    className={`${activeSection === "personal" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                  >
+                    CONTACT
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="experience" 
+                    className={`${activeSection === "experience" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                  >
+                    EXPERIENCE
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="project" 
+                    className={`${activeSection === "projects" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                  >
+                    PROJECT
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="education" 
+                    className={`${activeSection === "education" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                  >
+                    EDUCATION
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="skills" 
+                    className={`${activeSection === "skills" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                  >
+                    SKILLS
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="summary" 
+                    className={`${activeSection === "summary" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                  >
+                    SUMMARY
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="preview" 
+                    className={`${activeSection === "preview" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                  >
+                    FINISH UP & PREVIEW
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Sidebar with builder controls */}
+              {/* Left column with AI assistant for relevant sections */}
               <div className="lg:col-span-1">
+                {activeSection === "preview" ? (
+                  <div className="bg-white shadow rounded-lg overflow-hidden mb-6">
+                    <div className="p-4 border-b border-secondary-200">
+                      <div className="flex items-center">
+                        <Cpu className="h-5 w-5 text-primary-500 mr-2" />
+                        <h2 className="text-lg font-medium text-secondary-900">Resume Optimization Tips</h2>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <ul className="space-y-2 text-sm text-secondary-700">
+                        <li className="flex items-start">
+                          <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
+                          <span>Keep resume length to 1-2 pages for best readability</span>
+                        </li>
+                        <li className="flex items-start">
+                          <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
+                          <span>Use the "Auto-Adjust" feature to fit content on page</span>
+                        </li>
+                        <li className="flex items-start">
+                          <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
+                          <span>Include keywords from job descriptions to pass ATS scans</span>
+                        </li>
+                        <li className="flex items-start">
+                          <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
+                          <span>Quantify achievements with numbers and percentages</span>
+                        </li>
+                        <li className="flex items-start">
+                          <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
+                          <span>Review for spelling and grammar errors before saving</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                ) : activeSection === "summary" ? (
+                  <div className="bg-white shadow rounded-lg overflow-hidden mb-6">
+                    <div className="p-4 border-b border-secondary-200">
+                      <div className="flex items-center">
+                        <Cpu className="h-5 w-5 text-primary-500 mr-2" />
+                        <h2 className="text-lg font-medium text-secondary-900">AI Summary Generator</h2>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <p className="text-sm text-secondary-600 mb-4">
+                        Generate professional summaries optimized for ATS systems with keywords that match your experience.
+                      </p>
+                      <SummarySuggestions 
+                        resumeId={resumeId?.toString() || resume.id} 
+                        onApply={handleApplySummary}
+                      />
+                    </div>
+                  </div>
+                ) : activeSection === "experience" ? (
+                  <div className="bg-white shadow rounded-lg overflow-hidden mb-6">
+                    <div className="p-4 border-b border-secondary-200">
+                      <div className="flex items-center">
+                        <Cpu className="h-5 w-5 text-primary-500 mr-2" />
+                        <h2 className="text-lg font-medium text-secondary-900">AI Bullet Point Generator</h2>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <p className="text-sm text-secondary-600 mb-4">
+                        Generate professional, achievement-focused bullet points that highlight your impact and include keywords for ATS systems.
+                      </p>
+                      <ExperienceSuggestions 
+                        resumeId={resumeId?.toString() || resume.id} 
+                        onApply={handleAddExperienceWithAI}
+                      />
+                    </div>
+                  </div>
+                ) : activeSection === "skills" ? (
+                  <div className="bg-white shadow rounded-lg overflow-hidden mb-6">
+                    <div className="p-4 border-b border-secondary-200">
+                      <div className="flex items-center">
+                        <Cpu className="h-5 w-5 text-primary-500 mr-2" />
+                        <h2 className="text-lg font-medium text-secondary-900">AI Skill Suggestions</h2>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <p className="text-sm text-secondary-600 mb-4">
+                        Get recommendations for in-demand skills based on your experience that will help your resume pass through ATS systems.
+                      </p>
+                      <SkillSuggestions 
+                        resumeId={resumeId?.toString() || resume.id} 
+                        onApply={handleAddSkill}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <AIAssistant 
+                    resumeId={resumeId?.toString() || resume.id} 
+                    resume={resume}
+                    onApplySuggestions={handleApplySuggestions}
+                    onApplySummary={handleApplySummary}
+                    onApplyTailoredContent={handleApplyTailoredContent}
+                  />
+                )}
+              </div>
+              
+              {/* Main resume editor and preview */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Temporarily removing sidebar with Accordion structure */}
+                {/* 
                 <div className="bg-white shadow rounded-lg overflow-hidden mb-6">
                   <div className="p-4 border-b border-secondary-200">
                     <h2 className="text-lg font-medium text-secondary-900">Resume Sections</h2>
@@ -929,18 +1166,18 @@ export default function ResumeBuilder() {
                           </Button>
                         </AccordionContent>
                       </AccordionItem>
-                    </Accordion>
-                  </div>
+                    {/* </Accordion> */}
+                  {/* </div>
                 </div>
-                
+                */}
                 {/* AI Assistant */}
-                <AIAssistant 
+                {/* <AIAssistant 
                   resumeId={resumeId?.toString() || resume.id} 
                   resume={resume}
                   onApplySuggestions={handleApplySuggestions}
                   onApplySummary={handleApplySummary}
                   onApplyTailoredContent={handleApplyTailoredContent}
-                />
+                /> */}
               </div>
               
               {/* Main resume editor and preview */}

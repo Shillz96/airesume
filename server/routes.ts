@@ -127,25 +127,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       if (!req.file) {
-        return res.status(400).json({ message: "No file uploaded" });
+        return res.status(400).json({ success: false, error: "No file uploaded" });
       }
       
       const userId = req.user!.id;
       const filePath = req.file.path;
       const fileName = req.file.originalname;
       
+      // Verify API key is configured
+      if (!process.env.OPENAI_API_KEY) {
+        console.warn("OpenAI API key not configured for resume parsing");
+        return res.status(400).json({ 
+          success: false, 
+          error: "AI service is not properly configured. Please contact the administrator." 
+        });
+      }
+      
       // Parse the resume file
       const parsedResume = await parseResumeFile(filePath, fileName);
       
-      // Clean up the uploaded file (optional)
+      // Clean up the uploaded file
       fs.unlink(filePath, (err) => {
         if (err) console.error("Error deleting temporary file:", err);
       });
       
       res.json(parsedResume);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Resume upload error:", error);
-      res.status(500).json({ message: (error as Error).message });
+      
+      // Check for common OpenAI API errors
+      if (error?.status === 429) {
+        return res.status(429).json({ 
+          success: false, 
+          error: "The AI service is currently experiencing high demand. Please try again later." 
+        });
+      }
+      
+      if (error?.code === 'insufficient_quota') {
+        return res.status(402).json({ 
+          success: false, 
+          error: "AI service quota exceeded. Please try again later." 
+        });
+      }
+      
+      res.status(500).json({ 
+        success: false, 
+        error: "Failed to process the resume file. Please try again." 
+      });
     }
   });
 
@@ -196,13 +224,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const resume = await storage.getResume(resumeId, userId);
       if (!resume) {
-        return res.status(404).json({ message: "Resume not found" });
+        return res.status(404).json({ success: false, error: "Resume not found" });
+      }
+      
+      // Verify API key is configured
+      if (!process.env.OPENAI_API_KEY) {
+        console.warn("OpenAI API key not configured for resume suggestions");
+        return res.status(400).json({ 
+          success: false, 
+          error: "AI service is not properly configured. Please contact the administrator." 
+        });
       }
 
       const suggestions = await generateResumeSuggestions(resume);
-      res.json({ suggestions });
-    } catch (error) {
-      res.status(500).json({ message: (error as Error).message });
+      res.json({ success: true, suggestions });
+    } catch (error: any) {
+      console.error("Resume suggestions error:", error);
+      
+      // Check for common OpenAI API errors
+      if (error?.status === 429) {
+        return res.status(429).json({ 
+          success: false, 
+          error: "The AI service is currently experiencing high demand. Please try again later.",
+          fallbackSuggestions: ["Update your professional summary to highlight key achievements.", 
+                              "Add specific metrics and results to your work experience.", 
+                              "Include relevant skills that match your target job."] 
+        });
+      }
+      
+      if (error?.code === 'insufficient_quota') {
+        return res.status(402).json({ 
+          success: false, 
+          error: "AI service quota exceeded. Please try again later.",
+          fallbackSuggestions: ["Ensure your resume uses action verbs to describe responsibilities.", 
+                              "Tailor your resume to include keywords from the job description.", 
+                              "Make sure your most recent experience is detailed and comprehensive."] 
+        });
+      }
+      
+      res.status(500).json({ 
+        success: false, 
+        error: "Failed to generate resume suggestions. Please try again later.",
+        fallbackSuggestions: ["Keep your resume concise and focused on relevant experiences.", 
+                            "Quantify your achievements with numbers when possible.", 
+                            "Ensure your contact information is up-to-date and professional."]
+      });
     }
   });
 

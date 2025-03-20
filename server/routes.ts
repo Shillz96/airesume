@@ -122,7 +122,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Resume Upload and Parsing Route
-  app.post("/api/resume-upload", upload.single('file'), async (req, res) => {
+  app.post("/api/resumes/parse", upload.single('file'), async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     
     try {

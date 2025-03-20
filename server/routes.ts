@@ -3,11 +3,52 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { z } from "zod";
-import { ResumeSuggestions, generateResumeSuggestions, matchJobsWithResume } from "./ai";
+import { ResumeSuggestions, generateResumeSuggestions, matchJobsWithResume, parseResumeFile } from "./ai";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import os from "os";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
   setupAuth(app);
+  
+  // Configure multer for file uploads
+  const uploadDir = path.join(os.tmpdir(), 'resume-uploads');
+  
+  // Ensure upload directory exists
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+  
+  const multerStorage = multer.diskStorage({
+    destination: (_req, _file, cb) => {
+      cb(null, uploadDir);
+    },
+    filename: (_req, file, cb) => {
+      // Create a unique filename with original extension
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+  });
+  
+  const upload = multer({ 
+    storage: multerStorage,
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB max file size
+    },
+    fileFilter: (_req, file, cb) => {
+      // Accept only PDF, DOCX, and TXT files
+      const allowedFileTypes = ['.pdf', '.docx', '.txt'];
+      const ext = path.extname(file.originalname).toLowerCase();
+      
+      if (allowedFileTypes.includes(ext)) {
+        cb(null, true);
+      } else {
+        cb(new Error('Only PDF, DOCX, and TXT files are allowed'));
+      }
+    }
+  });
 
   // Dashboard Stats Route
   app.get("/api/dashboard/stats", async (req, res) => {
@@ -76,6 +117,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const resume = await storage.createResume(userId, resumeData);
       res.status(201).json(resume);
     } catch (error) {
+      res.status(500).json({ message: (error as Error).message });
+    }
+  });
+  
+  // Resume Upload and Parsing Route
+  app.post("/api/resume-upload", upload.single('file'), async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+      
+      const userId = req.user!.id;
+      const filePath = req.file.path;
+      const fileName = req.file.originalname;
+      
+      // Parse the resume file
+      const parsedResume = await parseResumeFile(filePath, fileName);
+      
+      // Clean up the uploaded file (optional)
+      fs.unlink(filePath, (err) => {
+        if (err) console.error("Error deleting temporary file:", err);
+      });
+      
+      res.json(parsedResume);
+    } catch (error) {
+      console.error("Resume upload error:", error);
       res.status(500).json({ message: (error as Error).message });
     }
   });

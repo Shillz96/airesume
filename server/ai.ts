@@ -1,5 +1,7 @@
 import OpenAI from "openai";
 import { Resume, Job } from "@shared/schema";
+import fs from "fs";
+import path from "path";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "" });
@@ -198,4 +200,141 @@ function getSampleResumeSuggestions(resume: Resume): string[] {
     "Add relevant certifications or training to showcase your continuous learning.",
     "Consider reorganizing your skills section to prioritize the most in-demand technologies."
   ];
+}
+
+/**
+ * Parse a resume file (PDF, DOCX, TXT) and extract structured information
+ */
+export async function parseResumeFile(filePath: string, fileName: string): Promise<any> {
+  try {
+    // If no API key is provided, return empty data structure
+    if (!process.env.OPENAI_API_KEY) {
+      console.warn("OpenAI API key not provided, cannot parse resume file");
+      return { success: false, error: "API key not configured" };
+    }
+    
+    // Read the file
+    const fileBuffer = fs.readFileSync(filePath);
+    const fileExtension = path.extname(fileName).toLowerCase();
+    
+    let fileContent = "";
+    
+    // For simplicity, we're treating all files as text and sending their content to OpenAI
+    // In a production app, you'd want to use specific libraries to parse different file types
+    if (fileExtension === '.pdf' || fileExtension === '.docx' || fileExtension === '.txt') {
+      // Convert file to base64
+      const base64File = fileBuffer.toString('base64');
+      
+      // For PDFs and DOCXs, use OpenAI's vision capabilities to extract text
+      if (fileExtension === '.pdf' || fileExtension === '.docx') {
+        const response = await openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content: "You are an expert resume parser. Extract the text content from this document."
+            },
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: "This is a resume document. Please extract all the text content."
+                },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: `data:application/${fileExtension === '.pdf' ? 'pdf' : 'vnd.openxmlformats-officedocument.wordprocessingml.document'};base64,${base64File}`
+                  }
+                }
+              ]
+            }
+          ]
+        });
+        
+        fileContent = response.choices[0].message.content || "";
+      } else {
+        // Text files can be read directly
+        fileContent = fileBuffer.toString('utf-8');
+      }
+      
+      // Now parse the extracted text to structure the resume data
+      const structureResponse = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert resume parser. Extract structured information from the resume text and format it according to the application's schema. Include personal information, work experience, education, skills, and projects."
+          },
+          {
+            role: "user",
+            content: `Parse this resume text and structure it according to the following format:
+            {
+              "personalInfo": {
+                "firstName": "",
+                "lastName": "",
+                "email": "",
+                "phone": "",
+                "headline": "",
+                "summary": ""
+              },
+              "experience": [
+                {
+                  "id": "1",
+                  "title": "",
+                  "company": "",
+                  "startDate": "YYYY-MM",
+                  "endDate": "YYYY-MM or 'Present'",
+                  "description": ""
+                }
+              ],
+              "education": [
+                {
+                  "id": "1",
+                  "degree": "",
+                  "institution": "",
+                  "startDate": "YYYY-MM",
+                  "endDate": "YYYY-MM",
+                  "description": ""
+                }
+              ],
+              "skills": [
+                {
+                  "id": "1",
+                  "name": "",
+                  "proficiency": 1-5
+                }
+              ],
+              "projects": [
+                {
+                  "id": "1",
+                  "title": "",
+                  "description": "",
+                  "technologies": ["tech1", "tech2"],
+                  "link": ""
+                }
+              ]
+            }
+            
+            Resume text:
+            ${fileContent}`
+          }
+        ],
+        response_format: { type: "json_object" }
+      });
+      
+      try {
+        const parsedData = JSON.parse(structureResponse.choices[0].message.content);
+        return { success: true, data: parsedData };
+      } catch (err) {
+        console.error("Error parsing resume structure:", err);
+        return { success: false, error: "Failed to parse resume structure" };
+      }
+    } else {
+      return { success: false, error: "Unsupported file format. Please upload PDF, DOCX, or TXT files." };
+    }
+  } catch (error) {
+    console.error("Error parsing resume file:", error);
+    return { success: false, error: "Failed to parse resume file" };
+  }
 }

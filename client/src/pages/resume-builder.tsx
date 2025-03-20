@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -65,10 +65,334 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import SummarySuggestions from "@/components/SummarySuggestions";
-import ExperienceSuggestions from "@/components/ExperienceSuggestions";
-import SkillSuggestions from "@/components/SkillSuggestions";
-import { EnhancedTextarea } from "@/components/enhanced-textarea";
+
+// Component for professional summary AI suggestions
+interface SummarySuggestionsProps {
+  resumeId: string;
+  onApply: (summary: string) => void;
+}
+
+function SummarySuggestions({ resumeId, onApply }: SummarySuggestionsProps) {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [summaries, setSummaries] = useState<string[]>([]);
+  
+  // Generate AI summaries
+  const handleGenerateSummaries = async () => {
+    if (!resumeId) {
+      return;
+    }
+    
+    setIsGenerating(true);
+    try {
+      // Use the summaryOnly parameter to get complete summary rewrites
+      const res = await apiRequest("GET", `/api/resumes/${resumeId}/suggestions?summaryOnly=true`);
+      const data = await res.json();
+      
+      if (data.success && data.suggestions && Array.isArray(data.suggestions)) {
+        setSummaries(data.suggestions.slice(0, 3));
+      } else {
+        // Fallback summaries if the API call fails
+        setSummaries([
+          "Accomplished software professional with a proven track record of delivering innovative solutions. Adept at leveraging technical expertise to drive business outcomes and optimize processes.",
+          "Results-driven professional combining technical expertise with strong communication skills. Committed to continuous improvement and delivering high-quality work that exceeds expectations.",
+          "Versatile and dedicated professional with strong problem-solving abilities. Effectively balances technical excellence with business requirements to create impactful solutions."
+        ]);
+      }
+    } catch (error) {
+      console.error("Error generating summaries:", error);
+      // Fallback summaries if the API call fails
+      setSummaries([
+        "Accomplished software professional with a proven track record of delivering innovative solutions. Adept at leveraging technical expertise to drive business outcomes and optimize processes.",
+        "Results-driven professional combining technical expertise with strong communication skills. Committed to continuous improvement and delivering high-quality work that exceeds expectations.",
+        "Versatile and dedicated professional with strong problem-solving abilities. Effectively balances technical excellence with business requirements to create impactful solutions."
+      ]);
+    }
+    setIsGenerating(false);
+  };
+  
+  return (
+    <div>
+      {summaries.length === 0 ? (
+        <div className="text-center py-3">
+          <Button
+            onClick={handleGenerateSummaries}
+            disabled={isGenerating}
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generating summaries...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                Generate AI summaries
+              </>
+            )}
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {summaries.map((summary, index) => (
+            <div 
+              key={index} 
+              className="bg-white p-3 rounded-md border border-secondary-200 text-sm relative group"
+            >
+              <p className="text-secondary-600">{summary}</p>
+              <Button
+                onClick={() => onApply(summary)}
+                size="sm"
+                className="mt-2 w-full flex items-center justify-center gap-1"
+              >
+                <Check className="h-3 w-3" />
+                Use this summary
+              </Button>
+            </div>
+          ))}
+          <Button
+            onClick={() => {
+              setSummaries([]);
+              handleGenerateSummaries();
+            }}
+            variant="ghost"
+            size="sm"
+            className="w-full flex items-center justify-center gap-1 mt-2"
+          >
+            <RefreshCw className="h-3 w-3" />
+            Generate different suggestions
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Component for experience bullet point AI suggestions
+interface ExperienceSuggestionsProps {
+  resumeId: string;
+  jobTitle?: string;
+  onApply: (bulletPoint: string) => void;
+}
+
+function ExperienceSuggestions({ resumeId, jobTitle, onApply }: ExperienceSuggestionsProps) {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [bulletPoints, setBulletPoints] = useState<string[]>([]);
+  
+  // Generate AI bullet points for experience section
+  const handleGenerateBulletPoints = async () => {
+    if (!resumeId) {
+      return;
+    }
+    
+    setIsGenerating(true);
+    try {
+      // Use the experienceOnly parameter to get ATS-optimized bullet points
+      let url = `/api/resumes/${resumeId}/suggestions?experienceOnly=true`;
+      if (jobTitle) {
+        url += `&jobTitle=${encodeURIComponent(jobTitle)}`;
+      }
+      
+      const res = await apiRequest("GET", url);
+      const data = await res.json();
+      
+      if (data.success && data.suggestions && Array.isArray(data.suggestions)) {
+        setBulletPoints(data.suggestions);
+      } else {
+        // Fallback bullet points if the API call fails
+        setBulletPoints([
+          "Increased website performance by 40% through optimization of front-end code and implementation of caching strategies.",
+          "Developed and implemented automated testing protocols that reduced QA time by 25% while improving code quality.",
+          "Spearheaded migration to cloud-based infrastructure, resulting in 30% cost reduction and 99.9% uptime.",
+          "Led cross-functional team of 5 developers to deliver critical project under budget and 2 weeks ahead of schedule.",
+          "Designed and implemented RESTful API that processed over 1M requests daily with average response time under 100ms."
+        ]);
+      }
+    } catch (error) {
+      console.error("Error generating experience bullet points:", error);
+      // Fallback bullet points if the API call fails
+      setBulletPoints([
+        "Increased website performance by 40% through optimization of front-end code and implementation of caching strategies.",
+        "Developed and implemented automated testing protocols that reduced QA time by 25% while improving code quality.",
+        "Spearheaded migration to cloud-based infrastructure, resulting in 30% cost reduction and 99.9% uptime.",
+        "Led cross-functional team of 5 developers to deliver critical project under budget and 2 weeks ahead of schedule.",
+        "Designed and implemented RESTful API that processed over 1M requests daily with average response time under 100ms."
+      ]);
+    }
+    setIsGenerating(false);
+  };
+  
+  return (
+    <div>
+      {bulletPoints.length === 0 ? (
+        <div className="text-center py-3">
+          <Button
+            onClick={handleGenerateBulletPoints}
+            disabled={isGenerating}
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generating bullet points...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                Generate ATS-optimized bullet points
+              </>
+            )}
+          </Button>
+          <p className="text-xs text-secondary-500 mt-2">
+            Creates achievement-focused bullet points with keywords that ATS systems scan for
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {bulletPoints.map((bulletPoint, index) => (
+            <div 
+              key={index} 
+              className="bg-white p-3 rounded-md border border-secondary-200 text-sm relative group"
+            >
+              <p className="text-secondary-600">{bulletPoint}</p>
+              <Button
+                onClick={() => onApply(bulletPoint)}
+                size="sm"
+                className="mt-2 w-full flex items-center justify-center gap-1"
+              >
+                <Check className="h-3 w-3" />
+                Use this bullet point
+              </Button>
+            </div>
+          ))}
+          <Button
+            onClick={() => {
+              setBulletPoints([]);
+              handleGenerateBulletPoints();
+            }}
+            variant="ghost"
+            size="sm"
+            className="w-full flex items-center justify-center gap-1 mt-2"
+          >
+            <RefreshCw className="h-3 w-3" />
+            Generate different bullet points
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Component for skills AI suggestions
+interface SkillSuggestionsProps {
+  resumeId: string;
+  jobTitle?: string;
+  onApply: (skill: string) => void;
+}
+
+function SkillSuggestions({ resumeId, jobTitle, onApply }: SkillSuggestionsProps) {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [skills, setSkills] = useState<string[]>([]);
+  
+  // Generate AI skill suggestions
+  const handleGenerateSkills = async () => {
+    if (!resumeId) {
+      return;
+    }
+    
+    setIsGenerating(true);
+    try {
+      // Use the skillsOnly parameter to get ATS-optimized skills
+      let url = `/api/resumes/${resumeId}/suggestions?skillsOnly=true`;
+      if (jobTitle) {
+        url += `&jobTitle=${encodeURIComponent(jobTitle)}`;
+      }
+      
+      const res = await apiRequest("GET", url);
+      const data = await res.json();
+      
+      if (data.success && data.suggestions && Array.isArray(data.suggestions)) {
+        setSkills(data.suggestions);
+      } else {
+        // Fallback skills if the API call fails
+        setSkills([
+          "JavaScript", "React", "Node.js", "TypeScript", "GraphQL", 
+          "AWS", "Docker", "CI/CD", "Git", "Agile Methodologies"
+        ]);
+      }
+    } catch (error) {
+      console.error("Error generating skill suggestions:", error);
+      // Fallback skills if the API call fails
+      setSkills([
+        "JavaScript", "React", "Node.js", "TypeScript", "GraphQL", 
+        "AWS", "Docker", "CI/CD", "Git", "Agile Methodologies"
+      ]);
+    }
+    setIsGenerating(false);
+  };
+  
+  return (
+    <div>
+      {skills.length === 0 ? (
+        <div className="text-center py-3">
+          <Button
+            onClick={handleGenerateSkills}
+            disabled={isGenerating}
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generating skills...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                Generate ATS-friendly skills
+              </>
+            )}
+          </Button>
+          <p className="text-xs text-secondary-500 mt-2">
+            Suggests skills that align with your experience and are frequently scanned by ATS systems
+          </p>
+        </div>
+      ) : (
+        <div>
+          <div className="flex flex-wrap gap-2 mb-3">
+            {skills.map((skill, index) => (
+              <Badge 
+                key={index} 
+                variant="secondary"
+                className="py-1 px-3 cursor-pointer hover:bg-primary-100 flex items-center gap-1"
+                onClick={() => onApply(skill)}
+              >
+                {skill}
+                <span className="text-xs text-primary-500">
+                  <Plus className="h-3 w-3" />
+                </span>
+              </Badge>
+            ))}
+          </div>
+          <Button
+            onClick={() => {
+              setSkills([]);
+              handleGenerateSkills();
+            }}
+            variant="ghost"
+            size="sm"
+            className="w-full flex items-center justify-center gap-1 mt-2"
+          >
+            <RefreshCw className="h-3 w-3" />
+            Generate different skills
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // Preview component for the "Preview" section
 function ResumePreview({ resume }: { resume: Resume }) {
@@ -151,10 +475,6 @@ export default function ResumeBuilder() {
   const [isSaving, setIsSaving] = useState(false);
   const [resumeId, setResumeId] = useState<number | null>(null);
   
-  // For AI targeting specific job
-  const [jobTitle, setJobTitle] = useState<string>("");
-  const [showJobTargeting, setShowJobTargeting] = useState(false);
-  
   // Initial resume state
   const [resume, setResume] = useState<Resume>({
     title: "My Professional Resume",
@@ -176,15 +496,14 @@ export default function ResumeBuilder() {
   // Fetch resume data if resumeId exists
   const { data: fetchedResume } = useQuery({
     queryKey: ["/api/resumes", resumeId],
-    enabled: !!resumeId
-  });
-  
-  // Update resume state when data is fetched
-  React.useEffect(() => {
-    if (fetchedResume) {
-      setResume(fetchedResume as Resume);
+    enabled: !!resumeId,
+    // Make sure the onSuccess uses correct type inference
+    onSuccess: (data) => {
+      if (data) {
+        setResume(data as Resume);
+      }
     }
-  }, [fetchedResume]);
+  });
   
   // Save resume mutation
   const saveResumeMutation = useMutation({
@@ -336,14 +655,17 @@ export default function ResumeBuilder() {
         experience: [...resume.experience, newExperience]
       });
       
+      // Switch to experience tab
+      setActiveSection("experience");
+      
       toast({
-        title: "New experience added",
+        title: "Experience added",
         description: "New experience with AI-generated bullet point has been added.",
       });
     }
   };
   
-  // Apply AI suggestions to summary
+  // Apply AI summary to personal info
   const handleApplySummary = (summary: string) => {
     updatePersonalInfo("summary", summary);
     
@@ -353,398 +675,516 @@ export default function ResumeBuilder() {
     });
   };
   
-  // Apply AI suggestions to skills
-  const handleApplySkill = (skill: string) => {
+  // Apply AI skill to skills section
+  const handleApplySkill = (skillName: string) => {
     // Check if skill already exists
-    const skillExists = resume.skills.some(s => s.name.toLowerCase() === skill.toLowerCase());
-    
-    if (!skillExists) {
-      const newSkill: SkillItem = {
-        id: `skill-${Date.now()}`,
-        name: skill,
-        proficiency: 3 // Default medium proficiency
-      };
-      
-      setResume({
-        ...resume,
-        skills: [...resume.skills, newSkill]
-      });
-      
-      toast({
-        title: "Skill added",
-        description: `"${skill}" has been added to your skills.`,
-      });
-    } else {
+    if (resume.skills.some(skill => skill.name.toLowerCase() === skillName.toLowerCase())) {
       toast({
         title: "Skill already exists",
-        description: `"${skill}" is already in your skills list.`,
+        description: `"${skillName}" is already in your skills list.`,
+        variant: "destructive",
       });
+      return;
     }
+    
+    const newSkill: SkillItem = {
+      id: `skill-${Date.now()}`,
+      name: skillName,
+      proficiency: 3 // Default to medium proficiency
+    };
+    
+    setResume({
+      ...resume,
+      skills: [...resume.skills, newSkill]
+    });
+    
+    toast({
+      title: "Skill added",
+      description: `"${skillName}" has been added to your skills.`,
+    });
+  };
+  
+  // Handle file input click
+  const handleFileInputClick = () => {
+    fileInputRef.current?.click();
   };
   
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <main className="flex-1 container max-w-screen-xl mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
+      
+      <main className="container mx-auto pt-16 pb-20 px-4">
+        {/* Page Header */}
+        <div className="mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Resume Builder</h1>
-            <p className="text-gray-500">Create a professional resume with AI assistance</p>
+            <h1 className="text-3xl font-bold text-primary-800 mb-2">Resume Builder</h1>
+            <p className="text-secondary-600">
+              Create a professional resume that gets you hired.
+            </p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileUpload}
-                className="hidden"
-                accept=".pdf,.doc,.docx,.txt"
-              />
-              <Button
-                onClick={() => fileInputRef.current?.click()}
-                variant="outline"
-                disabled={isUploading}
-                className="flex items-center gap-2"
-              >
-                {isUploading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Uploading...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="h-4 w-4" />
-                    Upload Resume
-                  </>
-                )}
-              </Button>
-            </div>
+          
+          <div className="flex space-x-3">
             <Button
               onClick={handleSaveResume}
               disabled={isSaving}
-              className="flex items-center gap-2"
+              className="flex items-center space-x-2"
             >
               {isSaving ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Saving...
+                  <span>Saving...</span>
                 </>
               ) : (
                 <>
                   <Save className="h-4 w-4" />
-                  Save Resume
+                  <span>Save Resume</span>
                 </>
               )}
             </Button>
+            
+            <Button
+              variant="outline"
+              onClick={handleFileInputClick}
+              disabled={isUploading}
+              className="flex items-center space-x-2"
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Uploading...</span>
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4" />
+                  <span>Upload Resume</span>
+                </>
+              )}
+            </Button>
+            
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+              accept=".pdf,.docx,.txt"
+              className="hidden"
+            />
           </div>
         </div>
         
-        {/* Resume Builder Interface */}
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm mb-6">
+        {/* Main content area */}
+        <div className="bg-white rounded-xl shadow-lg">
           {/* Horizontal Tab Navigation */}
-          <div className="border-b border-gray-200">
-            <div className="flex overflow-x-auto px-4 py-2 space-x-2">
-              <Button
-                variant={activeSection === "profile" ? "default" : "ghost"}
-                className="flex items-center px-4 py-2 rounded-md"
-                onClick={() => setActiveSection("profile")}
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Personal Info
-              </Button>
-              <Button
-                variant={activeSection === "experience" ? "default" : "ghost"}
-                className="flex items-center px-4 py-2 rounded-md"
-                onClick={() => setActiveSection("experience")}
-              >
-                <Briefcase className="h-4 w-4 mr-2" />
-                Experience
-              </Button>
-              <Button
-                variant={activeSection === "education" ? "default" : "ghost"}
-                className="flex items-center px-4 py-2 rounded-md"
-                onClick={() => setActiveSection("education")}
-              >
-                <GraduationCap className="h-4 w-4 mr-2" />
-                Education
-              </Button>
-              <Button
-                variant={activeSection === "skills" ? "default" : "ghost"}
-                className="flex items-center px-4 py-2 rounded-md"
-                onClick={() => setActiveSection("skills")}
-              >
-                <Code className="h-4 w-4 mr-2" />
-                Skills
-              </Button>
-              <Button
-                variant={activeSection === "projects" ? "default" : "ghost"}
-                className="flex items-center px-4 py-2 rounded-md"
-                onClick={() => setActiveSection("projects")}
-              >
-                <FolderKanban className="h-4 w-4 mr-2" />
-                Projects
-              </Button>
-              <Button
-                variant={activeSection === "preview" ? "default" : "ghost"}
-                className="flex items-center px-4 py-2 rounded-md"
-                onClick={() => setActiveSection("preview")}
-              >
-                <Maximize2 className="h-4 w-4 mr-2" />
-                Preview
-              </Button>
+          <div className="relative">
+            <div className="bg-primary-700 rounded-t-xl px-6 py-3">
+              <Tabs value={activeSection} onValueChange={setActiveSection} className="w-full">
+                <TabsList className="bg-transparent border-b border-white/20 w-full justify-start mb-1 p-0">
+                  <TabsTrigger 
+                    value="profile" 
+                    className={`${activeSection === "profile" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                  >
+                    PROFILE
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="experience" 
+                    className={`${activeSection === "experience" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                  >
+                    EXPERIENCE
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="education" 
+                    className={`${activeSection === "education" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                  >
+                    EDUCATION
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="skills" 
+                    className={`${activeSection === "skills" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                  >
+                    SKILLS
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="projects" 
+                    className={`${activeSection === "projects" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                  >
+                    PROJECTS
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="preview" 
+                    className={`${activeSection === "preview" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
+                  >
+                    PREVIEW
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
-          </div>
-          
-          {/* Job targeting section - moved to right side of tabs */}
-          <div className="border-b border-gray-200 px-4 py-2 flex justify-end">
-            <Collapsible
-              open={showJobTargeting}
-              onOpenChange={setShowJobTargeting}
-              className="w-64"
-            >
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" size="sm" className="flex items-center gap-1">
-                  <Cpu className="h-4 w-4" />
-                  <span>Target Job</span>
-                  <ChevronDown className={`h-4 w-4 transition-transform ${showJobTargeting ? 'transform rotate-180' : ''}`} />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="mt-2 p-3 bg-white rounded-md border border-gray-200 shadow-sm absolute right-0 z-10">
-                <div className="space-y-2">
-                  <Label htmlFor="job-title">Job Title</Label>
-                  <Input
-                    id="job-title"
-                    value={jobTitle}
-                    onChange={(e) => setJobTitle(e.target.value)}
-                    placeholder="e.g., Software Engineer"
-                  />
-                  <p className="text-xs text-gray-500">
-                    Enter a job title to tailor AI suggestions
-                  </p>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-          </div>
-          
-          {/* Main Content Area */}
-          <div className="p-6">
-            {/* Personal Information Section */}
-            {activeSection === "profile" && (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-semibold text-gray-900">Personal Information</h2>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input
-                      id="firstName"
-                      value={resume.personalInfo.firstName}
-                      onChange={(e) => updatePersonalInfo("firstName", e.target.value)}
-                      placeholder="John"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input
-                      id="lastName"
-                      value={resume.personalInfo.lastName}
-                      onChange={(e) => updatePersonalInfo("lastName", e.target.value)}
-                      placeholder="Doe"
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={resume.personalInfo.email}
-                      onChange={(e) => updatePersonalInfo("email", e.target.value)}
-                      placeholder="john.doe@example.com"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input
-                      id="phone"
-                      value={resume.personalInfo.phone}
-                      onChange={(e) => updatePersonalInfo("phone", e.target.value)}
-                      placeholder="(123) 456-7890"
-                    />
-                  </div>
-                </div>
-                
-                <div className="space-y-1">
-                  <Label htmlFor="headline">Professional Headline</Label>
-                  <Input
-                    id="headline"
-                    value={resume.personalInfo.headline}
-                    onChange={(e) => updatePersonalInfo("headline", e.target.value)}
-                    placeholder="Senior Software Engineer"
-                  />
-                </div>
-                
-                <div className="space-y-1">
-                  <div className="flex justify-between items-center">
-                    <Label htmlFor="summary">Professional Summary</Label>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" size="sm" className="flex items-center gap-1">
-                          <Sparkles className="h-3 w-3" />
-                          AI Assist
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-md">
-                        <DialogHeader>
-                          <DialogTitle>AI Summary Suggestions</DialogTitle>
-                          <DialogDescription>
-                            Select an AI-generated professional summary to use in your resume.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="mt-4 max-h-[60vh] overflow-y-auto">
-                          <SummarySuggestions 
-                            resumeId={resumeId ? String(resumeId) : "new"} 
-                            onApply={handleApplySummary} 
+            
+            {/* Tab Content */}
+            <div className="p-6">
+              {/* Profile Section */}
+              {activeSection === "profile" && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="md:col-span-2 space-y-6">
+                    <div>
+                      <h2 className="text-xl font-semibold mb-4 text-secondary-900">Personal Information</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="firstName">First Name</Label>
+                          <Input 
+                            id="firstName"
+                            value={resume.personalInfo.firstName}
+                            onChange={e => updatePersonalInfo("firstName", e.target.value)}
+                            className="mt-1"
                           />
                         </div>
-                      </DialogContent>
-                    </Dialog>
+                        <div>
+                          <Label htmlFor="lastName">Last Name</Label>
+                          <Input 
+                            id="lastName"
+                            value={resume.personalInfo.lastName}
+                            onChange={e => updatePersonalInfo("lastName", e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="email">Email</Label>
+                          <Input 
+                            id="email"
+                            type="email"
+                            value={resume.personalInfo.email}
+                            onChange={e => updatePersonalInfo("email", e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="phone">Phone</Label>
+                          <Input 
+                            id="phone"
+                            value={resume.personalInfo.phone}
+                            onChange={e => updatePersonalInfo("phone", e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="headline">Professional Headline</Label>
+                      <Input 
+                        id="headline"
+                        value={resume.personalInfo.headline}
+                        onChange={e => updatePersonalInfo("headline", e.target.value)}
+                        className="mt-1"
+                        placeholder="e.g., Senior Software Engineer | Front-End Specialist | React & TypeScript Expert"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="summary">Professional Summary</Label>
+                      <Textarea 
+                        id="summary"
+                        value={resume.personalInfo.summary}
+                        onChange={e => updatePersonalInfo("summary", e.target.value)}
+                        className="mt-1 min-h-32"
+                        placeholder="Write a concise summary of your professional background, key skills, and career achievements."
+                      />
+                    </div>
                   </div>
-                  <EnhancedTextarea
-                    id="summary-textarea"
-                    value={resume.personalInfo.summary}
-                    onChange={(e) => updatePersonalInfo("summary", e.target.value)}
-                    placeholder="Write a professional summary that highlights your experience, skills, and career goals..."
-                    className="h-32"
+                  
+                  {/* AI Assistant Section */}
+                  <div className="md:col-span-1">
+                    <div className="bg-secondary-50 p-5 rounded-lg border border-secondary-200">
+                      <div className="flex items-center mb-4 text-primary-800">
+                        <Cpu className="h-5 w-5 mr-2" />
+                        <h3 className="font-medium">AI Resume Assistant</h3>
+                      </div>
+                      
+                      <Collapsible className="mb-4">
+                        <div className="flex justify-between items-center">
+                          <h4 className="text-sm font-medium text-secondary-700 mb-2">
+                            Generate Professional Summary
+                          </h4>
+                          <CollapsibleTrigger className="text-xs text-secondary-500 hover:text-secondary-800">
+                            <ChevronDown className="h-4 w-4" />
+                          </CollapsibleTrigger>
+                        </div>
+                        <CollapsibleContent>
+                          <div className="mt-2">
+                            <SummarySuggestions 
+                              resumeId={resumeId?.toString() || "new"}
+                              onApply={handleApplySummary}
+                            />
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                      
+                      <div className="text-xs text-secondary-500 mt-3">
+                        <p className="mb-2">Tips for a great summary:</p>
+                        <ul className="list-disc pl-4 space-y-1">
+                          <li>Keep it concise (3-5 sentences)</li>
+                          <li>Highlight your most relevant experience</li>
+                          <li>Focus on achievements rather than responsibilities</li>
+                          <li>Include keywords relevant to your target position</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Experience Section */}
+              {activeSection === "experience" && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="md:col-span-2">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-xl font-semibold text-secondary-900">Work Experience</h2>
+                      <Button 
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const newExperience: ExperienceItem = {
+                            id: `exp-${Date.now()}`,
+                            title: "Position Title",
+                            company: "Company Name",
+                            startDate: "",
+                            endDate: "",
+                            description: ""
+                          };
+                          
+                          setResume({
+                            ...resume,
+                            experience: [...resume.experience, newExperience]
+                          });
+                        }}
+                        className="flex items-center space-x-1"
+                      >
+                        <Plus className="h-4 w-4" />
+                        <span>Add Experience</span>
+                      </Button>
+                    </div>
+                    
+                    <ResumeExperienceSection 
+                      experiences={resume.experience} 
+                      onUpdate={(experiences) => {
+                        setResume({
+                          ...resume,
+                          experience: experiences
+                        });
+                      }}
+                    />
+                  </div>
+                  
+                  {/* AI Assistant for Experience */}
+                  <div className="md:col-span-1">
+                    <div className="bg-secondary-50 p-5 rounded-lg border border-secondary-200">
+                      <div className="flex items-center mb-4 text-primary-800">
+                        <Cpu className="h-5 w-5 mr-2" />
+                        <h3 className="font-medium">AI Resume Assistant</h3>
+                      </div>
+                      
+                      <Collapsible className="mb-4">
+                        <div className="flex justify-between items-center">
+                          <h4 className="text-sm font-medium text-secondary-700 mb-2">
+                            Generate Achievement Bullets
+                          </h4>
+                          <CollapsibleTrigger className="text-xs text-secondary-500 hover:text-secondary-800">
+                            <ChevronDown className="h-4 w-4" />
+                          </CollapsibleTrigger>
+                        </div>
+                        <CollapsibleContent>
+                          <div className="mt-2">
+                            <ExperienceSuggestions 
+                              resumeId={resumeId?.toString() || "new"}
+                              jobTitle={resume.experience.length > 0 ? resume.experience[resume.experience.length - 1].title : undefined}
+                              onApply={handleApplyBulletPoint}
+                            />
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                      
+                      <div className="text-xs text-secondary-500 mt-3">
+                        <p className="mb-2">Tips for effective bullet points:</p>
+                        <ul className="list-disc pl-4 space-y-1">
+                          <li>Start with strong action verbs</li>
+                          <li>Include metrics and achievements</li>
+                          <li>Use industry-specific keywords</li>
+                          <li>Highlight results, not just responsibilities</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Education Section */}
+              {activeSection === "education" && (
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold text-secondary-900">Education</h2>
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newEducation: EducationItem = {
+                          id: `edu-${Date.now()}`,
+                          degree: "Degree Name",
+                          institution: "Institution Name",
+                          startDate: "",
+                          endDate: "",
+                          description: ""
+                        };
+                        
+                        setResume({
+                          ...resume,
+                          education: [...resume.education, newEducation]
+                        });
+                      }}
+                      className="flex items-center space-x-1"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>Add Education</span>
+                    </Button>
+                  </div>
+                  
+                  <ResumeEducationSection 
+                    education={resume.education} 
+                    onUpdate={(education) => {
+                      setResume({
+                        ...resume,
+                        education
+                      });
+                    }}
                   />
                 </div>
-              </div>
-            )}
-            
-            {/* Experience Section */}
-            {activeSection === "experience" && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-2xl font-semibold text-gray-900">Work Experience</h2>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="flex items-center gap-1">
-                        <Sparkles className="h-3 w-3" />
-                        AI Assist
+              )}
+              
+              {/* Skills Section */}
+              {activeSection === "skills" && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="md:col-span-2">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-xl font-semibold text-secondary-900">Skills</h2>
+                      <Button 
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const newSkill: SkillItem = {
+                            id: `skill-${Date.now()}`,
+                            name: "New Skill",
+                            proficiency: 3
+                          };
+                          
+                          setResume({
+                            ...resume,
+                            skills: [...resume.skills, newSkill]
+                          });
+                        }}
+                        className="flex items-center space-x-1"
+                      >
+                        <Plus className="h-4 w-4" />
+                        <span>Add Skill</span>
                       </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-md">
-                      <DialogHeader>
-                        <DialogTitle>AI Experience Suggestions</DialogTitle>
-                        <DialogDescription>
-                          Select ATS-optimized bullet points to highlight your achievements.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="mt-4 max-h-[60vh] overflow-y-auto">
-                        <ExperienceSuggestions 
-                          resumeId={resumeId ? String(resumeId) : "new"} 
-                          jobTitle={jobTitle}
-                          onApply={handleApplyBulletPoint}
-                          previewTargetId="experience-textarea"
-                        />
+                    </div>
+                    
+                    <ResumeSkillsSection 
+                      skills={resume.skills} 
+                      onUpdate={(skills) => {
+                        setResume({
+                          ...resume,
+                          skills
+                        });
+                      }}
+                    />
+                  </div>
+                  
+                  {/* AI Assistant for Skills */}
+                  <div className="md:col-span-1">
+                    <div className="bg-secondary-50 p-5 rounded-lg border border-secondary-200">
+                      <div className="flex items-center mb-4 text-primary-800">
+                        <Cpu className="h-5 w-5 mr-2" />
+                        <h3 className="font-medium">AI Resume Assistant</h3>
                       </div>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-                
-                <ResumeExperienceSection
-                  experiences={resume.experience}
-                  onUpdate={(experiences) => {
-                    setResume({
-                      ...resume,
-                      experience: experiences
-                    });
-                  }}
-                />
-              </div>
-            )}
-            
-            {/* Education Section */}
-            {activeSection === "education" && (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-semibold text-gray-900">Education</h2>
-                <ResumeEducationSection
-                  education={resume.education}
-                  onUpdate={(education) => {
-                    setResume({
-                      ...resume,
-                      education
-                    });
-                  }}
-                />
-              </div>
-            )}
-            
-            {/* Skills Section */}
-            {activeSection === "skills" && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-2xl font-semibold text-gray-900">Skills</h2>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="flex items-center gap-1">
-                        <Sparkles className="h-3 w-3" />
-                        AI Assist
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-md">
-                      <DialogHeader>
-                        <DialogTitle>AI Skill Suggestions</DialogTitle>
-                        <DialogDescription>
-                          Add in-demand skills that match your profile.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="mt-4 max-h-[60vh] overflow-y-auto">
-                        <SkillSuggestions 
-                          resumeId={resumeId ? String(resumeId) : "new"} 
-                          jobTitle={jobTitle}
-                          onApply={handleApplySkill}
-                        />
+                      
+                      <Collapsible className="mb-4">
+                        <div className="flex justify-between items-center">
+                          <h4 className="text-sm font-medium text-secondary-700 mb-2">
+                            Suggested Skills
+                          </h4>
+                          <CollapsibleTrigger className="text-xs text-secondary-500 hover:text-secondary-800">
+                            <ChevronDown className="h-4 w-4" />
+                          </CollapsibleTrigger>
+                        </div>
+                        <CollapsibleContent>
+                          <div className="mt-2">
+                            <SkillSuggestions 
+                              resumeId={resumeId?.toString() || "new"}
+                              jobTitle={resume.experience.length > 0 ? resume.experience[0].title : undefined}
+                              onApply={handleApplySkill}
+                            />
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                      
+                      <div className="text-xs text-secondary-500 mt-3">
+                        <p className="mb-2">Tips for showcasing skills:</p>
+                        <ul className="list-disc pl-4 space-y-1">
+                          <li>Include a mix of technical and soft skills</li>
+                          <li>Prioritize skills mentioned in job descriptions</li>
+                          <li>Be honest about your proficiency levels</li>
+                          <li>Group similar skills together</li>
+                        </ul>
                       </div>
-                    </DialogContent>
-                  </Dialog>
+                    </div>
+                  </div>
                 </div>
-                <ResumeSkillsSection
-                  skills={resume.skills}
-                  onUpdate={(skills) => {
-                    setResume({
-                      ...resume,
-                      skills
-                    });
-                  }}
-                />
-              </div>
-            )}
-            
-            {/* Projects Section */}
-            {activeSection === "projects" && (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-semibold text-gray-900">Projects</h2>
-                <ResumeProjectsSection
-                  projects={resume.projects}
-                  onUpdate={(projects) => {
-                    setResume({
-                      ...resume,
-                      projects
-                    });
-                  }}
-                />
-              </div>
-            )}
-            
-            {/* Preview Section */}
-            {activeSection === "preview" && (
-              <div>
-                <ResumePreview resume={resume} />
-              </div>
-            )}
+              )}
+              
+              {/* Projects Section */}
+              {activeSection === "projects" && (
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold text-secondary-900">Projects</h2>
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newProject: ProjectItem = {
+                          id: `proj-${Date.now()}`,
+                          title: "Project Name",
+                          description: "",
+                          technologies: []
+                        };
+                        
+                        setResume({
+                          ...resume,
+                          projects: [...resume.projects, newProject]
+                        });
+                      }}
+                      className="flex items-center space-x-1"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>Add Project</span>
+                    </Button>
+                  </div>
+                  
+                  <ResumeProjectsSection 
+                    projects={resume.projects} 
+                    onUpdate={(projects) => {
+                      setResume({
+                        ...resume,
+                        projects
+                      });
+                    }}
+                  />
+                </div>
+              )}
+              
+              {/* Preview Section */}
+              {activeSection === "preview" && (
+                <div>
+                  <ResumePreview resume={resume} />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </main>

@@ -4,7 +4,11 @@ import fs from "fs";
 import path from "path";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "" });
+const openai = new OpenAI({ 
+  apiKey: process.env.OPENAI_API_KEY || "",
+  // Add a default timeout
+  timeout: 30000
+});
 
 export interface ResumeSuggestions {
   suggestions: string[];
@@ -40,11 +44,11 @@ export async function generateResumeSuggestions(resume: Resume): Promise<string[
       messages: [
         {
           role: "system",
-          content: "You are an expert resume consultant who helps job seekers improve their resumes. Provide specific, actionable suggestions to enhance this resume. Focus on improvements related to content, structure, achievements, and keywords. Limit your suggestions to 3-5 concise, bullet-point style recommendations."
+          content: "You are an expert resume consultant who helps job seekers improve their resumes. Provide specific, actionable suggestions to enhance this resume. Focus on improvements related to content, structure, achievements, and keywords. Limit your suggestions to 3-5 concise, bullet-point style recommendations. Return the result as JSON."
         },
         {
           role: "user",
-          content: `Please analyze this resume and provide suggestions for improvement: ${JSON.stringify(resumeContext)}`
+          content: `Please analyze this resume and provide suggestions for improvement in JSON format. The response should be a JSON object with a 'suggestions' array containing string recommendations: ${JSON.stringify(resumeContext)}`
         }
       ],
       response_format: { type: "json_object" }
@@ -81,16 +85,20 @@ export async function matchJobsWithResume(jobs: Job[], resume: Resume): Promise<
           messages: [
             {
               role: "system",
-              content: "You are an expert job matching algorithm. You will analyze a job description and a candidate's resume to calculate a match percentage between 0-100. Consider skills, experience, and fit. Respond with a JSON object containing only the match percentage."
+              content: "You are an expert job matching algorithm. You will analyze a job description and a candidate's resume to calculate a match percentage between 0-100. Consider skills, experience, and fit. Return your response as JSON."
             },
             {
               role: "user",
-              content: `Job: ${JSON.stringify(job)}
+              content: `Analyze the following job and resume information and return a JSON object with a "match" field containing a number from 0-100 representing the match percentage.
+              
+              Job: ${JSON.stringify(job)}
               
               Candidate Resume: 
               Skills: ${JSON.stringify(skills)}
               Experience: ${JSON.stringify(experience)}
-              Personal Info: ${JSON.stringify(personalInfo)}`
+              Personal Info: ${JSON.stringify(personalInfo)}
+              
+              Return your response in JSON format with a match field, for example: {"match": 85}`
             }
           ],
           response_format: { type: "json_object" }
@@ -276,11 +284,11 @@ export async function parseResumeFile(filePath: string, fileName: string): Promi
         messages: [
           {
             role: "system",
-            content: "You are an expert resume parser. Extract structured information from the resume text and format it according to the application's schema. Include personal information, work experience, education, skills, and projects."
+            content: "You are an expert resume parser. Extract structured information from the resume text and format it according to the application's schema. Include personal information, work experience, education, skills, and projects. Return the result as JSON."
           },
           {
             role: "user",
-            content: `Parse this resume text and structure it according to the following format:
+            content: `Parse this resume text and structure it according to the following JSON format:
             {
               "personalInfo": {
                 "firstName": "",
@@ -312,7 +320,7 @@ export async function parseResumeFile(filePath: string, fileName: string): Promi
               ],
               "skills": [
                 {
-                  "id": "1",
+                  "id": "1", 
                   "name": "",
                   "proficiency": 1-5
                 }
@@ -327,6 +335,8 @@ export async function parseResumeFile(filePath: string, fileName: string): Promi
                 }
               ]
             }
+            
+            Make sure to return valid JSON that matches the structure above.
             
             Resume text:
             ${fileContent}`
@@ -358,11 +368,37 @@ export async function parseResumeFile(filePath: string, fileName: string): Promi
       };
     }
     
-    // Check if this is an invalid image format error
-    if (error?.code === 'invalid_image_format' || error?.type === 'invalid_request_error' ||
+    // Check for various OpenAI API errors and provide meaningful responses
+    if (error?.code === 'invalid_image_format' || 
         (error?.message && (error.message.includes('Invalid MIME type') || error.message.includes('image')))) {
       console.log("Detected format/image error but continuing with text-based extraction");
-      // This error is now handled by our fallback text extraction method, no need to return error
+      // Return fallback data with a warning
+      return { 
+        success: true,
+        data: fallbackResumeData,
+        warning: "PDF processing is currently in development. Using template data - please edit manually."
+      };
+    }
+    
+    if (error?.type === 'invalid_request_error') {
+      console.log("Detected invalid request error:", error.message);
+      // Return fallback data with appropriate warning
+      return { 
+        success: true,
+        data: fallbackResumeData,
+        warning: "Could not process this file format automatically. Using template - please edit manually."
+      };
+    }
+    
+    // Handle errors related to messages and JSON format
+    if (error?.message && error.message.includes('messages') && error.message.includes('json')) {
+      console.log("Detected JSON format error in messages");
+      // Attempt to fix this by using the fallback data with a warning
+      return { 
+        success: true,
+        data: fallbackResumeData,
+        warning: "Resume processing is available but encountered a temporary error. Using template - please edit manually."
+      };
     }
     
     return { success: false, error: "Failed to parse resume file" };

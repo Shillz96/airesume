@@ -97,6 +97,34 @@
     radial-gradient(circle at 50% 80%, rgba(6, 182, 212, 0.1) 0%, rgba(6, 182, 212, 0) 50%);
 }
 
+/* Cosmic background with animated stars */
+.cosmic-background {
+  background-color: #050A18;
+  background-image: 
+    radial-gradient(circle at 20% 35%, rgba(76, 29, 149, 0.15) 0%, rgba(76, 29, 149, 0) 50%),
+    radial-gradient(circle at 75% 44%, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0) 50%),
+    radial-gradient(circle at 50% 80%, rgba(6, 182, 212, 0.1) 0%, rgba(6, 182, 212, 0) 50%);
+  position: relative;
+  overflow: hidden;
+}
+
+.cosmic-background::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-image: radial-gradient(white, rgba(255, 255, 255, 0.2) 2px, transparent 2px);
+  background-size: 50px 50px;
+  z-index: 0;
+}
+
+/* Style overrides for tabs in cosmic theme */
+.cosmic-tabs button[data-state='active'] {
+  @apply bg-blue-600/50 text-white border-b-2 border-blue-400;
+}
+
 /* Cosmic Navigator Page Layout */
 .cosmic-page {
   @apply min-h-screen bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)] text-white pt-20 cosmic-nebula;

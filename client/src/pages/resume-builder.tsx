@@ -43,6 +43,7 @@ import {
   ChevronDown,
   Download,
   Minus,
+  User,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -965,9 +966,12 @@ export default function ResumeBuilder() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="md:col-span-2">
                     <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-xl font-semibold text-secondary-900">Work Experience</h2>
+                      <h2 className="text-xl font-semibold text-white flex items-center">
+                        <Briefcase className="h-5 w-5 mr-2 text-blue-400" />
+                        Work Experience
+                      </h2>
                       <Button 
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
                         onClick={() => {
                           const newExperience: ExperienceItem = {
@@ -984,7 +988,7 @@ export default function ResumeBuilder() {
                             experience: [...resume.experience, newExperience]
                           });
                         }}
-                        className="flex items-center space-x-1"
+                        className="flex items-center space-x-1 border-white/10 text-blue-400 hover:bg-white/10 hover:text-white"
                       >
                         <Plus className="h-4 w-4" />
                         <span>Add Experience</span>
@@ -1004,40 +1008,43 @@ export default function ResumeBuilder() {
                   
                   {/* AI Assistant for Experience */}
                   <div className="md:col-span-1">
-                    <div className="bg-secondary-50 p-5 rounded-lg border border-secondary-200">
-                      <div className="flex items-center mb-4 text-primary-800">
-                        <Cpu className="h-5 w-5 mr-2" />
-                        <h3 className="font-medium">AI Resume Assistant</h3>
-                      </div>
-                      
-                      <Collapsible className="mb-4">
-                        <div className="flex justify-between items-center">
-                          <h4 className="text-sm font-medium text-secondary-700 mb-2">
-                            Generate Achievement Bullets
-                          </h4>
-                          <CollapsibleTrigger className="text-xs text-secondary-500 hover:text-secondary-800">
-                            <ChevronDown className="h-4 w-4" />
-                          </CollapsibleTrigger>
+                    <div className="cosmic-card border border-white/10 bg-black/40 p-5 rounded-lg relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+                      <div className="relative z-10">
+                        <div className="flex items-center mb-4">
+                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
+                          <h3 className="font-medium text-white">AI Resume Assistant</h3>
                         </div>
-                        <CollapsibleContent>
-                          <div className="mt-2">
-                            <ExperienceSuggestions 
-                              resumeId={resumeId?.toString() || "new"}
-                              jobTitle={resume.experience.length > 0 ? resume.experience[resume.experience.length - 1].title : undefined}
-                              onApply={handleApplyBulletPoint}
-                            />
+                        
+                        <Collapsible className="mb-4">
+                          <div className="flex justify-between items-center">
+                            <h4 className="text-sm font-medium text-blue-300 mb-2">
+                              Generate Achievement Bullets
+                            </h4>
+                            <CollapsibleTrigger className="text-xs text-gray-400 hover:text-gray-200">
+                              <ChevronDown className="h-4 w-4" />
+                            </CollapsibleTrigger>
                           </div>
-                        </CollapsibleContent>
-                      </Collapsible>
-                      
-                      <div className="text-xs text-secondary-500 mt-3">
-                        <p className="mb-2">Tips for effective bullet points:</p>
-                        <ul className="list-disc pl-4 space-y-1">
-                          <li>Start with strong action verbs</li>
-                          <li>Include metrics and achievements</li>
-                          <li>Use industry-specific keywords</li>
-                          <li>Highlight results, not just responsibilities</li>
-                        </ul>
+                          <CollapsibleContent>
+                            <div className="mt-2">
+                              <ExperienceSuggestions 
+                                resumeId={resumeId?.toString() || "new"}
+                                jobTitle={resume.experience.length > 0 ? resume.experience[resume.experience.length - 1].title : undefined}
+                                onApply={handleApplyBulletPoint}
+                              />
+                            </div>
+                          </CollapsibleContent>
+                        </Collapsible>
+                        
+                        <div className="text-xs text-gray-300 mt-3 bg-white/5 p-3 rounded-lg">
+                          <p className="mb-2 text-blue-300 font-medium">Tips for effective bullet points:</p>
+                          <ul className="list-disc pl-4 space-y-1">
+                            <li>Start with strong action verbs</li>
+                            <li>Include metrics and achievements</li>
+                            <li>Use industry-specific keywords</li>
+                            <li>Highlight results, not just responsibilities</li>
+                          </ul>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1048,9 +1055,12 @@ export default function ResumeBuilder() {
               {activeSection === "education" && (
                 <div>
                   <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold text-secondary-900">Education</h2>
+                    <h2 className="text-xl font-semibold text-white flex items-center">
+                      <GraduationCap className="h-5 w-5 mr-2 text-blue-400" />
+                      Education
+                    </h2>
                     <Button 
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
                       onClick={() => {
                         const newEducation: EducationItem = {
@@ -1067,7 +1077,7 @@ export default function ResumeBuilder() {
                           education: [...resume.education, newEducation]
                         });
                       }}
-                      className="flex items-center space-x-1"
+                      className="flex items-center space-x-1 border-white/10 text-blue-400 hover:bg-white/10 hover:text-white"
                     >
                       <Plus className="h-4 w-4" />
                       <span>Add Education</span>
@@ -1091,9 +1101,12 @@ export default function ResumeBuilder() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="md:col-span-2">
                     <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-xl font-semibold text-secondary-900">Skills</h2>
+                      <h2 className="text-xl font-semibold text-white flex items-center">
+                        <Code className="h-5 w-5 mr-2 text-blue-400" />
+                        Skills
+                      </h2>
                       <Button 
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
                         onClick={() => {
                           const newSkill: SkillItem = {
@@ -1107,7 +1120,7 @@ export default function ResumeBuilder() {
                             skills: [...resume.skills, newSkill]
                           });
                         }}
-                        className="flex items-center space-x-1"
+                        className="flex items-center space-x-1 border-white/10 text-blue-400 hover:bg-white/10 hover:text-white"
                       >
                         <Plus className="h-4 w-4" />
                         <span>Add Skill</span>
@@ -1127,40 +1140,43 @@ export default function ResumeBuilder() {
                   
                   {/* AI Assistant for Skills */}
                   <div className="md:col-span-1">
-                    <div className="bg-secondary-50 p-5 rounded-lg border border-secondary-200">
-                      <div className="flex items-center mb-4 text-primary-800">
-                        <Cpu className="h-5 w-5 mr-2" />
-                        <h3 className="font-medium">AI Resume Assistant</h3>
-                      </div>
-                      
-                      <Collapsible className="mb-4">
-                        <div className="flex justify-between items-center">
-                          <h4 className="text-sm font-medium text-secondary-700 mb-2">
-                            Suggested Skills
-                          </h4>
-                          <CollapsibleTrigger className="text-xs text-secondary-500 hover:text-secondary-800">
-                            <ChevronDown className="h-4 w-4" />
-                          </CollapsibleTrigger>
+                    <div className="cosmic-card border border-white/10 bg-black/40 p-5 rounded-lg relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+                      <div className="relative z-10">
+                        <div className="flex items-center mb-4">
+                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
+                          <h3 className="font-medium text-white">AI Resume Assistant</h3>
                         </div>
-                        <CollapsibleContent>
-                          <div className="mt-2">
-                            <SkillSuggestions 
-                              resumeId={resumeId?.toString() || "new"}
-                              jobTitle={resume.experience.length > 0 ? resume.experience[0].title : undefined}
-                              onApply={handleApplySkill}
-                            />
+                        
+                        <Collapsible className="mb-4">
+                          <div className="flex justify-between items-center">
+                            <h4 className="text-sm font-medium text-blue-300 mb-2">
+                              Suggested Skills
+                            </h4>
+                            <CollapsibleTrigger className="text-xs text-gray-400 hover:text-gray-200">
+                              <ChevronDown className="h-4 w-4" />
+                            </CollapsibleTrigger>
                           </div>
-                        </CollapsibleContent>
-                      </Collapsible>
-                      
-                      <div className="text-xs text-secondary-500 mt-3">
-                        <p className="mb-2">Tips for showcasing skills:</p>
-                        <ul className="list-disc pl-4 space-y-1">
-                          <li>Include a mix of technical and soft skills</li>
-                          <li>Prioritize skills mentioned in job descriptions</li>
-                          <li>Be honest about your proficiency levels</li>
-                          <li>Group similar skills together</li>
-                        </ul>
+                          <CollapsibleContent>
+                            <div className="mt-2">
+                              <SkillSuggestions 
+                                resumeId={resumeId?.toString() || "new"}
+                                jobTitle={resume.experience.length > 0 ? resume.experience[0].title : undefined}
+                                onApply={handleApplySkill}
+                              />
+                            </div>
+                          </CollapsibleContent>
+                        </Collapsible>
+                        
+                        <div className="text-xs text-gray-300 mt-3 bg-white/5 p-3 rounded-lg">
+                          <p className="mb-2 text-blue-300 font-medium">Tips for showcasing skills:</p>
+                          <ul className="list-disc pl-4 space-y-1">
+                            <li>Include a mix of technical and soft skills</li>
+                            <li>Prioritize skills mentioned in job descriptions</li>
+                            <li>Be honest about your proficiency levels</li>
+                            <li>Group similar skills together</li>
+                          </ul>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1171,9 +1187,12 @@ export default function ResumeBuilder() {
               {activeSection === "projects" && (
                 <div>
                   <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold text-secondary-900">Projects</h2>
+                    <h2 className="text-xl font-semibold text-white flex items-center">
+                      <FolderKanban className="h-5 w-5 mr-2 text-blue-400" />
+                      Projects
+                    </h2>
                     <Button 
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
                       onClick={() => {
                         const newProject: ProjectItem = {
@@ -1188,7 +1207,7 @@ export default function ResumeBuilder() {
                           projects: [...resume.projects, newProject]
                         });
                       }}
-                      className="flex items-center space-x-1"
+                      className="flex items-center space-x-1 border-white/10 text-blue-400 hover:bg-white/10 hover:text-white"
                     >
                       <Plus className="h-4 w-4" />
                       <span>Add Project</span>
@@ -1209,8 +1228,25 @@ export default function ResumeBuilder() {
               
               {/* Preview Section */}
               {activeSection === "preview" && (
-                <div>
-                  <ResumePreview resume={resume} />
+                <div className="text-white">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-semibold text-white flex items-center">
+                      <Maximize2 className="h-5 w-5 mr-2 text-blue-400" />
+                      Resume Preview
+                    </h2>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-blue-400 hover:bg-white/10 hover:text-white border border-white/10"
+                      onClick={() => window.print()}
+                    >
+                      <Printer className="h-4 w-4 mr-2" />
+                      Print/Save PDF
+                    </Button>
+                  </div>
+                  <div className="bg-white/5 backdrop-blur-sm p-8 rounded-xl border border-white/10 shadow-xl">
+                    <ResumePreview resume={resume} />
+                  </div>
                 </div>
               )}
             </div>

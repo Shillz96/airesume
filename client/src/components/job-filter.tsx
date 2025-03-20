@@ -11,6 +11,8 @@ export interface JobFilterValues {
   location: string;
   type: string;
   experience: string;
+  remote: string;
+  salary: string;
 }
 
 interface JobFilterProps {
@@ -25,8 +27,34 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
       location: "",
       type: "all",
       experience: "all",
+      remote: "all",
+      salary: "all",
     }
   );
+  
+  const [titleSuggestions, setTitleSuggestions] = useState<string[]>([]);
+  
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    handleInputChange("title", value);
+    
+    // Simulate autocomplete suggestions
+    if (value.length > 2) {
+      setTitleSuggestions([
+        "Software Engineer",
+        "Senior Software Engineer",
+        "Frontend Developer",
+        "Backend Developer",
+        "Data Scientist",
+        "Product Manager",
+        "UX Designer",
+      ].filter(suggestion => 
+        suggestion.toLowerCase().includes(value.toLowerCase())
+      ));
+    } else {
+      setTitleSuggestions([]);
+    }
+  };
 
   const handleInputChange = (field: keyof JobFilterValues, value: string) => {
     setFilterValues((prev) => ({ ...prev, [field]: value }));
@@ -45,15 +73,33 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
       <CardContent>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div>
+            <div className="relative">
               <Label htmlFor="job-title">Job Title</Label>
               <Input
                 id="job-title"
                 placeholder="e.g. Software Engineer"
                 value={filterValues.title}
-                onChange={(e) => handleInputChange("title", e.target.value)}
+                onChange={handleTitleChange}
                 className="mt-1"
               />
+              {titleSuggestions.length > 0 && (
+                <div className="absolute z-10 mt-1 w-full bg-white rounded-md shadow-lg max-h-60 overflow-auto border border-secondary-200">
+                  <ul className="py-1">
+                    {titleSuggestions.map((suggestion, index) => (
+                      <li
+                        key={index}
+                        className="px-4 py-2 hover:bg-secondary-100 cursor-pointer text-sm"
+                        onClick={() => {
+                          handleInputChange("title", suggestion);
+                          setTitleSuggestions([]);
+                        }}
+                      >
+                        {suggestion}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
             
             <div>
@@ -81,7 +127,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
                   <SelectItem value="full-time">Full-time</SelectItem>
                   <SelectItem value="part-time">Part-time</SelectItem>
                   <SelectItem value="contract">Contract</SelectItem>
-                  <SelectItem value="remote">Remote</SelectItem>
+                  <SelectItem value="internship">Internship</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -106,11 +152,50 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
             </div>
           </div>
           
-          <div className="mt-4 flex justify-end">
-            <Button type="submit" className="flex items-center gap-2">
-              <Search className="h-4 w-4" />
-              Search
-            </Button>
+          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div>
+              <Label htmlFor="remote-option">Remote Options</Label>
+              <Select
+                value={filterValues.remote}
+                onValueChange={(value) => handleInputChange("remote", value)}
+              >
+                <SelectTrigger id="remote-option" className="mt-1">
+                  <SelectValue placeholder="Remote Options" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="remote">Remote Only</SelectItem>
+                  <SelectItem value="hybrid">Hybrid</SelectItem>
+                  <SelectItem value="on-site">On-Site Only</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label htmlFor="salary-range">Salary Range</Label>
+              <Select
+                value={filterValues.salary}
+                onValueChange={(value) => handleInputChange("salary", value)}
+              >
+                <SelectTrigger id="salary-range" className="mt-1">
+                  <SelectValue placeholder="Salary Range" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Ranges</SelectItem>
+                  <SelectItem value="50k-75k">$50k-$75k</SelectItem>
+                  <SelectItem value="75k-100k">$75k-$100k</SelectItem>
+                  <SelectItem value="100k-150k">$100k-$150k</SelectItem>
+                  <SelectItem value="150k+">$150k+</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="flex items-end">
+              <Button type="submit" className="w-full flex items-center justify-center gap-2 mt-1">
+                <Search className="h-4 w-4" />
+                Apply Filters
+              </Button>
+            </div>
           </div>
         </form>
       </CardContent>

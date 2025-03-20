@@ -3,8 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/navbar";
 import JobCard, { Job } from "@/components/job-card";
 import JobFilter, { JobFilterValues } from "@/components/job-filter";
-import { AlertTriangle, Cpu } from "lucide-react";
+import { AlertTriangle, Cpu, Star, Share2, Heart, Briefcase, Clock, Building } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import {
   Pagination,
   PaginationContent,
@@ -22,6 +24,8 @@ export default function JobFinder() {
     location: "",
     type: "all",
     experience: "all",
+    remote: "all",
+    salary: "all",
   });
   
   const { data: jobs, isLoading, error } = useQuery({

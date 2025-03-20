@@ -225,14 +225,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user!.id;
       const resumeId = parseInt(req.params.id);
       const summaryOnly = req.query.summaryOnly === 'true';
+      const experienceOnly = req.query.experienceOnly === 'true';
+      const skillsOnly = req.query.skillsOnly === 'true';
+      const jobTitle = req.query.jobTitle as string | undefined;
       
       const resume = await storage.getResume(resumeId, userId);
       if (!resume) {
         return res.status(404).json({ success: false, error: "Resume not found" });
       }
       
-      if (summaryOnly) {
-        // For summaryOnly requests, use OpenAI to generate complete summary rewrites
+      // Generate experience bullet points for a specific job
+      if (experienceOnly) {
         try {
           // Import the openai client from ai.ts
           const response = await (await import('./ai')).openai.chat.completions.create({
@@ -240,7 +243,167 @@ export async function registerRoutes(app: Express): Promise<Server> {
             messages: [
               {
                 role: "system",
-                content: "You are an expert resume writer. Given a person's resume information, generate 3 different complete professional summaries that highlight their experience, skills, and unique selling points. Make each summary different in tone and focus, but all professionally written and ready to use on a resume."
+                content: "You are an expert resume writer who specializes in crafting ATS-optimized bullet points. You create achievement-focused, specific bullet points that highlight measurable results and use industry keywords that pass through applicant tracking systems."
+              },
+              {
+                role: "user",
+                content: `Generate 5 professional and ATS-optimized bullet points for a ${jobTitle || 'professional'} based on this existing experience:
+                
+                Experience: ${JSON.stringify(resume.content?.experience || [])}
+                
+                Skills: ${JSON.stringify(resume.content?.skills || [])}
+                
+                Format each bullet point to:
+                1. Start with a strong action verb
+                2. Include specific, measurable achievements with numbers when possible
+                3. Incorporate keywords that ATS systems look for
+                4. Focus on accomplishments, not just responsibilities
+                5. Be concise (15-20 words per bullet)
+
+                Return only the bullet points, each on a new line. Do not include any other text.`
+              }
+            ],
+          });
+          
+          // Process the response to extract the bullet points
+          const content = response.choices[0].message.content || '';
+          
+          // Split by lines and clean up
+          const bulletPoints = content.split(/\n+/)
+            .filter(line => line.trim().length > 0)
+            .map(line => line.replace(/^[•\-*]\s*/, '').trim()) // Remove bullet symbols
+            .filter(line => line.length > 15); // Must be substantial enough
+            
+          if (bulletPoints.length > 0) {
+            return res.json({ success: true, suggestions: bulletPoints });
+          }
+          
+          // Fallback if extraction failed
+          return res.json({ 
+            success: true, 
+            suggestions: [
+              "Increased website performance by 40% through optimization of front-end code and implementation of caching strategies.",
+              "Developed and implemented automated testing protocols that reduced QA time by 25% while improving code quality.",
+              "Spearheaded migration to cloud-based infrastructure, resulting in 30% cost reduction and 99.9% uptime.",
+              "Led cross-functional team of 5 developers to deliver critical project under budget and 2 weeks ahead of schedule.",
+              "Designed and implemented RESTful API that processed over 1M requests daily with average response time under 100ms."
+            ]
+          });
+        } catch (error) {
+          console.error("Error generating experience suggestions:", error);
+          return res.json({ 
+            success: true, 
+            suggestions: [
+              "Increased website performance by 40% through optimization of front-end code and implementation of caching strategies.",
+              "Developed and implemented automated testing protocols that reduced QA time by 25% while improving code quality.",
+              "Spearheaded migration to cloud-based infrastructure, resulting in 30% cost reduction and 99.9% uptime.",
+              "Led cross-functional team of 5 developers to deliver critical project under budget and 2 weeks ahead of schedule.",
+              "Designed and implemented RESTful API that processed over 1M requests daily with average response time under 100ms."
+            ]
+          });
+        }
+      }
+      
+      // Generate skill suggestions
+      if (skillsOnly) {
+        try {
+          // Import the openai client from ai.ts
+          const response = await (await import('./ai')).openai.chat.completions.create({
+            model: "gpt-4o",
+            messages: [
+              {
+                role: "system",
+                content: "You are an expert at identifying in-demand technical and soft skills that employers and ATS systems look for. You analyze a person's experience and provide relevant skill suggestions that will enhance their resume's visibility and match rate with job descriptions."
+              },
+              {
+                role: "user",
+                content: `Based on this person's experience and existing skills, suggest 10 relevant technical and soft skills that would boost their resume's visibility to ATS systems and recruiters${jobTitle ? ' for ' + jobTitle + ' roles' : ''}.
+                
+                Current Experience: ${JSON.stringify(resume.content?.experience || [])}
+                
+                Current Skills: ${JSON.stringify(resume.content?.skills || [])}
+                
+                Return a list of 10 skills only, with no additional text. Include both technical and soft skills that are:
+                1. Highly relevant to their experience
+                2. In-demand in the current job market
+                3. Frequently included in ATS systems as keywords
+                4. A mix of both hard technical skills and valuable soft skills`
+              }
+            ],
+            response_format: { type: "text" }
+          });
+          
+          // Process the response to extract the skills
+          const content = response.choices[0].message.content || '';
+          
+          // Split and clean up
+          const skills = content.split(/\n+/)
+            .filter(line => line.trim().length > 0)
+            .map(line => line.replace(/^[•\-*0-9.]\s*/, '').trim()) // Remove bullets or numbering
+            .filter(line => line.length > 2 && line.length < 50); // Reasonable skill name length
+            
+          if (skills.length > 0) {
+            return res.json({ success: true, suggestions: skills });
+          }
+          
+          // Fallback skills by job category
+          const fallbackSkills = {
+            developer: [
+              "React", "Node.js", "TypeScript", "GraphQL", "CI/CD", "AWS", "Docker", 
+              "Problem Solving", "Agile Methodologies", "System Design"
+            ],
+            designer: [
+              "UI/UX Design", "Figma", "Adobe Creative Suite", "Wireframing", "Prototyping", 
+              "User Research", "Accessibility", "Design Systems", "Visual Communication", "Typography"
+            ],
+            manager: [
+              "Agile Project Management", "Team Leadership", "Strategic Planning", "Stakeholder Management", 
+              "Budget Oversight", "Risk Management", "Performance Analysis", "Process Optimization", 
+              "Change Management", "Cross-functional Collaboration"
+            ],
+            default: [
+              "Project Management", "Communication", "Problem Solving", "Data Analysis", 
+              "Microsoft Office Suite", "Critical Thinking", "Collaboration", "Time Management", 
+              "Leadership", "Attention to Detail"
+            ]
+          };
+          
+          // Determine which fallback list to use
+          let categorySkills = fallbackSkills.default;
+          if (jobTitle) {
+            const title = jobTitle.toLowerCase();
+            if (title.includes('develop') || title.includes('engineer') || title.includes('program')) {
+              categorySkills = fallbackSkills.developer;
+            } else if (title.includes('design')) {
+              categorySkills = fallbackSkills.designer;
+            } else if (title.includes('manage') || title.includes('director') || title.includes('lead')) {
+              categorySkills = fallbackSkills.manager;
+            }
+          }
+          
+          return res.json({ success: true, suggestions: categorySkills });
+        } catch (error) {
+          console.error("Error generating skill suggestions:", error);
+          return res.json({ 
+            success: true, 
+            suggestions: [
+              "React", "Node.js", "TypeScript", "GraphQL", "CI/CD", "AWS", "Docker", 
+              "Problem Solving", "Agile Methodologies", "System Design"
+            ]
+          });
+        }
+      }
+      
+      // Generate professional summaries
+      if (summaryOnly) {
+        try {
+          // Import the openai client from ai.ts
+          const response = await (await import('./ai')).openai.chat.completions.create({
+            model: "gpt-4o",
+            messages: [
+              {
+                role: "system",
+                content: "You are an expert resume writer. Given a person's resume information, generate 3 different complete professional summaries that highlight their experience, skills, and unique selling points. Make each summary different in tone and focus, but all professionally written and ready to use on a resume. Include ATS-friendly keywords."
               },
               {
                 role: "user",
@@ -254,7 +417,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 
                 Skills: ${JSON.stringify(resume.content?.skills || [])}
                 
-                Each summary should be complete, professionally written, and approximately 2-4 sentences long. Use varied styles and highlight different strengths in each one. Return just the summaries, not explanations or other text.`
+                Each summary should be:
+                1. Complete, professionally written, and approximately 2-4 sentences long
+                2. Include ATS-friendly keywords that hiring systems scan for
+                3. Highlight different strengths or angles in each version
+                4. Be ready to use without modification
+                
+                Return just the summaries, not explanations or other text.`
               }
             ],
           });

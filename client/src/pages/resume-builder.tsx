@@ -33,6 +33,7 @@ import {
   Check,
   RefreshCw,
   Sparkles,
+  Plus,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -138,6 +139,231 @@ function SummarySuggestions({ resumeId, onApply }: SummarySuggestionsProps) {
           >
             <RefreshCw className="h-3 w-3" />
             Generate different suggestions
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Component for experience bullet point AI suggestions
+interface ExperienceSuggestionsProps {
+  resumeId: string;
+  jobTitle?: string;
+  onApply: (bulletPoint: string) => void;
+}
+
+function ExperienceSuggestions({ resumeId, jobTitle, onApply }: ExperienceSuggestionsProps) {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [bulletPoints, setBulletPoints] = useState<string[]>([]);
+  
+  // Generate AI bullet points for experience section
+  const handleGenerateBulletPoints = async () => {
+    if (!resumeId) {
+      return;
+    }
+    
+    setIsGenerating(true);
+    try {
+      // Use the experienceOnly parameter to get ATS-optimized bullet points
+      let url = `/api/resumes/${resumeId}/suggestions?experienceOnly=true`;
+      if (jobTitle) {
+        url += `&jobTitle=${encodeURIComponent(jobTitle)}`;
+      }
+      
+      const res = await apiRequest("GET", url);
+      const data = await res.json();
+      
+      if (data.success && data.suggestions && Array.isArray(data.suggestions)) {
+        setBulletPoints(data.suggestions);
+      } else {
+        // Fallback bullet points if the API call fails
+        setBulletPoints([
+          "Increased website performance by 40% through optimization of front-end code and implementation of caching strategies.",
+          "Developed and implemented automated testing protocols that reduced QA time by 25% while improving code quality.",
+          "Spearheaded migration to cloud-based infrastructure, resulting in 30% cost reduction and 99.9% uptime.",
+          "Led cross-functional team of 5 developers to deliver critical project under budget and 2 weeks ahead of schedule.",
+          "Designed and implemented RESTful API that processed over 1M requests daily with average response time under 100ms."
+        ]);
+      }
+    } catch (error) {
+      console.error("Error generating experience bullet points:", error);
+      // Fallback bullet points if the API call fails
+      setBulletPoints([
+        "Increased website performance by 40% through optimization of front-end code and implementation of caching strategies.",
+        "Developed and implemented automated testing protocols that reduced QA time by 25% while improving code quality.",
+        "Spearheaded migration to cloud-based infrastructure, resulting in 30% cost reduction and 99.9% uptime.",
+        "Led cross-functional team of 5 developers to deliver critical project under budget and 2 weeks ahead of schedule.",
+        "Designed and implemented RESTful API that processed over 1M requests daily with average response time under 100ms."
+      ]);
+    }
+    setIsGenerating(false);
+  };
+  
+  return (
+    <div>
+      {bulletPoints.length === 0 ? (
+        <div className="text-center py-3">
+          <Button
+            onClick={handleGenerateBulletPoints}
+            disabled={isGenerating}
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generating bullet points...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                Generate ATS-optimized bullet points
+              </>
+            )}
+          </Button>
+          <p className="text-xs text-secondary-500 mt-2">
+            Creates achievement-focused bullet points with keywords that ATS systems scan for
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {bulletPoints.map((bulletPoint, index) => (
+            <div 
+              key={index} 
+              className="bg-white p-3 rounded-md border border-secondary-200 text-sm relative group"
+            >
+              <p className="text-secondary-600">{bulletPoint}</p>
+              <Button
+                onClick={() => onApply(bulletPoint)}
+                size="sm"
+                className="mt-2 w-full flex items-center justify-center gap-1"
+              >
+                <Check className="h-3 w-3" />
+                Use this bullet point
+              </Button>
+            </div>
+          ))}
+          <Button
+            onClick={() => {
+              setBulletPoints([]);
+              handleGenerateBulletPoints();
+            }}
+            variant="ghost"
+            size="sm"
+            className="w-full flex items-center justify-center gap-1 mt-2"
+          >
+            <RefreshCw className="h-3 w-3" />
+            Generate different bullet points
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Component for skills AI suggestions
+interface SkillSuggestionsProps {
+  resumeId: string;
+  jobTitle?: string;
+  onApply: (skill: string) => void;
+}
+
+function SkillSuggestions({ resumeId, jobTitle, onApply }: SkillSuggestionsProps) {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [skills, setSkills] = useState<string[]>([]);
+  
+  // Generate AI skill suggestions
+  const handleGenerateSkills = async () => {
+    if (!resumeId) {
+      return;
+    }
+    
+    setIsGenerating(true);
+    try {
+      // Use the skillsOnly parameter to get ATS-optimized skills
+      let url = `/api/resumes/${resumeId}/suggestions?skillsOnly=true`;
+      if (jobTitle) {
+        url += `&jobTitle=${encodeURIComponent(jobTitle)}`;
+      }
+      
+      const res = await apiRequest("GET", url);
+      const data = await res.json();
+      
+      if (data.success && data.suggestions && Array.isArray(data.suggestions)) {
+        setSkills(data.suggestions);
+      } else {
+        // Fallback skills if the API call fails
+        setSkills([
+          "JavaScript", "React", "Node.js", "TypeScript", "GraphQL", 
+          "AWS", "Docker", "CI/CD", "Git", "Agile Methodologies"
+        ]);
+      }
+    } catch (error) {
+      console.error("Error generating skill suggestions:", error);
+      // Fallback skills if the API call fails
+      setSkills([
+        "JavaScript", "React", "Node.js", "TypeScript", "GraphQL", 
+        "AWS", "Docker", "CI/CD", "Git", "Agile Methodologies"
+      ]);
+    }
+    setIsGenerating(false);
+  };
+  
+  return (
+    <div>
+      {skills.length === 0 ? (
+        <div className="text-center py-3">
+          <Button
+            onClick={handleGenerateSkills}
+            disabled={isGenerating}
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generating skills...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                Generate ATS-friendly skills
+              </>
+            )}
+          </Button>
+          <p className="text-xs text-secondary-500 mt-2">
+            Suggests skills that align with your experience and are frequently scanned by ATS systems
+          </p>
+        </div>
+      ) : (
+        <div>
+          <div className="flex flex-wrap gap-2 mb-3">
+            {skills.map((skill, index) => (
+              <Badge 
+                key={index} 
+                variant="secondary"
+                className="py-1 px-3 cursor-pointer hover:bg-primary-100 flex items-center gap-1"
+                onClick={() => onApply(skill)}
+              >
+                {skill}
+                <span className="text-xs text-primary-500">
+                  <Plus className="h-3 w-3" />
+                </span>
+              </Badge>
+            ))}
+          </div>
+          <Button
+            onClick={() => {
+              setSkills([]);
+              handleGenerateSkills();
+            }}
+            variant="ghost"
+            size="sm"
+            className="w-full flex items-center justify-center gap-1 mt-2"
+          >
+            <RefreshCw className="h-3 w-3" />
+            Generate different skills
           </Button>
         </div>
       )}

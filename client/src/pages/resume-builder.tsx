@@ -3,7 +3,6 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/navbar";
-import AIAssistant from "@/components/ai-assistant";
 import ResumeTemplate, { 
   ProfessionalTemplate, 
   CreativeTemplate, 
@@ -459,58 +458,8 @@ function ResumePreview({ resume }: { resume: Resume }) {
       <div className="mt-8">
         <h3 className="text-lg font-medium mb-4">Choose a Template</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div 
-            className={`border rounded-lg p-4 cursor-pointer ${resume.template === 'professional' ? 'border-primary-500 bg-primary-50' : 'border-secondary-200'}`}
-            onClick={() => {/* handleTemplateChange('professional') */}}
-          >
-            <h4 className="font-medium mb-2">Professional</h4>
-            <p className="text-sm text-secondary-600">Clean, traditional layout ideal for conservative industries</p>
-          </div>
-          <div 
-            className={`border rounded-lg p-4 cursor-pointer ${resume.template === 'creative' ? 'border-primary-500 bg-primary-50' : 'border-secondary-200'}`}
-            onClick={() => {/* handleTemplateChange('creative') */}}
-          >
-            <h4 className="font-medium mb-2">Creative</h4>
-            <p className="text-sm text-secondary-600">Modern design with accent colors for creative fields</p>
-          </div>
-          <div 
-            className={`border rounded-lg p-4 cursor-pointer ${resume.template === 'executive' ? 'border-primary-500 bg-primary-50' : 'border-secondary-200'}`}
-            onClick={() => {/* handleTemplateChange('executive') */}}
-          >
-            <h4 className="font-medium mb-2">Executive</h4>
-            <p className="text-sm text-secondary-600">Sophisticated layout highlighting leadership experience</p>
-          </div>
+          {/* Template options would go here */}
         </div>
-      </div>
-      
-      {/* Resume optimization tips */}
-      <div className="bg-secondary-50 p-4 rounded-lg border border-secondary-200 mt-8">
-        <div className="flex items-center mb-3">
-          <Cpu className="h-5 w-5 text-primary-500 mr-2" />
-          <h3 className="font-medium text-secondary-900">Resume Optimization Tips</h3>
-        </div>
-        <ul className="space-y-2 text-sm text-secondary-700">
-          <li className="flex items-start">
-            <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-            <span>Keep resume length to 1-2 pages for best readability</span>
-          </li>
-          <li className="flex items-start">
-            <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-            <span>Use the zoom controls to fit content appropriately on page</span>
-          </li>
-          <li className="flex items-start">
-            <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-            <span>Include keywords from job descriptions to pass ATS scans</span>
-          </li>
-          <li className="flex items-start">
-            <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-            <span>Quantify achievements with numbers and percentages</span>
-          </li>
-          <li className="flex items-start">
-            <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5" />
-            <span>Review for spelling and grammar errors before downloading</span>
-          </li>
-        </ul>
       </div>
     </div>
   );
@@ -544,30 +493,190 @@ export default function ResumeBuilder() {
     template: "professional"
   });
   
-  // Function to add a new experience entry with an AI-generated bullet point
-  const handleAddExperienceWithAI = (bulletPoint: string) => {
-    const newExperience: ExperienceItem = {
-      id: `exp-${Date.now()}`,
-      title: "New Position",
-      company: "Company Name",
-      startDate: "2022-01",
-      endDate: "Present",
-      description: bulletPoint
-    };
-    
+  // Fetch resume data if resumeId exists
+  const { data: fetchedResume } = useQuery({
+    queryKey: ["/api/resumes", resumeId],
+    enabled: !!resumeId,
+    // Make sure the onSuccess uses correct type inference
+    onSuccess: (data) => {
+      if (data) {
+        setResume(data as Resume);
+      }
+    }
+  });
+  
+  // Save resume mutation
+  const saveResumeMutation = useMutation({
+    mutationFn: async (resumeData: Resume) => {
+      if (resumeId) {
+        const res = await apiRequest("PATCH", `/api/resumes/${resumeId}`, resumeData);
+        return await res.json();
+      } else {
+        const res = await apiRequest("POST", "/api/resumes", resumeData);
+        return await res.json();
+      }
+    },
+    onSuccess: (data) => {
+      setResumeId(data.id);
+      setResumeSaved(true);
+      
+      toast({
+        title: "Resume saved",
+        description: "Your resume has been saved successfully.",
+      });
+      
+      queryClient.invalidateQueries({ queryKey: ["/api/resumes"] });
+    },
+    onError: (error) => {
+      console.error("Error saving resume:", error);
+      toast({
+        title: "Error saving resume",
+        description: "There was an error saving your resume. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+  
+  // Save resume handler
+  const handleSaveResume = () => {
+    setIsSaving(true);
+    saveResumeMutation.mutate(resume);
+    setIsSaving(false);
+  };
+  
+  // Update personal info fields
+  const updatePersonalInfo = (field: string, value: string) => {
     setResume({
       ...resume,
-      experience: [...resume.experience, newExperience]
-    });
-    
-    toast({
-      title: "Experience added",
-      description: "New experience with AI-generated bullet point has been added.",
+      personalInfo: {
+        ...resume.personalInfo,
+        [field]: value
+      }
     });
   };
   
-  // Function to add a new skill with AI suggestion
-  const handleAddSkill = (skillName: string) => {
+  // Template change handler
+  const handleTemplateChange = (template: string) => {
+    setResume({
+      ...resume,
+      template
+    });
+  };
+  
+  // File upload handler
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setIsUploading(true);
+    
+    const formData = new FormData();
+    formData.append("file", file);
+    
+    try {
+      const res = await apiRequest("POST", "/api/resumes/parse", formData);
+      const parsedData = await res.json();
+      
+      if (parsedData.success) {
+        // Update resume state with parsed data
+        setResume({
+          ...resume,
+          personalInfo: {
+            ...resume.personalInfo,
+            ...parsedData.data.personalInfo
+          },
+          experience: parsedData.data.experience || [],
+          education: parsedData.data.education || [],
+          skills: parsedData.data.skills || []
+        });
+        
+        toast({
+          title: "Resume uploaded",
+          description: "Your resume has been parsed successfully.",
+        });
+      } else {
+        toast({
+          title: "Error parsing resume",
+          description: parsedData.error || "There was an error parsing your resume.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error uploading resume:", error);
+      toast({
+        title: "Error uploading resume",
+        description: "There was an error uploading your resume. Please try again.",
+        variant: "destructive",
+      });
+    }
+    
+    setIsUploading(false);
+    
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+  
+  // Apply AI suggestions to experience section
+  const handleApplyBulletPoint = (bulletPoint: string) => {
+    if (activeSection === "experience" && resume.experience.length > 0) {
+      // Apply to the most recent experience item
+      const updatedExperience = [...resume.experience];
+      const lastIndex = updatedExperience.length - 1;
+      
+      updatedExperience[lastIndex] = {
+        ...updatedExperience[lastIndex],
+        description: bulletPoint
+      };
+      
+      setResume({
+        ...resume,
+        experience: updatedExperience
+      });
+      
+      toast({
+        title: "Bullet point applied",
+        description: "AI-generated bullet point has been applied to your experience.",
+      });
+    } else {
+      // Create a new experience item with the bullet point
+      const newExperience: ExperienceItem = {
+        id: `exp-${Date.now()}`,
+        title: "Position Title",
+        company: "Company Name",
+        startDate: "2022-01",
+        endDate: "Present",
+        description: bulletPoint
+      };
+      
+      setResume({
+        ...resume,
+        experience: [...resume.experience, newExperience]
+      });
+      
+      // Switch to experience tab
+      setActiveSection("experience");
+      
+      toast({
+        title: "Experience added",
+        description: "New experience with AI-generated bullet point has been added.",
+      });
+    }
+  };
+  
+  // Apply AI summary to personal info
+  const handleApplySummary = (summary: string) => {
+    updatePersonalInfo("summary", summary);
+    
+    toast({
+      title: "Summary applied",
+      description: "AI-generated summary has been applied to your resume.",
+    });
+  };
+  
+  // Apply AI skill to skills section
+  const handleApplySkill = (skillName: string) => {
     // Check if skill already exists
     if (resume.skills.some(skill => skill.name.toLowerCase() === skillName.toLowerCase())) {
       toast({
@@ -595,240 +704,80 @@ export default function ResumeBuilder() {
     });
   };
   
-  // Function to update personal information
-  const handlePersonalInfoChange = (field: string, value: string) => {
-    setResume({
-      ...resume,
-      personalInfo: {
-        ...resume.personalInfo,
-        [field]: value
-      }
-    });
-  };
-  
-  // Function to apply a generated summary
-  const handleApplySummary = (summary: string) => {
-    handlePersonalInfoChange("summary", summary);
-    
-    toast({
-      title: "Summary updated",
-      description: "Professional summary has been updated with AI-generated content.",
-    });
-  };
-  
-  // Function to apply tailored content from AI assistant
-  const handleApplyTailoredContent = (content: any) => {
-    const updatedResume = { ...resume };
-    
-    // Update summary if provided
-    if (content.summary) {
-      updatedResume.personalInfo.summary = content.summary;
-    }
-    
-    // Add suggested skills if provided
-    if (content.skills && Array.isArray(content.skills)) {
-      content.skills.forEach((skill: string) => {
-        // Only add skills that don't already exist
-        if (!updatedResume.skills.some(s => s.name.toLowerCase() === skill.toLowerCase())) {
-          updatedResume.skills.push({
-            id: `skill-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-            name: skill,
-            proficiency: 3
-          });
-        }
-      });
-    }
-    
-    // Update experience descriptions if provided
-    if (content.experienceImprovements && Array.isArray(content.experienceImprovements)) {
-      content.experienceImprovements.forEach((improvement: any) => {
-        const expIndex = updatedResume.experience.findIndex(exp => exp.id === improvement.id);
-        if (expIndex !== -1) {
-          updatedResume.experience[expIndex].description = improvement.improvedDescription;
-        }
-      });
-    }
-    
-    setResume(updatedResume);
-    
-    toast({
-      title: "Resume tailored",
-      description: "Your resume has been updated with AI-tailored content.",
-    });
-  };
-  
-  // Function to apply all suggestions from AI assistant
-  const handleApplySuggestions = (suggestions: string[]) => {
-    toast({
-      title: "Suggestions applied",
-      description: "AI suggestions have been applied to your resume.",
-    });
-  };
-  
-  // Function to save the resume
-  const handleSaveResume = async () => {
-    setIsSaving(true);
-    
-    try {
-      let response;
-      
-      if (resumeId) {
-        // Update existing resume
-        response = await apiRequest("PUT", `/api/resumes/${resumeId}`, resume);
-      } else {
-        // Create new resume
-        response = await apiRequest("POST", "/api/resumes", resume);
-      }
-      
-      const data = await response.json();
-      
-      if (data.id) {
-        setResumeId(data.id);
-        setResumeSaved(true);
-        
-        toast({
-          title: "Resume saved",
-          description: "Your resume has been saved successfully.",
-        });
-      }
-    } catch (error) {
-      console.error("Error saving resume:", error);
-      
-      toast({
-        title: "Save failed",
-        description: "There was an error saving your resume. Please try again.",
-        variant: "destructive",
-      });
-    }
-    
-    setIsSaving(false);
-  };
-  
-  // Function to handle resume file upload
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    setIsUploading(true);
-    
-    // Create FormData object to send the file
-    const formData = new FormData();
-    formData.append("file", file);
-    
-    try {
-      const res = await apiRequest("POST", "/api/resumes/upload", formData);
-      const data = await res.json();
-      
-      if (data.success && data.resumeData) {
-        // Update state with parsed resume data
-        setResume(data.resumeData);
-        setResumeId(data.resumeId || null);
-        
-        toast({
-          title: "Resume uploaded",
-          description: "Your resume has been successfully parsed and loaded.",
-        });
-      } else {
-        throw new Error(data.message || "Failed to parse resume");
-      }
-    } catch (error) {
-      console.error("Error uploading resume:", error);
-      
-      toast({
-        title: "Upload failed",
-        description: "There was an error uploading your resume. Please try again or create a new resume manually.",
-        variant: "destructive",
-      });
-    }
-    
-    setIsUploading(false);
-    // Clear the file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-  
-  // Function to change the resume template
-  const handleTemplateChange = (template: string) => {
-    setResume({
-      ...resume,
-      template
-    });
-    
-    toast({
-      title: "Template changed",
-      description: `Resume template has been updated to ${template}.`,
-    });
+  // Handle file input click
+  const handleFileInputClick = () => {
+    fileInputRef.current?.click();
   };
   
   return (
-    <div className="min-h-screen bg-secondary-50">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
       
-      <main className="pt-16">
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-4 py-6 sm:px-0">
-            {/* Page header */}
-            <div className="mb-8 flex justify-between items-center">
-              <div>
-                <h1 className="text-2xl font-bold text-secondary-900">Resume Builder</h1>
-                <p className="mt-1 text-sm text-secondary-500">Create and customize your professional resume</p>
-              </div>
-              <div className="flex space-x-3">
-                <Button
-                  onClick={handleSaveResume}
-                  disabled={isSaving}
-                  className="flex items-center space-x-2"
-                >
-                  {isSaving ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Saving...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Save className="h-4 w-4" />
-                      <span>Save Resume</span>
-                    </>
-                  )}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploading}
-                  className="flex items-center space-x-2"
-                >
-                  {isUploading ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Uploading...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="h-4 w-4" />
-                      <span>Upload Resume</span>
-                    </>
-                  )}
-                </Button>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileUpload}
-                  style={{ display: 'none' }}
-                  accept=".pdf,.docx,.txt"
-                />
-              </div>
-            </div>
-
-            {/* Main tab navigation */}
-            <div className="mb-6 bg-secondary-900 rounded-lg">
-              <Tabs 
-                defaultValue="profile" 
-                value={activeSection}
-                onValueChange={setActiveSection}
-                className="w-full"
-              >
-                <TabsList className="w-full grid grid-cols-6 h-12 bg-secondary-900">
+      <main className="container mx-auto pt-16 pb-20 px-4">
+        {/* Page Header */}
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-primary-800 mb-2">Resume Builder</h1>
+            <p className="text-secondary-600">
+              Create a professional resume that gets you hired.
+            </p>
+          </div>
+          
+          <div className="flex space-x-3">
+            <Button
+              onClick={handleSaveResume}
+              disabled={isSaving}
+              className="flex items-center space-x-2"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  <span>Save Resume</span>
+                </>
+              )}
+            </Button>
+            
+            <Button
+              variant="outline"
+              onClick={handleFileInputClick}
+              disabled={isUploading}
+              className="flex items-center space-x-2"
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Uploading...</span>
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4" />
+                  <span>Upload Resume</span>
+                </>
+              )}
+            </Button>
+            
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+              accept=".pdf,.docx,.txt"
+              className="hidden"
+            />
+          </div>
+        </div>
+        
+        {/* Main content area */}
+        <div className="bg-white rounded-xl shadow-lg">
+          {/* Horizontal Tab Navigation */}
+          <div className="relative">
+            <div className="bg-primary-700 rounded-t-xl px-6 py-3">
+              <Tabs value={activeSection} onValueChange={setActiveSection} className="w-full">
+                <TabsList className="bg-transparent border-b border-white/20 w-full justify-start mb-1 p-0">
                   <TabsTrigger 
                     value="profile" 
                     className={`${activeSection === "profile" ? "bg-primary-600 text-white" : "text-white/80"} font-medium`}
@@ -868,251 +817,377 @@ export default function ResumeBuilder() {
                 </TabsList>
               </Tabs>
             </div>
-
-            {/* Main content area */}
-            <div className="max-w-5xl mx-auto">
-              <div className="bg-white shadow rounded-lg overflow-hidden">
-                <div className="p-6">
-                  {/* Profile section with nested tabs */}
-                  {activeSection === "profile" && (
+            
+            {/* Tab Content */}
+            <div className="p-6">
+              {/* Profile Section */}
+              {activeSection === "profile" && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="md:col-span-2 space-y-6">
                     <div>
-                      <h2 className="text-lg font-medium text-secondary-900 mb-4">Profile</h2>
-                      <Tabs defaultValue="personal" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2">
-                          <TabsTrigger value="personal">Personal Information</TabsTrigger>
-                          <TabsTrigger value="summary">Professional Summary</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="personal">
-                          <div className="grid grid-cols-1 gap-6 sm:grid-cols-6">
-                            <div className="sm:col-span-3">
-                              <Label htmlFor="first-name">First name</Label>
-                              <Input
-                                id="first-name"
-                                value={resume.personalInfo.firstName}
-                                onChange={(e) => handlePersonalInfoChange("firstName", e.target.value)}
-                                className="mt-1"
-                                placeholder="John"
-                              />
-                            </div>
-                            <div className="sm:col-span-3">
-                              <Label htmlFor="last-name">Last name</Label>
-                              <Input
-                                id="last-name"
-                                value={resume.personalInfo.lastName}
-                                onChange={(e) => handlePersonalInfoChange("lastName", e.target.value)}
-                                className="mt-1"
-                                placeholder="Doe"
-                              />
-                            </div>
-                            <div className="sm:col-span-4">
-                              <Label htmlFor="email">Email address</Label>
-                              <Input
-                                id="email"
-                                type="email"
-                                value={resume.personalInfo.email}
-                                onChange={(e) => handlePersonalInfoChange("email", e.target.value)}
-                                className="mt-1"
-                                placeholder="john.doe@example.com"
-                              />
-                            </div>
-                            <div className="sm:col-span-2">
-                              <Label htmlFor="phone">Phone</Label>
-                              <Input
-                                id="phone"
-                                value={resume.personalInfo.phone}
-                                onChange={(e) => handlePersonalInfoChange("phone", e.target.value)}
-                                className="mt-1"
-                                placeholder="(555) 123-4567"
-                              />
-                            </div>
-                            <div className="sm:col-span-6">
-                              <Label htmlFor="headline">Professional Headline</Label>
-                              <Input
-                                id="headline"
-                                value={resume.personalInfo.headline}
-                                onChange={(e) => handlePersonalInfoChange("headline", e.target.value)}
-                                className="mt-1"
-                                placeholder="Software Engineer with 5+ years of experience"
-                              />
-                            </div>
-                          </div>
-                        </TabsContent>
-                        <TabsContent value="summary">
-                          <div className="space-y-4">
-                            <div>
-                              <Label htmlFor="summary">Professional Summary</Label>
-                              <Textarea
-                                id="summary"
-                                value={resume.personalInfo.summary}
-                                onChange={(e) => handlePersonalInfoChange("summary", e.target.value)}
-                                rows={5}
-                                className="mt-1 resize-none"
-                                placeholder="Passionate software engineer with expertise in JavaScript, React, and Node.js."
-                              />
-                              <p className="mt-2 text-sm text-secondary-500">
-                                Write a 2-3 sentence summary highlighting your experience and strengths.
-                              </p>
-                            </div>
-                            <div className="bg-secondary-50 p-4 rounded-lg border border-secondary-200">
-                              <Collapsible>
-                                <CollapsibleTrigger asChild>
-                                  <Button variant="ghost" className="flex items-center justify-between w-full p-0 h-auto">
-                                    <div className="flex items-center">
-                                      <Cpu className="h-4 w-4 text-primary-500 mr-2" />
-                                      <span className="font-medium text-sm text-secondary-900">AI Summary Suggestions</span>
-                                    </div>
-                                    <ChevronDown className="h-4 w-4" />
-                                  </Button>
-                                </CollapsibleTrigger>
-                                <CollapsibleContent className="mt-2">
-                                  <SummarySuggestions 
-                                    resumeId={resumeId?.toString() || "temp-id"} 
-                                    onApply={handleApplySummary}
-                                  />
-                                </CollapsibleContent>
-                              </Collapsible>
-                            </div>
-                          </div>
-                        </TabsContent>
-                      </Tabs>
-                    </div>
-                  )}
-                  
-                  {/* Experience section */}
-                  {activeSection === "experience" && (
-                    <div>
-                      <h2 className="text-lg font-medium text-secondary-900 mb-4">Work Experience</h2>
-                      <ResumeExperienceSection
-                        experiences={resume.experience}
-                        onUpdate={(experience) => setResume({ ...resume, experience })}
-                      />
-                      
-                      {/* Compact AI Experience Suggestions */}
-                      <div className="mt-6 bg-secondary-50 p-4 rounded-lg border border-secondary-200">
-                        <Collapsible>
-                          <CollapsibleTrigger asChild>
-                            <Button variant="ghost" className="flex items-center justify-between w-full p-0 h-auto">
-                              <div className="flex items-center">
-                                <Cpu className="h-4 w-4 text-primary-500 mr-2" />
-                                <span className="font-medium text-sm text-secondary-900">AI Bullet Point Generator</span>
-                              </div>
-                              <ChevronDown className="h-4 w-4" />
-                            </Button>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent className="mt-2">
-                            <ExperienceSuggestions 
-                              resumeId={resumeId?.toString() || "temp-id"} 
-                              onApply={handleAddExperienceWithAI}
-                            />
-                          </CollapsibleContent>
-                        </Collapsible>
+                      <h2 className="text-xl font-semibold mb-4 text-secondary-900">Personal Information</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="firstName">First Name</Label>
+                          <Input 
+                            id="firstName"
+                            value={resume.personalInfo.firstName}
+                            onChange={e => updatePersonalInfo("firstName", e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="lastName">Last Name</Label>
+                          <Input 
+                            id="lastName"
+                            value={resume.personalInfo.lastName}
+                            onChange={e => updatePersonalInfo("lastName", e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="email">Email</Label>
+                          <Input 
+                            id="email"
+                            type="email"
+                            value={resume.personalInfo.email}
+                            onChange={e => updatePersonalInfo("email", e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="phone">Phone</Label>
+                          <Input 
+                            id="phone"
+                            value={resume.personalInfo.phone}
+                            onChange={e => updatePersonalInfo("phone", e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
                       </div>
                     </div>
-                  )}
-                  
-                  {/* Education section */}
-                  {activeSection === "education" && (
+                    
                     <div>
-                      <h2 className="text-lg font-medium text-secondary-900 mb-4">Education</h2>
-                      <ResumeEducationSection
-                        education={resume.education}
-                        onUpdate={(education) => setResume({ ...resume, education })}
+                      <Label htmlFor="headline">Professional Headline</Label>
+                      <Input 
+                        id="headline"
+                        value={resume.personalInfo.headline}
+                        onChange={e => updatePersonalInfo("headline", e.target.value)}
+                        className="mt-1"
+                        placeholder="e.g., Senior Software Engineer | Front-End Specialist | React & TypeScript Expert"
                       />
                     </div>
-                  )}
-                  
-                  {/* Skills section */}
-                  {activeSection === "skills" && (
+                    
                     <div>
-                      <h2 className="text-lg font-medium text-secondary-900 mb-4">Skills</h2>
-                      <ResumeSkillsSection
-                        skills={resume.skills}
-                        onUpdate={(skills) => setResume({ ...resume, skills })}
+                      <Label htmlFor="summary">Professional Summary</Label>
+                      <Textarea 
+                        id="summary"
+                        value={resume.personalInfo.summary}
+                        onChange={e => updatePersonalInfo("summary", e.target.value)}
+                        className="mt-1 min-h-32"
+                        placeholder="Write a concise summary of your professional background, key skills, and career achievements."
                       />
+                    </div>
+                  </div>
+                  
+                  {/* AI Assistant Section */}
+                  <div className="md:col-span-1">
+                    <div className="bg-secondary-50 p-5 rounded-lg border border-secondary-200">
+                      <div className="flex items-center mb-4 text-primary-800">
+                        <Cpu className="h-5 w-5 mr-2" />
+                        <h3 className="font-medium">AI Resume Assistant</h3>
+                      </div>
                       
-                      {/* Compact AI Skills Suggestions */}
-                      <div className="mt-6 bg-secondary-50 p-4 rounded-lg border border-secondary-200">
-                        <Collapsible>
-                          <CollapsibleTrigger asChild>
-                            <Button variant="ghost" className="flex items-center justify-between w-full p-0 h-auto">
-                              <div className="flex items-center">
-                                <Cpu className="h-4 w-4 text-primary-500 mr-2" />
-                                <span className="font-medium text-sm text-secondary-900">AI Skill Suggestions</span>
-                              </div>
-                              <ChevronDown className="h-4 w-4" />
-                            </Button>
+                      <Collapsible className="mb-4">
+                        <div className="flex justify-between items-center">
+                          <h4 className="text-sm font-medium text-secondary-700 mb-2">
+                            Generate Professional Summary
+                          </h4>
+                          <CollapsibleTrigger className="text-xs text-secondary-500 hover:text-secondary-800">
+                            <ChevronDown className="h-4 w-4" />
                           </CollapsibleTrigger>
-                          <CollapsibleContent className="mt-2">
-                            <SkillSuggestions 
-                              resumeId={resumeId?.toString() || "temp-id"} 
-                              onApply={handleAddSkill}
+                        </div>
+                        <CollapsibleContent>
+                          <div className="mt-2">
+                            <SummarySuggestions 
+                              resumeId={resumeId?.toString() || "new"}
+                              onApply={handleApplySummary}
                             />
-                          </CollapsibleContent>
-                        </Collapsible>
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                      
+                      <div className="text-xs text-secondary-500 mt-3">
+                        <p className="mb-2">Tips for a great summary:</p>
+                        <ul className="list-disc pl-4 space-y-1">
+                          <li>Keep it concise (3-5 sentences)</li>
+                          <li>Highlight your most relevant experience</li>
+                          <li>Focus on achievements rather than responsibilities</li>
+                          <li>Include keywords relevant to your target position</li>
+                        </ul>
                       </div>
                     </div>
-                  )}
-                  
-                  {/* Projects section */}
-                  {activeSection === "projects" && (
-                    <div>
-                      <h2 className="text-lg font-medium text-secondary-900 mb-4">Projects</h2>
-                      <ResumeProjectsSection
-                        projects={resume.projects}
-                        onUpdate={(projects) => setResume({ ...resume, projects })}
-                      />
-                    </div>
-                  )}
-                  
-                  {/* Preview section */}
-                  {activeSection === "preview" && (
-                    <ResumePreview resume={resume} />
-                  )}
+                  </div>
                 </div>
-              </div>
+              )}
               
-              {/* Live preview for all sections except preview */}
-              {activeSection !== "preview" && (
-                <div className="bg-white shadow rounded-lg overflow-hidden p-6 mt-6">
-                  <h3 className="text-lg font-medium mb-4 border-b pb-2">Live Preview</h3>
-                  <ResumeTemplate 
-                    resume={resume} 
-                    onTemplateChange={handleTemplateChange} 
+              {/* Experience Section */}
+              {activeSection === "experience" && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="md:col-span-2">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-xl font-semibold text-secondary-900">Work Experience</h2>
+                      <Button 
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const newExperience: ExperienceItem = {
+                            id: `exp-${Date.now()}`,
+                            title: "Position Title",
+                            company: "Company Name",
+                            startDate: "",
+                            endDate: "",
+                            description: ""
+                          };
+                          
+                          setResume({
+                            ...resume,
+                            experience: [...resume.experience, newExperience]
+                          });
+                        }}
+                        className="flex items-center space-x-1"
+                      >
+                        <Plus className="h-4 w-4" />
+                        <span>Add Experience</span>
+                      </Button>
+                    </div>
+                    
+                    <ResumeExperienceSection 
+                      experiences={resume.experience} 
+                      onUpdate={(experiences) => {
+                        setResume({
+                          ...resume,
+                          experience: experiences
+                        });
+                      }}
+                    />
+                  </div>
+                  
+                  {/* AI Assistant for Experience */}
+                  <div className="md:col-span-1">
+                    <div className="bg-secondary-50 p-5 rounded-lg border border-secondary-200">
+                      <div className="flex items-center mb-4 text-primary-800">
+                        <Cpu className="h-5 w-5 mr-2" />
+                        <h3 className="font-medium">AI Resume Assistant</h3>
+                      </div>
+                      
+                      <Collapsible className="mb-4">
+                        <div className="flex justify-between items-center">
+                          <h4 className="text-sm font-medium text-secondary-700 mb-2">
+                            Generate Achievement Bullets
+                          </h4>
+                          <CollapsibleTrigger className="text-xs text-secondary-500 hover:text-secondary-800">
+                            <ChevronDown className="h-4 w-4" />
+                          </CollapsibleTrigger>
+                        </div>
+                        <CollapsibleContent>
+                          <div className="mt-2">
+                            <ExperienceSuggestions 
+                              resumeId={resumeId?.toString() || "new"}
+                              jobTitle={resume.experience.length > 0 ? resume.experience[resume.experience.length - 1].title : undefined}
+                              onApply={handleApplyBulletPoint}
+                            />
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                      
+                      <div className="text-xs text-secondary-500 mt-3">
+                        <p className="mb-2">Tips for effective bullet points:</p>
+                        <ul className="list-disc pl-4 space-y-1">
+                          <li>Start with strong action verbs</li>
+                          <li>Include metrics and achievements</li>
+                          <li>Use industry-specific keywords</li>
+                          <li>Highlight results, not just responsibilities</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Education Section */}
+              {activeSection === "education" && (
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold text-secondary-900">Education</h2>
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newEducation: EducationItem = {
+                          id: `edu-${Date.now()}`,
+                          degree: "Degree Name",
+                          institution: "Institution Name",
+                          startDate: "",
+                          endDate: "",
+                          description: ""
+                        };
+                        
+                        setResume({
+                          ...resume,
+                          education: [...resume.education, newEducation]
+                        });
+                      }}
+                      className="flex items-center space-x-1"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>Add Education</span>
+                    </Button>
+                  </div>
+                  
+                  <ResumeEducationSection 
+                    education={resume.education} 
+                    onUpdate={(education) => {
+                      setResume({
+                        ...resume,
+                        education
+                      });
+                    }}
                   />
+                </div>
+              )}
+              
+              {/* Skills Section */}
+              {activeSection === "skills" && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="md:col-span-2">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-xl font-semibold text-secondary-900">Skills</h2>
+                      <Button 
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const newSkill: SkillItem = {
+                            id: `skill-${Date.now()}`,
+                            name: "New Skill",
+                            proficiency: 3
+                          };
+                          
+                          setResume({
+                            ...resume,
+                            skills: [...resume.skills, newSkill]
+                          });
+                        }}
+                        className="flex items-center space-x-1"
+                      >
+                        <Plus className="h-4 w-4" />
+                        <span>Add Skill</span>
+                      </Button>
+                    </div>
+                    
+                    <ResumeSkillsSection 
+                      skills={resume.skills} 
+                      onUpdate={(skills) => {
+                        setResume({
+                          ...resume,
+                          skills
+                        });
+                      }}
+                    />
+                  </div>
+                  
+                  {/* AI Assistant for Skills */}
+                  <div className="md:col-span-1">
+                    <div className="bg-secondary-50 p-5 rounded-lg border border-secondary-200">
+                      <div className="flex items-center mb-4 text-primary-800">
+                        <Cpu className="h-5 w-5 mr-2" />
+                        <h3 className="font-medium">AI Resume Assistant</h3>
+                      </div>
+                      
+                      <Collapsible className="mb-4">
+                        <div className="flex justify-between items-center">
+                          <h4 className="text-sm font-medium text-secondary-700 mb-2">
+                            Suggested Skills
+                          </h4>
+                          <CollapsibleTrigger className="text-xs text-secondary-500 hover:text-secondary-800">
+                            <ChevronDown className="h-4 w-4" />
+                          </CollapsibleTrigger>
+                        </div>
+                        <CollapsibleContent>
+                          <div className="mt-2">
+                            <SkillSuggestions 
+                              resumeId={resumeId?.toString() || "new"}
+                              jobTitle={resume.experience.length > 0 ? resume.experience[0].title : undefined}
+                              onApply={handleApplySkill}
+                            />
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                      
+                      <div className="text-xs text-secondary-500 mt-3">
+                        <p className="mb-2">Tips for showcasing skills:</p>
+                        <ul className="list-disc pl-4 space-y-1">
+                          <li>Include a mix of technical and soft skills</li>
+                          <li>Prioritize skills mentioned in job descriptions</li>
+                          <li>Be honest about your proficiency levels</li>
+                          <li>Group similar skills together</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Projects Section */}
+              {activeSection === "projects" && (
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold text-secondary-900">Projects</h2>
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newProject: ProjectItem = {
+                          id: `proj-${Date.now()}`,
+                          title: "Project Name",
+                          description: "",
+                          technologies: []
+                        };
+                        
+                        setResume({
+                          ...resume,
+                          projects: [...resume.projects, newProject]
+                        });
+                      }}
+                      className="flex items-center space-x-1"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>Add Project</span>
+                    </Button>
+                  </div>
+                  
+                  <ResumeProjectsSection 
+                    projects={resume.projects} 
+                    onUpdate={(projects) => {
+                      setResume({
+                        ...resume,
+                        projects
+                      });
+                    }}
+                  />
+                </div>
+              )}
+              
+              {/* Preview Section */}
+              {activeSection === "preview" && (
+                <div>
+                  <ResumePreview resume={resume} />
                 </div>
               )}
             </div>
           </div>
         </div>
       </main>
-      
-      {/* Floating AI Assistant Button */}
-      <div className="fixed bottom-4 right-4 z-10">
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button size="icon" className="rounded-full h-12 w-12">
-              <Cpu className="h-6 w-6" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>AI Resume Assistant</DialogTitle>
-              <DialogDescription>
-                Get AI-powered suggestions to improve your resume
-              </DialogDescription>
-            </DialogHeader>
-            <div className="py-4">
-              <AIAssistant 
-                resumeId={resumeId?.toString() || "temp-id"} 
-                resume={resume}
-                onApplySuggestions={handleApplySuggestions}
-                onApplySummary={handleApplySummary}
-                onApplyTailoredContent={handleApplyTailoredContent}
-              />
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
     </div>
   );
 }

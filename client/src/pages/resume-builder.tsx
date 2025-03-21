@@ -902,6 +902,30 @@ function SkillSuggestions({
 // This component has been replaced by ResumePreviewComponent
 
 function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resume: Resume; onTemplateChange: (template: string) => void; onDownload?: () => void }) {
+  // Local state for downloading
+  const [isDownloading, setIsDownloading] = useState(false);
+  
+  // Function to handle download with progress indicator
+  const handleDownload = async () => {
+    if (isDownloading) return; // Prevent multiple clicks
+    
+    setIsDownloading(true);
+    
+    try {
+      if (onDownload) {
+        await onDownload();
+      } else {
+        // Fallback to print dialog if no download function provided
+        window.print();
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      // Fallback to print dialog
+      window.print();
+    } finally {
+      setIsDownloading(false);
+    }
+  };
   // Calculate an initial scale that will fit most resumes in the viewport
   // Starting with 0.85 instead of 1.0 to show more content initially
   const [scale, setScale] = useState(0.85); 
@@ -1270,11 +1294,16 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
           <Button
             variant="outline"
             size="sm"
-            onClick={onDownload || downloadResume}
+            onClick={handleDownload}
             className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
+            disabled={isDownloading}
           >
-            <Download className="h-4 w-4" />
-            Download PDF
+            {isDownloading ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-1" />
+            ) : (
+              <Download className="h-4 w-4 mr-1" />
+            )}
+            {isDownloading ? "Generating..." : "Download PDF"}
           </Button>
         </div>
       </div>

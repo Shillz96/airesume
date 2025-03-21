@@ -1971,6 +1971,203 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // PDF Generation API Route
+  app.post('/api/generate-pdf', upload.none(), async (req, res) => {
+    try {
+      // Extract resume data from request
+      const resumeData = JSON.parse(req.body.resumeData);
+      const templateName = req.body.template || 'professional';
+      
+      console.log(`Generating PDF for resume with template: ${templateName}`);
+      
+      try {
+        // Create HTML content from template and resume data
+        let htmlContent = `<!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Resume - ${resumeData.personalInfo?.firstName || ''} ${resumeData.personalInfo?.lastName || ''}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+            .page { width: 8.5in; height: 11in; padding: 0.5in; box-sizing: border-box; }
+            .header { margin-bottom: 1rem; }
+            h1 { margin: 0; color: #333; }
+            .contact-info { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; }
+            .section { margin-bottom: 1rem; }
+            .section-title { border-bottom: 1px solid #ccc; padding-bottom: 0.25rem; margin-bottom: 0.5rem; color: #333; }
+            .experience-item, .education-item { margin-bottom: 0.75rem; }
+            .experience-header, .education-header { display: flex; justify-content: space-between; }
+            .job-title, .degree { font-weight: bold; }
+            .company, .institution { font-style: italic; }
+            .skills-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+            .skill-item { background: #f0f0f0; padding: 0.25rem 0.5rem; border-radius: 3px; font-size: 0.9rem; }
+            
+            /* Template styles */
+            ${templateName === 'professional' ? `
+              body { color: #333; }
+              h1 { color: #2c3e50; }
+              .section-title { color: #2c3e50; border-bottom: 2px solid #3498db; }
+              .job-title, .degree { color: #3498db; }
+            ` : templateName === 'creative' ? `
+              body { color: #333; }
+              h1 { color: #e74c3c; }
+              .section-title { color: #e74c3c; border-bottom: 2px solid #e74c3c; }
+              .job-title, .degree { color: #e74c3c; }
+              .skill-item { background: #fce4ec; color: #e74c3c; }
+            ` : templateName === 'executive' ? `
+              body { color: #333; }
+              h1 { color: #000; border-bottom: 2px solid #000; padding-bottom: 0.5rem; }
+              .section-title { color: #000; border-bottom: 1px solid #000; text-transform: uppercase; letter-spacing: 1px; }
+              .job-title, .degree { font-weight: bold; }
+            ` : templateName === 'modern' ? `
+              body { color: #333; font-family: 'Segoe UI', sans-serif; }
+              h1 { color: #4a154b; }
+              .section-title { color: #4a154b; border-bottom: 2px solid #4a154b; }
+              .job-title, .degree { color: #4a154b; }
+              .skill-item { background: #f4eff4; color: #4a154b; }
+            ` : templateName === 'minimal' ? `
+              body { color: #333; font-family: 'Helvetica', sans-serif; }
+              h1 { color: #333; font-weight: 300; letter-spacing: 1px; }
+              .section-title { color: #333; border-bottom: 1px solid #ddd; font-weight: 300; }
+              .job-title, .degree { font-weight: normal; }
+              .skill-item { background: #f8f8f8; color: #333; border: 1px solid #eee; }
+            ` : `
+              body { color: #333; }
+              h1 { color: #2c3e50; }
+              .section-title { color: #2c3e50; border-bottom: 2px solid #3498db; }
+              .job-title, .degree { color: #3498db; }
+            `}
+          </style>
+        </head>
+        <body>
+          <div class="page">
+            <div class="header">
+              <h1>${resumeData.personalInfo?.firstName || ''} ${resumeData.personalInfo?.lastName || ''}</h1>
+              <div class="contact-info">
+                ${resumeData.personalInfo?.email ? `<div class="email">${resumeData.personalInfo.email}</div>` : ''}
+                ${resumeData.personalInfo?.phone ? `<div class="phone">${resumeData.personalInfo.phone}</div>` : ''}
+              </div>
+              ${resumeData.personalInfo?.summary ? `
+                <div class="summary">
+                  ${resumeData.personalInfo.summary}
+                </div>
+              ` : ''}
+            </div>
+            
+            ${resumeData.experience && resumeData.experience.length > 0 ? `
+              <div class="section experience-section">
+                <h2 class="section-title">Experience</h2>
+                ${resumeData.experience.map((exp: any) => `
+                  <div class="experience-item">
+                    <div class="experience-header">
+                      <div class="job-title">${exp.title || ''}</div>
+                      <div class="dates">${exp.startDate || ''} - ${exp.endDate || 'Present'}</div>
+                    </div>
+                    <div class="company">${exp.company || ''}</div>
+                    <div class="description">${exp.description || ''}</div>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+            
+            ${resumeData.education && resumeData.education.length > 0 ? `
+              <div class="section education-section">
+                <h2 class="section-title">Education</h2>
+                ${resumeData.education.map((edu: any) => `
+                  <div class="education-item">
+                    <div class="education-header">
+                      <div class="degree">${edu.degree || ''}</div>
+                      <div class="dates">${edu.startDate || ''} - ${edu.endDate || ''}</div>
+                    </div>
+                    <div class="institution">${edu.institution || ''}</div>
+                    ${edu.description ? `<div class="description">${edu.description}</div>` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+            
+            ${resumeData.skills && resumeData.skills.length > 0 ? `
+              <div class="section skills-section">
+                <h2 class="section-title">Skills</h2>
+                <div class="skills-list">
+                  ${resumeData.skills.map((skill: any) => `
+                    <div class="skill-item">${skill.name || ''}</div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+            
+            ${resumeData.projects && resumeData.projects.length > 0 ? `
+              <div class="section projects-section">
+                <h2 class="section-title">Projects</h2>
+                ${resumeData.projects.map((project: any) => `
+                  <div class="project-item">
+                    <div class="project-title">${project.title || ''}</div>
+                    <div class="description">${project.description || ''}</div>
+                    ${project.technologies && project.technologies.length > 0 ? `
+                      <div class="technologies">
+                        <strong>Technologies:</strong> ${project.technologies.join(', ')}
+                      </div>
+                    ` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+        </body>
+        </html>`;
+        
+        // Try to use Puppeteer for server-side PDF generation
+        try {
+          const browser = await puppeteer.launch({
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            headless: 'new'
+          });
+          
+          const page = await browser.newPage();
+          await page.setContent(htmlContent);
+          
+          const pdfBuffer = await page.pdf({
+            format: 'A4',
+            printBackground: true,
+            margin: { top: '0.4in', right: '0.4in', bottom: '0.4in', left: '0.4in' }
+          });
+          
+          await browser.close();
+          
+          // Send PDF response
+          res.contentType('application/pdf');
+          res.setHeader('Content-Disposition', 'attachment; filename=resume.pdf');
+          return res.send(pdfBuffer);
+          
+        } catch (puppeteerError) {
+          // If Puppeteer fails, return HTML that the browser can print
+          console.error('Error generating PDF:', puppeteerError);
+          throw new Error('Server-side PDF generation failed, falling back to client-side');
+        }
+        
+      } catch (renderError) {
+        // Return HTML content for the client to handle
+        console.log('Falling back to client-side PDF rendering');
+        
+        // Return an error so the client uses the window.print() fallback
+        return res.status(500).json({
+          error: 'Failed to generate PDF',
+          message: 'Server-side PDF generation failed, falling back to client-side',
+          htmlContent: ''  // We don't send HTML back for security reasons
+        });
+      }
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      res.status(500).json({
+        error: 'Failed to generate PDF',
+        message: (error as Error).message
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

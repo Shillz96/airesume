@@ -291,7 +291,14 @@ export default function ResumePreviewComponent({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={onSmartAdjust}
+                    onClick={() => {
+                      console.log('Smart Adjust button clicked');
+                      if (onSmartAdjust) {
+                        onSmartAdjust();
+                      } else {
+                        console.error('Smart Adjust function is not defined');
+                      }
+                    }}
                     className="h-7 px-2 text-xs gap-1 bg-[rgba(30,40,80,0.5)] hover:bg-blue-800/50 border-blue-800/30 text-blue-300"
                   >
                     <Sparkles className="w-3 h-3" />

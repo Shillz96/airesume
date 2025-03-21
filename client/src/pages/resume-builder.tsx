@@ -791,127 +791,106 @@ export default function ResumeBuilder() {
   const handleSmartAdjust = () => {
     console.log("Smart Adjust triggered");
     
-    // Real-time smart adjust in multiple steps with small delays
-    // to allow the UI to update and show the changes in real-time
+    // Immediate feedback to show processing has started
+    toast({
+      title: "Smart Adjust Started",
+      description: "Processing your resume...",
+    });
     
-    // Step 1: Adjust experience descriptions
-    setTimeout(() => {
-      setResume(prevResume => {
-        const adjustedExperience = prevResume.experience.map(exp => {
-          // If description is too long, truncate it
-          if (exp.description && exp.description.length > 500) {
-            // Make each bullet point shorter if possible
-            let newDescription = exp.description;
-            
-            // If it has bullet points, shorten each one
-            if (exp.description.includes('•')) {
-              const bullets = exp.description.split('•').filter(Boolean);
-              newDescription = bullets
-                .map(bullet => {
-                  // Trim and shorten long bullet points
-                  const trimmed = bullet.trim();
-                  return trimmed.length > 100 ? 
-                    `• ${trimmed.substring(0, 95)}...` : 
-                    `• ${trimmed}`;
-                })
-                .join('\n');
-            } else {
-              // Just trim the whole description
-              newDescription = exp.description.substring(0, 490) + '...';
-            }
-            
-            return {
-              ...exp,
-              description: newDescription
-            };
-          }
-          return exp;
-        });
+    // Create a copy of resume to work with
+    const resumeCopy = { ...resume };
+    let contentAdjusted = false;
+    
+    // 1. Adjust experience descriptions in a single update
+    const adjustedExperience = resumeCopy.experience.map(exp => {
+      // If description is too long, truncate it
+      if (exp.description && exp.description.length > 500) {
+        contentAdjusted = true;
+        // Make each bullet point shorter if possible
+        let newDescription = exp.description;
         
-        return {
-          ...prevResume,
-          experience: adjustedExperience
-        };
-      });
-      
-      // Show feedback about progress
-      toast({
-        title: "Smart Adjust: Step 1/4",
-        description: "Optimizing experience descriptions...",
-      });
-    }, 100);
-    
-    // Step 2: Adjust education descriptions
-    setTimeout(() => {
-      setResume(prevResume => {
-        const adjustedEducation = prevResume.education.map(edu => {
-          if (edu.description && edu.description.length > 300) {
-            return {
-              ...edu,
-              description: edu.description.substring(0, 290) + '...'
-            };
-          }
-          return edu;
-        });
-        
-        return {
-          ...prevResume,
-          education: adjustedEducation
-        };
-      });
-      
-      // Show feedback about progress
-      toast({
-        title: "Smart Adjust: Step 2/4",
-        description: "Optimizing education details...",
-      });
-    }, 300);
-    
-    // Step 3: Prioritize skills by proficiency
-    setTimeout(() => {
-      setResume(prevResume => {
-        let adjustedSkills = [...prevResume.skills];
-        if (adjustedSkills.length > 10) {
-          // Sort skills by proficiency and take the top skills
-          adjustedSkills = adjustedSkills
-            .sort((a, b) => b.proficiency - a.proficiency)
-            .slice(0, 10);
+        // If it has bullet points, shorten each one
+        if (exp.description.includes('•')) {
+          const bullets = exp.description.split('•').filter(Boolean);
+          newDescription = bullets
+            .map(bullet => {
+              // Trim and shorten long bullet points
+              const trimmed = bullet.trim();
+              return trimmed.length > 100 ? 
+                `• ${trimmed.substring(0, 95)}...` : 
+                `• ${trimmed}`;
+            })
+            .join('\n');
+        } else {
+          // Just trim the whole description
+          newDescription = exp.description.substring(0, 490) + '...';
         }
         
         return {
-          ...prevResume,
-          skills: adjustedSkills
+          ...exp,
+          description: newDescription
         };
-      });
-      
-      // Show feedback about progress
-      toast({
-        title: "Smart Adjust: Step 3/4",
-        description: "Prioritizing most relevant skills...",
-      });
-    }, 500);
+      }
+      return exp;
+    });
     
-    // Step 4: Truncate lengthy summaries
-    setTimeout(() => {
-      setResume(prevResume => {
-        const personalInfo = {...prevResume.personalInfo};
-        
-        if (personalInfo.summary && personalInfo.summary.length > 600) {
-          personalInfo.summary = personalInfo.summary.substring(0, 590) + '...';
-        }
-        
+    // 2. Adjust education descriptions
+    const adjustedEducation = resumeCopy.education.map(edu => {
+      if (edu.description && edu.description.length > 300) {
+        contentAdjusted = true;
         return {
-          ...prevResume,
-          personalInfo
+          ...edu,
+          description: edu.description.substring(0, 290) + '...'
         };
-      });
-      
-      // Final completion toast
+      }
+      return edu;
+    });
+    
+    // 3. Prioritize skills by proficiency
+    let adjustedSkills = [...resumeCopy.skills];
+    if (adjustedSkills.length > 10) {
+      contentAdjusted = true;
+      // Sort skills by proficiency and take the top skills
+      adjustedSkills = adjustedSkills
+        .sort((a, b) => b.proficiency - a.proficiency)
+        .slice(0, 10);
+    }
+    
+    // 4. Truncate lengthy summaries
+    let adjustedPersonalInfo = { ...resumeCopy.personalInfo };
+    if (adjustedPersonalInfo.summary && adjustedPersonalInfo.summary.length > 600) {
+      contentAdjusted = true;
+      adjustedPersonalInfo = {
+        ...adjustedPersonalInfo,
+        summary: adjustedPersonalInfo.summary.substring(0, 590) + '...'
+      };
+    }
+    
+    // Apply all changes at once to minimize re-renders
+    const adjustedResume = {
+      ...resumeCopy,
+      experience: adjustedExperience,
+      education: adjustedEducation,
+      skills: adjustedSkills,
+      personalInfo: adjustedPersonalInfo
+    };
+    
+    // Update the state with all changes
+    if (contentAdjusted) {
+      setResume(adjustedResume);
+      // Show success feedback
       toast({
         title: "Smart Adjust Complete",
-        description: "Your resume has been optimized for better presentation and page fit.",
+        description: "Your resume has been optimized for better page fit.",
       });
-    }, 700);
+    } else {
+      // No changes needed
+      toast({
+        title: "Resume Already Optimized",
+        description: "Your resume content is already well-balanced.",
+        variant: "default"
+      });
+    }
   };
   
   // Handle resume upload and parsed data

@@ -52,8 +52,9 @@ interface TailoredContent {
 interface ChatMessage {
   sender: 'AI' | 'User';
   message: string;
-  type?: 'summary' | 'bullet' | 'skill' | 'tailoring' | 'general' | 'option';
+  type?: 'summary' | 'bullet' | 'skill' | 'tailoring' | 'general' | 'option' | 'education' | 'project' | 'custom';
   options?: string[];
+  section?: string; // Indicates which resume section this content is for
 }
 
 export default function AIAssistant({ 
@@ -497,8 +498,24 @@ export default function AIAssistant({
     // Add user message to chat
     setChatMessages(prev => [...prev, { sender: 'User', message: userInput }]);
     
-    // Process user input
-    const input = userInput.toLowerCase();
+    // Process user input based on context and user message
+    const input = userInput.trim().toLowerCase();
+    
+    // Identify the resume section from user input
+    let section = '';
+    if (input.includes('summary') || input.includes('profile') || input.includes('about me')) {
+      section = 'profile';
+    } else if (input.includes('experience') || input.includes('work') || input.includes('job')) {
+      section = 'experience';
+    } else if (input.includes('education') || input.includes('school') || input.includes('degree') || input.includes('university')) {
+      section = 'education';
+    } else if (input.includes('skill')) {
+      section = 'skills';
+    } else if (input.includes('project')) {
+      section = 'projects';
+    }
+    
+    // Generate AI response based on input type
     setUserInput("");
     
     setTimeout(() => {

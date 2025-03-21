@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/navbar";
 import JobCard, { Job } from "@/components/job-card";
@@ -19,40 +19,13 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGuestMode } from "@/hooks/use-guest-mode";
 import { useAuth } from "@/hooks/use-auth";
-import { useToast } from "@/hooks/use-toast";
 import { getQueryFn } from "@/lib/queryClient";
-
-// Extend Window interface to include our custom property
-declare global {
-  interface Window {
-    cosmic_prompt_for_api_key?: () => void;
-  }
-}
 
 export default function JobFinder() {
   const { isGuestMode } = useGuestMode();
   const { user } = useAuth();
   
-  // Get toast from the hook
-  const { toast } = useToast();
-  
-  // Add the API key prompt function to the window object so we can call it from the link
-  // This is a workaround since we can't directly call the ask_secrets tool from the client
-  useEffect(() => {
-    window.cosmic_prompt_for_api_key = () => {
-      // Show a toast message to the user
-      toast({
-        title: "Job API Key Required",
-        description: "Please contact the administrator to set up a real job API connection. Using sample data for now.",
-        variant: "default"
-      });
-    };
-    
-    return () => {
-      // Clean up
-      delete window.cosmic_prompt_for_api_key;
-    };
-  }, [toast]);
+  // Note: We're just using sample job data throughout the application for demonstration purposes
   const [filterValues, setFilterValues] = useState<JobFilterValues>({
     title: "",
     location: "",
@@ -142,10 +115,7 @@ export default function JobFinder() {
                   <h3 className="text-lg font-medium text-blue-300">AI-Powered Job Matching</h3>
                   <div className="mt-2 text-sm text-gray-300">
                     <p>Based on your resume, our AI has found jobs that match your skills and experience. Jobs with higher match scores align better with your profile and have greater potential for success.</p>
-                    <p className="mt-2">Currently using sample job data. <a href="#" className="text-blue-400 hover:text-blue-300 underline" onClick={(e) => {
-                      e.preventDefault();
-                      window.cosmic_prompt_for_api_key?.();
-                    }}>Connect to a real jobs API</a> for live listings.</p>
+                    <p className="mt-2">Currently using sample job data for demonstration purposes. In a production environment, this would connect to a real jobs API service.</p>
                   </div>
                 </div>
               </div>

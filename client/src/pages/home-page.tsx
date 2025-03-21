@@ -79,52 +79,49 @@ export default function HomePage() {
   }, []);
   
   return (
-    <div className="cosmic-page">
+    <>
       <CosmicBackground />
       <Navbar />
-      
-      <main className="relative z-10 cosmic-nebula flex-1">
-        <div className="container pt-24 pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
-          <div className="flex items-center justify-between mb-6" ref={welcomeRef}>
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight cosmic-text-gradient">
-                Welcome back, <span className="cosmic-text-gradient">{user?.username}</span>!
-              </h1>
-              <p className="text-muted-foreground">
-                Navigate your career journey with AI-powered tools and insights.
-              </p>
-            </div>
-            <div className="ml-4" ref={rocketRef}>
-              <div className="bg-[hsl(260,100%,60%)] bg-opacity-20 p-3 rounded-full cosmic-glow">
-                <Rocket size={24} className="text-white" />
-              </div>
-            </div>
+      <div className="container pt-24 pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
+        <div className="flex items-center justify-between mb-6" ref={welcomeRef}>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight cosmic-text-gradient">
+              Welcome back, <span className="cosmic-text-gradient">{user?.username}</span>!
+            </h1>
+            <p className="text-muted-foreground">
+              Navigate your career journey with AI-powered tools and insights.
+            </p>
           </div>
-            
-          <SubscriptionStatus />
-            
-          <div className="mt-6">
-            <DashboardStats />
-          </div>
-            
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[600px]">
-            <div className="md:col-span-1 flex flex-col h-full">
-              <div className="flex-1 h-full">
-                <JobInterviewAvatar />
-              </div>
+          <div className="ml-4" ref={rocketRef}>
+            <div className="bg-[hsl(260,100%,60%)] bg-opacity-20 p-3 rounded-full cosmic-glow">
+              <Rocket size={24} className="text-white" />
             </div>
-            <div className="md:col-span-1 flex flex-col h-full">
-              <div className="flex-1 h-full">
-                <RecentActivity />
-              </div>
-            </div>
-          </div>
-            
-          <div className="mt-16 mb-12 pt-4">
-            <JobSearchProgress />
           </div>
         </div>
-      </main>
-    </div>
+        
+        <SubscriptionStatus />
+        
+        <div className="mt-6">
+          <DashboardStats />
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[600px]">
+          <div className="md:col-span-1 flex flex-col h-full">
+            <div className="flex-1 h-full">
+              <JobInterviewAvatar />
+            </div>
+          </div>
+          <div className="md:col-span-1 flex flex-col h-full">
+            <div className="flex-1 h-full">
+              <RecentActivity />
+            </div>
+          </div>
+        </div>
+        
+        <div className="mt-16 mb-12 pt-4">
+          <JobSearchProgress />
+        </div>
+      </div>
+    </>
   );
 }

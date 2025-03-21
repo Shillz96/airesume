@@ -294,7 +294,138 @@ export default function ResumePreviewComponent({
                     onClick={() => {
                       console.log('Smart Adjust button clicked');
                       if (onSmartAdjust) {
-                        onSmartAdjust();
+                        // First check if we need adjustment based on content length
+                        const contentNeedsAdjustment = totalPages > 1;
+                        
+                        if (contentNeedsAdjustment) {
+                          // Create a deep copy of the current resume
+                          const adjustedResume = JSON.parse(JSON.stringify(resume));
+                          
+                          // Calculate the severity of adjustment needed based on content volume
+                          // 1.0 = minimal adjustment, 3.0 = aggressive adjustment
+                          const adjustmentSeverity = Math.min(totalPages, 3);
+                          
+                          // Adjust personal summary based on severity
+                          if (adjustedResume.personalInfo?.summary) {
+                            const maxSummaryLength = Math.floor(300 / adjustmentSeverity);
+                            if (adjustedResume.personalInfo.summary.length > maxSummaryLength) {
+                              adjustedResume.personalInfo.summary = adjustedResume.personalInfo.summary
+                                .substring(0, maxSummaryLength)
+                                .replace(/\s+[^\s]*$/, ''); // Cut at word boundary
+                              adjustedResume.personalInfo.summary += '...';
+                            }
+                          }
+                          
+                          // Adjust experience entries
+                          if (adjustedResume.experience && adjustedResume.experience.length > 0) {
+                            // Limit number of experiences based on severity
+                            const maxExperiences = Math.max(2, Math.floor(5 / adjustmentSeverity));
+                            if (adjustedResume.experience.length > maxExperiences) {
+                              adjustedResume.experience = adjustedResume.experience.slice(0, maxExperiences);
+                            }
+                            
+                            // Limit description length for each experience
+                            adjustedResume.experience = adjustedResume.experience.map(exp => {
+                              if (exp.description) {
+                                const maxDescLength = Math.floor(250 / adjustmentSeverity);
+                                
+                                // Handle bullet point format (if description contains bullet points)
+                                if (exp.description.includes('•')) {
+                                  const bullets = exp.description.split('•').filter(b => b.trim());
+                                  // Keep only top few bullet points
+                                  const maxBullets = Math.max(2, Math.floor(5 / adjustmentSeverity));
+                                  const trimmedBullets = bullets.slice(0, maxBullets);
+                                  
+                                  // Trim each bullet point if needed
+                                  const processedBullets = trimmedBullets.map(bullet => {
+                                    const trimmed = bullet.trim();
+                                    if (trimmed.length > maxDescLength / maxBullets) {
+                                      return trimmed.substring(0, maxDescLength / maxBullets).replace(/\s+[^\s]*$/, '') + '...';
+                                    }
+                                    return trimmed;
+                                  });
+                                  
+                                  exp.description = processedBullets.map(b => `• ${b}`).join('\n');
+                                } else {
+                                  // Handle paragraph format
+                                  if (exp.description.length > maxDescLength) {
+                                    exp.description = exp.description
+                                      .substring(0, maxDescLength)
+                                      .replace(/\s+[^\s]*$/, '') + '...';
+                                  }
+                                }
+                              }
+                              return exp;
+                            });
+                          }
+                          
+                          // Adjust education entries
+                          if (adjustedResume.education && adjustedResume.education.length > 0) {
+                            const maxEducation = Math.max(1, Math.floor(3 / adjustmentSeverity));
+                            if (adjustedResume.education.length > maxEducation) {
+                              adjustedResume.education = adjustedResume.education.slice(0, maxEducation);
+                            }
+                            
+                            // Trim description
+                            adjustedResume.education = adjustedResume.education.map(edu => {
+                              if (edu.description && edu.description.length > 100 / adjustmentSeverity) {
+                                edu.description = edu.description
+                                  .substring(0, 100 / adjustmentSeverity)
+                                  .replace(/\s+[^\s]*$/, '') + '...';
+                              }
+                              return edu;
+                            });
+                          }
+                          
+                          // Adjust skills
+                          if (adjustedResume.skills && adjustedResume.skills.length > 0) {
+                            const maxSkills = Math.max(6, Math.floor(15 / adjustmentSeverity));
+                            if (adjustedResume.skills.length > maxSkills) {
+                              adjustedResume.skills = adjustedResume.skills.slice(0, maxSkills);
+                            }
+                          }
+                          
+                          // Adjust projects
+                          if (adjustedResume.projects && adjustedResume.projects.length > 0) {
+                            const maxProjects = Math.max(1, Math.floor(3 / adjustmentSeverity));
+                            if (adjustedResume.projects.length > maxProjects) {
+                              adjustedResume.projects = adjustedResume.projects.slice(0, maxProjects);
+                            }
+                            
+                            // Trim project descriptions
+                            adjustedResume.projects = adjustedResume.projects.map(project => {
+                              if (project.description && project.description.length > 100 / adjustmentSeverity) {
+                                project.description = project.description
+                                  .substring(0, 100 / adjustmentSeverity)
+                                  .replace(/\s+[^\s]*$/, '') + '...';
+                              }
+                              
+                              // Limit technologies to a few
+                              if (project.technologies && project.technologies.length > 4 / adjustmentSeverity) {
+                                project.technologies = project.technologies.slice(0, Math.floor(4 / adjustmentSeverity));
+                              }
+                              
+                              return project;
+                            });
+                          }
+                          
+                          // Apply the adjustments
+                          onSmartAdjust(adjustedResume);
+                          
+                          // Notify the user
+                          toast({
+                            title: "Smart Adjust Applied",
+                            description: `Content optimized to fit on a single page (${adjustmentSeverity.toFixed(1)}x compression).`,
+                            variant: "default",
+                          });
+                        } else {
+                          // No adjustment needed
+                          toast({
+                            title: "Resume Already Optimized",
+                            description: "Your resume already fits on a single page.",
+                            variant: "default",
+                          });
+                        }
                       } else {
                         console.error('Smart Adjust function is not defined');
                       }

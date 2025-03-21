@@ -28,44 +28,50 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { cn } from "@/lib/utils";
+import { insertUserSchema } from "@shared/schema";
+import { useGuestMode } from "@/hooks/use-guest-mode";
 import gsap from "gsap";
 
 // Login form schema
 const loginSchema = z.object({
-  username: z.string().min(1, "Username is required"),
-  password: z.string().min(1, "Password is required"),
-});
-
-// Registration form schema
-const registerSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
 });
 
+// Registration form schema (extends the base schema from shared)
+const registerSchema = insertUserSchema
+  .extend({
+    confirmPassword: z.string(),
+    plan: z.string().optional(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
 export default function LandingPage() {
+  const [, setLocation] = useLocation();
   const { user, loginMutation, registerMutation } = useAuth();
   const { toast } = useToast();
-  const [, setLocation] = useLocation();
+  const { showGuestModal } = useGuestMode();
+  
+  // Animation refs
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const featuresRef = useRef<HTMLDivElement>(null);
+  
+  // Dialog states
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   
-  // Dialog refs
-  const heroRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const subtitleRef = useRef<HTMLParagraphElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
-  const featureRefs = useRef<(HTMLDivElement | null)[]>([]);
-  
-  // Forms
+  // Form setup
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -73,172 +79,111 @@ export default function LandingPage() {
       password: "",
     },
   });
-
+  
   const registerForm = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       username: "",
       password: "",
       confirmPassword: "",
+      plan: "",
     },
   });
+  
+  // If user is already logged in, redirect to home
+  useEffect(() => {
+    if (user) {
+      setLocation("/");
+    }
+  }, [user, setLocation]);
   
   // Form submission handlers
   async function onLoginSubmit(values: z.infer<typeof loginSchema>) {
     try {
       await loginMutation.mutateAsync(values);
       setIsLoginOpen(false);
-      setLocation("/dashboard");
       toast({
-        title: "Login successful",
-        description: "Welcome back!",
+        title: "Welcome back!",
+        description: "You have successfully logged in.",
       });
+      setLocation("/");
     } catch (error) {
-      // Error is handled by the mutation
+      // Error is handled in the mutation
     }
   }
-
+  
   async function onRegisterSubmit(values: z.infer<typeof registerSchema>) {
     try {
-      const { confirmPassword, ...registerData } = values;
-      await registerMutation.mutateAsync(registerData);
+      // Remove confirmPassword and plan as they're not part of the API schema
+      const { confirmPassword, plan, ...userValues } = values;
+      
+      await registerMutation.mutateAsync(userValues);
       setIsRegisterOpen(false);
-      setLocation("/dashboard");
       toast({
-        title: "Registration successful",
-        description: "Your account has been created.",
+        title: "Account created!",
+        description: "Your account has been successfully created.",
       });
+      setLocation("/");
     } catch (error) {
-      // Error is handled by the mutation
+      // Error is handled in the mutation
     }
   }
   
-  // Open the register modal with a specific plan
-  const openRegisterWithPlan = (plan: string) => {
-    setSelectedPlan(plan);
-    setIsRegisterOpen(true);
-  };
-  
-  // Redirect authenticated users to dashboard
+  // Starfield animation
   useEffect(() => {
-    if (user) {
-      setLocation("/dashboard");
-    }
-  }, [user, setLocation]);
-
-  // Animation effects
-  useEffect(() => {
-    // Hero animations
-    if (titleRef.current && subtitleRef.current && ctaRef.current) {
-      const tl = gsap.timeline();
+    const createStar = () => {
+      const star = document.createElement("div");
+      star.className = "cosmic-star absolute rounded-full";
       
-      tl.fromTo(
-        titleRef.current,
-        { y: 50, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" }
-      )
-      .fromTo(
-        subtitleRef.current,
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.7, ease: "power2.out" },
-        "-=0.5"
-      )
-      .fromTo(
-        ctaRef.current,
-        { y: 20, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.7)" },
-        "-=0.3"
-      );
-    }
-    
-    // Feature section animations
-    if (featureRefs.current.length > 0) {
-      gsap.fromTo(
-        featureRefs.current,
-        { y: 50, opacity: 0 },
-        { 
-          y: 0, 
-          opacity: 1, 
-          duration: 0.7, 
-          stagger: 0.15, 
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: featureRefs.current[0],
-            start: "top bottom-=100",
-          }
-        }
-      );
-    }
-    
-    // Create orbiting particles around the hero section
-    const createParticle = () => {
-      if (!heroRef.current) return;
+      // Random size between 1-3px
+      const size = Math.random() * 2 + 1;
+      star.style.width = `${size}px`;
+      star.style.height = `${size}px`;
       
-      const particle = document.createElement('div');
-      particle.className = 'cosmic-particle';
+      // Random position
+      star.style.left = `${Math.random() * 100}%`;
+      star.style.top = `${Math.random() * 100}%`;
       
-      // Random size
-      const size = Math.random() * 4 + 2;
-      particle.style.width = `${size}px`;
-      particle.style.height = `${size}px`;
+      // Random opacity
+      star.style.opacity = `${Math.random() * 0.5 + 0.3}`;
       
-      // Random position around the perimeter
-      const heroRect = heroRef.current.getBoundingClientRect();
-      const centerX = heroRect.left + heroRect.width / 2;
-      const centerY = heroRect.top + heroRect.height / 2;
-      const radius = Math.max(heroRect.width, heroRect.height) * 0.7;
-      const angle = Math.random() * Math.PI * 2;
+      // Random background color - whites and blues
+      const colors = ['#ffffff', '#e1e1ff', '#b3c6ff', '#d6e4ff'];
+      star.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
       
-      const x = centerX + Math.cos(angle) * radius;
-      const y = centerY + Math.sin(angle) * radius;
+      // Append to body
+      document.querySelector('.cosmic-page')?.appendChild(star);
       
-      particle.style.left = `${x}px`;
-      particle.style.top = `${y}px`;
-      
-      document.body.appendChild(particle);
-      
-      // Animate in orbit
-      gsap.to(particle, {
-        duration: Math.random() * 15 + 15,
-        rotation: 360,
-        repeat: -1,
-        ease: "none",
-        motionPath: {
-          path: [
-            {x: x - centerX, y: y - centerY},
-            {x: y - centerY, y: -(x - centerX)},
-            {x: -(x - centerX), y: -(y - centerY)},
-            {x: -(y - centerY), y: x - centerX},
-            {x: x - centerX, y: y - centerY}
-          ],
-          curviness: 1.5,
-          autoRotate: false
-        },
-        transformOrigin: "center center"
-      });
-      
-      // Random opacity pulsing
-      gsap.to(particle, {
-        opacity: Math.random() * 0.5 + 0.3,
-        duration: Math.random() * 2 + 1,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut"
-      });
-      
-      // Cleanup
+      // Cleanup function
       return () => {
-        if (particle.parentNode) {
-          particle.parentNode.removeChild(particle);
+        if (star.parentNode) {
+          star.parentNode.removeChild(star);
         }
       };
     };
+
+    // Create stars
+    const cleanupFns = [];
+    const starCount = window.innerWidth < 768 ? 50 : 100;
     
-    // Create particles
-    const cleanupFns: Array<() => void> = [];
-    for (let i = 0; i < 20; i++) {
-      const cleanup = createParticle();
-      if (cleanup) cleanupFns.push(cleanup);
+    for (let i = 0; i < starCount; i++) {
+      cleanupFns.push(createStar());
+    }
+    
+    // GSAP animations
+    if (titleRef.current && subtitleRef.current && ctaRef.current) {
+      gsap.fromTo(titleRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1 });
+      gsap.fromTo(subtitleRef.current, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 1, delay: 0.3 });
+      gsap.fromTo(ctaRef.current, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 1, delay: 0.6 });
+    }
+    
+    // Feature animations on scroll
+    if (featuresRef.current) {
+      const features = featuresRef.current.querySelectorAll('.feature-card');
+      gsap.fromTo(features, 
+        { opacity: 0, y: 30 }, 
+        { opacity: 1, y: 0, duration: 0.7, stagger: 0.2, scrollTrigger: { trigger: featuresRef.current, start: "top 80%" } }
+      );
     }
     
     return () => {
@@ -249,28 +194,29 @@ export default function LandingPage() {
   const handleLoginClick = () => {
     setIsLoginOpen(true);
   };
-
+  
   const handleRegisterClick = () => {
     setIsRegisterOpen(true);
   };
+  
+  // Handle the "Try Free" buttons in pricing cards
+  const handleSelectPlan = (plan: string) => {
+    setSelectedPlan(plan);
+    registerForm.setValue("plan", plan);
+    setIsRegisterOpen(true);
+  };
 
+  // Button event listener effect
   useEffect(() => {
-    // Override the navbar login/register button actions
-    const loginBtn = document.querySelector("[data-navbar-login]");
-    const registerBtn = document.querySelector("[data-navbar-register]");
+    const loginBtn = document.getElementById("login-button");
+    const registerBtn = document.getElementById("register-button");
     
     if (loginBtn) {
-      loginBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        handleLoginClick();
-      });
+      loginBtn.addEventListener("click", handleLoginClick);
     }
     
     if (registerBtn) {
-      registerBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        handleRegisterClick();
-      });
+      registerBtn.addEventListener("click", handleRegisterClick);
     }
     
     return () => {
@@ -285,10 +231,8 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="cosmic-page min-h-screen">
+    <>
       <CosmicBackground />
-      
-      {/* Use the common Navbar component */}
       <Navbar />
       
       {/* Login Dialog */}
@@ -308,14 +252,8 @@ export default function LandingPage() {
                     <FormLabel>Username</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                          <User className="h-5 w-5" />
-                        </span>
-                        <Input 
-                          placeholder="Enter your username" 
-                          className="pl-10" 
-                          {...field} 
-                        />
+                        <User className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input placeholder="Enter your username" className="pl-8" {...field} />
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -330,22 +268,15 @@ export default function LandingPage() {
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                          <Lock className="h-5 w-5" />
-                        </span>
-                        <Input 
-                          type="password" 
-                          placeholder="Enter your password" 
-                          className="pl-10" 
-                          {...field} 
-                        />
+                        <Lock className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input type="password" placeholder="Enter your password" className="pl-8" {...field} />
                       </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full cosmic-btn-glow mt-2" disabled={loginMutation.isPending}>
+              <Button type="submit" className="w-full cosmic-btn-glow" disabled={loginMutation.isPending}>
                 {loginMutation.isPending ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : null}
@@ -353,12 +284,12 @@ export default function LandingPage() {
               </Button>
             </form>
           </Form>
-          <div className="mt-4 text-center text-sm">
-            <p className="text-muted-foreground">
+          <DialogFooter className="mt-4 text-center flex-col sm:flex-col sm:space-y-2">
+            <div className="text-sm">
               Don't have an account?{" "}
               <Button 
                 variant="link" 
-                className="p-0 text-primary"
+                className="p-0 h-auto text-blue-400 hover:text-blue-300"
                 onClick={() => {
                   setIsLoginOpen(false);
                   setIsRegisterOpen(true);
@@ -366,8 +297,20 @@ export default function LandingPage() {
               >
                 Sign up
               </Button>
-            </p>
-          </div>
+            </div>
+            <div className="text-sm">
+              <Button 
+                variant="link" 
+                className="p-0 h-auto text-blue-400 hover:text-blue-300"
+                onClick={() => {
+                  setIsLoginOpen(false);
+                  showGuestModal();
+                }}
+              >
+                Continue as guest
+              </Button>
+            </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
       
@@ -375,12 +318,8 @@ export default function LandingPage() {
       <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
         <DialogContent className="bg-card/90 backdrop-blur-xl border-white/10 sm:max-w-md">
           <DialogHeader className="mb-3">
-            <DialogTitle className="text-2xl cosmic-text-gradient">Sign Up</DialogTitle>
-            <DialogDescription>
-              {selectedPlan 
-                ? `Create an account to get started with the ${selectedPlan} plan` 
-                : "Create an account to get started"}
-            </DialogDescription>
+            <DialogTitle className="text-2xl cosmic-text-gradient">Create Account</DialogTitle>
+            <DialogDescription>Sign up to get started with AIreHire</DialogDescription>
           </DialogHeader>
           <Form {...registerForm}>
             <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
@@ -392,14 +331,8 @@ export default function LandingPage() {
                     <FormLabel>Username</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                          <User className="h-5 w-5" />
-                        </span>
-                        <Input 
-                          placeholder="Choose a username" 
-                          className="pl-10" 
-                          {...field} 
-                        />
+                        <User className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input placeholder="Choose a username" className="pl-8" {...field} />
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -414,15 +347,8 @@ export default function LandingPage() {
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                          <Lock className="h-5 w-5" />
-                        </span>
-                        <Input 
-                          type="password" 
-                          placeholder="Create a password" 
-                          className="pl-10" 
-                          {...field} 
-                        />
+                        <Lock className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input type="password" placeholder="Create a password" className="pl-8" {...field} />
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -437,15 +363,8 @@ export default function LandingPage() {
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                          <Lock className="h-5 w-5" />
-                        </span>
-                        <Input 
-                          type="password" 
-                          placeholder="Confirm your password" 
-                          className="pl-10" 
-                          {...field} 
-                        />
+                        <Lock className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Input type="password" placeholder="Confirm your password" className="pl-8" {...field} />
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -468,35 +387,31 @@ export default function LandingPage() {
             </form>
           </Form>
           <div className="mt-4 text-center text-sm">
-            <p className="text-muted-foreground">
-              Already have an account?{" "}
-              <Button 
-                variant="link" 
-                className="p-0 text-primary"
-                onClick={() => {
-                  setIsRegisterOpen(false);
-                  setIsLoginOpen(true);
-                }}
-              >
-                Log in
-              </Button>
-            </p>
+            Already have an account?{" "}
+            <Button 
+              variant="link" 
+              className="p-0 h-auto text-blue-400 hover:text-blue-300"
+              onClick={() => {
+                setIsRegisterOpen(false);
+                setIsLoginOpen(true);
+              }}
+            >
+              Log in
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
       
-      {/* Hero Section */}
-      <section 
-        className="pt-32 pb-20 relative overflow-hidden" 
-        ref={heroRef}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center">
+      {/* Main Content */}
+      <div className="container pt-24 pb-10 px-4 md:px-6 mx-auto min-h-screen relative z-10">
+        {/* Hero Section */}
+        <section className="py-12 md:py-20">
+          <div className="text-center max-w-3xl mx-auto">
             <h1 
-              className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight"
+              className="text-4xl sm:text-5xl md:text-6xl font-bold background-animate bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent"
               ref={titleRef}
             >
-              <span className="cosmic-text-gradient">AI-Powered</span> Career Acceleration
+              Accelerate Your Career with AI-Powered Resume & Job Tools
             </h1>
             <p 
               className="mt-6 max-w-2xl mx-auto text-xl text-gray-300"
@@ -518,680 +433,366 @@ export default function LandingPage() {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="px-8 py-6 text-lg"
-                onClick={() => {
-                  const pricingSection = document.getElementById("pricing");
-                  pricingSection?.scrollIntoView({ behavior: "smooth" });
-                }}
+                className="px-8 py-6 text-lg border-white/10 hover:bg-white/10 text-gray-200"
+                onClick={() => showGuestModal()}
               >
-                View Plans
+                Continue as Guest
               </Button>
             </div>
           </div>
-        </div>
+        </section>
         
-        {/* Decorative elements */}
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-500/20 rounded-full filter blur-3xl"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full filter blur-3xl"></div>
-      </section>
-      
-      {/* Features Section */}
-      <section id="features" className="py-20 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold cosmic-text-gradient">
-              Supercharge Your Job Search
-            </h2>
-            <p className="mt-4 text-lg text-gray-300">
-              Our AI tools help you stand out and land your dream job faster.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div 
-              className="bg-card/60 backdrop-blur-lg border border-white/10 rounded-xl p-6 text-center"
-              ref={el => featureRefs.current[0] = el}
-            >
-              <div className="flex justify-center mb-4">
-                <div className="bg-blue-900/50 p-3 rounded-full cosmic-glow">
-                  <FileText className="h-8 w-8 text-blue-400" />
-                </div>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">AI Resume Builder</h3>
-              <p className="text-gray-300">
-                Create professional, ATS-optimized resumes with smart suggestions and templates tailored to your industry.
-              </p>
-              <ul className="mt-4 space-y-2 text-left">
-                <li className="flex items-center">
-                  <CheckCircle2 className="h-4 w-4 text-green-400 mr-2" />
-                  <span className="text-sm text-gray-300">Smart content suggestions</span>
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle2 className="h-4 w-4 text-green-400 mr-2" />
-                  <span className="text-sm text-gray-300">Multiple design templates</span>
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle2 className="h-4 w-4 text-green-400 mr-2" />
-                  <span className="text-sm text-gray-300">Keyword optimization</span>
-                </li>
-              </ul>
-            </div>
-            
-            {/* Feature 2 */}
-            <div 
-              className="bg-card/60 backdrop-blur-lg border border-white/10 rounded-xl p-6 text-center"
-              ref={el => featureRefs.current[1] = el}
-            >
-              <div className="flex justify-center mb-4">
-                <div className="bg-purple-900/50 p-3 rounded-full cosmic-glow">
-                  <Briefcase className="h-8 w-8 text-purple-400" />
-                </div>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">Smart Job Matching</h3>
-              <p className="text-gray-300">
-                Discover jobs that match your skills and experience with our intelligent job recommendation engine.
-              </p>
-              <ul className="mt-4 space-y-2 text-left">
-                <li className="flex items-center">
-                  <CheckCircle2 className="h-4 w-4 text-green-400 mr-2" />
-                  <span className="text-sm text-gray-300">Personalized job recommendations</span>
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle2 className="h-4 w-4 text-green-400 mr-2" />
-                  <span className="text-sm text-gray-300">Match percentage indicators</span>
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle2 className="h-4 w-4 text-green-400 mr-2" />
-                  <span className="text-sm text-gray-300">One-click applications</span>
-                </li>
-              </ul>
-            </div>
-            
-            {/* Feature 3 */}
-            <div 
-              className="bg-card/60 backdrop-blur-lg border border-white/10 rounded-xl p-6 text-center"
-              ref={el => featureRefs.current[2] = el}
-            >
-              <div className="flex justify-center mb-4">
-                <div className="bg-cyan-900/50 p-3 rounded-full cosmic-glow">
-                  <Bot className="h-8 w-8 text-cyan-400" />
-                </div>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">AI Career Assistant</h3>
-              <p className="text-gray-300">
-                Get personalized guidance and feedback from our AI assistant to improve your job search strategy.
-              </p>
-              <ul className="mt-4 space-y-2 text-left">
-                <li className="flex items-center">
-                  <CheckCircle2 className="h-4 w-4 text-green-400 mr-2" />
-                  <span className="text-sm text-gray-300">Resume improvement suggestions</span>
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle2 className="h-4 w-4 text-green-400 mr-2" />
-                  <span className="text-sm text-gray-300">Cover letter generation</span>
-                </li>
-                <li className="flex items-center">
-                  <CheckCircle2 className="h-4 w-4 text-green-400 mr-2" />
-                  <span className="text-sm text-gray-300">Interview preparation help</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-          
-          {/* More features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-            {/* Feature 4 */}
-            <div 
-              className="bg-card/60 backdrop-blur-lg border border-white/10 rounded-xl p-6 text-center"
-              ref={el => featureRefs.current[3] = el}
-            >
-              <div className="flex justify-center mb-4">
-                <div className="bg-amber-900/50 p-3 rounded-full cosmic-glow">
-                  <Zap className="h-8 w-8 text-amber-400" />
-                </div>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">One-Click Tailoring</h3>
-              <p className="text-gray-300">
-                Instantly tailor your resume to match specific job descriptions and increase your chance of getting hired.
+        {/* Features Section */}
+        <section className="py-20 relative z-10" ref={featuresRef}>
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold cosmic-text-gradient">
+                Powerful Features to Supercharge Your Job Search
+              </h2>
+              <p className="mt-4 text-xl text-gray-300">
+                Everything you need to create professional resumes and find your dream job
               </p>
             </div>
             
-            {/* Feature 5 */}
-            <div 
-              className="bg-card/60 backdrop-blur-lg border border-white/10 rounded-xl p-6 text-center"
-              ref={el => featureRefs.current[4] = el}
-            >
-              <div className="flex justify-center mb-4">
-                <div className="bg-green-900/50 p-3 rounded-full cosmic-glow">
-                  <Search className="h-8 w-8 text-green-400" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Feature 1 */}
+              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
+                <div className="h-12 w-12 rounded-full bg-blue-500/20 flex items-center justify-center mb-4">
+                  <FileText className="h-6 w-6 text-blue-400" />
                 </div>
+                <h3 className="text-xl font-semibold mb-2">AI Resume Builder</h3>
+                <p className="text-gray-300">
+                  Create ATS-optimized resumes with intelligent suggestions for every section, customizable templates, and real-time feedback.
+                </p>
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3">ATS Optimization</h3>
-              <p className="text-gray-300">
-                Ensure your resume passes through Applicant Tracking Systems with our keyword and format optimization.
+              
+              {/* Feature 2 */}
+              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
+                <div className="h-12 w-12 rounded-full bg-purple-500/20 flex items-center justify-center mb-4">
+                  <Bot className="h-6 w-6 text-purple-400" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">AI Tailor Resume</h3>
+                <p className="text-gray-300">
+                  Automatically optimize your resume for specific job descriptions, increasing your chances of getting interviews.
+                </p>
+              </div>
+              
+              {/* Feature 3 */}
+              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
+                <div className="h-12 w-12 rounded-full bg-pink-500/20 flex items-center justify-center mb-4">
+                  <Briefcase className="h-6 w-6 text-pink-400" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Intelligent Job Matching</h3>
+                <p className="text-gray-300">
+                  Discover jobs that match your skills and experience with our AI-powered job search and matching algorithm.
+                </p>
+              </div>
+              
+              {/* Feature 4 */}
+              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
+                <div className="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
+                  <Star className="h-6 w-6 text-green-400" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Multiple Resume Versions</h3>
+                <p className="text-gray-300">
+                  Create and manage multiple resume versions for different job types, industries, or career paths.
+                </p>
+              </div>
+              
+              {/* Feature 5 */}
+              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
+                <div className="h-12 w-12 rounded-full bg-yellow-500/20 flex items-center justify-center mb-4">
+                  <Search className="h-6 w-6 text-yellow-400" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">ATS Keyword Analysis</h3>
+                <p className="text-gray-300">
+                  Identify missing keywords and optimize your resume to pass through Applicant Tracking Systems.
+                </p>
+              </div>
+              
+              {/* Feature 6 */}
+              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
+                <div className="h-12 w-12 rounded-full bg-red-500/20 flex items-center justify-center mb-4">
+                  <Zap className="h-6 w-6 text-red-400" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Job Application Tracking</h3>
+                <p className="text-gray-300">
+                  Keep track of your job applications, status, and follow-ups in one centralized dashboard.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        {/* Pricing Section */}
+        <section id="pricing" className="py-20 relative z-10">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold cosmic-text-gradient">
+                Simple, Transparent Pricing
+              </h2>
+              <p className="mt-4 text-lg text-gray-300">
+                Choose the plan that fits your needs. All plans include our core features.
               </p>
             </div>
             
-            {/* Feature 6 */}
-            <div 
-              className="bg-card/60 backdrop-blur-lg border border-white/10 rounded-xl p-6 text-center"
-              ref={el => featureRefs.current[5] = el}
-            >
-              <div className="flex justify-center mb-4">
-                <div className="bg-pink-900/50 p-3 rounded-full cosmic-glow">
-                  <Sparkles className="h-8 w-8 text-pink-400" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Free Plan */}
+              <Card className="cosmic-card border border-white/10 relative">
+                <CardHeader>
+                  <CardTitle className="text-xl">Basic</CardTitle>
+                  <CardDescription>For individuals just getting started</CardDescription>
+                  <div className="mt-4">
+                    <span className="text-3xl font-bold">Free</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <ul className="space-y-2">
+                    <li className="flex items-start">
+                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+                      <span>1 Resume Creation</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+                      <span>Basic AI Resume Tips</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+                      <span>10 Job Matches Per Month</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+                      <span>Access to Basic Templates</span>
+                    </li>
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Button 
+                    className="w-full"
+                    variant="outline"
+                    onClick={() => handleSelectPlan("Basic")}
+                  >
+                    Get Started Free
+                  </Button>
+                </CardFooter>
+              </Card>
+              
+              {/* Pro Plan */}
+              <Card className="cosmic-card border-2 border-blue-400/50 relative">
+                <div className="absolute -top-4 left-0 right-0 mx-auto w-fit px-4 py-1 bg-blue-500 text-white text-sm font-medium rounded-full">
+                  Most Popular
                 </div>
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">Career Progress Tracking</h3>
-              <p className="text-gray-300">
-                Monitor your job search progress, track applications, and visualize your career growth over time.
-              </p>
+                <CardHeader>
+                  <CardTitle className="text-xl">Pro</CardTitle>
+                  <CardDescription>For individuals actively job hunting</CardDescription>
+                  <div className="mt-4">
+                    <span className="text-3xl font-bold">$15</span>
+                    <span className="text-muted-foreground">/month</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <ul className="space-y-2">
+                    <li className="flex items-start">
+                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+                      <span>Unlimited Resume Creations</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+                      <span>Advanced AI Resume Suggestions</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+                      <span>Unlimited Job Matches</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+                      <span>Resume Tailoring for Each Job</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+                      <span>Application Tracking Dashboard</span>
+                    </li>
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Button 
+                    className="w-full cosmic-btn-glow"
+                    onClick={() => handleSelectPlan("Pro")}
+                  >
+                    Start Pro Plan
+                  </Button>
+                </CardFooter>
+              </Card>
+              
+              {/* Business Plan */}
+              <Card className="cosmic-card border border-white/10 relative">
+                <CardHeader>
+                  <CardTitle className="text-xl">Enterprise</CardTitle>
+                  <CardDescription>For career professionals and teams</CardDescription>
+                  <div className="mt-4">
+                    <span className="text-3xl font-bold">$29</span>
+                    <span className="text-muted-foreground">/month</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <ul className="space-y-2">
+                    <li className="flex items-start">
+                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+                      <span>All Pro Features</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+                      <span>Premium Resume Templates</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+                      <span>Priority AI Assistance</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+                      <span>Advanced Career Insights</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+                      <span>Team Collaboration Features</span>
+                    </li>
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Button 
+                    className="w-full"
+                    variant="outline"
+                    onClick={() => handleSelectPlan("Enterprise")}
+                  >
+                    Start Enterprise Plan
+                  </Button>
+                </CardFooter>
+              </Card>
             </div>
           </div>
-        </div>
-      </section>
-      
-      {/* Pricing Section */}
-      <section id="pricing" className="py-20 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold cosmic-text-gradient">
-              Simple, Transparent Pricing
-            </h2>
-            <p className="mt-4 text-lg text-gray-300">
-              Choose the plan that fits your needs. All plans include our core features.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Free Plan */}
-            <Card className="bg-card/60 backdrop-blur-lg border-white/10">
-              <CardHeader>
-                <div className="flex items-center justify-between">
+        </section>
+        
+        {/* Testimonials Section */}
+        <section className="py-20 relative z-10">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold cosmic-text-gradient">
+                What Our Users Say
+              </h2>
+              <p className="mt-4 text-lg text-gray-300">
+                Join thousands of professionals who have accelerated their careers with AIreHire
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+              {/* Testimonial 1 */}
+              <div className="cosmic-card border border-white/10 rounded-lg p-6">
+                <div className="flex items-center mb-4">
+                  <div className="mr-4">
+                    <div className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+                      <span className="text-white font-bold">JM</span>
+                    </div>
+                  </div>
                   <div>
-                    <CardTitle>Free</CardTitle>
-                    <CardDescription>Get started with basic features</CardDescription>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-3xl font-bold">$0</span>
-                    <span className="text-sm text-muted-foreground">/month</span>
+                    <h4 className="font-medium">James Mitchell</h4>
+                    <p className="text-sm text-gray-400">Software Developer</p>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                    <span>1 Resume</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                    <span>Basic AI suggestions</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                    <span>5 Job applications/month</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                    <span>Standard templates</span>
-                  </li>
-                </ul>
-              </CardContent>
-              <CardFooter>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="w-full"
-                  onClick={() => openRegisterWithPlan('free')}
-                >
-                  Get Started
-                </Button>
-              </CardFooter>
-            </Card>
-            
-            {/* Starter Plan */}
-            <Card className="bg-card/60 backdrop-blur-lg border-blue-400/30 relative">
-              <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs px-3 py-1 rounded-bl-lg rounded-tr-lg font-medium">
-                POPULAR
+                <p className="text-gray-300">
+                  "The AI resume tailoring feature is a game-changer. I saw an immediate increase in interview callbacks after optimizing my resume for each job application."
+                </p>
+                <div className="mt-4 flex text-yellow-400">
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                </div>
               </div>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Starter</CardTitle>
-                    <CardDescription>Essentials for job seekers</CardDescription>
+              
+              {/* Testimonial 2 */}
+              <div className="cosmic-card border border-white/10 rounded-lg p-6">
+                <div className="flex items-center mb-4">
+                  <div className="mr-4">
+                    <div className="h-12 w-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                      <span className="text-white font-bold">SR</span>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <span className="text-3xl font-bold">$9.99</span>
-                    <span className="text-sm text-muted-foreground">/month</span>
+                  <div>
+                    <h4 className="font-medium">Sarah Rodriguez</h4>
+                    <p className="text-sm text-gray-400">Marketing Manager</p>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                    <span>3 Resumes</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                    <span>Advanced AI suggestions</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                    <span>Unlimited job applications</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                    <span>ATS optimization</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                    <span>Job match recommendations</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                    <span>Application tracking</span>
-                  </li>
-                </ul>
-              </CardContent>
-              <CardFooter>
-                <Button
-                  size="lg"
-                  className="w-full cosmic-btn-glow"
-                  onClick={() => openRegisterWithPlan('starter')}
-                >
-                  Get Started
-                </Button>
-              </CardFooter>
-            </Card>
-            
-            {/* Pro Plan */}
-            <Card className="bg-card/60 backdrop-blur-lg border-white/10">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Professional</CardTitle>
-                    <CardDescription>Advanced career toolkit</CardDescription>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-3xl font-bold">$19.99</span>
-                    <span className="text-sm text-muted-foreground">/month</span>
-                  </div>
+                <p className="text-gray-300">
+                  "The job matching algorithm found opportunities that perfectly aligned with my skills and career goals. I landed my dream job within a month!"
+                </p>
+                <div className="mt-4 flex text-yellow-400">
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                    <span>Everything in Starter</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                    <span>Unlimited resumes</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                    <span>Premium templates</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                    <span>Cover letter generation</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                    <span>LinkedIn profile optimization</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                    <span>Interview preparation tool</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                    <span>Priority support</span>
-                  </li>
-                </ul>
-              </CardContent>
-              <CardFooter>
-                <Button
-                  variant="default"
-                  size="lg"
-                  className="w-full"
-                  onClick={() => openRegisterWithPlan('pro')}
-                >
-                  Get Started
-                </Button>
-              </CardFooter>
-            </Card>
-          </div>
-        </div>
-      </section>
-      
-      {/* FAQ Section */}
-      <section id="faq" className="py-20 relative z-10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold cosmic-text-gradient">
-              Frequently Asked Questions
-            </h2>
-            <p className="mt-4 text-lg text-gray-300">
-              Find answers to common questions about our service.
-            </p>
-          </div>
-          
-          <div className="space-y-6">
-            {/* FAQ Item 1 */}
-            <div className="bg-card/60 backdrop-blur-lg border border-white/10 rounded-xl p-6">
-              <h3 className="text-xl font-semibold text-white mb-3">
-                How does the AI resume builder work?
-              </h3>
-              <p className="text-gray-300">
-                Our AI resume builder analyzes your experience and skills to suggest impactful content tailored to your industry. It helps optimize your resume for ATS systems and provides real-time suggestions to improve your job applications.
-              </p>
-            </div>
-            
-            {/* FAQ Item 2 */}
-            <div className="bg-card/60 backdrop-blur-lg border border-white/10 rounded-xl p-6">
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Can I cancel my subscription at any time?
-              </h3>
-              <p className="text-gray-300">
-                Yes, you can cancel your subscription at any time. Your benefits will continue until the end of your current billing period, and you won't be charged again afterward.
-              </p>
-            </div>
-            
-            {/* FAQ Item 3 */}
-            <div className="bg-card/60 backdrop-blur-lg border border-white/10 rounded-xl p-6">
-              <h3 className="text-xl font-semibold text-white mb-3">
-                How accurate is the job matching feature?
-              </h3>
-              <p className="text-gray-300">
-                Our job matching algorithm analyzes your skills, experience, and preferences against thousands of job postings to find the best matches. It continuously improves as you use the platform and provide feedback on job suggestions.
-              </p>
-            </div>
-            
-            {/* FAQ Item 4 */}
-            <div className="bg-card/60 backdrop-blur-lg border border-white/10 rounded-xl p-6">
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Can I use AIreHire on multiple devices?
-              </h3>
-              <p className="text-gray-300">
-                Yes, AIreHire is a cloud-based platform that you can access from any device with a web browser. Your data is securely stored and synchronized across all your devices, allowing you to manage your job search from anywhere.
-              </p>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-      
-      {/* CTA Section */}
-      <section className="py-16 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-white/10 rounded-xl p-8 md:p-12 backdrop-blur-lg">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-white mb-4">
-                Ready to Launch Your Career?
+        </section>
+        
+        {/* CTA Section */}
+        <section className="py-16 relative z-10">
+          <div className="max-w-4xl mx-auto">
+            <div className="cosmic-card border border-white/10 rounded-lg p-8 text-center bg-gradient-to-r from-blue-900/40 to-purple-900/40">
+              <h2 className="text-3xl font-bold mb-4 cosmic-text-gradient">
+                Ready to Accelerate Your Career?
               </h2>
               <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-                Join thousands of job seekers who've found their dream careers using AIreHire's AI-powered platform.
+                Join thousands of professionals who have transformed their job search with AIreHire's AI-powered tools.
               </p>
-              <Button 
-                size="lg" 
-                className="px-8 py-6 text-lg cosmic-btn-glow"
-                onClick={() => setIsRegisterOpen(true)}
-              >
-                Start Your Free Trial <ChevronRight className="ml-2 h-5 w-5" />
-              </Button>
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <Button 
+                  size="lg" 
+                  className="px-8 py-6 text-lg cosmic-btn-glow"
+                  onClick={() => setIsRegisterOpen(true)}
+                >
+                  Get Started Today <Rocket className="ml-2 h-5 w-5" />
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
       
       {/* Footer */}
-      <footer className="border-t border-white/10 py-12 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <footer className="border-t border-white/10 py-10 relative z-10">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <div className="flex items-center mb-4">
-                <Rocket className="mr-2 h-5 w-5 text-blue-400" />
-                <span className="font-bold text-lg cosmic-text-gradient">AIreHire</span>
-              </div>
-              <p className="text-gray-400 text-sm">
-                AI-powered career acceleration platform helping job seekers land their dream jobs faster.
+              <h3 className="text-xl font-bold mb-4 cosmic-text-gradient">AIreHire</h3>
+              <p className="text-gray-400">
+                AI-powered career development platform that transforms professional growth through intelligent tools.
               </p>
             </div>
-            
             <div>
-              <h3 className="text-lg font-medium text-white mb-4">Product</h3>
+              <h4 className="font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2">
-                <li><a href="#features" className="text-gray-400 hover:text-white text-sm transition-colors">Features</a></li>
-                <li><a href="#pricing" className="text-gray-400 hover:text-white text-sm transition-colors">Pricing</a></li>
-                <li><a href="#faq" className="text-gray-400 hover:text-white text-sm transition-colors">FAQ</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Home</a></li>
+                <li><a href="#features" className="text-gray-400 hover:text-white transition-colors">Features</a></li>
+                <li><a href="#pricing" className="text-gray-400 hover:text-white transition-colors">Pricing</a></li>
               </ul>
             </div>
-            
             <div>
-              <h3 className="text-lg font-medium text-white mb-4">Resources</h3>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Blog</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Career Tips</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Resume Templates</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-medium text-white mb-4">Company</h3>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">About Us</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Contact</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Terms of Service</a></li>
-              </ul>
+              <h4 className="font-semibold mb-4">Contact</h4>
+              <div className="flex items-center mb-2">
+                <Mail className="h-4 w-4 mr-2 text-gray-400" />
+                <span className="text-gray-400">support@airehire.com</span>
+              </div>
             </div>
           </div>
-          
-          <div className="border-t border-white/10 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">
-              © {new Date().getFullYear()} AIreHire. All rights reserved.
-            </p>
-            <div className="flex space-x-4 mt-4 md:mt-0">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" />
-                </svg>
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-                </svg>
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
-                </svg>
-              </a>
-            </div>
+          <div className="mt-8 pt-8 border-t border-white/10 text-center text-gray-400 text-sm">
+            <p>&copy; {new Date().getFullYear()} AIreHire. All rights reserved.</p>
           </div>
         </div>
       </footer>
-      
-      {/* Login Dialog */}
-      <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Log in to your account</DialogTitle>
-            <DialogDescription>
-              Enter your credentials to access your account.
-            </DialogDescription>
-          </DialogHeader>
-          <Form {...loginForm}>
-            <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
-              <FormField
-                control={loginForm.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input placeholder="username" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={loginForm.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex items-center justify-between pt-4">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => {
-                    setIsLoginOpen(false);
-                    setIsRegisterOpen(true);
-                  }}
-                >
-                  Create account
-                </Button>
-                <Button type="submit" disabled={loginMutation.isPending}>
-                  {loginMutation.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Logging in...
-                    </>
-                  ) : (
-                    "Log in"
-                  )}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Register Dialog */}
-      <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Create an account</DialogTitle>
-            <DialogDescription>
-              {selectedPlan ? (
-                `Sign up for the ${selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)} plan.`
-              ) : (
-                "Create your account to get started."
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          <Form {...registerForm}>
-            <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
-              <FormField
-                control={registerForm.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input placeholder="username" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={registerForm.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={registerForm.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex items-center justify-between pt-4">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => {
-                    setIsRegisterOpen(false);
-                    setIsLoginOpen(true);
-                  }}
-                >
-                  Already have an account
-                </Button>
-                <Button type="submit" disabled={registerMutation.isPending}>
-                  {registerMutation.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating account...
-                    </>
-                  ) : (
-                    "Sign up"
-                  )}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Custom styles for this page */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        .cosmic-text-gradient {
-          background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          color: transparent;
-          display: inline;
-        }
-        
-        .cosmic-btn-glow {
-          box-shadow: 0 0 15px 5px rgba(139, 92, 246, 0.3);
-          transition: box-shadow 0.3s ease;
-        }
-        
-        .cosmic-btn-glow:hover {
-          box-shadow: 0 0 20px 8px rgba(139, 92, 246, 0.4);
-        }
-        
-        .cosmic-particle {
-          position: absolute;
-          width: 3px;
-          height: 3px;
-          background: white;
-          border-radius: 50%;
-          opacity: 0.6;
-          z-index: 5;
-        }
-        `
-      }} />
-    </div>
+    </>
   );
 }

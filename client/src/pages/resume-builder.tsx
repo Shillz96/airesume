@@ -11,7 +11,7 @@ import {
   Check, Zap, EyeOff, Eye, FileImage, X, Move,
   GraduationCap, Briefcase, Code, Award, FolderKanban,
   FolderOpen, Save, Upload, Cpu, RefreshCw, Sparkles,
-  Printer, ChevronDown, User
+  Printer, ChevronDown, User, Columns, LayoutGrid, Copy, Rows
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -884,7 +884,7 @@ function SkillSuggestions({
 // Preview component for the "Preview" section
 // This component has been replaced by ResumePreviewComponent
 
-function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resume: Resume; onTemplateChange: (template: string) => void; onDownload?: () => void }) {
+function ResumePreviewComponent({ resume, onTemplateChange, onDownload, toastFn }: { resume: Resume; onTemplateChange: (template: string) => void; onDownload?: () => void; toastFn: any }) {
   // Local state for downloading
   const [isDownloading, setIsDownloading] = useState(false);
   
@@ -918,13 +918,14 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
   const [editedResume, setEditedResume] = useState<Resume>(resume);
   const [fontScale, setFontScale] = useState(1); // For auto-adjusting font size
   const [skillsDisplayMode, setSkillsDisplayMode] = useState<'bubbles' | 'bullets'>('bubbles');
-  const [spacingScale, setSpacingScale] = useState(1); // For auto-adjusting spacing
-  const [numPages, setNumPages] = useState(1); // Track number of pages
   const [showMultiPage, setShowMultiPage] = useState(false); // Toggle between single page and multi-page view
   const [sideBySideView, setSideBySideView] = useState(false); // Toggle between vertical and side-by-side view
+  const [spacingScale, setSpacingScale] = useState(1); // For auto-adjusting spacing
+  const [numPages, setNumPages] = useState(1); // Track number of pages
   const previewRef = useRef<HTMLDivElement>(null);
   const resumeContainerRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
+  // Using toast function from props (toastFn) instead of useToast hook
+  const toast = toastFn;
   
   // Function to calculate the number of pages
   const calculatePages = () => {
@@ -1308,6 +1309,36 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
           <Button
             variant="outline"
             size="sm"
+            onClick={toggleMultiPageView}
+            className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
+            title={showMultiPage ? "Switch to single page view" : "Switch to multi-page view"}
+          >
+            {showMultiPage ? (
+              <Copy className="h-4 w-4 mr-1" />
+            ) : (
+              <LayoutGrid className="h-4 w-4 mr-1" />
+            )}
+            {showMultiPage ? "Single Page" : "Multi-Page"}
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleSideBySideView}
+            className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
+            title={sideBySideView ? "Switch to vertical view" : "Switch to side-by-side view"}
+          >
+            {sideBySideView ? (
+              <Rows className="h-4 w-4 mr-1" />
+            ) : (
+              <Columns className="h-4 w-4 mr-1" />
+            )}
+            {sideBySideView ? "Vertical" : "Side-by-Side"}
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
             onClick={handleDownload}
             className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
             disabled={isDownloading}
@@ -1329,28 +1360,41 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
           "bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-xl overflow-auto scroll-smooth",
           isFullScreen
             ? "fixed inset-0 z-50 m-0 p-8 bg-black/90"
-            : "p-4 h-[80vh] flex items-center justify-center" // Center the preview vertically and horizontally
+            : sideBySideView 
+              ? "p-4 h-[80vh] flex items-start justify-center overflow-x-auto" // Side-by-side view with horizontal scroll
+              : "p-4 h-[80vh] flex items-start justify-center overflow-y-auto" // Vertical view with vertical scroll
         )}
       >
-        <div
-          ref={previewRef}
-          className="resume-content-container transition-all duration-300 mx-auto bg-white shadow-lg print:shadow-none"
-          data-font-scale={fontScale.toString()}
-          data-spacing-scale={spacingScale.toString()}
-          style={{
-            transform: `scale(${scale})`,
-            width: "210mm", // A4 width
-            minHeight: "297mm", // A4 height (minimum to ensure proper proportions)
-            maxHeight: "297mm", // A4 height (maximum to ensure proper proportions)
-            transformOrigin: "center", // Center transform origin for better viewing 
-            fontSize: `${fontScale * 100}%`, // Dynamic font scaling
-            lineHeight: `${spacingScale * 1.5}`, // Dynamic line height scaling
-            overflowY: isEditing ? "auto" : "hidden", // Hide overflow when not editing
-            boxShadow: "0 4px 24px rgba(0, 0, 0, 0.15)", // Add shadow for better visibility
-            marginTop: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
-            marginBottom: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
-          }}
+        <div 
+          className={cn(
+            "flex", 
+            sideBySideView ? "flex-row items-start gap-8" : "flex-col items-center gap-16",
+            showMultiPage && !isEditing ? "py-8" : ""
+          )}
         >
+          {/* First page (or only page in single page view) */}
+          <div
+            ref={previewRef}
+            className={cn(
+              "resume-content-container transition-all duration-300 bg-white shadow-lg print:shadow-none",
+              showMultiPage && !isEditing ? "mb-8" : "mx-auto" // Add margin between pages in multi-page view
+            )}
+            data-font-scale={fontScale.toString()}
+            data-spacing-scale={spacingScale.toString()}
+            style={{
+              transform: `scale(${scale})`,
+              width: "210mm", // A4 width
+              minHeight: "297mm", // A4 height (minimum to ensure proper proportions)
+              maxHeight: showMultiPage ? "none" : "297mm", // Allow content to flow to additional pages in multi-page view
+              transformOrigin: "top center", // Top center transform origin for better multi-page viewing
+              fontSize: `${fontScale * 100}%`, // Dynamic font scaling
+              lineHeight: `${spacingScale * 1.5}`, // Dynamic line height scaling
+              overflowY: isEditing || showMultiPage ? "auto" : "hidden", // Show overflow in edit or multi-page mode
+              boxShadow: "0 4px 24px rgba(0, 0, 0, 0.15)", // Add shadow for better visibility
+              marginTop: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
+              marginBottom: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
+            }}
+          >
           {isEditing ? (
             <div className="p-6 bg-white text-black h-full">
               {/* Personal Info Section */}
@@ -3400,6 +3444,7 @@ export default function ResumeBuilder() {
                       }}
                       onTemplateChange={handleTemplateChange}
                       onDownload={downloadResume}
+                      toastFn={toast}
                     />
                   </div>
                 </div>

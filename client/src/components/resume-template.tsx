@@ -360,6 +360,14 @@ export default function ResumeTemplate({ resume, onTemplateChange }: ResumeTempl
         return <CreativeTemplate resume={resume} />;
       case 'executive':
         return <ExecutiveTemplate resume={resume} />;
+      case 'modern':
+        return <ModernTemplate resume={resume} />;
+      case 'minimal':
+        return <MinimalTemplate resume={resume} />;
+      case 'industry':
+        return <IndustryTemplate resume={resume} />;
+      case 'bold':
+        return <BoldTemplate resume={resume} />;
       default:
         return <ProfessionalTemplate resume={resume} />;
     }

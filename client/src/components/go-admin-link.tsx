@@ -6,8 +6,8 @@ import { Link } from "wouter";
 export default function GoAdminLink() {
   const { user } = useAuth();
   
-  // Only render if user is logged in
-  if (!user) return null;
+  // Only render if user is logged in and is an admin
+  if (!user || !user.isAdmin) return null;
   
   return (
     <Link href="/admin-access">

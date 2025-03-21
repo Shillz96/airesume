@@ -44,11 +44,40 @@ export function ProtectedRoute({
     );
   }
 
-  // If the user is not logged in and not in guest mode, redirect to auth
+  // If the user is not logged in and not in guest mode, redirect to home to login/register
   if (!user && !isGuestMode) {
+    // Add ?guest=true parameter to the current URL to enable guest mode
+    const currentPath = window.location.pathname;
+    const guestUrl = currentPath + '?guest=true';
+    
     return (
       <Route path={path}>
-        <Redirect to="/auth" />
+        <div className="flex flex-col items-center justify-center min-h-screen">
+          <div className="bg-black/70 p-8 rounded-lg border border-blue-500/30 max-w-md">
+            <h2 className="text-xl font-bold cosmic-text-gradient mb-4">Authentication Required</h2>
+            <p className="text-gray-300 mb-4">You need to log in to access this page, or continue as a guest.</p>
+            <div className="flex gap-3 flex-wrap">
+              <a 
+                href="/?login=true" 
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded px-4 py-2 text-center"
+              >
+                Log In
+              </a>
+              <a 
+                href="/?register=true" 
+                className="bg-green-600 hover:bg-green-700 text-white font-medium rounded px-4 py-2 text-center"
+              >
+                Register
+              </a>
+              <a 
+                href={guestUrl} 
+                className="bg-purple-600 hover:bg-purple-700 text-white font-medium rounded px-4 py-2 text-center"
+              >
+                Continue as Guest
+              </a>
+            </div>
+          </div>
+        </div>
       </Route>
     );
   }

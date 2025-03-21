@@ -18,6 +18,7 @@ import { Job } from "./job-card";
 import { ExperienceItem, SkillItem } from "./resume-section";
 
 interface UserResume {
+  id?: number; // Optional ID for authenticated users
   personalInfo: {
     firstName: string;
     lastName: string;
@@ -37,6 +38,8 @@ interface TailoredResume {
   };
   experience: ExperienceItem[];
   skills: string[] | SkillItem[];
+  keywordsIncorporated?: string[]; // ATS keywords added to the resume
+  matchAnalysis?: string; // Analysis of how well the resume matches the job
 }
 
 interface JobListingProps {
@@ -85,27 +88,64 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
   // Mutation to tailor the resume
   const { mutate: tailorResume, isPending: isTailoring } = useMutation({
     mutationFn: async () => {
-      // Call the API to tailor the resume for this job
-      // For guest mode, we'd send the resume directly in the request
-      // For authenticated users, we'd just send the resume ID
-      const payload = {
-        resumeId: resume.id || "guest-resume", 
-        resumeData: !resume.id ? resume : undefined // Include resume data for guest mode
-      };
-      
-      const res = await apiRequest(
-        "POST", 
-        `/api/jobs/${job.id}/tailor-resume`, 
-        payload
-      );
-      
-      const data = await res.json();
-      
-      if (!data.success) {
-        throw new Error(data.error || "Failed to tailor resume");
+      if (!resume.id) {
+        // Guest mode - use the existing tailoring approach for the job
+        const payload = {
+          resumeId: "guest-resume", 
+          resumeData: resume // Include full resume data for guest mode
+        };
+        
+        const res = await apiRequest(
+          "POST", 
+          `/api/jobs/${job.id}/tailor-resume`, 
+          payload
+        );
+        
+        const data = await res.json();
+        
+        if (!data.success) {
+          throw new Error(data.error || "Failed to tailor resume");
+        }
+        
+        return data.tailoredResume;
+      } else {
+        // Authenticated user - use our enhanced job-specific tailoring endpoint
+        const res = await apiRequest(
+          "POST", 
+          `/api/resumes/${resume.id}/tailor-to-job/${job.id}`,
+          {} // No body needed as we're using the IDs in the URL
+        );
+        
+        const data = await res.json();
+        
+        if (!data.success) {
+          throw new Error(data.error || "Failed to tailor resume");
+        }
+        
+        // Create TailoredResume format from the response
+        const { tailoredContent, originalResume } = data;
+        
+        // Transform the tailored content to match our expected format
+        return {
+          personalInfo: {
+            ...originalResume.content.personalInfo,
+            summary: tailoredContent.summary || originalResume.content.personalInfo.summary
+          },
+          experience: originalResume.content.experience.map((exp: ExperienceItem) => {
+            // Find if this experience has improvements
+            const improved = tailoredContent.experienceImprovements?.find(
+              (improvement: any) => improvement.id === exp.id
+            );
+            
+            return improved 
+              ? { ...exp, description: improved.improvedDescription } 
+              : exp;
+          }),
+          skills: tailoredContent.skills || originalResume.content.skills,
+          keywordsIncorporated: tailoredContent.keywordsIncorporated,
+          matchAnalysis: tailoredContent.matchAnalysis
+        };
       }
-      
-      return data.tailoredResume;
     },
     onSuccess: (data) => {
       setTailoredResume(data);
@@ -131,8 +171,9 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
       // Extract skill names from skill items
       const userSkillNames = resume.skills.map((skill: SkillItem) => skill.name);
       
-      // Merge user skills with job skills
-      const tailoredSkillNames = [...new Set([...userSkillNames, ...job.skills])];
+      // Merge user skills with job skills - use Array.from for better compatibility
+      const skillSet = new Set([...userSkillNames, ...job.skills]);
+      const tailoredSkillNames = Array.from(skillSet);
 
       const fallbackResume = {
         personalInfo: {
@@ -454,7 +495,36 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
                         }
                       </div>
                     </div>
-                    <div className="flex gap-2 pt-2">
+                    
+                    {/* ATS Optimization Insights */}
+                    {tailoredResume.keywordsIncorporated && (
+                      <div>
+                        <h4 className="text-sm font-medium text-green-300 mb-1">
+                          ATS Keywords Incorporated
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {tailoredResume.keywordsIncorporated.map((keyword, index) => (
+                            <span key={index} className="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded-full">
+                              {keyword}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Match Analysis */}
+                    {tailoredResume.matchAnalysis && (
+                      <div>
+                        <h4 className="text-sm font-medium text-purple-300 mb-1">
+                          Match Analysis
+                        </h4>
+                        <div className="bg-gray-800/50 p-3 rounded-md border border-gray-700 text-sm text-gray-300">
+                          {tailoredResume.matchAnalysis}
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="flex gap-2 pt-4">
                       <Button
                         onClick={handleApplyTailored}
                         className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"

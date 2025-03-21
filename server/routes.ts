@@ -726,6 +726,104 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+  
+  // New endpoint to tailor resume to a specific job posting
+  app.post("/api/resumes/:id/tailor-to-job/:jobId", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const userId = req.user!.id;
+      const resumeId = parseInt(req.params.id);
+      const jobId = parseInt(req.params.jobId);
+      
+      // Get the resume and job data
+      const resume = await storage.getResume(resumeId, userId);
+      const job = await storage.getJob(jobId);
+      
+      if (!resume) {
+        return res.status(404).json({ success: false, error: "Resume not found" });
+      }
+      
+      if (!job) {
+        return res.status(404).json({ success: false, error: "Job not found" });
+      }
+      
+      // Verify API key is configured
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "AI service is not properly configured."
+        });
+      }
+      
+      // Extract resume data
+      const personalInfo = resume.content?.personalInfo || {};
+      const experience = resume.content?.experience || [];
+      const skills = resume.content?.skills || [];
+      
+      // Extract job data
+      const { title, company, description, skills: jobSkills = [] } = job;
+      
+      // Import the openai client from ai.ts
+      const response = await (await import('./ai')).openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert resume tailoring assistant. You will analyze a job description and modify a resume to maximize its relevance to the specific job. Focus on highlighting the most relevant experience, skills, and accomplishments that align with the job requirements. Identify and incorporate keywords from the job description that may be used in ATS (Applicant Tracking Systems)."
+          },
+          {
+            role: "user",
+            content: `Tailor this resume for the following job:
+            
+            Job Title: ${title}
+            Company: ${company}
+            Job Description: ${description}
+            Required Skills: ${JSON.stringify(jobSkills)}
+            
+            Resume Information:
+            Summary: ${personalInfo.summary || ''}
+            Skills: ${JSON.stringify(skills)}
+            Experience: ${JSON.stringify(experience)}
+            
+            Provide a comprehensive tailoring in JSON format with these sections:
+            {
+              "summary": "ATS-optimized professional summary that directly addresses the job requirements",
+              "skills": ["skill1", "skill2", "skill3", ...], (prioritize skills mentioned in the job description)
+              "experienceImprovements": [
+                { "id": "exp-id", "improvedDescription": "enhanced bullet points that highlight relevant experience" }
+              ],
+              "keywordsIncorporated": ["keyword1", "keyword2", ...], (list of ATS keywords you've incorporated)
+              "matchAnalysis": "Brief explanation of how well the resume matches the job requirements"
+            }`
+          }
+        ],
+        response_format: { type: "json_object" }
+      });
+      
+      try {
+        const tailoredContent = JSON.parse(response.choices[0].message.content);
+        return res.json({ 
+          success: true, 
+          tailoredContent,
+          originalResume: resume,
+          job: job
+        });
+      } catch (error) {
+        console.error("Error parsing tailored content:", error);
+        return res.status(500).json({ 
+          success: false, 
+          error: "Failed to process tailored content" 
+        });
+      }
+    } catch (error) {
+      console.error("Error tailoring resume to job:", error);
+      return res.status(500).json({ 
+        success: false, 
+        error: "Failed to tailor resume to job" 
+      });
+    }
+  });
 
   app.post("/api/resumes/:id", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);

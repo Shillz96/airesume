@@ -148,8 +148,11 @@ export default function Navbar() {
       className="cosmic-navbar"
       ref={navbarRef}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+      <div className="content-container max-w-7xl mx-auto" style={{ 
+        paddingLeft: "var(--space-4)",
+        paddingRight: "var(--space-4)"
+      }}>
+        <div className="flex justify-between" style={{ height: "var(--space-16)" }}>
           {/* Left side - logo */}
           <div 
             className="flex-shrink-0 flex items-center"
@@ -286,7 +289,13 @@ export default function Navbar() {
       {/* Mobile menu */}
       {mobileMenuOpen && (
         <div className="sm:hidden bg-black/50 backdrop-blur-lg cosmic-nebula shadow-lg">
-          <div className="pt-2 pb-3 space-y-1">
+          <div style={{ 
+            paddingTop: "var(--space-2)", 
+            paddingBottom: "var(--space-3)", 
+            display: "flex", 
+            flexDirection: "column", 
+            gap: "var(--space-1)" 
+          }}>
             {navItems.map((item) => (
               <a 
                 key={item.path} 

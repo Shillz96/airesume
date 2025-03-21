@@ -299,7 +299,7 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
 
   return (
     <Card className="border border-blue-500/30 shadow-lg bg-gradient-to-r from-blue-950/50 to-purple-950/50 backdrop-blur max-w-full w-full">
-      <CardHeader className="p-3 pb-2">
+      <CardHeader style={{ padding: "var(--space-3)" }}>
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-blue-400" />
           <CardTitle className="text-sm text-blue-100">{getTipTitle()}</CardTitle>
@@ -307,11 +307,19 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
         <CardDescription className="text-xs text-blue-200/70">{getTipDescription()}</CardDescription>
       </CardHeader>
       
-      <CardContent className="p-3 pt-1">
+      <CardContent style={{ 
+        padding: "var(--space-3)",
+        paddingTop: "var(--space-1)"
+      }}>
         <Tabs defaultValue={activeTab} value={activeTab}>
           {getLengthOptions()}
           
-          <div className="mt-2 space-y-2">
+          <div style={{ 
+            marginTop: "var(--space-2)", 
+            gap: "var(--space-2)",
+            display: "flex",
+            flexDirection: "column"
+          }}>
             {isGenerating ? (
               <div className="flex justify-center py-4">
                 <div className="animate-spin h-6 w-6 border-2 border-blue-500 rounded-full border-t-transparent"></div>
@@ -400,10 +408,14 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
         </Tabs>
       </CardContent>
       
-      <CardFooter className="p-3 pt-0">
+      <CardFooter style={{ 
+        padding: "var(--space-3)",
+        paddingTop: "var(--space-2)"
+      }}>
         <Button 
           variant="outline" 
-          className="w-full h-7 text-xs text-blue-300 border-blue-500/30 hover:bg-blue-800/50 hover:text-blue-100"
+          style={{ height: "var(--space-8)" }}
+          className="w-full text-xs text-blue-300 border-blue-500/30 hover:bg-blue-800/50 hover:text-blue-100"
           onClick={() => generateSuggestions(activeTab)}
           disabled={isGenerating}
         >

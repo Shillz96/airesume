@@ -852,12 +852,12 @@ export default function ResumeBuilder() {
       });
     }
     
-    // Merge the uploaded resume data with the existing resume
-    setResume(current => ({
-      ...current,
-      title: uploadedResumeData.title || current.title,
+    // Build the new resume with the uploaded data
+    const updatedResume = {
+      ...resume,
+      title: uploadedResumeData.title || resume.title,
       personalInfo: {
-        ...current.personalInfo,
+        ...resume.personalInfo,
         ...(uploadedResumeData.personalInfo || {}),
       },
       experience: (uploadedResumeData.experience || []).map(exp => ({
@@ -874,7 +874,24 @@ export default function ResumeBuilder() {
         id: proj.id || crypto.randomUUID(),
         technologies: Array.isArray(proj.technologies) ? proj.technologies : []
       })),
-    }));
+    };
+    
+    // Update state
+    setResume(updatedResume);
+    
+    // Save to localStorage for session persistence
+    try {
+      // Store with a timestamp to know when it was last updated
+      const sessionData = {
+        resume: updatedResume,
+        timestamp: new Date().toISOString(),
+        resumeId: resumeId
+      };
+      localStorage.setItem('resumeBuilderSessionData', JSON.stringify(sessionData));
+      console.log('Resume saved to session storage');
+    } catch (err) {
+      console.error('Failed to save resume to session storage:', err);
+    }
     
     // Show feedback toast
     toast({

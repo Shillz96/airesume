@@ -31,6 +31,7 @@ export interface Resume {
   skills: any[];
   projects: any[];
   template: string;
+  skillsDisplayMode?: 'bubbles' | 'bullets';
 }
 
 interface TemplateOptionProps {
@@ -61,6 +62,7 @@ function TemplateOption({ name, description, preview, selected, onClick }: Templ
 export function ProfessionalTemplate({ resume }: { resume: Resume }) {
   const { personalInfo, experience, education, skills } = resume;
   const fullName = `${personalInfo?.firstName || ''} ${personalInfo?.lastName || ''}`.trim();
+  const displayMode = resume.skillsDisplayMode || 'bubbles';
   
   return (
     <div className="p-6 bg-white">

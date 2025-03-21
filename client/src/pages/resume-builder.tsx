@@ -1436,18 +1436,69 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
               
               {/* Skills Section */}
               <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-3">Skills</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                  {editedResume.skills.map((skill, index) => (
-                    <div key={skill.id} className="border border-gray-200 rounded p-2">
-                      <Input
-                        value={skill.name}
-                        onChange={(e) => handleFieldChange("skills", "name", e.target.value, index)}
-                        className="border-none p-0 text-sm w-full"
-                      />
-                    </div>
-                  ))}
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-lg font-semibold">Skills</h3>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500">Display as:</span>
+                    <Button
+                      size="sm"
+                      variant={skillsDisplayMode === 'bubbles' ? 'default' : 'outline'}
+                      onClick={() => setSkillsDisplayMode('bubbles')}
+                      className={`text-xs ${skillsDisplayMode === 'bubbles' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+                    >
+                      Bubbles
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={skillsDisplayMode === 'bullets' ? 'default' : 'outline'}
+                      onClick={() => setSkillsDisplayMode('bullets')}
+                      className={`text-xs ${skillsDisplayMode === 'bullets' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+                    >
+                      Bullet List
+                    </Button>
+                  </div>
                 </div>
+                
+                {skillsDisplayMode === 'bubbles' ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                    {editedResume.skills.map((skill, index) => (
+                      <div key={skill.id} className="border border-gray-200 rounded p-2 bg-white">
+                        <Input
+                          value={skill.name}
+                          onChange={(e) => handleFieldChange("skills", "name", e.target.value, index)}
+                          className="border-none p-0 text-sm w-full bg-white"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="border border-gray-200 rounded p-3 bg-white">
+                    <div className="mb-2 text-sm text-gray-500">Edit skills as a bullet list (one skill per line)</div>
+                    <Textarea
+                      value={editedResume.skills.map(skill => skill.name).join('\n')}
+                      onChange={(e) => {
+                        const skillNames = e.target.value.split('\n').filter(name => name.trim() !== '');
+                        setEditedResume(prev => {
+                          const newResume = { ...prev };
+                          newResume.skills = skillNames.map((name, i) => {
+                            return {
+                              id: i < prev.skills.length ? prev.skills[i].id : `skill-${Date.now()}-${i}`,
+                              name: name.trim(),
+                              proficiency: i < prev.skills.length ? prev.skills[i].proficiency : 3
+                            };
+                          });
+                          return newResume;
+                        });
+                      }}
+                      className="w-full border-gray-200 min-h-[150px] bg-white"
+                      placeholder="JavaScript
+React
+TypeScript
+Node.js
+etc."
+                    />
+                  </div>
+                )}
               </div>
               
               {/* Education Section - Simplified */}

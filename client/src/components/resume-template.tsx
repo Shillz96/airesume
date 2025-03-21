@@ -730,23 +730,39 @@ export default function ResumeTemplate({ resume, onTemplateChange }: ResumeTempl
       <CardHeader className="border-b border-secondary-200 px-4 py-4 sm:px-6 flex justify-between items-center">
         <h2 className="text-lg font-medium text-secondary-900">{resume.title || "Untitled Resume"}</h2>
         <div className="flex space-x-2">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="text-xs">
-                <Download className="h-3 w-3 mr-1" /> PDF
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Export as PDF</DialogTitle>
-              </DialogHeader>
-              <div className="py-4">
-                <p className="text-secondary-600">
-                  This would export your resume as a PDF file in a real implementation.
-                </p>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-xs"
+            onClick={() => {
+              // Create a form to post data
+              const form = document.createElement('form');
+              form.method = 'POST';
+              form.action = '/api/generate-pdf';
+              form.target = '_blank';
+              
+              // Add resume data as hidden input
+              const resumeInput = document.createElement('input');
+              resumeInput.type = 'hidden';
+              resumeInput.name = 'resumeData';
+              resumeInput.value = JSON.stringify(resume);
+              form.appendChild(resumeInput);
+              
+              // Add template as hidden input
+              const templateInput = document.createElement('input');
+              templateInput.type = 'hidden';
+              templateInput.name = 'template';
+              templateInput.value = resume.template || 'professional';
+              form.appendChild(templateInput);
+              
+              // Append to body, submit and remove
+              document.body.appendChild(form);
+              form.submit();
+              document.body.removeChild(form);
+            }}
+          >
+            <Download className="h-3 w-3 mr-1" /> Download PDF
+          </Button>
           
           <Dialog>
             <DialogTrigger asChild>

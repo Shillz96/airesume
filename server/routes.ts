@@ -1704,6 +1704,273 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // PDF Generation Endpoint
+  app.post('/api/generate-pdf', upload.none(), async (req, res) => {
+    try {
+      const resumeData = req.body.resumeData ? JSON.parse(req.body.resumeData) : null;
+      const template = req.body.template || 'professional';
+      
+      if (!resumeData) {
+        return res.status(400).json({ error: 'Resume data is required' });
+      }
+      
+      console.log('Generating PDF for resume with template:', template);
+      
+      // Create an HTML template for the resume based on the selected template
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>${resumeData.personalInfo?.firstName || ''} ${resumeData.personalInfo?.lastName || ''} - Resume</title>
+          <style>
+            /* Reset and base styles */
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+              font-family: Arial, sans-serif;
+            }
+            body {
+              padding: 0;
+              margin: 0;
+              background: white;
+              color: #333;
+              font-size: 12px;
+              line-height: 1.5;
+            }
+            .page {
+              width: 210mm;
+              min-height: 297mm;
+              padding: 20mm;
+              margin: 0;
+              background: white;
+            }
+            h1 {
+              font-size: 24px;
+              margin-bottom: 5px;
+              color: #333;
+            }
+            h2 {
+              font-size: 18px;
+              margin: 15px 0 10px;
+              color: ${template === 'modern' ? '#2563eb' : 
+                        template === 'creative' ? '#8b5cf6' : 
+                        template === 'bold' ? '#dc2626' : '#333'};
+              border-bottom: ${template === 'professional' || template === 'executive' ? '1px solid #ddd' : 'none'};
+              padding-bottom: 5px;
+            }
+            h3 {
+              font-size: 16px;
+              margin-bottom: 3px;
+            }
+            p {
+              margin-bottom: 10px;
+            }
+            .header {
+              ${template === 'creative' ? 'text-align: center;' : ''}
+              ${template === 'bold' || template === 'modern' ? 'border-bottom: 3px solid #ddd;' : ''}
+              margin-bottom: 20px;
+              padding-bottom: 10px;
+            }
+            .contact-info {
+              ${template === 'creative' ? 'text-align: center;' : ''}
+              display: flex;
+              flex-wrap: wrap;
+              gap: 15px;
+              margin-bottom: 20px;
+              font-size: 14px;
+            }
+            .section {
+              margin-bottom: 20px;
+            }
+            .experience-item, .education-item {
+              margin-bottom: 15px;
+            }
+            .job-title, .degree {
+              font-weight: bold;
+              font-size: 14px;
+            }
+            .company, .institution {
+              font-style: ${template === 'bold' ? 'normal' : 'italic'};
+            }
+            .date {
+              color: #666;
+              font-size: 12px;
+              ${template === 'modern' ? 'float: right;' : ''}
+            }
+            .skills-list {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 10px;
+              list-style-type: none;
+            }
+            .skill-item {
+              background: ${template === 'modern' ? '#e0f2fe' : 
+                            template === 'creative' ? '#f3e8ff' : 
+                            template === 'bold' ? '#fee2e2' : '#f3f4f6'};
+              padding: 5px 10px;
+              border-radius: 3px;
+              font-size: 12px;
+            }
+            .projects {
+              margin-top: 20px;
+            }
+            .project-item {
+              margin-bottom: 15px;
+            }
+            .project-title {
+              font-weight: bold;
+              font-size: 14px;
+            }
+            .project-tech {
+              margin-top: 5px;
+              font-size: 12px;
+              color: #666;
+            }
+            /* Template specific styles */
+            ${template === 'executive' ? `
+              body { font-family: 'Times New Roman', serif; }
+              h1 { text-align: center; font-size: 28px; }
+              .header { border-bottom: 2px solid #000; }
+              .contact-info { justify-content: center; }
+            ` : ''}
+            ${template === 'creative' ? `
+              body { font-family: 'Calibri', sans-serif; }
+              .header { background-color: #8b5cf6; color: white; padding: 20px; }
+              h1, h2 { color: #8b5cf6; }
+            ` : ''}
+            ${template === 'modern' ? `
+              body { font-family: 'Segoe UI', sans-serif; }
+              .header { display: flex; justify-content: space-between; align-items: flex-start; }
+              .contact-info { flex-direction: column; }
+            ` : ''}
+            ${template === 'bold' ? `
+              body { font-family: 'Arial Black', sans-serif; }
+              h1, h2 { color: #dc2626; }
+              .header { border-bottom: 4px solid #dc2626; }
+            ` : ''}
+            ${template === 'minimal' ? `
+              body { font-family: 'Helvetica', sans-serif; }
+              .header { border: none; }
+              h2 { border: none; font-weight: 300; }
+            ` : ''}
+            ${template === 'industry' ? `
+              body { font-family: 'Georgia', serif; }
+              .header { background-color: #1e3a8a; color: white; padding: 15px; }
+              h1, h2 { color: #1e3a8a; }
+            ` : ''}
+          </style>
+        </head>
+        <body>
+          <div class="page">
+            <div class="header">
+              <h1>${resumeData.personalInfo?.firstName || ''} ${resumeData.personalInfo?.lastName || ''}</h1>
+              <p>${resumeData.personalInfo?.headline || ''}</p>
+            </div>
+            
+            <div class="contact-info">
+              <span>${resumeData.personalInfo?.email || ''}</span>
+              <span>${resumeData.personalInfo?.phone || ''}</span>
+            </div>
+            
+            <div class="section">
+              <h2>Summary</h2>
+              <p>${resumeData.personalInfo?.summary || ''}</p>
+            </div>
+            
+            <div class="section">
+              <h2>Experience</h2>
+              ${(resumeData.experience || []).map(exp => `
+                <div class="experience-item">
+                  <div class="job-title">${exp.title || ''}</div>
+                  <div class="company">${exp.company || ''}</div>
+                  <div class="date">${exp.startDate || ''} - ${exp.endDate || 'Present'}</div>
+                  <p>${exp.description || ''}</p>
+                </div>
+              `).join('')}
+            </div>
+            
+            <div class="section">
+              <h2>Education</h2>
+              ${(resumeData.education || []).map(edu => `
+                <div class="education-item">
+                  <div class="degree">${edu.degree || ''}</div>
+                  <div class="institution">${edu.institution || ''}</div>
+                  <div class="date">${edu.startDate || ''} - ${edu.endDate || ''}</div>
+                  <p>${edu.description || ''}</p>
+                </div>
+              `).join('')}
+            </div>
+            
+            <div class="section">
+              <h2>Skills</h2>
+              <ul class="skills-list">
+                ${(resumeData.skills || []).map(skill => `
+                  <li class="skill-item">${skill.name || ''}</li>
+                `).join('')}
+              </ul>
+            </div>
+            
+            ${(resumeData.projects && resumeData.projects.length > 0) ? `
+            <div class="section projects">
+              <h2>Projects</h2>
+              ${resumeData.projects.map(project => `
+                <div class="project-item">
+                  <div class="project-title">${project.title || ''}</div>
+                  <p>${project.description || ''}</p>
+                  <div class="project-tech">Technologies: ${(project.technologies || []).join(', ')}</div>
+                </div>
+              `).join('')}
+            </div>
+            ` : ''}
+          </div>
+        </body>
+        </html>
+      `;
+      
+      // Launch Puppeteer to generate PDF
+      const browser = await puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        headless: 'new'
+      });
+      
+      const page = await browser.newPage();
+      await page.setContent(htmlContent);
+      
+      // Set PDF options
+      const pdfOptions = {
+        format: 'A4',
+        printBackground: true,
+        margin: {
+          top: '0.4in',
+          right: '0.4in',
+          bottom: '0.4in',
+          left: '0.4in'
+        }
+      };
+      
+      // Generate PDF
+      const pdfBuffer = await page.pdf(pdfOptions);
+      
+      // Close browser
+      await browser.close();
+      
+      // Return the PDF file
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${resumeData.personalInfo?.firstName || 'Resume'}_${resumeData.personalInfo?.lastName || ''}.pdf"`);
+      res.send(pdfBuffer);
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      res.status(500).json({ 
+        error: 'Failed to generate PDF',
+        message: (error as Error).message 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

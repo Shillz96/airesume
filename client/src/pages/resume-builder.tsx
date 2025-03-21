@@ -1682,7 +1682,7 @@ export default function ResumeBuilder() {
                                 Add Skill
                               </Button>
                             </DialogTrigger>
-                            <DialogContent className="bg-[rgba(15,20,50,0.95)] backdrop-blur-lg border-blue-900/40 text-gray-200">
+                            <DialogContent className="cosmic-dialog-content">
                               <DialogHeader>
                                 <DialogTitle>Add a New Skill</DialogTitle>
                                 <DialogDescription className="text-gray-400">
@@ -1740,7 +1740,7 @@ export default function ResumeBuilder() {
                                 Add Skill
                               </Button>
                             </DialogTrigger>
-                            <DialogContent className="bg-[rgba(15,20,50,0.95)] backdrop-blur-lg border-blue-900/40 text-gray-200">
+                            <DialogContent className="cosmic-dialog-content">
                               <DialogHeader>
                                 <DialogTitle>Add a New Skill</DialogTitle>
                                 <DialogDescription className="text-gray-400">

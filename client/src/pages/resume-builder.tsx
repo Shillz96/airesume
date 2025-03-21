@@ -1375,7 +1375,7 @@ export default function ResumeBuilder() {
                                 })
                               }
                               placeholder="John"
-                              className="bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                              className="cosmic-input"
                             />
                           </div>
                           <div className="space-y-2">
@@ -1389,7 +1389,7 @@ export default function ResumeBuilder() {
                                 })
                               }
                               placeholder="Doe"
-                              className="bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                              className="cosmic-input"
                             />
                           </div>
                         </div>
@@ -1405,7 +1405,7 @@ export default function ResumeBuilder() {
                               })
                             }
                             placeholder="Senior Software Engineer | Full Stack Developer | JavaScript Expert"
-                            className="bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                            className="cosmic-input"
                           />
                           <p className="text-xs text-gray-400">
                             A brief tagline that appears under your name
@@ -1425,7 +1425,7 @@ export default function ResumeBuilder() {
                                 })
                               }
                               placeholder="john.doe@example.com"
-                              className="bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                              className="cosmic-input"
                             />
                           </div>
                           <div className="space-y-2">
@@ -1439,7 +1439,7 @@ export default function ResumeBuilder() {
                                 })
                               }
                               placeholder="(123) 456-7890"
-                              className="bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                              className="cosmic-input"
                             />
                           </div>
                         </div>
@@ -1480,7 +1480,7 @@ export default function ResumeBuilder() {
                               })
                             }
                             placeholder="Experienced software engineer with a passion for developing innovative solutions that deliver exceptional user experiences..."
-                            className="min-h-[120px] bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                            className="min-h-[120px] cosmic-input"
                           />
                           <p className="text-xs text-gray-400">
                             A concise overview of your professional background, skills, and career objectives
@@ -1696,7 +1696,7 @@ export default function ResumeBuilder() {
                                   <Input
                                     id="skillName"
                                     placeholder="e.g., React.js, Project Management"
-                                    className="bg-[rgba(30,40,80,0.4)] border-blue-900/30"
+                                    className="cosmic-input"
                                   />
                                 </div>
                               </div>
@@ -1754,7 +1754,7 @@ export default function ResumeBuilder() {
                                   <Input
                                     id="skillName"
                                     placeholder="e.g., React.js, Project Management"
-                                    className="bg-[rgba(30,40,80,0.4)] border-blue-900/30"
+                                    className="cosmic-input"
                                   />
                                 </div>
                               </div>

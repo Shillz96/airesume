@@ -38,7 +38,7 @@ interface ResumePreviewComponentProps {
   onTemplateChange: (template: string) => void;
   onDownload?: () => void;
   onToggleSkillsDisplay?: () => void;
-  onSmartAdjust?: () => void;
+  onSmartAdjust?: (adjustedResume: Resume) => void;
   onEdit?: () => void; // Added edit functionality
 }
 

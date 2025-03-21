@@ -640,10 +640,10 @@ export default function AIAssistant({
     <>
       {/* Floating Button */}
       <div className="fixed bottom-6 right-6 z-50">
-        {!isDialogOpen ? (
+        {!isVisible ? (
           <Button
             ref={aiButtonRef}
-            onClick={() => setIsDialogOpen(true)}
+            onClick={() => setIsVisible(true)}
             className="w-14 h-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transition-all"
           >
             <Cpu className="h-6 w-6" />
@@ -702,7 +702,7 @@ export default function AIAssistant({
                   variant="ghost" 
                   size="icon" 
                   className="h-7 w-7 text-gray-400 hover:text-white hover:bg-white/10" 
-                  onClick={() => setIsDialogOpen(false)}
+                  onClick={() => setIsVisible(false)}
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -918,8 +918,8 @@ export default function AIAssistant({
       </div>
 
       {/* Full screen dialog for larger screens */}
-      <Dialog open={isDialogOpen} onOpenChange={(open) => {
-        setIsDialogOpen(open);
+      <Dialog open={isVisible} onOpenChange={(open) => {
+        setIsVisible(open);
         if (!open) setMinimized(false);
       }}>
         <DialogContent

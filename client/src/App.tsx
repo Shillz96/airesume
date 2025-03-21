@@ -18,6 +18,7 @@ import { ProtectedRoute } from "./lib/protected-route";
 
 import Navbar from "@/components/navbar";
 import GoAdminLink from "@/components/go-admin-link";
+import QuickLogin from "@/components/quick-login";
 
 function Router() {
   // Manual check for admin-access path to handle direct navigation
@@ -82,6 +83,8 @@ function AppContent() {
       </div>
       {/* Admin access button - always visible */}
       <GoAdminLink />
+      {/* Quick login for the admin user */}
+      <QuickLogin />
     </div>
   );
 }

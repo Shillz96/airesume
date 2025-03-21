@@ -109,9 +109,9 @@ export default function Navbar() {
 
   // Remove the conditional rendering check so navbar shows for both guests and logged-in users
 
-  // Always show the navbar - for both logged in users and guests
+  // Show dashboard items only for logged-in or guest users
   const navItems = [
-    { path: "/", label: "Dashboard", icon: <Home className="h-4 w-4 mr-1" /> },
+    { path: "/dashboard", label: "Dashboard", icon: <Home className="h-4 w-4 mr-1" /> },
     { path: "/resumes", label: "Resumes", icon: <FileText className="h-4 w-4 mr-1" /> },
     { path: "/resume-builder", label: "Resume Builder", icon: <FileText className="h-4 w-4 mr-1" /> },
     { path: "/job-finder", label: "Job Finder", icon: <Briefcase className="h-4 w-4 mr-1" /> },
@@ -156,7 +156,7 @@ export default function Navbar() {
               ref={logoRef}
             >
               <Link 
-                href="/" 
+                href={user ? "/dashboard" : "/"} 
                 className="flex items-center cosmic-text-gradient font-bold text-xl cursor-pointer"
               >
                 <Rocket className="mr-2 h-5 w-5" />

@@ -1,8 +1,8 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "@/hooks/use-auth";
+import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { GuestModeProvider } from "@/hooks/use-guest-mode";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
@@ -12,6 +12,7 @@ import ResumesPage from "@/pages/resumes-page";
 import JobFinder from "@/pages/job-finder";
 import JobDetails from "@/pages/job-details";
 import SubscriptionPage from "@/pages/subscription-page";
+import LandingPage from "@/pages/landing-page";
 import { ProtectedRoute } from "./lib/protected-route";
 
 import Navbar from "@/components/navbar";
@@ -19,7 +20,8 @@ import Navbar from "@/components/navbar";
 function Router() {
   return (
     <Switch>
-      <ProtectedRoute path="/" component={HomePage} />
+      <Route path="/" component={LandingPage} />
+      <ProtectedRoute path="/dashboard" component={HomePage} />
       <ProtectedRoute path="/resume-builder" component={ResumeBuilder} />
       <ProtectedRoute path="/resumes" component={ResumesPage} />
       <ProtectedRoute path="/job-finder" component={JobFinder} />
@@ -31,17 +33,30 @@ function Router() {
   );
 }
 
+// Separate component to use hooks that require auth context
+function AppContent() {
+  const [location] = useLocation();
+  const { user } = useAuth();
+  
+  // Only show navbar when not on landing page or if authenticated
+  const showNavbar = location !== "/" || user;
+  
+  return (
+    <div className="min-h-screen bg-black cosmic-background">
+      {showNavbar && <Navbar />}
+      <div className={showNavbar ? "pt-16" : ""}>
+        <Router />
+      </div>
+    </div>
+  );
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <GuestModeProvider>
-          <div className="min-h-screen bg-black cosmic-background">
-            <Navbar />
-            <div className="pt-16">
-              <Router />
-            </div>
-          </div>
+          <AppContent />
           <Toaster />
         </GuestModeProvider>
       </AuthProvider>

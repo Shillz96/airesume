@@ -867,54 +867,64 @@ export default function ResumeBuilder() {
   
   // Handle tailored resume data from localStorage
   useEffect(() => {
-    if (isTailoredResume) {
+    // Only check for tailored resume data on initial component mount
+    // to avoid conflicts with other state updates
+    const tailoredResumeData = localStorage.getItem("tailoredResume");
+    
+    if (tailoredResumeData) {
       try {
-        const tailoredResumeData = localStorage.getItem("tailoredResume");
-        if (tailoredResumeData) {
-          const parsedData = JSON.parse(tailoredResumeData);
+        const parsedData = JSON.parse(tailoredResumeData);
+        
+        // Immediately switch to profile tab for better UX
+        setActiveSection("profile");
+        
+        // Create a new resume with the tailored content or update existing
+        const hasExistingData = resume.personalInfo.firstName || 
+                               resume.personalInfo.lastName || 
+                               resume.experience.length > 0 || 
+                               resume.skills.length > 0;
+        
+        if (hasExistingData) {
+          // Update existing resume with tailored content
+          setResume((currentResume) => ({
+            ...currentResume,
+            personalInfo: {
+              ...currentResume.personalInfo,
+              // Only override summary from personalInfo
+              summary: parsedData.personalInfo?.summary || currentResume.personalInfo.summary
+            },
+            // Replace experience and skills completely with tailored content
+            experience: parsedData.experience || currentResume.experience,
+            skills: parsedData.skills || currentResume.skills
+          }));
           
-          // Check if we have an existing resume to update or need to create a new one
-          if (resume.personalInfo.firstName || resume.personalInfo.lastName || 
-              resume.experience.length > 0 || resume.skills.length > 0) {
-            // Update existing resume with tailored content
-            setResume((currentResume) => ({
-              ...currentResume,
-              personalInfo: {
-                ...currentResume.personalInfo,
-                summary: parsedData.personalInfo?.summary || currentResume.personalInfo.summary
-              },
-              experience: parsedData.experience || currentResume.experience,
-              skills: parsedData.skills || currentResume.skills
-            }));
-            
-            toast({
-              title: "Resume Updated",
-              description: "Your resume has been updated with the tailored content.",
-            });
-          } else {
-            // Create a new resume with the tailored content
-            setResume((currentResume) => ({
-              ...currentResume,
-              personalInfo: {
-                ...currentResume.personalInfo,
-                ...parsedData.personalInfo
-              },
-              experience: parsedData.experience || [],
-              skills: parsedData.skills || []
-            }));
-            
-            toast({
-              title: "Tailored Resume Created",
-              description: "A new resume has been created with the tailored content.",
-            });
-          }
+          toast({
+            title: "Resume Updated",
+            description: "Your resume has been updated with job-specific tailored content.",
+          });
+        } else {
+          // Create a new resume with the tailored content
+          setResume((currentResume) => ({
+            ...currentResume,
+            personalInfo: {
+              ...currentResume.personalInfo,
+              ...parsedData.personalInfo
+            },
+            experience: parsedData.experience || [],
+            skills: parsedData.skills || []
+          }));
           
-          // Clear the localStorage data to prevent reapplying
-          localStorage.removeItem("tailoredResume");
-          
-          // Remove the tailored parameter from URL
-          window.history.replaceState(null, '', window.location.pathname);
+          toast({
+            title: "Tailored Resume Created",
+            description: "A new resume has been created with job-specific content.",
+          });
         }
+        
+        // Clear the localStorage data to prevent reapplying
+        localStorage.removeItem("tailoredResume");
+        
+        // Remove the tailored parameter from URL
+        window.history.replaceState(null, '', window.location.pathname);
       } catch (error) {
         console.error("Error applying tailored resume:", error);
         toast({
@@ -924,8 +934,9 @@ export default function ResumeBuilder() {
         });
       }
     }
-  }, [isTailoredResume, resume.personalInfo.firstName, resume.personalInfo.lastName, 
-      resume.experience.length, resume.skills.length, toast]);
+  // Run this effect only once on component mount (empty dependency array)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
   // Save resume mutation
   const saveResumeMutation = useMutation({

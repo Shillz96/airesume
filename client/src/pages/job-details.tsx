@@ -54,10 +54,21 @@ export default function JobDetails() {
       return;
     }
     
-    // If logged in, navigate to the resume builder with the tailored resume data
-    // We'll pass the data via navigation to /resume-builder with state
+    // First, store the tailored resume data in localStorage
     localStorage.setItem("tailoredResume", JSON.stringify(tailoredResume));
-    setLocation("/resume-builder?tailored=true");
+    
+    // Add a success toast before redirecting
+    toast({
+      title: "Resume Tailored Successfully",
+      description: "Redirecting to Resume Builder with your tailored content...",
+    });
+    
+    // Use a slight delay before redirecting to ensure the toast is seen
+    // and localStorage has time to update
+    setTimeout(() => {
+      // Redirect to the resume builder with the tailored flag
+      setLocation("/resume-builder?tailored=true");
+    }, 1000);
   };
   
   if (isLoading) {

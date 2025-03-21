@@ -253,7 +253,7 @@ export default function SubscriptionPage() {
     <>
       <CosmicBackground />
       <Navbar />
-      <div className="container pt-24 pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
+      <div className="container pt-12 pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
         <PageHeader
           title="Subscription Management"
           subtitle="Manage your plans, add-ons, and payment history"

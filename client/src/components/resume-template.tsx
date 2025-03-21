@@ -800,38 +800,6 @@ export default function ResumeTemplate({ resume, onTemplateChange }: ResumeTempl
                   selected={resume.template === 'executive'}
                   onClick={() => onTemplateChange('executive')}
                 />
-                
-                <TemplateOption
-                  name="Modern"
-                  description="Contemporary layout"
-                  preview={<TemplatePreviewModern />}
-                  selected={resume.template === 'modern'}
-                  onClick={() => onTemplateChange('modern')}
-                />
-                
-                <TemplateOption
-                  name="Minimal"
-                  description="Simple and clean"
-                  preview={<TemplatePreviewMinimal />}
-                  selected={resume.template === 'minimal'}
-                  onClick={() => onTemplateChange('minimal')}
-                />
-                
-                <TemplateOption
-                  name="Industry"
-                  description="Industry-specific professional"
-                  preview={<TemplatePreviewIndustry />}
-                  selected={resume.template === 'industry'}
-                  onClick={() => onTemplateChange('industry')}
-                />
-                
-                <TemplateOption
-                  name="Bold"
-                  description="Stand out with impact"
-                  preview={<TemplatePreviewBold />}
-                  selected={resume.template === 'bold'}
-                  onClick={() => onTemplateChange('bold')}
-                />
               </div>
             </DialogContent>
           </Dialog>

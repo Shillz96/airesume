@@ -1258,7 +1258,7 @@ export default function ResumeBuilder() {
     <div className="min-h-screen bg-black cosmic-background">
       <Navbar />
       
-      <main className="container mx-auto pt-24 pb-20 px-4">
+      <main className="container mx-auto pt-12 pb-20 px-4">
         {/* Page Header */}
         <div className="mb-8 flex justify-between items-center">
           <div>

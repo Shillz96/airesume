@@ -20,6 +20,12 @@ import Navbar from "@/components/navbar";
 import GoAdminLink from "@/components/go-admin-link";
 
 function Router() {
+  // Manual check for admin-access path to handle direct navigation
+  const path = window.location.pathname;
+  if (path === "/admin-access") {
+    return <AdminAccess />;
+  }
+  
   return (
     <Switch>
       <Route path="/" component={LandingPage} />

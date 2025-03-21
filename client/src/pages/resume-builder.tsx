@@ -1310,6 +1310,38 @@ export default function ResumeBuilder() {
     enabled: true,
   });
 
+  // Add a recovery mechanism - check if we have saved resume data in sessionStorage
+  // and use it if the current resume is empty
+  useEffect(() => {
+    if (!resume.personalInfo.firstName && !resume.personalInfo.lastName) {
+      try {
+        // Try to recover from sessionStorage
+        const savedData = sessionStorage.getItem('loadedResumeData');
+        if (savedData) {
+          const parsedData = JSON.parse(savedData);
+          console.log("Recovering resume data from sessionStorage:", parsedData);
+          
+          if (parsedData.resumeData) {
+            // Apply the recovered data if we don't already have data
+            setResume(parsedData.resumeData as Resume);
+            
+            // If we know the ID, set it
+            if (parsedData.resumeData.id) {
+              setResumeId(parsedData.resumeData.id);
+            }
+            
+            toast({
+              title: "Resume Data Recovered",
+              description: "Your resume data has been recovered from a previous session.",
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error recovering resume data:", error);
+      }
+    }
+  }, [resume]);
+
   // Parse URL parameters on component mount
   useEffect(() => {
     // Check for resume ID in URL parameters
@@ -1906,12 +1938,23 @@ export default function ResumeBuilder() {
                                 template: resumeData.template || "professional"
                               };
                               
+                              // Preserve the reference to the complete resume for later
+                              const finalResumeData = {...completeResume};
+                              
                               // Set the resume ID and update the UI state
                               setResumeId(savedResume.id);
                               setActiveSection("profile");
                               
                               // Force a complete state update by creating a brand new object
-                              setResume(completeResume as Resume);
+                              // We wrap this in setTimeout to ensure it runs after other state changes
+                              setResume(finalResumeData as Resume);
+                              
+                              // Add a safety net: store the loaded resume in sessionStorage
+                              // so we can recover if state gets lost
+                              sessionStorage.setItem('loadedResumeData', JSON.stringify({
+                                resumeData: finalResumeData,
+                                timestamp: new Date().toISOString()
+                              }));
                               
                               // Set a debug flag in local storage
                               localStorage.setItem('lastLoadedResume', JSON.stringify({

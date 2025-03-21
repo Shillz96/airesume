@@ -192,11 +192,42 @@ export default function ResumesPage() {
         });
         break;
       case 'delete':
-        toast({
-          title: "Resume Deleted",
-          description: "Your resume has been permanently removed.",
-          variant: "destructive",
-        });
+        try {
+          // Show loading toast
+          toast({
+            title: "Deleting Resume",
+            description: "Please wait while we remove your resume...",
+          });
+          
+          // Call the API to delete the resume
+          const response = await fetch(`/api/resumes/${id}`, {
+            method: 'DELETE',
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Error deleting resume: ${response.status}`);
+          }
+          
+          // Wait a moment before refreshing the page to allow the API to fully process
+          setTimeout(() => {
+            // Invalidate and refetch the resumes list
+            window.location.reload();
+          }, 500);
+          
+          // Show success toast
+          toast({
+            title: "Resume Deleted",
+            description: "Your resume has been permanently removed.",
+            variant: "destructive",
+          });
+        } catch (error) {
+          console.error("Error deleting resume:", error);
+          toast({
+            title: "Error Deleting Resume",
+            description: "Failed to delete the resume. Please try again.",
+            variant: "destructive",
+          });
+        }
         break;
       case 'upload':
         toast({

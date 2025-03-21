@@ -68,8 +68,10 @@ export class JobsAPIService {
       }
       
       // Make the API request to Adzuna
-      console.log(`Fetching jobs from Adzuna: ${this.baseUrl}/us/search/1?${params.toString()}`);
-      const response = await fetch(`${this.baseUrl}/us/search/1?${params.toString()}`);
+      // The correct format for Adzuna API is: https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=X&app_key=Y&params
+      const apiUrl = `${this.baseUrl}/us/search/1?${params.toString()}`;
+      console.log(`Fetching jobs from Adzuna: ${apiUrl}`);
+      const response = await fetch(apiUrl);
       
       if (!response.ok) {
         throw new Error(`Adzuna API request failed with status ${response.status}: ${await response.text()}`);
@@ -129,8 +131,9 @@ export class JobsAPIService {
    * Transform a single job from the API to our schema
    */
   private transformJobData(apiJob: any, index?: number): Job {
-    // Adzuna API returns jobs with a different structure
-    const id = apiJob.id || index || Math.floor(Math.random() * 10000);
+    // Adzuna API returns jobs with a specific structure based on our API test
+    // Convert the ID to a number (Adzuna provides string IDs)
+    const id = apiJob.id ? parseInt(apiJob.id) : (index || Math.floor(Math.random() * 10000));
     
     // Get description - Adzuna provides this in the 'description' field
     const description = apiJob.description || 'No description provided';
@@ -138,28 +141,55 @@ export class JobsAPIService {
     // Extract skills from description
     const skills = this.extractSkillsFromDescription(description);
     
-    // Parse location - Adzuna provides this as area array or location.display_name
+    // Parse location - Adzuna provides location as an object with display_name and area array
     let location = 'Remote';
     if (apiJob.location && apiJob.location.display_name) {
       location = apiJob.location.display_name;
     } else if (apiJob.location && apiJob.location.area && Array.isArray(apiJob.location.area)) {
-      location = apiJob.location.area.join(', ');
+      // Take the most specific location (city/town) which is usually the last element
+      // Remove the country (first element) as that's redundant
+      const locationParts = [...apiJob.location.area];
+      if (locationParts.length > 1) {
+        locationParts.shift(); // Remove the country
+        location = locationParts.join(', ');
+      } else {
+        location = locationParts.join(', ');
+      }
     }
     
     // Get contract type (full-time, part-time, etc.)
     let type = 'Full-time';
-    if (apiJob.contract_type) {
-      // Convert contract_type to more friendly format
-      if (apiJob.contract_type === 'full_time') {
+    if (apiJob.contract_time) {
+      // Convert contract_time to more friendly format
+      if (apiJob.contract_time === 'full_time') {
         type = 'Full-time';
-      } else if (apiJob.contract_type === 'part_time') {
+      } else if (apiJob.contract_time === 'part_time') {
         type = 'Part-time';
-      } else if (apiJob.contract_type === 'contract' || apiJob.contract_type === 'temporary') {
-        type = 'Contract';
       } else {
-        type = apiJob.contract_type;
+        type = apiJob.contract_time.charAt(0).toUpperCase() + apiJob.contract_time.slice(1);
+      }
+    } else if (apiJob.contract_type === 'permanent') {
+      type = 'Full-time';
+    } else if (apiJob.contract_type === 'contract' || apiJob.contract_type === 'temporary') {
+      type = 'Contract';
+    }
+    
+    // Handle salary information if available
+    let salaryInfo = '';
+    if (apiJob.salary_min && apiJob.salary_max) {
+      const min = Math.round(apiJob.salary_min);
+      const max = Math.round(apiJob.salary_max);
+      if (min === max) {
+        salaryInfo = `$${min.toLocaleString()}/year`;
+      } else {
+        salaryInfo = `$${min.toLocaleString()} - $${max.toLocaleString()}/year`;
       }
     }
+    
+    // Determine if the job is new (less than 3 days old)
+    const isNew = apiJob.created ? 
+      new Date(apiJob.created).getTime() > Date.now() - 3 * 24 * 60 * 60 * 1000 :
+      false;
     
     return {
       id: id,
@@ -172,9 +202,10 @@ export class JobsAPIService {
       postedAt: new Date(apiJob.created || Date.now()),
       expiresAt: null,
       applyUrl: apiJob.redirect_url || '#',
+      salary: salaryInfo || undefined,
       // These fields will be calculated when matching with a resume
-      match: 0,
-      isNew: true,
+      match: 0, 
+      isNew: isNew,
       saved: false
     };
   }

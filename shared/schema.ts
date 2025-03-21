@@ -66,6 +66,7 @@ export type Job = typeof jobs.$inferSelect & {
   match?: number;       // Match percentage with user's resume
   isNew?: boolean;      // Whether the job is recent
   saved?: boolean;      // Whether the job is saved by the user
+  salary?: string;      // Salary information from Adzuna API
 };
 
 // Saved Jobs table

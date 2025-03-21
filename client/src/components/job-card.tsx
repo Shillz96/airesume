@@ -1,12 +1,13 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Bookmark, ExternalLink, Building, MapPin, Briefcase, Clock, Star, Heart, Share2, Cpu } from "lucide-react";
+import { Bookmark, ExternalLink, Building, MapPin, Briefcase, Clock, Star, Heart, Share2, Cpu, Eye } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useGuestMode } from "@/hooks/use-guest-mode";
 import { useAuth } from "@/hooks/use-auth";
+import { useLocation } from "wouter";
 
 export interface Job {
   id: string;
@@ -31,6 +32,7 @@ export default function JobCard({ job }: JobCardProps) {
   const { toast } = useToast();
   const { isGuestMode, showGuestModal } = useGuestMode();
   const { user } = useAuth();
+  const [, setLocation] = useLocation();
   
   const { mutate: toggleSaveJob } = useMutation({
     mutationFn: async () => {
@@ -98,15 +100,11 @@ export default function JobCard({ job }: JobCardProps) {
   const successChance = getSuccessChance();
   const salaryRange = getSalaryRange();
 
-  // Generate a mutation for the AI tailor resume feature
-  const { mutate: tailorResume } = useMutation({
-    mutationFn: async () => {
-      toast({
-        title: "AI Resume Tailoring",
-        description: "This feature would customize your resume for this specific job.",
-      });
-    }
-  });
+  // Handler for the AI tailor resume feature
+  const handleTailorResume = () => {
+    // Navigate to the job details page instead
+    setLocation(`/job/${job.id}`);
+  };
 
   return (
     <div className="cosmic-card border border-white/10 p-6 transition-all hover:border-blue-500/50 relative overflow-hidden group">
@@ -201,6 +199,15 @@ export default function JobCard({ job }: JobCardProps) {
           >
             <Share2 className="h-4 w-4 mr-1.5 text-blue-400" />
             Share
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={() => setLocation(`/job/${job.id}`)}
+            className="text-gray-300 hover:text-white hover:bg-white/10" 
+          >
+            <Eye className="h-4 w-4 mr-1.5 text-blue-400" />
+            View Details
           </Button>
         </div>
         

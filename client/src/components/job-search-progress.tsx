@@ -107,7 +107,7 @@ export default function JobSearchProgress() {
   }, []);
   
   return (
-    <Card className="cosmic-card mb-8 overflow-hidden" ref={cardRef}>
+    <Card className="cosmic-card overflow-hidden" ref={cardRef}>
       <CardHeader className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 pb-3">
         <CardTitle className="text-xl text-white">Job Search Progress</CardTitle>
         <CardDescription className="text-gray-300">

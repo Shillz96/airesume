@@ -4,10 +4,21 @@ import Navbar from "@/components/navbar";
 import JobCard, { Job } from "@/components/job-card";
 import JobFilter, { JobFilterValues } from "@/components/job-filter";
 import CosmicBackground from "@/components/cosmic-background";
-import { AlertTriangle, Cpu, Star, Share2, Heart, Briefcase, Clock, Building } from "lucide-react";
+import AIAssistant from "@/components/ai-assistant";
+import { AlertTriangle, Cpu, Star, Share2, Heart, Briefcase, Clock, Building, Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import {
   Pagination,
   PaginationContent,
@@ -40,6 +51,7 @@ export default function JobFinder() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   // Enhanced to support real job API with pagination
   const { data: jobs, isLoading, error } = useQuery({
@@ -311,6 +323,46 @@ export default function JobFinder() {
           </div>
         </div>
       </main>
+
+      {/* Floating AI Assistant Button */}
+      <div className="fixed bottom-6 right-6 z-50 group">
+        <div className="absolute -inset-0.5 rounded-full bg-blue-500 opacity-75 blur-sm group-hover:opacity-100 transition duration-300 animate-pulse"></div>
+        <Button
+          onClick={() => setIsDialogOpen(true)}
+          className="relative h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 p-0 shadow-lg group-hover:scale-105 transition duration-300"
+          aria-label="Open AI Job Assistant"
+        >
+          <div className="absolute inset-0 rounded-full border border-white/20 animate-ping opacity-40"></div>
+          <Sparkles className="h-5 w-5 text-white" />
+        </Button>
+        <span className="absolute top-0 right-16 bg-black/80 text-white text-sm py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">AI Job Assistant</span>
+      </div>
+
+      {/* AI Assistant Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[600px] bg-black/90 border border-blue-500/30 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-2xl cosmic-text-gradient">AI Job Assistant</DialogTitle>
+            <DialogDescription className="text-gray-300">
+              Get help finding jobs, customizing applications, and preparing for interviews.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <AIAssistant 
+              activeTab="jobs"
+            />
+          </div>
+          
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline" className="border-blue-500/30 text-blue-400 hover:bg-blue-900/30 hover:text-white">
+                Close
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

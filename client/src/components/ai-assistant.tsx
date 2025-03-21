@@ -132,7 +132,9 @@ export default function AIAssistant({
         education: "Need help with your education section? I can suggest formatting or additions like GPA or honors.",
         skills: "I can suggest in-demand skills for your field. What job roles are you targeting?",
         projects: "Let's enhance your project descriptions! I can suggest impactful ways to describe your contributions.",
-        preview: "Your resume is looking good! I can provide final optimization tips for ATS systems."
+        preview: "Your resume is looking good! I can provide final optimization tips for ATS systems.",
+        jobs: "I can help with your job search! I can provide tips for matching with employers, tailoring applications, or finding relevant opportunities.",
+        interview: "Preparing for an interview? I can provide common questions for your target role and tips for answering them effectively."
       };
       
       setChatMessages([{ 

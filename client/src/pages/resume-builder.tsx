@@ -1813,6 +1813,20 @@ export default function ResumeBuilder() {
         </div>
       </main>
 
+      {/* Floating AI Assistant Button */}
+      <div className="fixed bottom-6 right-6 z-50 group">
+        <div className="absolute -inset-0.5 rounded-full bg-blue-500 opacity-75 blur-sm group-hover:opacity-100 transition duration-300 animate-pulse"></div>
+        <Button
+          onClick={() => setIsDialogOpen(true)}
+          className="relative h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 p-0 shadow-lg group-hover:scale-105 transition duration-300"
+          aria-label="Open AI Assistant"
+        >
+          <div className="absolute inset-0 rounded-full border border-white/20 animate-ping opacity-40"></div>
+          <Sparkles className="h-5 w-5 text-white" />
+        </Button>
+        <span className="absolute top-0 right-16 bg-black/80 text-white text-sm py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">AI Assistant</span>
+      </div>
+
       {/* AI Assistant Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[600px] bg-black/90 border border-blue-500/30 text-white">

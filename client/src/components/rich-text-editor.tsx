@@ -1,17 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Bold, 
-  Italic, 
-  Underline, 
-  List, 
+import {
+  Bold,
+  Italic,
+  Underline,
+  List,
   ListOrdered,
   AlignLeft,
   AlignCenter,
-  AlignRight
+  AlignRight,
+  Type
 } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
 interface RichTextEditorProps {
@@ -35,6 +38,8 @@ export default function RichTextEditor({
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
   const [alignment, setAlignment] = useState<string>("left");
+  const [fontSize, setFontSize] = useState<string>("medium");
+  const [fontFamily, setFontFamily] = useState<string>("default");
 
   // Parse HTML content from the textarea
   const parseHtml = (text: string) => {
@@ -71,6 +76,93 @@ export default function RichTextEditor({
       newText = value.substring(0, start) + formattedText + value.substring(end);
     }
     
+    onChange(newText);
+    
+    // Reset selection
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(
+        start,
+        end + (newText.length - value.length)
+      );
+    }, 0);
+  };
+  
+  // Apply font size to selected text
+  const applyFontSize = (size: string) => {
+    const textarea = document.getElementById('rich-text-area') as HTMLTextAreaElement;
+    if (!textarea) return;
+    
+    setFontSize(size);
+    
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = value.substring(start, end);
+    
+    if (start === end) return; // No text selected
+    
+    let sizeClass = "";
+    switch(size) {
+      case "small":
+        sizeClass = "text-sm";
+        break;
+      case "medium":
+        sizeClass = "text-base";
+        break;
+      case "large":
+        sizeClass = "text-lg";
+        break;
+      case "xlarge":
+        sizeClass = "text-xl";
+        break;
+      default:
+        sizeClass = "text-base";
+    }
+    
+    const formattedText = `<span class="${sizeClass}">${selectedText}</span>`;
+    const newText = value.substring(0, start) + formattedText + value.substring(end);
+    onChange(newText);
+    
+    // Reset selection
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(
+        start,
+        end + (newText.length - value.length)
+      );
+    }, 0);
+  };
+  
+  // Apply font family to selected text
+  const applyFontFamily = (font: string) => {
+    const textarea = document.getElementById('rich-text-area') as HTMLTextAreaElement;
+    if (!textarea) return;
+    
+    setFontFamily(font);
+    
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = value.substring(start, end);
+    
+    if (start === end) return; // No text selected
+    
+    let fontStyle = "";
+    switch(font) {
+      case "default":
+        fontStyle = "font-sans";
+        break;
+      case "serif":
+        fontStyle = "font-serif";
+        break;
+      case "mono":
+        fontStyle = "font-mono";
+        break;
+      default:
+        fontStyle = "font-sans";
+    }
+    
+    const formattedText = `<span class="${fontStyle}">${selectedText}</span>`;
+    const newText = value.substring(0, start) + formattedText + value.substring(end);
     onChange(newText);
     
     // Reset selection
@@ -156,6 +248,96 @@ export default function RichTextEditor({
           
           <div className="h-6 mx-2 border-l border-gray-200"></div>
           
+          {/* Font Family & Size Controls */}
+          <div className="flex items-center gap-1">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 px-2 gap-1 text-xs">
+                  <Type className="h-4 w-4 mr-1" />
+                  {fontFamily === "default" ? "Sans" : fontFamily === "serif" ? "Serif" : "Mono"}
+                  <span className="sr-only">Font Family</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-56 p-2" side="bottom">
+                <div className="grid gap-1">
+                  <Button 
+                    variant={fontFamily === "default" ? "default" : "ghost"} 
+                    size="sm" 
+                    className="justify-start font-sans"
+                    onClick={() => applyFontFamily("default")}
+                  >
+                    Sans-serif
+                  </Button>
+                  <Button 
+                    variant={fontFamily === "serif" ? "default" : "ghost"} 
+                    size="sm" 
+                    className="justify-start font-serif"
+                    onClick={() => applyFontFamily("serif")}
+                  >
+                    Serif
+                  </Button>
+                  <Button 
+                    variant={fontFamily === "mono" ? "default" : "ghost"} 
+                    size="sm" 
+                    className="justify-start font-mono"
+                    onClick={() => applyFontFamily("mono")}
+                  >
+                    Monospace
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+            
+            <Separator orientation="vertical" className="h-4" />
+            
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 px-2 gap-1 text-xs">
+                  {fontSize === "small" ? "Small" : fontSize === "medium" ? "Medium" : fontSize === "large" ? "Large" : "X-Large"}
+                  <span className="sr-only">Font Size</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-40 p-2" side="bottom">
+                <div className="grid gap-1">
+                  <Button 
+                    variant={fontSize === "small" ? "default" : "ghost"} 
+                    size="sm" 
+                    className="justify-start text-sm"
+                    onClick={() => applyFontSize("small")}
+                  >
+                    Small
+                  </Button>
+                  <Button 
+                    variant={fontSize === "medium" ? "default" : "ghost"} 
+                    size="sm" 
+                    className="justify-start text-base"
+                    onClick={() => applyFontSize("medium")}
+                  >
+                    Medium
+                  </Button>
+                  <Button 
+                    variant={fontSize === "large" ? "default" : "ghost"} 
+                    size="sm" 
+                    className="justify-start text-lg"
+                    onClick={() => applyFontSize("large")}
+                  >
+                    Large
+                  </Button>
+                  <Button 
+                    variant={fontSize === "xlarge" ? "default" : "ghost"} 
+                    size="sm" 
+                    className="justify-start text-xl"
+                    onClick={() => applyFontSize("xlarge")}
+                  >
+                    X-Large
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+          
+          <div className="h-6 mx-2 border-l border-gray-200"></div>
+          
           <div className="flex gap-0.5">
             <Button
               type="button"
@@ -214,12 +396,15 @@ export default function RichTextEditor({
         />
       </div>
       
-      {/* Preview (for development purposes) */}
-      {/*
-      <div className="p-3 border rounded-md bg-white">
-        <div dangerouslySetInnerHTML={parseHtml(value)} />
-      </div>
-      */}
+      {/* Live Preview */}
+      {value && value.includes("<") && (
+        <div className="mt-2">
+          <div className="text-xs text-gray-500 mb-1">Formatted Preview:</div>
+          <div className="p-3 border rounded-md bg-white shadow-sm">
+            <div dangerouslySetInnerHTML={parseHtml(value)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

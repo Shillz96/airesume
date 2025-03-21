@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
 interface ResumeTipsProps {
-  resumeId?: string | number;
+  resumeId?: string | number | null;
   onApplySuggestion: (suggestion: string) => void;
   suggestionType: "summary" | "bullet" | "skill";
 }
@@ -24,7 +24,12 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
 
     // If we don't have a valid resumeId, use fallback suggestions
     if (!resumeId || resumeId === "new") {
-      setSuggestions(getFallbackSuggestions(length as "short" | "medium" | "long", suggestionType));
+      // For skills, we need to handle different category options
+      if (suggestionType === "skill") {
+        setSuggestions(getFallbackSuggestions(length as any, suggestionType));
+      } else {
+        setSuggestions(getFallbackSuggestions(length as "short" | "medium" | "long", suggestionType));
+      }
       setIsGenerating(false);
       return;
     }
@@ -103,14 +108,17 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
         ];
       }
     } else if (type === "skill") {
-      // Skill suggestions (length matters less here)
-      if (length === "technical") {
+      // Skill suggestions - we use a different set of categories for skills
+      // Note: TypeScript doesn't know this, so we need to handle it properly
+      const skillLength = length as any; // Cast to any to avoid TypeScript errors
+      
+      if (skillLength === "technical" || skillLength === "short") {
         return [
           "Data Analysis",
           "Project Management",
           "Cloud Computing"
         ];
-      } else if (length === "soft") {
+      } else if (skillLength === "soft" || skillLength === "medium") {
         return [
           "Strategic Communication",
           "Team Leadership",

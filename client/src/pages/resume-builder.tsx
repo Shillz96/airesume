@@ -927,6 +927,7 @@ export default function ResumeBuilder() {
     searchParams.get('tailored') === 'true'
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [showTips, setShowTips] = useState<"summary" | "experience" | "skills" | null>(null);
   
   // Initial resume state
   const [resume, setResume] = useState<Resume>({
@@ -1525,14 +1526,45 @@ export default function ResumeBuilder() {
                         </div>
                         
                         <div className="mt-4 flex">
-                          <Button
-                            onClick={() => setIsDialogOpen(true)}
-                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                            size="sm"
-                          >
-                            <Cpu className="h-4 w-4 mr-2" />
-                            Get AI Assistance
-                          </Button>
+                          {showTips === "summary" ? (
+                            <div className="w-full">
+                              <ResumeTips 
+                                resumeId={resumeId} 
+                                onApplySuggestion={(suggestion) => {
+                                  setResume({
+                                    ...resume,
+                                    personalInfo: {
+                                      ...resume.personalInfo,
+                                      summary: suggestion
+                                    }
+                                  });
+                                  setShowTips(null);
+                                  toast({
+                                    title: "Summary Applied",
+                                    description: "AI-generated summary has been applied to your resume."
+                                  });
+                                }}
+                                suggestionType="summary"
+                              />
+                              <Button
+                                onClick={() => setShowTips(null)}
+                                variant="ghost"
+                                size="sm"
+                                className="mt-2 w-full text-gray-400 hover:text-white"
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          ) : (
+                            <Button
+                              onClick={() => setShowTips("summary")}
+                              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                              size="sm"
+                            >
+                              <Cpu className="h-4 w-4 mr-2" />
+                              Get AI Suggestions
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1606,14 +1638,53 @@ export default function ResumeBuilder() {
                         </div>
                         
                         <div className="mt-4 flex">
-                          <Button
-                            onClick={() => setIsDialogOpen(true)}
-                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                            size="sm"
-                          >
-                            <Cpu className="h-4 w-4 mr-2" />
-                            Get AI Assistance
-                          </Button>
+                          {showTips === "experience" ? (
+                            <div className="w-full">
+                              <ResumeTips 
+                                resumeId={resumeId} 
+                                onApplySuggestion={(bulletPoint) => {
+                                  if (resume.experience.length > 0) {
+                                    // Apply to the most recent experience item
+                                    const updatedExperience = [...resume.experience];
+                                    const lastIndex = updatedExperience.length - 1;
+                                    
+                                    updatedExperience[lastIndex] = {
+                                      ...updatedExperience[lastIndex],
+                                      description: bulletPoint
+                                    };
+                                    
+                                    setResume({
+                                      ...resume,
+                                      experience: updatedExperience
+                                    });
+                                  }
+                                  setShowTips(null);
+                                  toast({
+                                    title: "Bullet point applied",
+                                    description: "AI-generated bullet point has been applied to your experience."
+                                  });
+                                }}
+                                suggestionType="bullet"
+                              />
+                              <Button
+                                onClick={() => setShowTips(null)}
+                                variant="ghost"
+                                size="sm"
+                                className="mt-2 w-full text-gray-400 hover:text-white"
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          ) : (
+                            <Button
+                              onClick={() => setShowTips("experience")}
+                              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                              size="sm"
+                            >
+                              <Cpu className="h-4 w-4 mr-2" />
+                              Get AI Suggestions
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1729,14 +1800,57 @@ export default function ResumeBuilder() {
                         </div>
                         
                         <div className="mt-4 flex">
-                          <Button
-                            onClick={() => setIsDialogOpen(true)}
-                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                            size="sm"
-                          >
-                            <Cpu className="h-4 w-4 mr-2" />
-                            Get AI Assistance
-                          </Button>
+                          {showTips === "skills" ? (
+                            <div className="w-full">
+                              <ResumeTips 
+                                resumeId={resumeId} 
+                                onApplySuggestion={(skill) => {
+                                  if (!resume.skills.some(s => s.name.toLowerCase() === skill.toLowerCase())) {
+                                    const newSkill = {
+                                      id: `skill-${Date.now()}`,
+                                      name: skill,
+                                      proficiency: 3
+                                    };
+                                    
+                                    setResume({
+                                      ...resume,
+                                      skills: [...resume.skills, newSkill]
+                                    });
+                                    
+                                    toast({
+                                      title: "Skill added",
+                                      description: `"${skill}" has been added to your skills.`
+                                    });
+                                  } else {
+                                    toast({
+                                      title: "Skill already exists",
+                                      description: `"${skill}" is already in your skills list.`,
+                                      variant: "destructive"
+                                    });
+                                  }
+                                  setShowTips(null);
+                                }}
+                                suggestionType="skill"
+                              />
+                              <Button
+                                onClick={() => setShowTips(null)}
+                                variant="ghost"
+                                size="sm"
+                                className="mt-2 w-full text-gray-400 hover:text-white"
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          ) : (
+                            <Button
+                              onClick={() => setShowTips("skills")}
+                              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                              size="sm"
+                            >
+                              <Cpu className="h-4 w-4 mr-2" />
+                              Get AI Suggestions
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </div>

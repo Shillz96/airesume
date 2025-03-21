@@ -333,7 +333,7 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
                       {appliedSuggestions.map((applied, idx) => (
                         <div key={`applied-${idx}`} className="flex items-start p-1.5 rounded-md bg-blue-800/20 border border-blue-500/30">
                           <div className="flex-grow">
-                            <p className="text-xs text-blue-100 leading-relaxed">{applied}</p>
+                            <p className="text-xs text-blue-100 leading-relaxed">{typeof applied === 'object' ? JSON.stringify(applied) : applied}</p>
                           </div>
                           <Button
                             variant="ghost"
@@ -353,7 +353,10 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
                 
                 <h4 className="text-xs font-medium text-blue-300 mb-1">Available Suggestions</h4>
                 {suggestions.map((suggestion, index) => {
-                  const isApplied = appliedSuggestions.includes(suggestion);
+                  // For object suggestions, we need to stringify to check if they're already applied
+                  const isApplied = typeof suggestion === 'object' 
+                    ? appliedSuggestions.some(s => JSON.stringify(s) === JSON.stringify(suggestion))
+                    : appliedSuggestions.includes(suggestion);
                   return (
                     <div 
                       key={index} 
@@ -374,7 +377,7 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
                         }
                       }}
                     >
-                      <p className="text-xs text-white leading-relaxed">{suggestion}</p>
+                      <p className="text-xs text-white leading-relaxed">{typeof suggestion === 'object' ? JSON.stringify(suggestion) : suggestion}</p>
                       <div className="flex justify-end mt-1">
                         <Button 
                           variant="ghost" 

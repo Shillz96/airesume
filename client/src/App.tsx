@@ -1,3 +1,4 @@
+import React from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -38,6 +39,31 @@ function AppContent() {
   
   // Only show navbar when not on landing page or if authenticated
   const showNavbar = location !== "/" || user;
+  
+  // Check current location and redirect if using older paths
+  React.useEffect(() => {
+    // If we get a 404, we need to check if there's a hash in the URL that we can redirect to
+    if (location === "/404") {
+      const path = window.location.pathname;
+      
+      // Define map of old paths to new paths
+      const pathMap: {[key: string]: string} = {
+        "/": "/",
+        "/dashboard": "/dashboard",
+        "/resume-builder": "/resume-builder",
+        "/resumes": "/resumes",
+        "/job-finder": "/job-finder",
+        "/subscription": "/subscription"
+      };
+      
+      // Check if the path exists in our map and redirect
+      const newPath = pathMap[path];
+      if (newPath) {
+        window.history.replaceState(null, '', newPath);
+        window.location.reload();
+      }
+    }
+  }, [location]);
   
   return (
     <div className="min-h-screen bg-black cosmic-background">

@@ -166,7 +166,7 @@ export default function Navbar() {
             <div className="hidden sm:flex sm:justify-center sm:flex-1">
               <div className="flex justify-center space-x-8">
                 {navItems.map((item, index) => (
-                  <Link 
+                  <a 
                     key={item.path} 
                     href={item.path}
                     ref={el => navItemsRef.current[index] = el}
@@ -178,7 +178,7 @@ export default function Navbar() {
                   >
                     <span className={getIconColor(location === item.path)}>{item.icon}</span>
                     {item.label}
-                  </Link>
+                  </a>
                 ))}
               </div>
             </div>
@@ -217,14 +217,14 @@ export default function Navbar() {
                       <User className="mr-2 h-4 w-4 text-blue-400" /> 
                       Profile
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link 
+                    <DropdownMenuItem>
+                      <a 
                         href="/subscription"
                         className="cursor-pointer text-gray-200 hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white"
                       >
                         <CreditCard className="mr-2 h-4 w-4 text-purple-400" /> 
                         Subscription
-                      </Link>
+                      </a>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-white/10" />
                     <DropdownMenuItem 
@@ -287,7 +287,7 @@ export default function Navbar() {
         <div className="sm:hidden bg-black/50 backdrop-blur-lg cosmic-nebula shadow-lg">
           <div className="pt-2 pb-3 space-y-1">
             {navItems.map((item) => (
-              <Link 
+              <a 
                 key={item.path} 
                 href={item.path}
                 className={`${
@@ -299,7 +299,7 @@ export default function Navbar() {
               >
                 <span className={`${getIconColor(location === item.path)} mr-3`}>{item.icon}</span>
                 {item.label}
-              </Link>
+              </a>
             ))}
           </div>
           <div className="pt-4 pb-3 border-t border-white/10">

@@ -1,7 +1,8 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useGuestMode } from "@/hooks/use-guest-mode";
-import { Loader2 } from "lucide-react";
-import { Route } from "wouter";
+import { Route, useLocation } from "wouter";
+import CosmicLoader from "@/components/cosmic-loader";
+import PageTransition from "@/components/page-transition";
 
 export function ProtectedRoute({
   path,
@@ -12,19 +13,25 @@ export function ProtectedRoute({
 }) {
   const { user, isLoading } = useAuth();
   const { isGuestMode } = useGuestMode();
+  const [location] = useLocation();
 
-  // Show loading while auth status is being determined
+  // Show enhanced cosmic loader while auth status is being determined
   if (isLoading) {
     return (
       <Route path={path}>
-        <div className="flex items-center justify-center min-h-screen">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-        </div>
+        <CosmicLoader fullScreen={true} />
       </Route>
     );
   }
 
-  // Simply render the component - the GuestModeProvider will handle enabling guest mode
-  // automatically based on URL or location
-  return <Route path={path} component={Component} />;
+  // Wrap the component in PageTransition for smooth transitions
+  return (
+    <Route path={path}>
+      {({ params }) => (
+        <PageTransition location={location}>
+          <Component {...params} />
+        </PageTransition>
+      )}
+    </Route>
+  );
 }

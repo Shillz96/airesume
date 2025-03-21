@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -17,30 +17,53 @@ import LandingPage from "@/pages/landing-page";
 import AdminAccess from "@/pages/admin-access";
 import { ProtectedRoute } from "./lib/protected-route";
 import { useEffect, useRef } from "react";
+import { Loader2 } from "lucide-react";
 
 import Navbar from "@/components/navbar";
 import GoAdminLink from "@/components/go-admin-link";
 import QuickLogin from "@/components/quick-login";
 import AuthDialog from "@/components/auth-dialog";
+import PageTransition from "@/components/page-transition";
+import CosmicLoader from "@/components/cosmic-loader";
 
 function Router() {
   // Manual check for admin-access path to handle direct navigation
   const path = window.location.pathname;
+  const [location] = useLocation();
+  
   if (path === "/admin-access") {
     return <AdminAccess />;
   }
   
   return (
     <Switch>
-      <Route path="/" component={LandingPage} />
+      <Route path="/">
+        {() => (
+          <PageTransition location={location}>
+            <LandingPage />
+          </PageTransition>
+        )}
+      </Route>
       <ProtectedRoute path="/dashboard" component={HomePage} />
       <ProtectedRoute path="/resume-builder" component={ResumeBuilder} />
       <ProtectedRoute path="/resumes" component={ResumesPage} />
       <ProtectedRoute path="/job-finder" component={JobFinder} />
       <ProtectedRoute path="/job/:id" component={JobDetails} />
       <ProtectedRoute path="/subscription" component={SubscriptionPage} />
-      <Route path="/admin-access" component={AdminAccess} />
-      <Route component={NotFound} />
+      <Route path="/admin-access">
+        {() => (
+          <PageTransition location={location}>
+            <AdminAccess />
+          </PageTransition>
+        )}
+      </Route>
+      <Route>
+        {() => (
+          <PageTransition location={location}>
+            <NotFound />
+          </PageTransition>
+        )}
+      </Route>
     </Switch>
   );
 }

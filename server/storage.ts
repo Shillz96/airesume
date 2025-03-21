@@ -1,12 +1,19 @@
 import { 
   User, InsertUser, Job, Application, Resume, 
-  Subscription, InsertSubscription, Addon, InsertAddon, Payment, InsertPayment 
+  Subscription, InsertSubscription, Addon, InsertAddon, Payment, InsertPayment,
+  users, resumes, jobs, applications, savedJobs, subscriptions, addons, payments
 } from "@shared/schema";
 import { type Activity, type DashboardStats } from "./types";
 import session from "express-session";
 import createMemoryStore from "memorystore";
+import { db } from "./db";
+import { eq, and, asc, desc } from "drizzle-orm";
+import connectPg from "connect-pg-simple";
+import pkg from "pg";
+const { Pool } = pkg;
 
 const MemoryStore = createMemoryStore(session);
+const PostgresSessionStore = connectPg(session);
 
 export interface IStorage {
   // User operations
@@ -117,7 +124,11 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
+    const user: User = { 
+      ...insertUser, 
+      id,
+      isAdmin: insertUser.isAdmin ?? false // Ensure isAdmin is always set to a boolean
+    };
     this.users.set(id, user);
     
     // Initialize user's activities list
@@ -692,4 +703,481 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  sessionStore: any;
+  
+  constructor() {
+    // Initialize session store with PostgreSQL
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    this.sessionStore = new PostgresSessionStore({
+      pool,
+      createTableIfMissing: true,
+    });
+  }
+  
+  // User operations
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+  
+  // Resume operations
+  async getResumes(userId: number): Promise<Resume[]> {
+    return db.select().from(resumes).where(eq(resumes.userId, userId));
+  }
+
+  async getResume(id: number, userId: number): Promise<Resume | undefined> {
+    const [resume] = await db.select().from(resumes)
+      .where(and(eq(resumes.id, id), eq(resumes.userId, userId)));
+    return resume;
+  }
+
+  async createResume(userId: number, resumeData: any): Promise<Resume> {
+    const now = new Date();
+    const [resume] = await db.insert(resumes).values({
+      userId,
+      title: resumeData.title || "Untitled Resume",
+      template: resumeData.template || "professional",
+      content: resumeData.content || {},
+      createdAt: now,
+      updatedAt: now
+    }).returning();
+    
+    // Add activity
+    await this.addActivity(userId, {
+      id: Date.now(), // Use timestamp as unique ID
+      type: 'resume_update',
+      title: `Resume created: ${resume.title}`,
+      status: 'complete',
+      timestamp: now.toISOString()
+    });
+    
+    return resume;
+  }
+
+  async updateResume(id: number, userId: number, resumeData: any): Promise<Resume | undefined> {
+    const existingResume = await this.getResume(id, userId);
+    if (!existingResume) {
+      return undefined;
+    }
+    
+    const now = new Date();
+    const [updatedResume] = await db.update(resumes)
+      .set({
+        title: resumeData.title !== undefined ? resumeData.title : existingResume.title,
+        template: resumeData.template !== undefined ? resumeData.template : existingResume.template,
+        content: resumeData.content !== undefined ? resumeData.content : existingResume.content,
+        updatedAt: now
+      })
+      .where(and(eq(resumes.id, id), eq(resumes.userId, userId)))
+      .returning();
+    
+    // Add activity
+    if (updatedResume) {
+      await this.addActivity(userId, {
+        id: Date.now(),
+        type: 'resume_update',
+        title: `Resume updated: ${updatedResume.title}`,
+        status: 'complete',
+        timestamp: now.toISOString()
+      });
+    }
+    
+    return updatedResume;
+  }
+
+  async deleteResume(id: number, userId: number): Promise<boolean> {
+    const result = await db.delete(resumes)
+      .where(and(eq(resumes.id, id), eq(resumes.userId, userId)))
+      .returning();
+    
+    return result.length > 0;
+  }
+  
+  // Job operations
+  async getJobs(filters?: { title?: string, location?: string, type?: string, experience?: string }): Promise<Job[]> {
+    // For simplicity, we're just fetching all jobs and filtering in memory for now
+    // In a real application, you'd build a more sophisticated query with WHERE clauses
+    const allJobs = await db.select().from(jobs);
+    let filteredJobs = [...allJobs];
+    
+    if (filters) {
+      if (filters.title) {
+        const titleLower = filters.title.toLowerCase();
+        filteredJobs = filteredJobs.filter(job => job.title.toLowerCase().includes(titleLower));
+      }
+      
+      if (filters.location) {
+        const locationLower = filters.location.toLowerCase();
+        filteredJobs = filteredJobs.filter(job => job.location.toLowerCase().includes(locationLower));
+      }
+      
+      if (filters.type && filters.type !== 'all') {
+        filteredJobs = filteredJobs.filter(job => job.type.toLowerCase() === filters.type!.toLowerCase());
+      }
+      
+      if (filters.experience && filters.experience !== 'all') {
+        const experienceLevel = filters.experience.toLowerCase();
+        
+        if (experienceLevel === 'entry') {
+          filteredJobs = filteredJobs.filter(job => 
+            job.title.toLowerCase().includes('junior') || 
+            job.title.toLowerCase().includes('entry') ||
+            job.description.toLowerCase().includes('entry level')
+          );
+        } else if (experienceLevel === 'mid') {
+          filteredJobs = filteredJobs.filter(job => 
+            !job.title.toLowerCase().includes('senior') && 
+            !job.title.toLowerCase().includes('junior') &&
+            !job.title.toLowerCase().includes('lead')
+          );
+        } else if (experienceLevel === 'senior') {
+          filteredJobs = filteredJobs.filter(job => 
+            job.title.toLowerCase().includes('senior') || 
+            job.title.toLowerCase().includes('lead') ||
+            job.description.toLowerCase().includes('senior level')
+          );
+        } else if (experienceLevel === 'executive') {
+          filteredJobs = filteredJobs.filter(job => 
+            job.title.toLowerCase().includes('director') || 
+            job.title.toLowerCase().includes('vp') ||
+            job.title.toLowerCase().includes('chief')
+          );
+        }
+      }
+    }
+    
+    // Convert isNew here in-memory for each job
+    return filteredJobs.map(job => ({
+      ...job,
+      isNew: this.isNewJob(job.postedAt),
+    }));
+  }
+
+  private isNewJob(postedAt: Date): boolean {
+    const now = new Date();
+    const threeDaysAgo = new Date(now);
+    threeDaysAgo.setDate(now.getDate() - 3);
+    
+    return postedAt >= threeDaysAgo;
+  }
+
+  async getJob(id: number): Promise<Job | undefined> {
+    const [job] = await db.select().from(jobs).where(eq(jobs.id, id));
+    if (job) {
+      return {
+        ...job,
+        isNew: this.isNewJob(job.postedAt),
+      };
+    }
+    return undefined;
+  }
+
+  async getSavedJobs(userId: number): Promise<Job[]> {
+    // Join the saved_jobs table with the jobs table
+    const savedJobsData = await db.select({
+      job: jobs,
+      savedJob: savedJobs,
+    }).from(savedJobs)
+      .innerJoin(jobs, eq(savedJobs.jobId, jobs.id))
+      .where(eq(savedJobs.userId, userId));
+    
+    // Format the result for the expected Job type with saved=true
+    return savedJobsData.map(({ job }) => ({
+      ...job,
+      saved: true,
+      isNew: this.isNewJob(job.postedAt),
+    }));
+  }
+
+  async getSavedJobIds(userId?: number): Promise<number[]> {
+    // If userId is undefined, return an empty array (for guest mode)
+    if (userId === undefined) {
+      return [];
+    }
+    
+    const savedJobsData = await db.select({ jobId: savedJobs.jobId })
+      .from(savedJobs)
+      .where(eq(savedJobs.userId, userId));
+    
+    return savedJobsData.map(item => item.jobId);
+  }
+
+  async toggleSavedJob(userId: number, jobId: number): Promise<boolean> {
+    // Check if the job is already saved
+    const [existingSavedJob] = await db.select()
+      .from(savedJobs)
+      .where(and(
+        eq(savedJobs.userId, userId),
+        eq(savedJobs.jobId, jobId)
+      ));
+    
+    if (existingSavedJob) {
+      // Job is already saved, so remove it
+      await db.delete(savedJobs)
+        .where(and(
+          eq(savedJobs.userId, userId),
+          eq(savedJobs.jobId, jobId)
+        ));
+      return false;
+    } else {
+      // Job is not saved, so save it
+      await db.insert(savedJobs)
+        .values({
+          userId,
+          jobId,
+          savedAt: new Date(),
+        });
+      
+      // Add activity
+      const job = await this.getJob(jobId);
+      if (job) {
+        await this.addActivity(userId, {
+          id: Date.now(),
+          type: 'job_match',
+          title: `Saved job: ${job.title} at ${job.company}`,
+          status: 'new',
+          timestamp: new Date().toISOString()
+        });
+      }
+      
+      return true;
+    }
+  }
+  
+  // Application operations
+  async createApplication(userId: number, jobId: number, resumeId: number, notes?: string): Promise<Application> {
+    const now = new Date();
+    
+    const [application] = await db.insert(applications)
+      .values({
+        userId,
+        jobId,
+        resumeId,
+        status: 'applied',
+        appliedAt: now,
+        notes: notes || null
+      })
+      .returning();
+    
+    // Add activity
+    const job = await this.getJob(jobId);
+    if (job) {
+      await this.addActivity(userId, {
+        id: Date.now(),
+        type: 'job_application',
+        title: `Applied to: ${job.title} at ${job.company}`,
+        status: 'in_progress',
+        timestamp: now.toISOString()
+      });
+    }
+    
+    return application;
+  }
+
+  async getApplications(userId: number): Promise<Application[]> {
+    return db.select()
+      .from(applications)
+      .where(eq(applications.userId, userId));
+  }
+  
+  // Dashboard operations
+  async getDashboardStats(userId: number): Promise<DashboardStats> {
+    const resumeCount = await db.select()
+      .from(resumes)
+      .where(eq(resumes.userId, userId));
+    
+    const applicationsCount = await db.select()
+      .from(applications)
+      .where(eq(applications.userId, userId));
+    
+    const jobsCount = await db.select()
+      .from(jobs);
+    
+    return {
+      activeResumes: resumeCount.length,
+      jobMatches: jobsCount.length,
+      submittedApplications: applicationsCount.length
+    };
+  }
+
+  async getRecentActivities(userId: number): Promise<Activity[]> {
+    // Placeholder for activities - in a real implementation, you'd have an activities table
+    // For now, we'll return an empty array, but you would implement a proper DB query
+    return [];
+  }
+  
+  // We need a method to add activities - in a real implementation, this would insert into a DB table
+  private async addActivity(userId: number, activity: Activity): Promise<void> {
+    // This is a placeholder function - in a real implementation, you'd insert the activity into a DB table
+    console.log(`Activity for user ${userId}: ${activity.title}`);
+  }
+  
+  // Subscription operations
+  async getUserSubscription(userId: number): Promise<Subscription | undefined> {
+    const [subscription] = await db.select()
+      .from(subscriptions)
+      .where(and(
+        eq(subscriptions.userId, userId),
+        eq(subscriptions.status, 'active')
+      ));
+    
+    return subscription;
+  }
+  
+  async createSubscription(subscription: InsertSubscription): Promise<Subscription> {
+    const now = new Date();
+    
+    const [newSubscription] = await db.insert(subscriptions)
+      .values({
+        userId: subscription.userId,
+        planType: subscription.planType,
+        status: subscription.status || 'active',
+        startDate: subscription.startDate || now,
+        endDate: subscription.endDate || null,
+        paymentMethod: subscription.paymentMethod || null,
+        autoRenew: subscription.autoRenew !== undefined ? subscription.autoRenew : true,
+        createdAt: now,
+        updatedAt: now
+      })
+      .returning();
+    
+    // Add activity
+    await this.addActivity(subscription.userId, {
+      id: Date.now(),
+      type: 'resume_update', // Using existing type for now
+      title: `Subscription started: ${subscription.planType}`,
+      status: 'complete',
+      timestamp: now.toISOString()
+    });
+    
+    return newSubscription;
+  }
+  
+  async updateSubscription(id: number, userId: number, updates: Partial<InsertSubscription>): Promise<Subscription | undefined> {
+    const now = new Date();
+    
+    const [updatedSubscription] = await db.update(subscriptions)
+      .set({
+        ...updates,
+        updatedAt: now
+      })
+      .where(and(
+        eq(subscriptions.id, id),
+        eq(subscriptions.userId, userId)
+      ))
+      .returning();
+    
+    if (updatedSubscription) {
+      // Add activity
+      await this.addActivity(userId, {
+        id: Date.now(),
+        type: 'resume_update', // Using existing type for now
+        title: `Subscription updated: ${updatedSubscription.planType}`,
+        status: 'complete',
+        timestamp: now.toISOString()
+      });
+    }
+    
+    return updatedSubscription;
+  }
+  
+  async cancelSubscription(id: number, userId: number): Promise<boolean> {
+    const [updatedSubscription] = await db.update(subscriptions)
+      .set({
+        status: 'cancelled',
+        updatedAt: new Date()
+      })
+      .where(and(
+        eq(subscriptions.id, id),
+        eq(subscriptions.userId, userId)
+      ))
+      .returning();
+    
+    if (updatedSubscription) {
+      // Add activity
+      await this.addActivity(userId, {
+        id: Date.now(),
+        type: 'resume_update', // Using existing type for now
+        title: `Subscription cancelled: ${updatedSubscription.planType}`,
+        status: 'complete',
+        timestamp: new Date().toISOString()
+      });
+      return true;
+    }
+    
+    return false;
+  }
+  
+  // Add-on operations
+  async getUserAddons(userId: number): Promise<Addon[]> {
+    return db.select()
+      .from(addons)
+      .where(eq(addons.userId, userId));
+  }
+  
+  async createAddon(addon: InsertAddon): Promise<Addon> {
+    const [newAddon] = await db.insert(addons)
+      .values({
+        userId: addon.userId,
+        addonType: addon.addonType,
+        quantity: addon.quantity || 1,
+        expiresAt: addon.expiresAt || null,
+        createdAt: new Date()
+      })
+      .returning();
+    
+    return newAddon;
+  }
+  
+  async updateAddon(id: number, userId: number, updates: Partial<InsertAddon>): Promise<Addon | undefined> {
+    const [updatedAddon] = await db.update(addons)
+      .set(updates)
+      .where(and(
+        eq(addons.id, id),
+        eq(addons.userId, userId)
+      ))
+      .returning();
+    
+    return updatedAddon;
+  }
+  
+  // Payment operations
+  async createPayment(payment: InsertPayment): Promise<Payment> {
+    const [newPayment] = await db.insert(payments)
+      .values({
+        userId: payment.userId,
+        amount: payment.amount,
+        currency: payment.currency || 'USD',
+        paymentMethod: payment.paymentMethod,
+        status: payment.status,
+        transactionId: payment.transactionId || null,
+        itemType: payment.itemType,
+        itemId: payment.itemId || null,
+        createdAt: new Date()
+      })
+      .returning();
+    
+    return newPayment;
+  }
+  
+  async getPaymentsByUser(userId: number): Promise<Payment[]> {
+    return db.select()
+      .from(payments)
+      .where(eq(payments.userId, userId))
+      .orderBy(desc(payments.createdAt));
+  }
+}
+
+// Use the database storage for production
+export const storage = new DatabaseStorage();

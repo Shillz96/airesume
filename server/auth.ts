@@ -30,14 +30,38 @@ async function comparePasswords(supplied: string, stored: string) {
   return timingSafeEqual(hashedBuf, suppliedBuf);
 }
 
-export function setupAuth(app: Express) {
+export async function setupAuth(app: Express) {
+  // Create admin user if it doesn't exist
+  const adminUsername = "admin";
+  const existingAdmin = await storage.getUserByUsername(adminUsername);
+  
+  if (!existingAdmin) {
+    console.log("Creating admin user...");
+    const adminUser = await storage.createUser({
+      username: adminUsername,
+      password: await hashPassword("adminpassword"),
+      isAdmin: true
+    });
+    
+    // Give admin a pro subscription
+    await storage.createSubscription({
+      userId: adminUser.id,
+      planType: "pro",
+      status: "active",
+      startDate: new Date(),
+      endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
+      paymentMethod: "system",
+      autoRenew: true
+    });
+    
+    console.log(`Admin user created with ID: ${adminUser.id}`);
+  }
+  
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "resumeai-secret-key",
     resave: false,
     saveUninitialized: false,
-    store: new MemoryStore({
-      checkPeriod: 86400000 // prune expired entries every 24h
-    }),
+    store: storage.sessionStore,
     cookie: {
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }

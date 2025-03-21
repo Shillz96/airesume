@@ -12,7 +12,7 @@ import { jobsApiService } from "./services/jobs-api";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
-  setupAuth(app);
+  await setupAuth(app);
   
   // API endpoint to test Adzuna API credentials
   app.get('/api/test-adzuna', async (req, res) => {

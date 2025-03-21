@@ -1344,34 +1344,66 @@ export default function ResumeBuilder() {
   // Use useEffect to handle the data instead of onSuccess
   useEffect(() => {
     if (fetchedResume) {
-      console.log("Resume data fetched:", fetchedResume);
+      console.log("Resume data fetched:", JSON.stringify(fetchedResume, null, 2));
       
-      // Ensure we have complete data structure for all fields
-      const completeResume = {
-        id: fetchedResume.id,
-        title: fetchedResume.title || "Untitled Resume",
-        personalInfo: {
-          firstName: fetchedResume.personalInfo?.firstName || "",
-          lastName: fetchedResume.personalInfo?.lastName || "",
-          email: fetchedResume.personalInfo?.email || "",
-          phone: fetchedResume.personalInfo?.phone || "",
-          headline: fetchedResume.personalInfo?.headline || "",
-          summary: fetchedResume.personalInfo?.summary || ""
-        },
-        experience: Array.isArray(fetchedResume.experience) ? fetchedResume.experience : [],
-        education: Array.isArray(fetchedResume.education) ? fetchedResume.education : [],
-        skills: Array.isArray(fetchedResume.skills) ? fetchedResume.skills : [],
-        projects: Array.isArray(fetchedResume.projects) ? fetchedResume.projects : [],
-        template: fetchedResume.template || "professional"
-      };
-      
-      setResume(completeResume as Resume);
-      
-      // Show success toast when resume is fully loaded
-      toast({
-        title: "Resume Loaded",
-        description: `${completeResume.title} has been loaded successfully.`,
-      });
+      try {
+        // Ensure we have complete data structure for all fields
+        const completeResume = {
+          id: fetchedResume.id,
+          title: fetchedResume.title || "Untitled Resume",
+          personalInfo: {
+            firstName: fetchedResume.personalInfo?.firstName || "",
+            lastName: fetchedResume.personalInfo?.lastName || "",
+            email: fetchedResume.personalInfo?.email || "",
+            phone: fetchedResume.personalInfo?.phone || "",
+            headline: fetchedResume.personalInfo?.headline || "",
+            summary: fetchedResume.personalInfo?.summary || ""
+          },
+          experience: Array.isArray(fetchedResume.experience) ? fetchedResume.experience.map((exp: any) => ({
+            ...exp,
+            id: exp.id || crypto.randomUUID(), // Ensure each experience has an ID
+          })) : [],
+          education: Array.isArray(fetchedResume.education) ? fetchedResume.education.map((edu: any) => ({
+            ...edu,
+            id: edu.id || crypto.randomUUID(), // Ensure each education has an ID
+          })) : [],
+          skills: Array.isArray(fetchedResume.skills) ? fetchedResume.skills.map((skill: any) => ({
+            ...skill,
+            id: skill.id || crypto.randomUUID(), // Ensure each skill has an ID
+          })) : [],
+          projects: Array.isArray(fetchedResume.projects) ? fetchedResume.projects.map((project: any) => ({
+            ...project,
+            id: project.id || crypto.randomUUID(), // Ensure each project has an ID
+          })) : [],
+          template: fetchedResume.template || "professional"
+        };
+        
+        console.log("Processed resume to load:", JSON.stringify(completeResume, null, 2));
+        
+        // Force a complete state update by creating a brand new object
+        setResume(completeResume as Resume);
+        
+        // Set a debug flag in local storage to help with diagnostics
+        localStorage.setItem('lastLoadedResume', JSON.stringify({
+          resumeId: completeResume.id,
+          firstName: completeResume.personalInfo.firstName,
+          lastName: completeResume.personalInfo.lastName,
+          timestamp: new Date().toISOString()
+        }));
+        
+        // Show success toast when resume is fully loaded
+        toast({
+          title: "Resume Loaded Successfully",
+          description: `"${completeResume.title}" has been loaded with ${completeResume.experience.length} experiences, ${completeResume.skills.length} skills, and ${completeResume.education.length} education entries.`,
+        });
+      } catch (error) {
+        console.error("Error processing fetched resume:", error);
+        toast({
+          title: "Error Loading Resume",
+          description: "There was a problem processing the resume data. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   }, [fetchedResume, toast]);
 
@@ -1747,19 +1779,41 @@ export default function ResumeBuilder() {
                       key={savedResume.id}
                       className="text-gray-300 hover:text-white cursor-pointer focus:text-white focus:bg-blue-700"
                       onClick={() => {
-                        // We'll do a proper fetch of the full resume data instead
-                        // of assuming the resume list contains all required fields
-                        setResumeId(savedResume.id);
-                        setActiveSection("profile");
-                        
-                        // Instead of immediately setting the resume, we'll rely on 
-                        // the fetchedResume useEffect to fully populate all fields
-                        // when the API responds
-                        
-                        toast({
-                          title: "Loading Resume",
-                          description: `Loading ${savedResume.title}...`,
-                        });
+                        try {
+                          // Ensure we have a valid resume ID before using it
+                          if (savedResume && typeof savedResume.id === 'number') {
+                            console.log("Loading resume with ID:", savedResume.id);
+                            setResumeId(savedResume.id);
+                            setActiveSection("profile");
+                            
+                            // Force the resume ID change to be applied immediately
+                            setTimeout(() => {
+                              // This ensures the query will re-run
+                              queryClient.invalidateQueries({ 
+                                queryKey: ["/api/resumes", savedResume.id] 
+                              });
+                            }, 100);
+                            
+                            toast({
+                              title: "Loading Resume",
+                              description: `Loading ${savedResume.title || "Untitled Resume"}...`,
+                            });
+                          } else {
+                            console.error("Invalid resume ID:", savedResume);
+                            toast({
+                              title: "Error Loading Resume",
+                              description: "Invalid resume ID. Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        } catch (error) {
+                          console.error("Error when loading resume:", error);
+                          toast({
+                            title: "Error Loading Resume",
+                            description: "Failed to load the selected resume.",
+                            variant: "destructive",
+                          });
+                        }
                       }}
                     >
                       <FileText className="h-4 w-4 mr-2" />

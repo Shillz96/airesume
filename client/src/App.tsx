@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -22,48 +22,25 @@ import Navbar from "@/components/navbar";
 import GoAdminLink from "@/components/go-admin-link";
 import QuickLogin from "@/components/quick-login";
 import AuthDialog from "@/components/auth-dialog";
-import PageTransition from "@/components/page-transition";
-import CosmicLoader from "@/components/cosmic-loader";
-import GlobalLoading from "@/components/global-loading";
 
 function Router() {
   // Manual check for admin-access path to handle direct navigation
   const path = window.location.pathname;
-  const [location] = useLocation();
-  
   if (path === "/admin-access") {
     return <AdminAccess />;
   }
   
   return (
     <Switch>
-      <Route path="/">
-        {() => (
-          <PageTransition location={location}>
-            <LandingPage />
-          </PageTransition>
-        )}
-      </Route>
+      <Route path="/" component={LandingPage} />
       <ProtectedRoute path="/dashboard" component={HomePage} />
       <ProtectedRoute path="/resume-builder" component={ResumeBuilder} />
       <ProtectedRoute path="/resumes" component={ResumesPage} />
       <ProtectedRoute path="/job-finder" component={JobFinder} />
       <ProtectedRoute path="/job/:id" component={JobDetails} />
       <ProtectedRoute path="/subscription" component={SubscriptionPage} />
-      <Route path="/admin-access">
-        {() => (
-          <PageTransition location={location}>
-            <AdminAccess />
-          </PageTransition>
-        )}
-      </Route>
-      <Route>
-        {() => (
-          <PageTransition location={location}>
-            <NotFound />
-          </PageTransition>
-        )}
-      </Route>
+      <Route path="/admin-access" component={AdminAccess} />
+      <Route component={NotFound} />
     </Switch>
   );
 }
@@ -230,7 +207,6 @@ function App() {
         <GuestModeProvider>
           <AuthDialogProvider>
             <AppContent />
-            <GlobalLoading />
             <Toaster />
           </AuthDialogProvider>
         </GuestModeProvider>

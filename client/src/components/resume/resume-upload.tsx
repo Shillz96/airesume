@@ -19,13 +19,8 @@ export default function ResumeUpload({ onUploadSuccess }: ResumeUploadProps) {
 
   const uploadMutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      return apiRequest({
-        url: "/api/resumes/upload",
-        method: "POST",
-        body: formData,
-        headers: {
-          // Don't set Content-Type header as FormData will set it with boundary
-        },
+      return apiRequest("POST", "/api/resumes/upload", formData, {
+        // Don't set Content-Type header as FormData will set it with boundary
       });
     },
     onSuccess: (data: any) => {

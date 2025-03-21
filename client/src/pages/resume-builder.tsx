@@ -708,6 +708,33 @@ export default function ResumeBuilder() {
     const newMode = resume.skillsDisplayMode === 'bubbles' ? 'bullets' : 'bubbles';
     setResume({ ...resume, skillsDisplayMode: newMode });
   };
+  
+  // Handle resume upload and parsed data
+  const handleResumeUpload = (uploadedResumeData: Partial<Resume>) => {
+    // Merge the uploaded resume data with the existing resume
+    setResume(current => ({
+      ...current,
+      title: uploadedResumeData.title || current.title,
+      personalInfo: {
+        ...current.personalInfo,
+        ...uploadedResumeData.personalInfo || {},
+      },
+      experience: uploadedResumeData.experience || current.experience,
+      education: uploadedResumeData.education || current.education,
+      skills: uploadedResumeData.skills || current.skills,
+      projects: uploadedResumeData.projects || current.projects,
+    }));
+    
+    // Show feedback toast
+    toast({
+      title: "Resume uploaded successfully",
+      description: "Your resume has been parsed and loaded. You can now edit and enhance it.",
+    });
+    
+    // Switch to personal info tab
+    setCurrentTab("contact");
+    setShowPersonalInfo(true);
+  };
 
   return (
     <div className="min-h-screen bg-[#050A24] text-gray-100 flex flex-col">
@@ -1030,6 +1057,12 @@ export default function ResumeBuilder() {
             <div className="flex-1 flex flex-col-reverse xl:flex-row gap-6">
               {/* Resume form */}
               <div className="flex-1">
+                {/* Only show upload option for new resumes */}
+                {resumeId === 'new' && !resume.experience.length && !resume.education.length && !resume.skills.length && (
+                  <div className="mb-6">
+                    <ResumeUpload onUploadSuccess={handleResumeUpload} />
+                  </div>
+                )}
                 <div className="bg-[rgba(10,15,40,0.5)] backdrop-blur-sm rounded-lg border border-indigo-900/30 p-5">
                   {/* Personal Info Section */}
                   {showPersonalInfo && (

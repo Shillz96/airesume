@@ -921,6 +921,7 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
   const [spacingScale, setSpacingScale] = useState(1); // For auto-adjusting spacing
   const [numPages, setNumPages] = useState(1); // Track number of pages
   const [showMultiPage, setShowMultiPage] = useState(false); // Toggle between single page and multi-page view
+  const [sideBySideView, setSideBySideView] = useState(false); // Toggle between vertical and side-by-side view
   const previewRef = useRef<HTMLDivElement>(null);
   const resumeContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -1093,6 +1094,22 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
       });
       document.dispatchEvent(event);
     }
+  };
+  
+  // Toggle multi-page view
+  const toggleMultiPageView = () => {
+    setShowMultiPage(!showMultiPage);
+    // If enabling multi-page view, ensure we can see multiple pages
+    if (!showMultiPage) {
+      // Force recalculation of number of pages for the badge
+      const pages = calculatePages();
+      setNumPages(pages);
+    }
+  };
+  
+  // Toggle side-by-side view
+  const toggleSideBySideView = () => {
+    setSideBySideView(!sideBySideView);
   };
 
   // Handle field changes in the edit mode

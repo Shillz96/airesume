@@ -932,6 +932,19 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
         const fileName = `${name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
         
         try {
+          // Display print dialog message to user
+          toast({
+            title: "Using Print Dialog",
+            description: "PDF generation API failed. Using browser print dialog instead.",
+          });
+          
+          // Set timeout to allow toast to display before print dialog
+          setTimeout(() => {
+            // Use print dialog as primary method until server-side PDF generation is fixed
+            window.print();
+          }, 1000);
+          
+          /* Server-side PDF generation temporarily disabled
           // Create a form to send to the server for PDF generation
           const formData = new FormData();
           formData.append('resumeData', JSON.stringify(resume));
@@ -963,6 +976,7 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
             title: "PDF Downloaded",
             description: `Your resume has been downloaded as ${fileName}`,
           });
+          */
         } catch (error) {
           console.error('Error downloading PDF:', error);
           

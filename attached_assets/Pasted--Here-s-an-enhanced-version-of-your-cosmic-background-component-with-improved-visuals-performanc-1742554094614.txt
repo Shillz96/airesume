@@ -1,9 +1,12 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+}
+Here's an enhanced version of your cosmic background component with improved visuals, performance optimizations, and additional features:
+jsx
+import { useEffect, useState, useCallback, useRef } from 'react';
 
 export default function CosmicBackground() {
   const [isClient, setIsClient] = useState(false);
-  const starfieldRef = useRef<HTMLDivElement | null>(null);
-  const animationFrameRef = useRef<NodeJS.Timeout | null>(null);
+  const starfieldRef = useRef(null);
+  const animationFrameRef = useRef(null);
 
   // Memoized shooting star creation function
   const createShootingStar = useCallback(() => {
@@ -51,50 +54,6 @@ export default function CosmicBackground() {
       }
     };
   }, [createShootingStar]);
-
-  useEffect(() => {
-    // Add these keyframes to the stylesheet
-    const style = document.createElement('style');
-    style.innerHTML = `
-      @keyframes twinkle {
-        0%, 100% { opacity: 0.3; }
-        50% { opacity: 1; }
-      }
-
-      @keyframes shooting-star {
-        0% { transform: translate(0, 0) rotate(var(--angle)); opacity: 1; }
-        100% { transform: translate(-500px, 500px) rotate(var(--angle)); opacity: 0; }
-      }
-
-      @keyframes pulse-slow {
-        0%, 100% { transform: scale(1); opacity: 0.25; }
-        50% { transform: scale(1.05); opacity: 0.35; }
-      }
-
-      @keyframes pulse-slow2 {
-        0%, 100% { transform: scale(1); opacity: 0.2; }
-        50% { transform: scale(1.1); opacity: 0.3; }
-      }
-
-      @keyframes pulse-slow3 {
-        0%, 100% { transform: scale(1); opacity: 0.15; }
-        50% { transform: scale(1.08); opacity: 0.25; }
-      }
-
-      .shooting-star {
-        position: absolute;
-        width: 100px;
-        height: 2px;
-        animation: shooting-star 1s linear;
-        will-change: transform, opacity;
-      }
-    `;
-    document.head.appendChild(style);
-
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
 
   if (!isClient) return null;
 
@@ -152,3 +111,78 @@ export default function CosmicBackground() {
     </div>
   );
 }
+
+// Add these styles to your CSS file
+const styles = `
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes shooting-star {
+    0% { transform: translate(0, 0) rotate(var(--angle)); opacity: 1; }
+    100% { transform: translate(-500px, 500px) rotate(var(--angle)); opacity: 0; }
+  }
+
+  @keyframes pulse-slow {
+    0%, 100% { transform: scale(1); opacity: 0.25; }
+    50% { transform: scale(1.05); opacity: 0.35; }
+  }
+
+  @keyframes pulse-slow2 {
+    0%, 100% { transform: scale(1); opacity: 0.2; }
+    50% { transform: scale(1.1); opacity: 0.3; }
+  }
+
+  @keyframes pulse-slow3 {
+    0%, 100% { transform: scale(1); opacity: 0.15; }
+    50% { transform: scale(1.08); opacity: 0.25; }
+  }
+
+  .shooting-star {
+    position: absolute;
+    width: 100px;
+    height: 2px;
+    animation: shooting-star 1s linear;
+    will-change: transform, opacity;
+  }
+`;
+
+Key enhancements made:
+Performance Optimization:
+Added useRef for direct DOM access
+
+Used useCallback for memoized star creation
+
+Replaced setInterval with recursive setTimeout for better control
+
+Added cleanup for animations
+Visual Improvements:
+Added gradient background to starfield
+
+Enhanced nebulae with radial gradients and subtle scaling animations
+
+Improved shooting stars with gradient trails and better animation
+
+Added box-shadow to stars for subtle glow
+
+Increased star count to 150
+
+Better randomization of star sizes and animation timing
+Code Structure:
+Separated nebula layer from starfield
+
+Added container div for better organization
+
+Improved CSS variable usage for animations
+
+Included necessary CSS animations in the code
+Features:
+Shooting stars now have variable duration
+
+Wider angle range for shooting stars
+
+Self-cleaning shooting stars using animationend event
+
+More realistic nebula movement with scale animations
+

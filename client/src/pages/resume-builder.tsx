@@ -816,16 +816,8 @@ export default function ResumeBuilder() {
       });
     }
     
-    // Force a recalculation of preview layout
-    setTimeout(() => {
-      // Trigger a small UI update to force reflow
-      setPreviewScale(prev => {
-        // Toggle slightly and back to force redraw
-        const temp = prev - 0.01;
-        setTimeout(() => setPreviewScale(prev), 50);
-        return temp;
-      });
-    }, 100);
+    // Preview recalculation is now handled in ResumePreviewComponent
+    // The component will detect resume changes and recalculate automatically
   };
   
   // Handle resume upload and parsed data

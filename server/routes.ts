@@ -139,81 +139,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json(resumes[0]);
       }
       
-      // If no resume exists, create a sample resume
+      // If no resume exists, create a sample resume based on the basic professional template
       const sampleResume = {
-        title: "My Resume",
+        title: "Basic Professional Resume",
         template: "professional",
         content: {
           personalInfo: {
-            firstName: "Dylan",
-            lastName: "Spivack",
-            email: "dylan.spivack@gmail.com",
-            phone: "(303) 995-8907",
-            headline: "Junior Developer | Python & JavaScript Programmer",
-            summary: "Aspiring junior programmer with a passion for coding and hands-on experience in website building and Python app development. Currently a student and freelance coder, proficient in Python, JavaScript, and data analysis. Skilled in writing clean, efficient code to automate processes and solve complex problems.",
+            firstName: "Your",
+            lastName: "Name",
+            email: "yourname@example.com",
+            phone: "(123) 456-7890",
+            headline: "Software Developer | Web Design Professional",
+            summary: "Detail-oriented software developer with experience building responsive web applications and strong problem-solving skills. Proficient in multiple programming languages with a focus on creating efficient, user-friendly solutions.",
           },
           experience: [
             {
               id: "exp-1",
-              title: "Freelance Coder",
-              company: "Self-employed",
-              location: "Denver, CO",
-              startDate: "2025-03",
+              title: "Software Developer",
+              company: "Company Name",
+              location: "City, State",
+              startDate: "2023-01",
               endDate: "Present",
-              description: "Developed and maintained websites for clients using HTML, CSS, and JavaScript, ensuring responsive design and cross-browser compatibility. Built Python apps for data analysis and automation, utilizing libraries like Pandas, NumPy, and Matplotlib to process and visualize data.",
+              description: "Developed and maintained web applications using modern JavaScript frameworks. Collaborated with cross-functional teams to implement new features and improve application performance. Optimized database queries resulting in 30% faster page load times.",
             },
             {
               id: "exp-2",
-              title: "Junior Sales Analyst",
-              company: "Heartland Tax Solutions",
-              location: "Wheat Ridge, CO",
-              startDate: "2017-02",
-              endDate: "2020-09",
-              description: "Analyzed sales data with Python and SQL to uncover trends, boosting monthly conversion rates by 25%. Automated data collection and reporting workflows, saving 10 hours of manual effort weekly.",
+              title: "Junior Web Developer",
+              company: "Previous Company",
+              location: "City, State",
+              startDate: "2020-06",
+              endDate: "2022-12",
+              description: "Built responsive user interfaces using HTML, CSS, and JavaScript. Worked with REST APIs to integrate frontend components with backend services. Participated in code reviews and implemented best practices for web development.",
+            },
+            {
+              id: "exp-3",
+              title: "Web Design Intern",
+              company: "Internship Company",
+              location: "City, State",
+              startDate: "2019-05",
+              endDate: "2020-05",
+              description: "Assisted in designing and implementing website layouts. Created graphics and visual elements for company websites and marketing materials. Gained experience with front-end frameworks and version control systems.",
             }
           ],
           education: [
             {
               id: "edu-1",
-              degree: "Bachelor of Science in Computer Science (In Progress)",
-              institution: "University of Denver",
-              location: "Denver, CO",
-              startDate: "2021-09", 
-              endDate: "Present",
-              description: "Currently pursuing a degree with a focus on software development, data analysis, and algorithms.",
-            },
-            {
-              id: "edu-2",
-              degree: "Associate of Applied Science in Network Security/Programming",
-              institution: "Front Range Community College",
-              location: "Denver, CO",
-              startDate: "2016-08",
-              endDate: "2017-07",
-              description: "Graduated with a 3.5 GPA, focusing on programming and network security.",
+              degree: "Bachelor of Science, Computer Science",
+              institution: "University Name",
+              location: "City, State",
+              startDate: "2015-09", 
+              endDate: "2019-05",
+              description: "Relevant coursework: Data Structures, Algorithms, Web Development, Database Systems, Software Engineering",
             }
           ],
           skills: [
-            { id: "skill-1", name: "Python", proficiency: 4 },
-            { id: "skill-2", name: "JavaScript", proficiency: 3 },
-            { id: "skill-3", name: "SQL", proficiency: 3 },
-            { id: "skill-4", name: "HTML/CSS", proficiency: 4 },
-            { id: "skill-5", name: "Git", proficiency: 3 },
-            { id: "skill-6", name: "Data Analysis", proficiency: 4 },
+            { id: "skill-1", name: "JavaScript", proficiency: 4 },
+            { id: "skill-2", name: "React", proficiency: 4 },
+            { id: "skill-3", name: "HTML/CSS", proficiency: 5 },
+            { id: "skill-4", name: "Node.js", proficiency: 3 },
+            { id: "skill-5", name: "SQL", proficiency: 3 },
+            { id: "skill-6", name: "Git", proficiency: 4 },
+            { id: "skill-7", name: "Python", proficiency: 3 },
+            { id: "skill-8", name: "Responsive Design", proficiency: 4 },
           ],
           projects: [
             {
               id: "proj-1",
-              title: "Portfolio Website",
-              description: "Designed and developed a personal portfolio website using HTML, CSS, and JavaScript, showcasing coding projects and skills.",
-              technologies: ["HTML", "CSS", "JavaScript", "Git"],
-              link: "https://github.com/example/portfolio"
+              title: "E-commerce Website",
+              description: "Developed a full-stack e-commerce application with user authentication, product catalog, shopping cart, and payment processing. Implemented responsive design for optimal user experience across all devices.",
+              technologies: ["React", "Node.js", "MongoDB", "Express", "CSS"],
+              link: "https://github.com/example/ecommerce"
             },
             {
               id: "proj-2",
-              title: "Data Analysis App",
-              description: "Developed a Python app for data analysis and visualization, using Pandas, NumPy, and Matplotlib to process and display data.",
-              technologies: ["Python", "Pandas", "NumPy", "Matplotlib", "SQL"],
-              link: "https://github.com/example/data-analysis"
+              title: "Project Management Tool",
+              description: "Created a collaborative task management application with real-time updates, user roles, and project tracking features. Implemented drag-and-drop functionality for intuitive task prioritization.",
+              technologies: ["JavaScript", "React", "Firebase", "Bootstrap"],
+              link: "https://github.com/example/project-manager"
             }
           ]
         }

@@ -94,6 +94,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import AIAssistant from "@/components/ai-assistant";
+import CosmicBackground from "@/components/cosmic-background";
 
 // Component for professional summary AI suggestions
 interface SummarySuggestionsProps {
@@ -2141,7 +2142,8 @@ export default function ResumeBuilder() {
   };
 
   return (
-    <div className="min-h-screen bg-black cosmic-background">
+    <div className="min-h-screen">
+      <CosmicBackground />
       <Navbar />
 
       <main className="container mx-auto pt-12 pb-20 px-4">

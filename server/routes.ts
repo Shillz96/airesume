@@ -1117,7 +1117,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/jobs/:id", async (req, res) => {
     try {
       const jobId = parseInt(req.params.id);
-      const job = await storage.getJob(jobId);
+      // Use the job API service instead of storage
+      const job = await jobsApiService.getJobById(jobId);
       
       if (!job) {
         return res.status(404).json({ message: "Job not found" });
@@ -1129,13 +1130,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         savedJobIds = await storage.getSavedJobIds(req.user!.id);
       }
       
-      // Augment job with saved status and format dates
+      // Format dates for the frontend
+      const postedAtStr = job.postedAt instanceof Date 
+        ? job.postedAt.toLocaleDateString() 
+        : new Date(job.postedAt).toLocaleDateString();
+        
+      // Augment job with saved status and other frontend-needed properties
       const augmentedJob = {
         ...job,
-        saved: savedJobIds.includes(job.id as unknown as number),
-        postedAt: job.postedAt instanceof Date ? job.postedAt.toLocaleDateString() : job.postedAt,
-        match: 0, // Default match score
-        isNew: new Date(job.postedAt).getTime() > (Date.now() - 3 * 24 * 60 * 60 * 1000) // New if less than 3 days old
+        saved: savedJobIds.includes(job.id),
+        postedAt: postedAtStr,
+        match: job.match || 0, // Use existing match or default to 0
+        isNew: job.isNew || new Date(job.postedAt).getTime() > (Date.now() - 3 * 24 * 60 * 60 * 1000) // New if less than 3 days old
       };
       
       // If user is authenticated, calculate match score

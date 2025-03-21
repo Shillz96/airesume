@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/navbar";
 import JobCard, { Job } from "@/components/job-card";
@@ -19,11 +19,40 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGuestMode } from "@/hooks/use-guest-mode";
 import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
 import { getQueryFn } from "@/lib/queryClient";
+
+// Extend Window interface to include our custom property
+declare global {
+  interface Window {
+    cosmic_prompt_for_api_key?: () => void;
+  }
+}
 
 export default function JobFinder() {
   const { isGuestMode } = useGuestMode();
   const { user } = useAuth();
+  
+  // Get toast from the hook
+  const { toast } = useToast();
+  
+  // Add the API key prompt function to the window object so we can call it from the link
+  // This is a workaround since we can't directly call the ask_secrets tool from the client
+  useEffect(() => {
+    window.cosmic_prompt_for_api_key = () => {
+      // Show a toast message to the user
+      toast({
+        title: "Job API Key Required",
+        description: "Please contact the administrator to set up a real job API connection. Using sample data for now.",
+        variant: "default"
+      });
+    };
+    
+    return () => {
+      // Clean up
+      delete window.cosmic_prompt_for_api_key;
+    };
+  }, [toast]);
   const [filterValues, setFilterValues] = useState<JobFilterValues>({
     title: "",
     location: "",
@@ -34,17 +63,23 @@ export default function JobFinder() {
   });
   
   const [statusFilter, setStatusFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
   
-  // Modified to support guest mode access to jobs
+  // Enhanced to support real job API with pagination
   const { data: jobs, isLoading, error } = useQuery({
-    queryKey: ["/api/jobs", filterValues, statusFilter, isGuestMode],
-    queryFn: async () => {
-      // Add guest parameter when in guest mode
+    queryKey: ["/api/jobs", filterValues, statusFilter, isGuestMode, currentPage, itemsPerPage],
+    queryFn: async ({ signal }) => {
+      // Add filter parameters
       const params = new URLSearchParams();
       if (filterValues.title) params.append('title', filterValues.title);
       if (filterValues.location) params.append('location', filterValues.location);
       if (filterValues.type !== 'all') params.append('type', filterValues.type);
       if (filterValues.experience !== 'all') params.append('experience', filterValues.experience);
+      
+      // Add pagination parameters
+      params.append('page', currentPage.toString());
+      params.append('limit', itemsPerPage.toString());
       
       // Add guest=true for guest mode users
       if (isGuestMode && !user) {
@@ -54,7 +89,9 @@ export default function JobFinder() {
       // Use the getQueryFn with the appropriate error handling
       const queryFn = getQueryFn({ on401: "returnNull" });
       return queryFn({ 
-        queryKey: [`/api/jobs?${params.toString()}`] 
+        queryKey: [`/api/jobs?${params.toString()}`],
+        signal,
+        meta: {}
       });
     },
     refetchInterval: false,
@@ -105,6 +142,10 @@ export default function JobFinder() {
                   <h3 className="text-lg font-medium text-blue-300">AI-Powered Job Matching</h3>
                   <div className="mt-2 text-sm text-gray-300">
                     <p>Based on your resume, our AI has found jobs that match your skills and experience. Jobs with higher match scores align better with your profile and have greater potential for success.</p>
+                    <p className="mt-2">Currently using sample job data. <a href="#" className="text-blue-400 hover:text-blue-300 underline" onClick={(e) => {
+                      e.preventDefault();
+                      window.cosmic_prompt_for_api_key?.();
+                    }}>Connect to a real jobs API</a> for live listings.</p>
                   </div>
                 </div>
               </div>
@@ -244,38 +285,37 @@ export default function JobFinder() {
                     <Pagination>
                       <PaginationContent>
                         <PaginationItem>
-                          <PaginationPrevious href="#" className="text-gray-300 hover:text-white border-white/10 hover:border-blue-400 hover:bg-blue-900/20" />
-                        </PaginationItem>
-                        <PaginationItem>
-                          <PaginationLink 
-                            href="#" 
-                            isActive
-                            className="data-[active=true]:bg-blue-900/30 data-[active=true]:text-blue-300 data-[active=true]:border-blue-500 text-gray-300 border-white/10"
+                          <button 
+                            onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : 1)}
+                            disabled={currentPage === 1}
+                            className="text-gray-300 hover:text-white border border-white/10 hover:border-blue-400 hover:bg-blue-900/20 px-2.5 py-1.5 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            1
-                          </PaginationLink>
+                            Previous
+                          </button>
                         </PaginationItem>
+                        
+                        {Array.from({ length: 3 }, (_, i) => i + 1).map((page) => (
+                          <PaginationItem key={page}>
+                            <button
+                              onClick={() => setCurrentPage(page)}
+                              className={`w-9 h-9 border rounded-md flex items-center justify-center ${
+                                currentPage === page
+                                  ? 'bg-blue-900/30 text-blue-300 border-blue-500'
+                                  : 'text-gray-300 border-white/10 hover:border-blue-400 hover:bg-blue-900/20'
+                              }`}
+                            >
+                              {page}
+                            </button>
+                          </PaginationItem>
+                        ))}
+                        
                         <PaginationItem>
-                          <PaginationLink 
-                            href="#"
-                            className="text-gray-300 hover:text-white border-white/10 hover:border-blue-400 hover:bg-blue-900/20"
+                          <button
+                            onClick={() => setCurrentPage(currentPage + 1)}
+                            className="text-gray-300 hover:text-white border border-white/10 hover:border-blue-400 hover:bg-blue-900/20 px-2.5 py-1.5 rounded-md"
                           >
-                            2
-                          </PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                          <PaginationLink 
-                            href="#"
-                            className="text-gray-300 hover:text-white border-white/10 hover:border-blue-400 hover:bg-blue-900/20"
-                          >
-                            3
-                          </PaginationLink>
-                        </PaginationItem>
-                        <PaginationItem>
-                          <PaginationEllipsis className="text-gray-400" />
-                        </PaginationItem>
-                        <PaginationItem>
-                          <PaginationNext href="#" className="text-gray-300 hover:text-white border-white/10 hover:border-blue-400 hover:bg-blue-900/20" />
+                            Next
+                          </button>
                         </PaginationItem>
                       </PaginationContent>
                     </Pagination>

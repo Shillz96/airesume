@@ -126,10 +126,12 @@ export default function ResumesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black cosmic-background">
+    <div className="cosmic-page">
       <Navbar />
       
-      <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 pt-24">
+      <main className="pt-24 relative z-10 cosmic-nebula flex-1">
+        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="px-4 py-6 sm:px-0 h-full flex flex-col pb-16">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold cosmic-text-gradient">My Resumes</h1>
@@ -421,6 +423,8 @@ export default function ResumesPage() {
           </TabsContent>
         </Tabs>
       </div>
+        </div>
+      </main>
     </div>
   );
 }

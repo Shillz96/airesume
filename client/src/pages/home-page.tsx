@@ -116,9 +116,9 @@ export default function HomePage() {
       
       <Navbar />
       
-      <main className="pt-24 relative z-10 cosmic-nebula min-h-[calc(100vh-64px)]">
+      <main className="pt-24 relative z-10 cosmic-nebula flex-1">
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 h-full">
-          <div className="px-4 py-6 sm:px-0 h-full flex flex-col">
+          <div className="px-4 py-6 sm:px-0 h-full flex flex-col pb-16">
             <div className="mb-8 flex items-center" ref={welcomeRef}>
               <div>
                 <h1 className="cosmic-page-title text-3xl">

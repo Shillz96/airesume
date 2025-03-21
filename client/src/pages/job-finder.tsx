@@ -78,12 +78,12 @@ export default function JobFinder() {
     : [];
   
   return (
-    <div className="min-h-screen bg-black cosmic-background">
+    <div className="cosmic-page">
       <Navbar />
       
-      <main className="pt-24">
+      <main className="pt-24 relative z-10 cosmic-nebula flex-1">
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-4 py-6 sm:px-0">
+          <div className="px-4 py-6 sm:px-0 pb-16">
             <div className="mb-8">
               <h1 className="text-3xl font-bold cosmic-text-gradient">Job Finder</h1>
               <p className="mt-2 text-gray-300">

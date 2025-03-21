@@ -36,6 +36,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { CosmicButton } from "@/components/cosmic-button";
 import RichTextEditor from "@/components/rich-text-editor";
 import {
   FileText,
@@ -2307,42 +2308,27 @@ export default function ResumeBuilder() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button
+            <CosmicButton
+              variant="primary"
               onClick={handleSaveResume}
               disabled={isSaving}
-              className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0"
+              isLoading={isSaving}
+              loadingText="Saving..."
+              iconLeft={!isSaving ? <Save /> : undefined}
             >
-              {isSaving ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Saving...</span>
-                </>
-              ) : (
-                <>
-                  <Save className="h-4 w-4" />
-                  <span>Save Resume</span>
-                </>
-              )}
-            </Button>
+              Save Resume
+            </CosmicButton>
 
-            <Button
-              variant="outline"
+            <CosmicButton
+              variant="secondary"
               onClick={handleFileInputClick}
               disabled={isUploading}
-              className="flex items-center space-x-2 border-white/10 bg-blue-600/40 text-white hover:bg-blue-600/60"
+              isLoading={isUploading}
+              loadingText="Uploading..."
+              iconLeft={!isUploading ? <Upload /> : undefined}
             >
-              {isUploading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Uploading...</span>
-                </>
-              ) : (
-                <>
-                  <Upload className="h-4 w-4 text-white" />
-                  <span>Upload Existing Resume</span>
-                </>
-              )}
-            </Button>
+              Upload Existing Resume
+            </CosmicButton>
 
             <input
               type="file"
@@ -2482,13 +2468,13 @@ export default function ResumeBuilder() {
                               information and fill out this form for you.
                             </p>
                             <div className="flex flex-wrap gap-3">
-                              <Button
+                              <CosmicButton
+                                variant="primary"
                                 onClick={handleFileInputClick}
-                                className="bg-blue-600 text-white hover:bg-blue-700 flex items-center space-x-2"
+                                iconLeft={<Upload />}
                               >
-                                <Upload className="h-4 w-4" />
-                                <span>Upload PDF, DOCX, or TXT</span>
-                              </Button>
+                                Upload PDF, DOCX, or TXT
+                              </CosmicButton>
                               <p className="text-sm text-gray-400 flex items-center">
                                 <span className="mr-1">or</span> fill out the
                                 form manually below

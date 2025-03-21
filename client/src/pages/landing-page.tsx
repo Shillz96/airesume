@@ -553,8 +553,13 @@ export default function LandingPage() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button asChild variant="outline" size="lg" className="w-full">
-                  <Link href="/auth?tab=register">Get Started</Link>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="w-full"
+                  onClick={() => openRegisterWithPlan('free')}
+                >
+                  Get Started
                 </Button>
               </CardFooter>
             </Card>
@@ -605,8 +610,12 @@ export default function LandingPage() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button asChild size="lg" className="w-full cosmic-btn-glow">
-                  <Link href="/auth?tab=register&plan=starter">Get Started</Link>
+                <Button
+                  size="lg"
+                  className="w-full cosmic-btn-glow"
+                  onClick={() => openRegisterWithPlan('starter')}
+                >
+                  Get Started
                 </Button>
               </CardFooter>
             </Card>
@@ -658,8 +667,13 @@ export default function LandingPage() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button asChild variant="default" size="lg" className="w-full">
-                  <Link href="/auth?tab=register&plan=pro">Get Started</Link>
+                <Button
+                  variant="default"
+                  size="lg"
+                  className="w-full"
+                  onClick={() => openRegisterWithPlan('pro')}
+                >
+                  Get Started
                 </Button>
               </CardFooter>
             </Card>
@@ -734,10 +748,12 @@ export default function LandingPage() {
               <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
                 Join thousands of job seekers who've found their dream careers using AIreHire's AI-powered platform.
               </p>
-              <Button asChild size="lg" className="px-8 py-6 text-lg cosmic-btn-glow">
-                <Link href="/auth?tab=register">
-                  Start Your Free Trial <ChevronRight className="ml-2 h-5 w-5" />
-                </Link>
+              <Button 
+                size="lg" 
+                className="px-8 py-6 text-lg cosmic-btn-glow"
+                onClick={() => setIsRegisterOpen(true)}
+              >
+                Start Your Free Trial <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </div>
@@ -812,6 +828,151 @@ export default function LandingPage() {
         </div>
       </footer>
       
+      {/* Login Dialog */}
+      <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Log in to your account</DialogTitle>
+            <DialogDescription>
+              Enter your credentials to access your account.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...loginForm}>
+            <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+              <FormField
+                control={loginForm.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input placeholder="username" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={loginForm.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="••••••••" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex items-center justify-between pt-4">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => {
+                    setIsLoginOpen(false);
+                    setIsRegisterOpen(true);
+                  }}
+                >
+                  Create account
+                </Button>
+                <Button type="submit" disabled={loginMutation.isPending}>
+                  {loginMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Logging in...
+                    </>
+                  ) : (
+                    "Log in"
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Register Dialog */}
+      <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create an account</DialogTitle>
+            <DialogDescription>
+              {selectedPlan ? (
+                `Sign up for the ${selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)} plan.`
+              ) : (
+                "Create your account to get started."
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...registerForm}>
+            <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+              <FormField
+                control={registerForm.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input placeholder="username" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={registerForm.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="••••••••" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={registerForm.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="••••••••" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex items-center justify-between pt-4">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => {
+                    setIsRegisterOpen(false);
+                    setIsLoginOpen(true);
+                  }}
+                >
+                  Already have an account
+                </Button>
+                <Button type="submit" disabled={registerMutation.isPending}>
+                  {registerMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Creating account...
+                    </>
+                  ) : (
+                    "Sign up"
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
       {/* Custom styles for this page */}
       <style dangerouslySetInnerHTML={{
         __html: `

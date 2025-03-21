@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import ResumeTips from "@/components/resume-tips";
 import Navbar from "@/components/navbar";
 import ResumeTemplate, {
@@ -1151,87 +1152,6 @@ function ResumePreview({
               <h4 className="font-medium text-center text-white capitalize">{template.name}</h4>
             </div>
           ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ... (rest of the ResumeBuilder component remains unchanged)
-
-      {/* Template selection */}
-      <div className="mt-8">
-        <h3 className="text-lg font-medium mb-4">Choose a Template</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          <div
-            className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === "professional" ? "border-2 border-blue-500 shadow-lg" : "border border-gray-300"}`}
-            onClick={() => onTemplateChange("professional")}
-          >
-            <div className="h-32 mb-2">
-              <TemplatePreviewProfessional />
-            </div>
-            <h4 className="font-medium text-center">Professional</h4>
-          </div>
-
-          <div
-            className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === "creative" ? "border-2 border-blue-500 shadow-lg" : "border border-gray-300"}`}
-            onClick={() => onTemplateChange("creative")}
-          >
-            <div className="h-32 mb-2">
-              <TemplatePreviewCreative />
-            </div>
-            <h4 className="font-medium text-center">Creative</h4>
-          </div>
-
-          <div
-            className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === "executive" ? "border-2 border-blue-500 shadow-lg" : "border border-gray-300"}`}
-            onClick={() => onTemplateChange("executive")}
-          >
-            <div className="h-32 mb-2">
-              <TemplatePreviewExecutive />
-            </div>
-            <h4 className="font-medium text-center">Executive</h4>
-          </div>
-
-          <div
-            className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === "modern" ? "border-2 border-blue-500 shadow-lg" : "border border-gray-300"}`}
-            onClick={() => onTemplateChange("modern")}
-          >
-            <div className="h-32 mb-2">
-              <TemplatePreviewModern />
-            </div>
-            <h4 className="font-medium text-center">Modern</h4>
-          </div>
-
-          <div
-            className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === "minimal" ? "border-2 border-blue-500 shadow-lg" : "border border-gray-300"}`}
-            onClick={() => onTemplateChange("minimal")}
-          >
-            <div className="h-32 mb-2">
-              <TemplatePreviewMinimal />
-            </div>
-            <h4 className="font-medium text-center">Minimal</h4>
-          </div>
-
-          <div
-            className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === "industry" ? "border-2 border-blue-500 shadow-lg" : "border border-gray-300"}`}
-            onClick={() => onTemplateChange("industry")}
-          >
-            <div className="h-32 mb-2">
-              <TemplatePreviewIndustry />
-            </div>
-            <h4 className="font-medium text-center">Industry</h4>
-          </div>
-
-          <div
-            className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === "bold" ? "border-2 border-blue-500 shadow-lg" : "border border-gray-300"}`}
-            onClick={() => onTemplateChange("bold")}
-          >
-            <div className="h-32 mb-2">
-              <TemplatePreviewBold />
-            </div>
-            <h4 className="font-medium text-center">Bold</h4>
-          </div>
         </div>
       </div>
     </div>

@@ -117,21 +117,13 @@ export function ProfessionalTemplate({ resume }: { resume: Resume }) {
       {skills && skills.length > 0 && (
         <div>
           <h2 className="text-lg font-semibold text-gray-900 mb-2">Skills</h2>
-          {displayMode === 'bubbles' ? (
-            <div className="flex flex-wrap gap-2">
-              {skills.map((skill, index) => (
-                <span key={index} className="px-2 py-1 bg-gray-100 rounded-md text-gray-700 text-sm">
-                  {skill.name}
-                </span>
-              ))}
-            </div>
-          ) : (
-            <ul className="list-disc ml-5 space-y-1 text-gray-700">
-              {skills.map((skill, index) => (
-                <li key={index}>{skill.name}</li>
-              ))}
-            </ul>
-          )}
+          <div className="flex flex-wrap gap-2">
+            {skills.map((skill, index) => (
+              <span key={index} className="px-2 py-1 bg-gray-100 rounded-md text-gray-700 text-sm">
+                {skill.name}
+              </span>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -141,7 +133,6 @@ export function ProfessionalTemplate({ resume }: { resume: Resume }) {
 export function CreativeTemplate({ resume }: { resume: Resume }) {
   const { personalInfo, experience, education, skills } = resume;
   const fullName = `${personalInfo?.firstName || ''} ${personalInfo?.lastName || ''}`.trim();
-  const displayMode = resume.skillsDisplayMode || 'bubbles';
   
   return (
     <div className="p-6 bg-white flex">
@@ -226,7 +217,6 @@ export function CreativeTemplate({ resume }: { resume: Resume }) {
 export function ExecutiveTemplate({ resume }: { resume: Resume }) {
   const { personalInfo, experience, education, skills } = resume;
   const fullName = `${personalInfo?.firstName || ''} ${personalInfo?.lastName || ''}`.trim();
-  const displayMode = resume.skillsDisplayMode || 'bubbles';
   
   return (
     <div className="p-6 bg-white">
@@ -427,7 +417,6 @@ export function TemplatePreviewBold() {
 export function ModernTemplate({ resume }: { resume: Resume }) {
   const { personalInfo, experience, education, skills } = resume;
   const fullName = `${personalInfo?.firstName || ''} ${personalInfo?.lastName || ''}`.trim();
-  const displayMode = resume.skillsDisplayMode || 'bubbles';
   
   return (
     <div className="p-6 bg-white">
@@ -499,7 +488,6 @@ export function ModernTemplate({ resume }: { resume: Resume }) {
 export function MinimalTemplate({ resume }: { resume: Resume }) {
   const { personalInfo, experience, education, skills } = resume;
   const fullName = `${personalInfo?.firstName || ''} ${personalInfo?.lastName || ''}`.trim();
-  const displayMode = resume.skillsDisplayMode || 'bubbles';
   
   return (
     <div className="p-6 bg-white">
@@ -550,21 +538,13 @@ export function MinimalTemplate({ resume }: { resume: Resume }) {
         {skills && skills.length > 0 && (
           <div>
             <h2 className="text-md uppercase tracking-wider text-gray-500 mb-3">Skills</h2>
-            {displayMode === 'bubbles' ? (
-              <p className="text-gray-700">
-                {skills.map((skill, i) => (
-                  <span key={i}>
-                    {skill.name}{i < skills.length - 1 ? " • " : ""}
-                  </span>
-                ))}
-              </p>
-            ) : (
-              <ul className="list-disc ml-5 space-y-1 text-gray-700">
-                {skills.map((skill, index) => (
-                  <li key={index}>{skill.name}</li>
-                ))}
-              </ul>
-            )}
+            <p className="text-gray-700">
+              {skills.map((skill, i) => (
+                <span key={i}>
+                  {skill.name}{i < skills.length - 1 ? " • " : ""}
+                </span>
+              ))}
+            </p>
           </div>
         )}
       </div>
@@ -575,7 +555,6 @@ export function MinimalTemplate({ resume }: { resume: Resume }) {
 export function IndustryTemplate({ resume }: { resume: Resume }) {
   const { personalInfo, experience, education, skills } = resume;
   const fullName = `${personalInfo?.firstName || ''} ${personalInfo?.lastName || ''}`.trim();
-  const displayMode = resume.skillsDisplayMode || 'bubbles';
   
   return (
     <div className="p-0 bg-white">
@@ -652,7 +631,6 @@ export function IndustryTemplate({ resume }: { resume: Resume }) {
 export function BoldTemplate({ resume }: { resume: Resume }) {
   const { personalInfo, experience, education, skills } = resume;
   const fullName = `${personalInfo?.firstName || ''} ${personalInfo?.lastName || ''}`.trim();
-  const displayMode = resume.skillsDisplayMode || 'bubbles';
   
   return (
     <div className="p-0 bg-white">
@@ -707,21 +685,13 @@ export function BoldTemplate({ resume }: { resume: Resume }) {
           {skills && skills.length > 0 && (
             <div>
               <h2 className="text-xl font-bold text-gray-900 mb-3">Skills & Expertise</h2>
-              {displayMode === 'bubbles' ? (
-                <div className="flex flex-wrap gap-2">
-                  {skills.map((skill, index) => (
-                    <span key={index} className="px-3 py-1 bg-pink-100 text-pink-700 font-medium rounded-full">
-                      {skill.name}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <ul className="list-disc ml-5 space-y-1 text-gray-700">
-                  {skills.map((skill, index) => (
-                    <li key={index} className="text-pink-700">{skill.name}</li>
-                  ))}
-                </ul>
-              )}
+              <div className="flex flex-wrap gap-2">
+                {skills.map((skill, index) => (
+                  <span key={index} className="px-3 py-1 bg-pink-100 text-pink-700 font-medium rounded-full">
+                    {skill.name}
+                  </span>
+                ))}
+              </div>
             </div>
           )}
         </div>

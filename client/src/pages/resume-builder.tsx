@@ -11,7 +11,7 @@ import {
   Check, Zap, EyeOff, Eye, FileImage, X, Move,
   GraduationCap, Briefcase, Code, Award, FolderKanban,
   FolderOpen, Save, Upload, Cpu, RefreshCw, Sparkles,
-  Printer, ChevronDown, User, LayoutGrid, LayoutTemplate
+  Printer, ChevronDown, User
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -881,346 +881,6 @@ function SkillSuggestions({
 
 // ... (previous imports remain unchanged)
 
-// Separate ResumePreview component to handle the rendering of the resume content
-// This makes the codebase more maintainable
-interface ResumePreviewProps {
-  resume: Resume;
-  isEditing: boolean;
-  sideBySideLayout: boolean;
-  scale: number;
-  fontScale: number;
-  spacingScale: number;
-  previewRef: React.RefObject<HTMLDivElement>;
-  skillsDisplayMode: 'bubbles' | 'bullets';
-  editedResume: Resume;
-  setEditedResume: React.Dispatch<React.SetStateAction<Resume>>;
-  handleFieldChange: (section: string, field: string, value: string, index?: number) => void;
-  calculatePages: () => number;
-}
-
-function ResumePreview({
-  resume,
-  isEditing,
-  sideBySideLayout,
-  scale,
-  fontScale,
-  spacingScale,
-  previewRef,
-  skillsDisplayMode,
-  editedResume,
-  setEditedResume,
-  handleFieldChange,
-  calculatePages
-}: ResumePreviewProps) {
-  return (
-    <div className={cn(
-      "flex flex-wrap gap-8 justify-center",
-      sideBySideLayout && calculatePages() > 1 ? "flex-row" : "flex-col",
-      sideBySideLayout && calculatePages() > 1 ? "items-start" : "items-center"
-    )}>
-      {/* For side-by-side layout, we create separate divs for each page */}
-      {sideBySideLayout && calculatePages() > 1 && !isEditing ? (
-        // Side-by-side pages layout
-        Array.from({ length: calculatePages() }).map((_, pageIndex) => (
-          <div
-            key={`page-${pageIndex}`}
-            className="resume-page-container transition-all duration-300 bg-white shadow-lg print:shadow-none mb-8"
-            style={{
-              transform: `scale(${scale})`,
-              width: "210mm", // A4 width
-              height: "297mm", // A4 height
-              overflow: "hidden",
-              position: "relative",
-              transformOrigin: "top center",
-              boxShadow: "0 4px 24px rgba(0, 0, 0, 0.15)",
-              fontSize: `${fontScale * 100}%`,
-              lineHeight: `${spacingScale * 1.5}`,
-            }}
-          >
-            <div 
-              className="absolute inset-0 p-8"
-              style={{
-                top: pageIndex > 0 ? `-${pageIndex * 297}mm` : "0",
-              }}
-            >
-              <div className="bg-white text-black h-full overflow-hidden">
-                {resume.template === "creative" ? (
-                  <CreativeTemplate resume={resume} />
-                ) : resume.template === "executive" ? (
-                  <ExecutiveTemplate resume={resume} />
-                ) : resume.template === "modern" ? (
-                  <ModernTemplate resume={resume} />
-                ) : resume.template === "minimal" ? (
-                  <MinimalTemplate resume={resume} />
-                ) : resume.template === "industry" ? (
-                  <IndustryTemplate resume={resume} />
-                ) : resume.template === "bold" ? (
-                  <BoldTemplate resume={resume} />
-                ) : (
-                  <ProfessionalTemplate resume={resume} />
-                )}
-              </div>
-            </div>
-          </div>
-        ))
-      ) : (
-        // Regular vertical layout - single content container
-        <div
-          ref={previewRef}
-          className="resume-content-container transition-all duration-300 mx-auto bg-white shadow-lg print:shadow-none"
-          data-font-scale={fontScale.toString()}
-          data-spacing-scale={spacingScale.toString()}
-          style={{
-            transform: `scale(${scale})`,
-            width: "210mm", // A4 width
-            minHeight: "297mm", // A4 height (minimum to ensure proper proportions)
-            maxHeight: isEditing ? "297mm" : calculatePages() > 1 ? `${calculatePages() * 297}mm` : "297mm", // Allow multiple pages in preview
-            height: isEditing ? "297mm" : calculatePages() > 1 ? `${calculatePages() * 297}mm` : "297mm", // Same height as maxHeight
-            transformOrigin: "top center", // Top center for better multi-page viewing
-            fontSize: `${fontScale * 100}%`, // Dynamic font scaling
-            lineHeight: `${spacingScale * 1.5}`, // Dynamic line height scaling
-            overflowY: isEditing ? "auto" : "visible", // Show overflow for multi-page in preview
-            boxShadow: "0 4px 24px rgba(0, 0, 0, 0.15)", // Add shadow for better visibility
-            marginTop: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
-            marginBottom: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
-          }}
-        >
-          {/* Page break lines for multi-page view (only in preview mode) */}
-          {!isEditing && calculatePages() > 1 && Array.from({ length: calculatePages() - 1 }).map((_, i) => (
-            <div 
-              key={i} 
-              className="page-break" 
-              style={{ 
-                position: 'absolute', 
-                left: 0, 
-                right: 0, 
-                top: `${(i + 1) * 297}mm`, 
-                height: '2px', 
-                backgroundColor: '#e2e8f0',
-                boxShadow: '0 -1px 2px rgba(0,0,0,0.1)'
-              }}
-            />
-          ))}
-          
-          {isEditing ? (
-            <div className="p-6 bg-white text-black h-full">
-              {/* Personal Info Section */}
-              <div className="mb-6 pb-4 border-b border-gray-200">
-                <h2 className="text-2xl font-bold mb-2">
-                  <Input
-                    value={editedResume.personalInfo.firstName + " " + editedResume.personalInfo.lastName}
-                    onChange={(e) => {
-                      const [firstName, ...lastNameParts] = e.target.value.split(" ");
-                      handleFieldChange("personalInfo", "firstName", firstName || "");
-                      handleFieldChange("personalInfo", "lastName", lastNameParts.join(" ") || "");
-                    }}
-                    className="border border-gray-200 p-1 text-2xl font-bold w-full bg-white"
-                  />
-                </h2>
-                <div className="flex flex-wrap gap-3 text-sm mb-4">
-                  <div className="flex-1 min-w-[200px]">
-                    <label className="text-xs text-gray-500 block mb-1">Email</label>
-                    <Input
-                      value={editedResume.personalInfo.email}
-                      onChange={(e) => handleFieldChange("personalInfo", "email", e.target.value)}
-                      className="border border-gray-200 p-1 text-sm w-full bg-white"
-                      placeholder="Email"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-[200px]">
-                    <label className="text-xs text-gray-500 block mb-1">Phone</label>
-                    <Input
-                      value={editedResume.personalInfo.phone}
-                      onChange={(e) => handleFieldChange("personalInfo", "phone", e.target.value)}
-                      className="border border-gray-200 p-1 text-sm w-full bg-white"
-                      placeholder="Phone"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <RichTextEditor
-                    label="Professional Summary"
-                    value={editedResume.personalInfo.summary}
-                    onChange={(value) => handleFieldChange("personalInfo", "summary", value)}
-                    placeholder="Professional Summary"
-                    rows={4}
-                  />
-                </div>
-              </div>
-              
-              {/* Experience Section */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-3">Experience</h3>
-                {editedResume.experience.map((exp, index) => (
-                  <div key={exp.id} className="mb-4 pb-4 border-b border-gray-100">
-                    <div className="flex flex-wrap gap-3 mb-2">
-                      <div className="flex-1 min-w-[200px]">
-                        <label className="text-xs text-gray-500 block mb-1">Job Title</label>
-                        <Input
-                          value={exp.title}
-                          onChange={(e) => handleFieldChange("experience", "title", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full bg-white"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-[200px]">
-                        <label className="text-xs text-gray-500 block mb-1">Company</label>
-                        <Input
-                          value={exp.company}
-                          onChange={(e) => handleFieldChange("experience", "company", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full bg-white"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap gap-3 mb-2">
-                      <div className="flex-1 min-w-[200px]">
-                        <label className="text-xs text-gray-500 block mb-1">Start Date</label>
-                        <Input
-                          value={exp.startDate}
-                          onChange={(e) => handleFieldChange("experience", "startDate", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full bg-white"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-[200px]">
-                        <label className="text-xs text-gray-500 block mb-1">End Date</label>
-                        <Input
-                          value={exp.endDate}
-                          onChange={(e) => handleFieldChange("experience", "endDate", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full bg-white"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <RichTextEditor
-                        label="Description"
-                        value={exp.description}
-                        onChange={(value) => handleFieldChange("experience", "description", value, index)}
-                        placeholder="Job description and achievements"
-                        rows={3}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              {/* Skills Section */}
-              <div className="mb-6">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-lg font-semibold">Skills</h3>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-500">Display as:</span>
-                    <Button
-                      size="sm"
-                      variant={skillsDisplayMode === 'bubbles' ? 'default' : 'outline'}
-                      onClick={() => handleFieldChange("skillsDisplayMode", "", "bubbles")}
-                      className={`text-xs ${skillsDisplayMode === 'bubbles' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
-                    >
-                      Bubbles
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant={skillsDisplayMode === 'bullets' ? 'default' : 'outline'}
-                      onClick={() => handleFieldChange("skillsDisplayMode", "", "bullets")}
-                      className={`text-xs ${skillsDisplayMode === 'bullets' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
-                    >
-                      Bullet List
-                    </Button>
-                  </div>
-                </div>
-                
-                {skillsDisplayMode === 'bubbles' ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                    {editedResume.skills.map((skill, index) => (
-                      <div key={skill.id} className="border border-gray-200 rounded p-2 bg-white">
-                        <Input
-                          value={skill.name}
-                          onChange={(e) => handleFieldChange("skills", "name", e.target.value, index)}
-                          className="border-none p-0 text-sm w-full bg-white"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="border border-gray-200 rounded p-3 bg-white">
-                    <div className="mb-2 text-sm text-gray-500">Edit skills as a bullet list (one skill per line)</div>
-                    <Textarea
-                      value={editedResume.skills.map(skill => skill.name).join('\n')}
-                      onChange={(e) => {
-                        const skillNames = e.target.value.split('\n').filter(name => name.trim() !== '');
-                        setEditedResume(prev => {
-                          const newResume = { ...prev };
-                          newResume.skills = skillNames.map((name, i) => {
-                            return {
-                              id: i < prev.skills.length ? prev.skills[i].id : `skill-${Date.now()}-${i}`,
-                              name: name.trim(),
-                              proficiency: i < prev.skills.length ? prev.skills[i].proficiency : 3
-                            };
-                          });
-                          return newResume;
-                        });
-                      }}
-                      className="w-full border-gray-200 min-h-[150px] bg-white"
-                      placeholder="JavaScript
-React
-TypeScript
-Node.js
-etc."
-                    />
-                  </div>
-                )}
-              </div>
-              
-              {/* Education Section - Simplified */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-3">Education</h3>
-                {editedResume.education.map((edu, index) => (
-                  <div key={edu.id} className="mb-4 pb-4 border-b border-gray-100">
-                    <div className="flex flex-wrap gap-3 mb-2">
-                      <div className="flex-1 min-w-[200px]">
-                        <label className="text-xs text-gray-500 block mb-1">Degree</label>
-                        <Input
-                          value={edu.degree}
-                          onChange={(e) => handleFieldChange("education", "degree", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full bg-white"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-[200px]">
-                        <label className="text-xs text-gray-500 block mb-1">Institution</label>
-                        <Input
-                          value={edu.institution}
-                          onChange={(e) => handleFieldChange("education", "institution", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full bg-white"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="bg-white text-black p-8">
-              {resume.template === "creative" ? (
-                <CreativeTemplate resume={resume} />
-              ) : resume.template === "executive" ? (
-                <ExecutiveTemplate resume={resume} />
-              ) : resume.template === "modern" ? (
-                <ModernTemplate resume={resume} />
-              ) : resume.template === "minimal" ? (
-                <MinimalTemplate resume={resume} />
-              ) : resume.template === "industry" ? (
-                <IndustryTemplate resume={resume} />
-              ) : resume.template === "bold" ? (
-                <BoldTemplate resume={resume} />
-              ) : (
-                <ProfessionalTemplate resume={resume} />
-              )}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
 // Preview component for the "Preview" section
 // This component has been replaced by ResumePreviewComponent
 
@@ -1260,8 +920,7 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
   const [skillsDisplayMode, setSkillsDisplayMode] = useState<'bubbles' | 'bullets'>('bubbles');
   const [spacingScale, setSpacingScale] = useState(1); // For auto-adjusting spacing
   const [numPages, setNumPages] = useState(1); // Track number of pages
-  const [sideBySideLayout, setSideBySideLayout] = useState(false); // For toggling between vertical and side-by-side layout
-  const [showMultiPage, setShowMultiPage] = useState(true); // Toggle between single page and multi-page view
+  const [showMultiPage, setShowMultiPage] = useState(false); // Toggle between single page and multi-page view
   const previewRef = useRef<HTMLDivElement>(null);
   const resumeContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -1421,26 +1080,16 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
     setIsFullScreen(!isFullScreen);
   };
 
-  // Toggle page layout between vertical and side-by-side
-  const togglePageLayout = () => {
-    setSideBySideLayout(!sideBySideLayout);
-  };
-
   // Toggle edit mode
   const toggleEdit = () => {
     setIsEditing(!isEditing);
     if (isEditing) {
-      // Apply changes from editedResume to the actual resume, including skill display mode
-      const updatedResume = { 
-        ...editedResume,
-        skillsDisplayMode: skillsDisplayMode // Preserve the skills display setting
-      };
-      
-      onTemplateChange(updatedResume.template);
+      // Apply changes from editedResume to the actual resume
+      onTemplateChange(editedResume.template);
       
       // Dispatch event to update parent component
       const event = new CustomEvent('resumeEdited', {
-        detail: { resume: updatedResume }
+        detail: { resume: editedResume }
       });
       document.dispatchEvent(event);
     }
@@ -1615,25 +1264,6 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
           <Button
             variant="outline"
             size="sm"
-            onClick={togglePageLayout}
-            className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
-            title="Toggle between vertical and side-by-side page layout"
-          >
-            {sideBySideLayout ? (
-              <>
-                <LayoutTemplate className="h-4 w-4" />
-                <span className="hidden sm:inline ml-1">Vertical</span>
-              </>
-            ) : (
-              <>
-                <LayoutGrid className="h-4 w-4" />
-                <span className="hidden sm:inline ml-1">Side by Side</span>
-              </>
-            )}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
             onClick={toggleFullScreen}
             className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
           >
@@ -1685,98 +1315,25 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
             : "p-4 h-[80vh] flex items-center justify-center" // Center the preview vertically and horizontally
         )}
       >
-        {/* Side-by-side layout container */}
-        <div 
-          className={cn(
-            "flex flex-wrap gap-8 justify-center",
-            sideBySideLayout && calculatePages() > 1 ? "flex-row" : "flex-col",
-            sideBySideLayout && calculatePages() > 1 ? "items-start" : "items-center"
-          )}
+        <div
+          ref={previewRef}
+          className="resume-content-container transition-all duration-300 mx-auto bg-white shadow-lg print:shadow-none"
+          data-font-scale={fontScale.toString()}
+          data-spacing-scale={spacingScale.toString()}
+          style={{
+            transform: `scale(${scale})`,
+            width: "210mm", // A4 width
+            minHeight: "297mm", // A4 height (minimum to ensure proper proportions)
+            maxHeight: "297mm", // A4 height (maximum to ensure proper proportions)
+            transformOrigin: "center", // Center transform origin for better viewing 
+            fontSize: `${fontScale * 100}%`, // Dynamic font scaling
+            lineHeight: `${spacingScale * 1.5}`, // Dynamic line height scaling
+            overflowY: isEditing ? "auto" : "hidden", // Hide overflow when not editing
+            boxShadow: "0 4px 24px rgba(0, 0, 0, 0.15)", // Add shadow for better visibility
+            marginTop: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
+            marginBottom: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
+          }}
         >
-          {/* For side-by-side layout, we create separate divs for each page */}
-          {sideBySideLayout && calculatePages() > 1 && !isEditing ? (
-            // Side-by-side pages layout
-            Array.from({ length: calculatePages() }).map((_, pageIndex) => (
-              <div
-                key={`page-${pageIndex}`}
-                className="resume-page-container transition-all duration-300 bg-white shadow-lg print:shadow-none mb-8"
-                style={{
-                  transform: `scale(${scale})`,
-                  width: "210mm", // A4 width
-                  height: "297mm", // A4 height
-                  overflow: "hidden",
-                  position: "relative",
-                  transformOrigin: "top center",
-                  boxShadow: "0 4px 24px rgba(0, 0, 0, 0.15)",
-                  fontSize: `${fontScale * 100}%`,
-                  lineHeight: `${spacingScale * 1.5}`,
-                }}
-              >
-                <div 
-                  className="absolute inset-0 p-8"
-                  style={{
-                    top: pageIndex > 0 ? `-${pageIndex * 297}mm` : "0",
-                  }}
-                >
-                  <div className="bg-white text-black h-full overflow-hidden">
-                    {resume.template === "creative" ? (
-                      <CreativeTemplate resume={resume} />
-                    ) : resume.template === "executive" ? (
-                      <ExecutiveTemplate resume={resume} />
-                    ) : resume.template === "modern" ? (
-                      <ModernTemplate resume={resume} />
-                    ) : resume.template === "minimal" ? (
-                      <MinimalTemplate resume={resume} />
-                    ) : resume.template === "industry" ? (
-                      <IndustryTemplate resume={resume} />
-                    ) : resume.template === "bold" ? (
-                      <BoldTemplate resume={resume} />
-                    ) : (
-                      <ProfessionalTemplate resume={resume} />
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            // Regular vertical layout - single content container
-            <div
-              ref={previewRef}
-              className="resume-content-container transition-all duration-300 mx-auto bg-white shadow-lg print:shadow-none"
-              data-font-scale={fontScale.toString()}
-              data-spacing-scale={spacingScale.toString()}
-              style={{
-                transform: `scale(${scale})`,
-                width: "210mm", // A4 width
-                minHeight: "297mm", // A4 height (minimum to ensure proper proportions)
-                maxHeight: isEditing ? "297mm" : calculatePages() > 1 ? `${calculatePages() * 297}mm` : "297mm", // Allow multiple pages in preview
-                height: isEditing ? "297mm" : calculatePages() > 1 ? `${calculatePages() * 297}mm` : "297mm", // Same height as maxHeight
-                transformOrigin: "top center", // Top center for better multi-page viewing
-                fontSize: `${fontScale * 100}%`, // Dynamic font scaling
-                lineHeight: `${spacingScale * 1.5}`, // Dynamic line height scaling
-                overflowY: isEditing ? "auto" : "visible", // Show overflow for multi-page in preview
-                boxShadow: "0 4px 24px rgba(0, 0, 0, 0.15)", // Add shadow for better visibility
-                marginTop: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
-                marginBottom: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
-              }}
-            >
-              {/* Page break lines for multi-page view (only in preview mode) */}
-              {!isEditing && calculatePages() > 1 && Array.from({ length: calculatePages() - 1 }).map((_, i) => (
-            <div 
-              key={i} 
-              className="page-break" 
-              style={{ 
-                position: 'absolute', 
-                left: 0, 
-                right: 0, 
-                top: `${(i + 1) * 297}mm`, 
-                height: '2px', 
-                backgroundColor: '#e2e8f0',
-                boxShadow: '0 -1px 2px rgba(0,0,0,0.1)'
-              }}
-            />
-          ))}
-          
           {isEditing ? (
             <div className="p-6 bg-white text-black h-full">
               {/* Personal Info Section */}

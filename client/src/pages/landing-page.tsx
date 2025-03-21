@@ -13,25 +13,115 @@ import {
   ChevronRight,
   Bot,
   Search,
-  Zap
+  Zap,
+  Mail,
+  Lock,
+  User,
+  X,
+  Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import gsap from "gsap";
 
+// Login form schema
+const loginSchema = z.object({
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(1, "Password is required"),
+});
+
+// Registration form schema
+const registerSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
+
 export default function LandingPage() {
-  const { user } = useAuth();
+  const { user, loginMutation, registerMutation } = useAuth();
+  const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  
+  // Dialog refs
   const heroRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const featureRefs = useRef<(HTMLDivElement | null)[]>([]);
   
+  // Forms
+  const loginForm = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  });
+
+  const registerForm = useForm<z.infer<typeof registerSchema>>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+  
+  // Form submission handlers
+  async function onLoginSubmit(values: z.infer<typeof loginSchema>) {
+    try {
+      await loginMutation.mutateAsync(values);
+      setIsLoginOpen(false);
+      setLocation("/dashboard");
+      toast({
+        title: "Login successful",
+        description: "Welcome back!",
+      });
+    } catch (error) {
+      // Error is handled by the mutation
+    }
+  }
+
+  async function onRegisterSubmit(values: z.infer<typeof registerSchema>) {
+    try {
+      const { confirmPassword, ...registerData } = values;
+      await registerMutation.mutateAsync(registerData);
+      setIsRegisterOpen(false);
+      setLocation("/dashboard");
+      toast({
+        title: "Registration successful",
+        description: "Your account has been created.",
+      });
+    } catch (error) {
+      // Error is handled by the mutation
+    }
+  }
+  
+  // Open the register modal with a specific plan
+  const openRegisterWithPlan = (plan: string) => {
+    setSelectedPlan(plan);
+    setIsRegisterOpen(true);
+  };
+  
   // Redirect authenticated users to dashboard
   useEffect(() => {
     if (user) {
-      setLocation("/");
+      setLocation("/dashboard");
     }
   }, [user, setLocation]);
 
@@ -179,16 +269,29 @@ export default function LandingPage() {
               <a href="#faq" className="text-gray-300 hover:text-white text-sm font-medium transition-colors duration-200">
                 FAQ
               </a>
-              <Button asChild variant="outline" size="sm" className="ml-3">
-                <Link href="/auth?tab=login">Log in</Link>
+              <Button
+                variant="outline"
+                size="sm"
+                className="ml-3"
+                onClick={() => setIsLoginOpen(true)}
+              >
+                Log in
               </Button>
-              <Button asChild size="sm" className="ml-3">
-                <Link href="/auth?tab=register">Sign up</Link>
+              <Button
+                size="sm"
+                className="ml-3"
+                onClick={() => setIsRegisterOpen(true)}
+              >
+                Sign up
               </Button>
             </div>
             <div className="md:hidden">
-              <Button asChild variant="outline" size="sm">
-                <Link href="/auth">Get Started</Link>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsRegisterOpen(true)}
+              >
+                Get Started
               </Button>
             </div>
           </div>
@@ -218,13 +321,23 @@ export default function LandingPage() {
               className="mt-10 flex justify-center gap-4"
               ref={ctaRef}
             >
-              <Button asChild size="lg" className="px-8 py-6 text-lg cosmic-btn-glow">
-                <Link href="/auth?tab=register">
-                  Try for Free <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
+              <Button 
+                size="lg" 
+                className="px-8 py-6 text-lg cosmic-btn-glow"
+                onClick={() => setIsRegisterOpen(true)}
+              >
+                Try for Free <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button asChild variant="outline" size="lg" className="px-8 py-6 text-lg">
-                <a href="#pricing">View Plans</a>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="px-8 py-6 text-lg"
+                onClick={() => {
+                  const pricingSection = document.getElementById("pricing");
+                  pricingSection?.scrollIntoView({ behavior: "smooth" });
+                }}
+              >
+                View Plans
               </Button>
             </div>
           </div>

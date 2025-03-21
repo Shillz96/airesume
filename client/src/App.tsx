@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { GuestModeProvider } from "@/hooks/use-guest-mode";
 import NotFound from "@/pages/not-found";
-import AuthPage from "@/pages/auth-page";
 import HomePage from "@/pages/home-page";
 import ResumeBuilder from "@/pages/resume-builder";
 import ResumesPage from "@/pages/resumes-page";
@@ -27,7 +26,6 @@ function Router() {
       <ProtectedRoute path="/job-finder" component={JobFinder} />
       <ProtectedRoute path="/job/:id" component={JobDetails} />
       <ProtectedRoute path="/subscription" component={SubscriptionPage} />
-      <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
   );

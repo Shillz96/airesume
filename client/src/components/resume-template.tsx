@@ -141,6 +141,7 @@ export function ProfessionalTemplate({ resume }: { resume: Resume }) {
 export function CreativeTemplate({ resume }: { resume: Resume }) {
   const { personalInfo, experience, education, skills } = resume;
   const fullName = `${personalInfo?.firstName || ''} ${personalInfo?.lastName || ''}`.trim();
+  const displayMode = resume.skillsDisplayMode || 'bubbles';
   
   return (
     <div className="p-6 bg-white flex">

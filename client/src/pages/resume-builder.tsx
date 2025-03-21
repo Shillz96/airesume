@@ -1334,30 +1334,33 @@ export default function ResumeBuilder() {
                   const resumeData = parsedData.resumeData;
                   
                   // Process the resume data to ensure it has the proper structure
+                  // The data comes with a nested 'content' object that contains all resume sections
+                  const content = resumeData.content || {};
+                  
                   const completeResume = {
                     id: resumeData.id,
                     title: resumeData.title || "Untitled Resume",
                     personalInfo: {
-                      firstName: resumeData.personalInfo?.firstName || "",
-                      lastName: resumeData.personalInfo?.lastName || "",
-                      email: resumeData.personalInfo?.email || "",
-                      phone: resumeData.personalInfo?.phone || "",
-                      headline: resumeData.personalInfo?.headline || "",
-                      summary: resumeData.personalInfo?.summary || ""
+                      firstName: content.personalInfo?.firstName || "",
+                      lastName: content.personalInfo?.lastName || "",
+                      email: content.personalInfo?.email || "",
+                      phone: content.personalInfo?.phone || "",
+                      headline: content.personalInfo?.headline || "",
+                      summary: content.personalInfo?.summary || ""
                     },
-                    experience: Array.isArray(resumeData.experience) ? resumeData.experience.map((exp: any) => ({
+                    experience: Array.isArray(content.experience) ? content.experience.map((exp: any) => ({
                       ...exp,
                       id: exp.id || crypto.randomUUID(),
                     })) : [],
-                    education: Array.isArray(resumeData.education) ? resumeData.education.map((edu: any) => ({
+                    education: Array.isArray(content.education) ? content.education.map((edu: any) => ({
                       ...edu,
                       id: edu.id || crypto.randomUUID(),
                     })) : [],
-                    skills: Array.isArray(resumeData.skills) ? resumeData.skills.map((skill: any) => ({
+                    skills: Array.isArray(content.skills) ? content.skills.map((skill: any) => ({
                       ...skill,
                       id: skill.id || crypto.randomUUID(),
                     })) : [],
-                    projects: Array.isArray(resumeData.projects) ? resumeData.projects.map((project: any) => ({
+                    projects: Array.isArray(content.projects) ? content.projects.map((project: any) => ({
                       ...project,
                       id: project.id || crypto.randomUUID(),
                     })) : [],
@@ -1410,31 +1413,35 @@ export default function ResumeBuilder() {
       console.log("Resume data fetched:", JSON.stringify(fetchedResume, null, 2));
       
       try {
+        // The API returns resume data with a nested 'content' object
+        const content = fetchedResume.content || {};
+        console.log("Resume content extracted:", content);
+        
         // Ensure we have complete data structure for all fields
         const completeResume = {
           id: fetchedResume.id,
           title: fetchedResume.title || "Untitled Resume",
           personalInfo: {
-            firstName: fetchedResume.personalInfo?.firstName || "",
-            lastName: fetchedResume.personalInfo?.lastName || "",
-            email: fetchedResume.personalInfo?.email || "",
-            phone: fetchedResume.personalInfo?.phone || "",
-            headline: fetchedResume.personalInfo?.headline || "",
-            summary: fetchedResume.personalInfo?.summary || ""
+            firstName: content.personalInfo?.firstName || "",
+            lastName: content.personalInfo?.lastName || "",
+            email: content.personalInfo?.email || "",
+            phone: content.personalInfo?.phone || "",
+            headline: content.personalInfo?.headline || "",
+            summary: content.personalInfo?.summary || ""
           },
-          experience: Array.isArray(fetchedResume.experience) ? fetchedResume.experience.map((exp: any) => ({
+          experience: Array.isArray(content.experience) ? content.experience.map((exp: any) => ({
             ...exp,
             id: exp.id || crypto.randomUUID(), // Ensure each experience has an ID
           })) : [],
-          education: Array.isArray(fetchedResume.education) ? fetchedResume.education.map((edu: any) => ({
+          education: Array.isArray(content.education) ? content.education.map((edu: any) => ({
             ...edu,
             id: edu.id || crypto.randomUUID(), // Ensure each education has an ID
           })) : [],
-          skills: Array.isArray(fetchedResume.skills) ? fetchedResume.skills.map((skill: any) => ({
+          skills: Array.isArray(content.skills) ? content.skills.map((skill: any) => ({
             ...skill,
             id: skill.id || crypto.randomUUID(), // Ensure each skill has an ID
           })) : [],
-          projects: Array.isArray(fetchedResume.projects) ? fetchedResume.projects.map((project: any) => ({
+          projects: Array.isArray(content.projects) ? content.projects.map((project: any) => ({
             ...project,
             id: project.id || crypto.randomUUID(), // Ensure each project has an ID
           })) : [],
@@ -1864,31 +1871,35 @@ export default function ResumeBuilder() {
                               const resumeData = await response.json();
                               console.log("Direct fetch resume data:", JSON.stringify(resumeData, null, 2));
                               
+                              // The API returns resume data with a nested 'content' object
+                              const content = resumeData.content || {};
+                              console.log("Resume content extracted:", content);
+                                
                               // Process the resume data
                               const completeResume = {
                                 id: resumeData.id,
                                 title: resumeData.title || "Untitled Resume",
                                 personalInfo: {
-                                  firstName: resumeData.personalInfo?.firstName || "",
-                                  lastName: resumeData.personalInfo?.lastName || "",
-                                  email: resumeData.personalInfo?.email || "",
-                                  phone: resumeData.personalInfo?.phone || "",
-                                  headline: resumeData.personalInfo?.headline || "",
-                                  summary: resumeData.personalInfo?.summary || ""
+                                  firstName: content.personalInfo?.firstName || "",
+                                  lastName: content.personalInfo?.lastName || "",
+                                  email: content.personalInfo?.email || "",
+                                  phone: content.personalInfo?.phone || "",
+                                  headline: content.personalInfo?.headline || "",
+                                  summary: content.personalInfo?.summary || ""
                                 },
-                                experience: Array.isArray(resumeData.experience) ? resumeData.experience.map((exp: any) => ({
+                                experience: Array.isArray(content.experience) ? content.experience.map((exp: any) => ({
                                   ...exp,
                                   id: exp.id || crypto.randomUUID(),
                                 })) : [],
-                                education: Array.isArray(resumeData.education) ? resumeData.education.map((edu: any) => ({
+                                education: Array.isArray(content.education) ? content.education.map((edu: any) => ({
                                   ...edu,
                                   id: edu.id || crypto.randomUUID(),
                                 })) : [],
-                                skills: Array.isArray(resumeData.skills) ? resumeData.skills.map((skill: any) => ({
+                                skills: Array.isArray(content.skills) ? content.skills.map((skill: any) => ({
                                   ...skill,
                                   id: skill.id || crypto.randomUUID(),
                                 })) : [],
-                                projects: Array.isArray(resumeData.projects) ? resumeData.projects.map((project: any) => ({
+                                projects: Array.isArray(content.projects) ? content.projects.map((project: any) => ({
                                   ...project,
                                   id: project.id || crypto.randomUUID(),
                                 })) : [],

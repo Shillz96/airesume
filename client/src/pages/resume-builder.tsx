@@ -180,9 +180,50 @@ export default function ResumeBuilder() {
     queryKey: ['/api/resumes', resumeId],
     queryFn: async () => {
       if (resumeId === 'new') {
+        // For new resumes, check for session data first
+        try {
+          const sessionDataStr = localStorage.getItem('resumeBuilderSessionData');
+          if (sessionDataStr) {
+            const sessionData = JSON.parse(sessionDataStr);
+            
+            // Only restore session data for new resumes
+            if (sessionData.resumeId === 'new' && sessionData.resume) {
+              console.log('Found session data for new resume, restoring state');
+              
+              // Ensure we have all required properties
+              const resumeData = {
+                ...sessionData.resume,
+                experience: sessionData.resume.experience || [],
+                education: sessionData.resume.education || [],
+                skills: sessionData.resume.skills || [],
+                projects: sessionData.resume.projects || [],
+                template: sessionData.resume.template || 'professional',
+                skillsDisplayMode: sessionData.resume.skillsDisplayMode || 'bubbles',
+              };
+              
+              // Only restore if there's actual content
+              const hasContent = resumeData.experience.length > 0 || 
+                resumeData.education.length > 0 || 
+                resumeData.skills.length > 0 ||
+                (resumeData.personalInfo?.firstName || resumeData.personalInfo?.summary);
+              
+              if (hasContent) {
+                setResume(resumeData);
+                
+                toast({
+                  title: 'Resume restored from session',
+                  description: 'Your previous unsaved work has been loaded.',
+                });
+              }
+            }
+          }
+        } catch (err) {
+          console.error('Failed to load session data:', err);
+        }
         return null;
       }
       
+      // For existing resumes, fetch from server
       const res = await apiRequest('GET', `/api/resumes/${resumeId}`);
       const data = await res.json();
       
@@ -211,6 +252,34 @@ export default function ResumeBuilder() {
       });
     },
   });
+  
+  // Save resume to localStorage whenever it changes
+  useEffect(() => {
+    // Don't save if it's the initial empty resume with no content
+    const hasContent = resume.experience.length > 0 || 
+      resume.education.length > 0 || 
+      resume.skills.length > 0 || 
+      resume.projects.length > 0 ||
+      resume.personalInfo.firstName || 
+      resume.personalInfo.lastName || 
+      resume.personalInfo.summary;
+      
+    if (!hasContent) {
+      return;
+    }
+    
+    try {
+      const sessionData = {
+        resume,
+        timestamp: new Date().toISOString(),
+        resumeId
+      };
+      localStorage.setItem('resumeBuilderSessionData', JSON.stringify(sessionData));
+      console.log('Resume automatically saved to session storage');
+    } catch (err) {
+      console.error('Failed to save resume to session storage:', err);
+    }
+  }, [resume, resumeId]);
 
   // Handle adding a new experience entry
   const handleAddExperience = () => {

@@ -373,12 +373,7 @@ export default function SubscriptionPage() {
                       </Button>
                     </>
                   ) : (
-                    <Button
-                      className="w-full"
-                      onClick={() => setActivePlanDialog(true)}
-                    >
-                      Choose a Plan
-                    </Button>
+                    <div className="h-[38px]"></div>
                   )}
                 </CardFooter>
               </Card>
@@ -428,7 +423,7 @@ export default function SubscriptionPage() {
                 <CardFooter>
                   <Button 
                     className="w-full"
-                    variant={selectedPlan === "starter" ? "default" : "outline"}
+                    variant="outline"
                     onClick={() => {
                       setSelectedPlan("starter");
                       setActivePlanDialog(true);
@@ -489,7 +484,7 @@ export default function SubscriptionPage() {
                 <CardFooter>
                   <Button 
                     className="w-full"
-                    variant={selectedPlan === "pro" ? "default" : "outline"}
+                    variant="outline"
                     onClick={() => {
                       setSelectedPlan("pro");
                       setActivePlanDialog(true);
@@ -550,7 +545,7 @@ export default function SubscriptionPage() {
                 <CardFooter>
                   <Button 
                     className="w-full"
-                    variant={selectedPlan === "career_builder" ? "default" : "outline"}
+                    variant="outline"
                     onClick={() => {
                       setSelectedPlan("career_builder");
                       setActivePlanDialog(true);

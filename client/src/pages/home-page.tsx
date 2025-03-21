@@ -150,7 +150,7 @@ export default function HomePage() {
               </div>
             </div>
             
-            <div className="mt-12 mb-8">
+            <div className="mt-16 mb-12 pt-4">
               <JobSearchProgress />
             </div>
           </div>

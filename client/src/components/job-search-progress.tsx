@@ -115,8 +115,8 @@ export default function JobSearchProgress() {
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="p-6" ref={progressRef}>
-        <div className="space-y-6">
+      <CardContent className="p-8" ref={progressRef}>
+        <div className="space-y-8">
           {milestones.map((milestone, index) => (
             <div key={index} className="progress-item">
               <div className="flex items-center justify-between mb-1.5">

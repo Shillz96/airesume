@@ -917,6 +917,7 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
   const [isAutoAdjusting, setIsAutoAdjusting] = useState(false);
   const [editedResume, setEditedResume] = useState<Resume>(resume);
   const [fontScale, setFontScale] = useState(1); // For auto-adjusting font size
+  const [skillsDisplayMode, setSkillsDisplayMode] = useState<'bubbles' | 'bullets'>('bubbles');
   const [spacingScale, setSpacingScale] = useState(1); // For auto-adjusting spacing
   const [numPages, setNumPages] = useState(1); // Track number of pages
   const [showMultiPage, setShowMultiPage] = useState(false); // Toggle between single page and multi-page view
@@ -1221,6 +1222,9 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
           <h3 className="text-lg font-medium text-white">Resume Preview</h3>
           <Badge variant="outline" className="text-blue-300 border-blue-300/30">
             {Math.round(scale * 100)}%
+          </Badge>
+          <Badge variant="outline" className="text-blue-300 border-blue-300/30">
+            Page {calculatePages() > 1 ? `1-${calculatePages()}` : '1'}
           </Badge>
         </div>
         <div className="flex gap-2">

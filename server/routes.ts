@@ -11,6 +11,10 @@ import os from "os";
 import { jobsApiService } from "./services/jobs-api";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve the direct admin page
+  app.get('/direct-admin', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'client/src/pages/direct-admin.html'));
+  });
   // Setup authentication routes
   await setupAuth(app);
   

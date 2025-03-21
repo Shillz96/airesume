@@ -1,13 +1,10 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { useLocation } from "wouter";
 
 export default function GoAdminLink() {
-  const [, setLocation] = useLocation();
-  
   const goToAdminPage = () => {
-    // We need to handle this manually since the router seems to have issues
-    window.location.href = "/admin-access";
+    // Use our simple direct admin page instead of the React router
+    window.location.href = "/direct-admin";
   };
   
   return (

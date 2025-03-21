@@ -761,6 +761,10 @@ function ResumePreview({ resume }: { resume: Resume }) {
   const TemplateComponent = 
     resume.template === "creative" ? CreativeTemplate :
     resume.template === "executive" ? ExecutiveTemplate :
+    resume.template === "modern" ? ModernTemplate :
+    resume.template === "minimal" ? MinimalTemplate :
+    resume.template === "industry" ? IndustryTemplate :
+    resume.template === "bold" ? BoldTemplate :
     ProfessionalTemplate; // Default to professional
   
   return (

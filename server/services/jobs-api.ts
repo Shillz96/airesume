@@ -102,30 +102,53 @@ export class JobsAPIService {
         }
       }
       
-      // Add experience level filtering if specified
+      // Add experience level filtering if specified - with safety mechanisms
       if (filters.experience && filters.experience !== 'all') {
-        // Map our experience levels to appropriate search terms
-        let experienceSearch = '';
-        
-        if (filters.experience.toLowerCase().includes('senior') || 
-            filters.experience.toLowerCase().includes('lead')) {
-          experienceSearch = 'senior OR lead OR principal OR architect';
-        } else if (filters.experience.toLowerCase().includes('mid')) {
-          // For mid-level, exclude junior and senior terms
-          apiUrl += '&exclude_keywords=junior,senior,lead,principal,architect';
-        } else if (filters.experience.toLowerCase().includes('junior') || 
-                  filters.experience.toLowerCase().includes('entry')) {
-          experienceSearch = 'junior OR entry OR graduate OR trainee';
-        }
-        
-        if (experienceSearch) {
-          // Add to existing search terms
-          if (apiUrl.includes('&what=')) {
-            // Append to existing what parameter
-            apiUrl = apiUrl.replace(/&what=([^&]+)/, `&what=$1 ${experienceSearch}`);
-          } else {
-            apiUrl += `&what=${encodeURIComponent(experienceSearch)}`;
+        try {
+          // Map our experience levels to appropriate search terms
+          let experienceSearch = '';
+          
+          if (filters.experience.toLowerCase().includes('senior') || 
+              filters.experience.toLowerCase().includes('lead')) {
+            // For senior positions, add senior keywords directly to the search
+            // This is the safer approach than modifying the existing query
+            if (!filters.title || filters.title.trim().length === 0) {
+              // If no title, use these terms as the main search
+              apiUrl += `&what=${encodeURIComponent('senior lead')}`;
+            } else {
+              // If there is a title, add "senior" to the beginning to find senior roles
+              // This is more reliable than trying to append to an existing query
+              let currentWhat = '';
+              const whatMatch = apiUrl.match(/&what=([^&]+)/);
+              if (whatMatch && whatMatch[1]) {
+                currentWhat = decodeURIComponent(whatMatch[1]);
+                // Replace the current what with "senior" + the current what
+                apiUrl = apiUrl.replace(/&what=([^&]+)/, 
+                  `&what=${encodeURIComponent(`senior ${currentWhat}`)}`);
+              }
+            }
+          } else if (filters.experience.toLowerCase().includes('mid')) {
+            // For mid-level, we don't modify the query as it can cause API errors
+            // Instead, we'll do client-side filtering of the results
+          } else if (filters.experience.toLowerCase().includes('junior') || 
+                    filters.experience.toLowerCase().includes('entry')) {
+            // For junior positions, add junior keywords to the search
+            if (!filters.title || filters.title.trim().length === 0) {
+              apiUrl += `&what=${encodeURIComponent('junior entry level')}`;
+            } else {
+              let currentWhat = '';
+              const whatMatch = apiUrl.match(/&what=([^&]+)/);
+              if (whatMatch && whatMatch[1]) {
+                currentWhat = decodeURIComponent(whatMatch[1]);
+                apiUrl = apiUrl.replace(/&what=([^&]+)/, 
+                  `&what=${encodeURIComponent(`junior ${currentWhat}`)}`);
+              }
+            }
           }
+        } catch (error) {
+          console.warn("Error adding experience filtering, ignoring this filter", error);
+          // If there's an error adding experience filtering, just continue without it
+          // rather than breaking the whole API request
         }
       }
       

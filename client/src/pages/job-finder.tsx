@@ -25,7 +25,7 @@ export default function JobFinder() {
   const { isGuestMode } = useGuestMode();
   const { user } = useAuth();
   
-  // Note: We're just using sample job data throughout the application for demonstration purposes
+  // State for filter values including country (US/UK)
   const [filterValues, setFilterValues] = useState<JobFilterValues>({
     title: "",
     location: "",
@@ -33,6 +33,7 @@ export default function JobFinder() {
     experience: "all",
     remote: "all",
     salary: "all",
+    country: "us", // Default to US jobs
   });
   
   const [statusFilter, setStatusFilter] = useState("all");
@@ -49,6 +50,9 @@ export default function JobFinder() {
       if (filterValues.location) params.append('location', filterValues.location);
       if (filterValues.type !== 'all') params.append('type', filterValues.type);
       if (filterValues.experience !== 'all') params.append('experience', filterValues.experience);
+      
+      // Add country parameter (US or UK)
+      params.append('country', filterValues.country);
       
       // Add pagination parameters
       params.append('page', currentPage.toString());

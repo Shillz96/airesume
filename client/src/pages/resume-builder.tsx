@@ -6,7 +6,11 @@ import Navbar from "@/components/navbar";
 import ResumeTemplate, { 
   ProfessionalTemplate, 
   CreativeTemplate, 
-  ExecutiveTemplate 
+  ExecutiveTemplate,
+  ModernTemplate,
+  MinimalTemplate,
+  IndustryTemplate,
+  BoldTemplate
 } from "@/components/resume-template";
 import { 
   ResumeExperienceSection, 

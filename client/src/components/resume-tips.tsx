@@ -27,11 +27,12 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
   const { toast } = useToast();
 
   const generateSuggestions = async (length: string = "medium") => {
+    // Always force the generating state to ensure the spinner shows
     setIsGenerating(true);
     setActiveTab(length);
     
-    // Clear the previous suggestions to give better visual feedback
-    setSuggestions([]);
+    // We no longer clear suggestions immediately as it causes a UI flicker
+    // Instead, we'll replace them only when we have new ones
     
     // Set a small timeout to ensure the UI updates before making the API call
     // This helps give a clearer visual indication that the refresh is happening
@@ -81,88 +82,147 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
       } finally {
         setIsGenerating(false);
       }
-    }, 100); // Small delay for better UX
+    }, 500); // Longer delay for better UX and to make the refresh more noticeable
   };
 
   const getFallbackSuggestions = (length: "short" | "medium" | "long", type: string) => {
+    // Create a larger pool of suggestions and randomly select 3 of them
+    // This helps ensure we get different suggestions each time
+    let suggestionsPool: string[] = [];
+    
     if (type === "summary") {
       // Short summaries
       if (length === "short") {
-        return [
+        suggestionsPool = [
           "Skilled professional with a proven track record in delivering high-impact solutions.",
           "Results-oriented professional with expertise in strategic planning and execution.",
-          "Dynamic professional with strong technical and communication skills."
+          "Dynamic professional with strong technical and communication skills.",
+          "Dedicated professional focused on continuous improvement and excellence.",
+          "Analytical problem-solver with expertise in optimizing business processes.",
+          "Innovative thinker committed to driving organizational success.",
+          "Adaptable professional with a diverse skill set and practical experience.",
+          "Achievement-focused individual with a history of exceeding targets."
         ];
       }
       // Long summaries
       else if (length === "long") {
-        return [
+        suggestionsPool = [
           "Accomplished professional with extensive experience driving innovation and operational excellence. Demonstrates exceptional ability to identify opportunities for improvement and implement strategic solutions that enhance business performance. Combines technical expertise with strong leadership capabilities to guide teams through complex projects and initiatives.",
           "Results-driven professional with a comprehensive background in developing and implementing strategic initiatives. Skilled at translating business requirements into effective solutions while maintaining a focus on quality and efficiency. Recognized for ability to collaborate across departments and deliver measurable improvements to organizational processes.",
-          "Versatile professional with a proven track record of success across multiple domains. Leverages deep technical knowledge and business acumen to drive transformative change and achieve ambitious goals. Excels at building relationships with stakeholders at all levels and communicating complex concepts in accessible terms."
+          "Versatile professional with a proven track record of success across multiple domains. Leverages deep technical knowledge and business acumen to drive transformative change and achieve ambitious goals. Excels at building relationships with stakeholders at all levels and communicating complex concepts in accessible terms.",
+          "Forward-thinking professional with a strategic mindset and demonstrated success in delivering impactful results. Combines analytical thinking with creative problem-solving to address complex challenges. Known for ability to lead cross-functional initiatives and align diverse stakeholders toward common objectives.",
+          "Dedicated professional with extensive expertise in optimizing operations and driving sustainable growth. Utilizes data-driven insights to identify improvement opportunities and implement effective solutions. Proven ability to navigate dynamic environments while maintaining a focus on long-term strategic objectives.",
+          "Accomplished leader with a track record of transforming organizational capabilities and enhancing performance metrics. Adept at identifying growth opportunities and implementing scalable solutions. Combines business acumen with technological expertise to deliver measurable improvements across multiple dimensions."
         ];
       }
       // Medium summaries (default)
       else {
-        return [
+        suggestionsPool = [
           "Accomplished professional with a proven track record of delivering innovative solutions. Adept at leveraging expertise to drive business outcomes and optimize processes.",
           "Results-driven professional combining technical knowledge with strong communication skills. Committed to continuous improvement and delivering high-quality work that exceeds expectations.",
-          "Versatile and dedicated professional with strong problem-solving abilities. Effectively balances technical excellence with business requirements to create impactful solutions."
+          "Versatile and dedicated professional with strong problem-solving abilities. Effectively balances technical excellence with business requirements to create impactful solutions.",
+          "Strategic thinker with expertise in identifying opportunities and implementing effective solutions. Demonstrates ability to collaborate across teams to achieve organizational objectives.",
+          "Detail-oriented professional with a talent for analyzing complex situations and developing practical approaches. Consistently delivers results that drive business growth and operational excellence.",
+          "Dynamic professional with a balanced approach to technical expertise and business acumen. Skilled at translating strategic vision into actionable plans with measurable outcomes."
         ];
       }
     } else if (type === "bullet") {
       // Experience bullet points
       if (length === "short") {
-        return [
+        suggestionsPool = [
           "Implemented process improvements that reduced costs by 15%.",
           "Led cross-functional team of 8 to deliver project ahead of schedule.",
-          "Increased customer satisfaction ratings by 22% through service enhancements."
+          "Increased customer satisfaction ratings by 22% through service enhancements.",
+          "Streamlined workflow resulting in 30% productivity increase.",
+          "Developed training materials that improved team efficiency by 25%.",
+          "Managed budget of $1.5M with consistent under-budget delivery.",
+          "Launched successful marketing campaign that increased sales by 18%.",
+          "Resolved critical system issues, reducing downtime by 40%."
         ];
       } else if (length === "long") {
-        return [
+        suggestionsPool = [
           "Spearheaded comprehensive process reengineering initiative that identified and eliminated redundancies, resulting in 15% reduction in operational costs and 30% increase in team productivity over a 6-month period.",
           "Led diverse cross-functional team of 8 professionals to deliver mission-critical project 2 weeks ahead of schedule, earning recognition from senior leadership and establishing new benchmark for project execution excellence.",
-          "Conceptualized and implemented customer service enhancement program that increased satisfaction ratings by 22%, reduced complaint volume by 35%, and improved retention rates among high-value clients by 18% within first quarter of implementation."
+          "Conceptualized and implemented customer service enhancement program that increased satisfaction ratings by 22%, reduced complaint volume by 35%, and improved retention rates among high-value clients by 18% within first quarter of implementation.",
+          "Pioneered data-driven decision-making approach across three departments, developing customized dashboards and KPI tracking mechanisms that enabled executive leadership to identify $2.3M in cost-saving opportunities within first year of implementation.",
+          "Orchestrated complex system migration involving 15,000+ user accounts and 8TB of data with zero unplanned downtime, completing the transition 5 days ahead of schedule and $75,000 under budget while maintaining 99.9% data integrity.",
+          "Redesigned customer onboarding process through comprehensive user experience research, resulting in 45% reduction in abandonment rates, 28% faster completion times, and 52% decrease in support tickets related to registration issues."
         ];
       } else {
-        return [
+        suggestionsPool = [
           "Implemented comprehensive process improvements that reduced operational costs by 15% while increasing team productivity by 30%.",
           "Led cross-functional team of 8 professionals to deliver project 2 weeks ahead of schedule, exceeding client expectations.",
-          "Developed and implemented customer service enhancements that increased satisfaction ratings by 22% and improved retention rates."
+          "Developed and implemented customer service enhancements that increased satisfaction ratings by 22% and improved retention rates.",
+          "Managed $1.2M budget for departmental operations, consistently delivering under budget while meeting all performance objectives.",
+          "Created and delivered training program that improved team efficiency by 25% and reduced onboarding time by two weeks.",
+          "Redesigned workflow processes resulting in 35% increase in output quality and 28% reduction in production time."
         ];
       }
     } else if (type === "skill") {
       // Skill suggestions - we use a different set of categories for skills
-      // Note: TypeScript doesn't know this, so we need to handle it properly
       const skillLength = length as any; // Cast to any to avoid TypeScript errors
       
       if (skillLength === "technical" || skillLength === "short") {
-        return [
+        suggestionsPool = [
           "Data Analysis",
           "Project Management",
-          "Cloud Computing"
+          "Cloud Computing",
+          "SQL",
+          "Python",
+          "JavaScript",
+          "Business Intelligence",
+          "Microsoft Azure",
+          "AWS",
+          "System Architecture",
+          "UX/UI Design",
+          "CI/CD Pipeline Management"
         ];
       } else if (skillLength === "soft" || skillLength === "medium") {
-        return [
+        suggestionsPool = [
           "Strategic Communication",
           "Team Leadership",
-          "Problem-solving"
+          "Problem-solving",
+          "Critical Thinking",
+          "Negotiation",
+          "Conflict Resolution",
+          "Time Management",
+          "Decision Making",
+          "Emotional Intelligence",
+          "Adaptability",
+          "Active Listening",
+          "Stakeholder Management"
         ];
       } else {
-        return [
+        suggestionsPool = [
           "Microsoft Office Suite",
           "Customer Relationship Management",
-          "Process Optimization"
+          "Process Optimization",
+          "Budget Management",
+          "Marketing Strategy",
+          "Content Creation",
+          "Social Media Management",
+          "Supply Chain Management",
+          "Healthcare Administration",
+          "Financial Analysis",
+          "Regulatory Compliance",
+          "Risk Assessment"
         ];
       }
+    } else {
+      // Default fallback
+      suggestionsPool = [
+        "Sample suggestion 1",
+        "Sample suggestion 2",
+        "Sample suggestion 3",
+        "Sample suggestion 4",
+        "Sample suggestion 5"
+      ];
     }
     
-    // Default fallback
-    return [
-      "Sample suggestion 1",
-      "Sample suggestion 2",
-      "Sample suggestion 3"
-    ];
+    // Randomly select 3 items from the suggestions pool
+    // This ensures we get different suggestions each time
+    const shuffled = [...suggestionsPool].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 3);
   };
 
   // Generate initial suggestions or when component props change

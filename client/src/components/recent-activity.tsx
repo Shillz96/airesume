@@ -86,7 +86,7 @@ export default function RecentActivity() {
   }
 
   return (
-    <div>
+    <div className="h-full flex flex-col">
       <h2 
         ref={titleRef}
         className="cosmic-page-title text-2xl flex items-center"
@@ -95,11 +95,11 @@ export default function RecentActivity() {
         Recent Activity
       </h2>
       
-      <Card className="cosmic-card mt-4 h-full" ref={cardRef}>
-        <CardHeader className="pb-2">
+      <Card className="cosmic-card mt-4 flex-1 flex flex-col" ref={cardRef}>
+        <CardHeader className="pb-2 flex-shrink-0">
           <CardTitle className="text-lg text-white font-medium">Activity Timeline</CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="p-0 flex-1 overflow-auto">
           {isLoading ? (
             <div className="divide-y divide-white/10">
               {[...Array(3)].map((_, i) => (

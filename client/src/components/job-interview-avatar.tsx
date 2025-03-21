@@ -151,7 +151,7 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
   };
 
   return (
-    <div>
+    <div className="h-full flex flex-col">
       <h2 
         ref={titleRef}
         className="cosmic-page-title text-2xl flex items-center"
@@ -160,8 +160,8 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
         Interview Practice AI
       </h2>
       
-      <Card className="cosmic-card mt-4" ref={cardRef}>
-        <CardHeader className="pb-2">
+      <Card className="cosmic-card mt-4 flex-1 flex flex-col" ref={cardRef}>
+        <CardHeader className="pb-2 flex-shrink-0">
           <div className="flex justify-between items-center">
             <CardTitle className="text-lg text-white font-medium">Practice Session</CardTitle>
             
@@ -228,7 +228,7 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
           </CardDescription>
         </CardHeader>
         
-        <CardContent className="p-6 space-y-4">
+        <CardContent className="p-6 space-y-4 flex-1 overflow-auto">
           <div className="flex items-start gap-4">
             <div 
               ref={avatarRef}

@@ -137,14 +137,14 @@ export default function HomePage() {
             
             <DashboardStats />
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[600px]">
               <div className="md:col-span-1 flex flex-col h-full">
-                <div className="flex-1">
+                <div className="flex-1 h-full">
                   <JobInterviewAvatar />
                 </div>
               </div>
               <div className="md:col-span-1 flex flex-col h-full">
-                <div className="flex-1">
+                <div className="flex-1 h-full">
                   <RecentActivity />
                 </div>
               </div>

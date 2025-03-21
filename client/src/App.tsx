@@ -40,28 +40,27 @@ function AppContent() {
   // Only show navbar when not on landing page or if authenticated
   const showNavbar = location !== "/" || user;
   
-  // Check current location and redirect if using older paths
+  // Handle browser refresh and direct URL navigation
   React.useEffect(() => {
-    // If we get a 404, we need to check if there's a hash in the URL that we can redirect to
-    if (location === "/404") {
-      const path = window.location.pathname;
-      
-      // Define map of old paths to new paths
-      const pathMap: {[key: string]: string} = {
-        "/": "/",
-        "/dashboard": "/dashboard",
-        "/resume-builder": "/resume-builder",
-        "/resumes": "/resumes",
-        "/job-finder": "/job-finder",
-        "/subscription": "/subscription"
-      };
-      
-      // Check if the path exists in our map and redirect
-      const newPath = pathMap[path];
-      if (newPath) {
-        window.history.replaceState(null, '', newPath);
-        window.location.reload();
-      }
+    // Get the current pathname from the browser
+    const path = window.location.pathname;
+    
+    // Define valid paths in our application
+    const validPaths = [
+      "/",
+      "/dashboard",
+      "/resume-builder",
+      "/resumes",
+      "/job-finder",
+      "/subscription"
+    ];
+    
+    // Check if we're on a valid path
+    if (validPaths.includes(path) || path.startsWith("/job/")) {
+      // The path is valid, we don't need to do anything
+    } else if (location === "/404") {
+      // We're on the 404 page, try to redirect
+      window.location.href = "/";
     }
   }, [location]);
   

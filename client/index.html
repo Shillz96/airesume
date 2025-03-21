@@ -3,9 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/">
   <title>ResumeAI - AI-Powered Resume Builder & Job Finder</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <meta name="description" content="Build professional resumes with AI assistance and find matching job opportunities">
+  <script>
+    // Handle direct navigation to client-side routes
+    (function() {
+      // List of known client-side routes
+      var clientRoutes = ['/', '/dashboard', '/resume-builder', '/resumes', '/job-finder', '/subscription'];
+      var path = window.location.pathname;
+      
+      // Check if this is a direct browser request to a client route (not an API)
+      if (!path.startsWith('/api') && path !== '/' && !path.startsWith('/static')) {
+        var isClientRoute = clientRoutes.indexOf(path) !== -1 || path.startsWith('/job/');
+        
+        if (isClientRoute) {
+          // It's a client route, we just need to ensure it loads the app
+          console.log('Client route:', path);
+        } else {
+          // It's not a recognized client route, redirect to home
+          console.log('Unknown route, redirecting to home:', path);
+          window.location.href = '/';
+        }
+      }
+    })();
+  </script>
 </head>
 <body>
   <div id="root"></div>

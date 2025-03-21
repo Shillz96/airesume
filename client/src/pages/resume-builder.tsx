@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import ResumeTips from "@/components/resume-tips";
 import Navbar from "@/components/navbar";
 import ResumeTemplate, { 
   ProfessionalTemplate, 

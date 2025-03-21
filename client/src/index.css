@@ -55,41 +55,50 @@
   50% { opacity: 1; }
 }
 
-/* Enhanced Shooting stars */
+/* Dramatic Shooting stars with longer trail */
 @keyframes shooting-star {
   0% { 
     transform: translate(0, 0) rotate(var(--angle, 0deg)); 
-    opacity: 1; 
+    opacity: 1;
+    width: 150px;
   }
   100% { 
     transform: translate(-500px, 500px) rotate(var(--angle, 0deg)); 
-    opacity: 0; 
+    opacity: 0;
+    width: 50px;
   }
 }
 
 .shooting-star {
   position: absolute;
-  width: 100px;
-  height: 2px;
-  background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.8), rgba(255,255,255,0));
-  animation: shooting-star 1s linear;
+  width: 150px;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0) 0%, 
+    rgba(147,197,253,0.3) 10%,
+    rgba(255,255,255,0.9) 50%, 
+    rgba(192,132,252,0.3) 90%,
+    rgba(255,255,255,0) 100%);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+  animation: shooting-star 1.5s linear;
   will-change: transform, opacity;
+  z-index: 10;
 }
 
-/* Nebula pulse animations */
+/* More dramatic nebula pulse animations */
 @keyframes pulse-slow {
-  0%, 100% { transform: scale(1); opacity: 0.25; }
-  50% { transform: scale(1.05); opacity: 0.35; }
+  0%, 100% { transform: scale(1); opacity: 0.35; }
+  50% { transform: scale(1.08); opacity: 0.5; }
 }
 
 @keyframes pulse-slow2 {
-  0%, 100% { transform: scale(1); opacity: 0.2; }
-  50% { transform: scale(1.1); opacity: 0.3; }
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.15); opacity: 0.45; }
 }
 
 @keyframes pulse-slow3 {
-  0%, 100% { transform: scale(1); opacity: 0.15; }
-  50% { transform: scale(1.08); opacity: 0.25; }
+  0%, 100% { transform: scale(1); opacity: 0.25; }
+  50% { transform: scale(1.12); opacity: 0.4; }
 }
 
 /* Cosmic Pulse Animation for AI Assistant */
@@ -157,9 +166,9 @@
 .cosmic-background {
   background-color: #050A18;
   background-image: 
-    radial-gradient(circle at 20% 35%, rgba(76, 29, 149, 0.2) 0%, rgba(76, 29, 149, 0) 50%),
-    radial-gradient(circle at 75% 44%, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0) 50%),
-    radial-gradient(circle at 50% 80%, rgba(6, 182, 212, 0.15) 0%, rgba(6, 182, 212, 0) 50%);
+    radial-gradient(circle at 20% 35%, rgba(76, 29, 149, 0.4) 0%, rgba(76, 29, 149, 0) 50%),
+    radial-gradient(circle at 75% 44%, rgba(59, 130, 246, 0.4) 0%, rgba(59, 130, 246, 0) 50%),
+    radial-gradient(circle at 50% 80%, rgba(6, 182, 212, 0.3) 0%, rgba(6, 182, 212, 0) 50%);
   position: relative;
   overflow: hidden;
 }
@@ -172,18 +181,36 @@
   top: 0;
   left: 0;
   background: 
-    radial-gradient(1px 1px at 25% 5%, rgba(255, 255, 255, 0.6), transparent),
-    radial-gradient(1px 1px at 50% 25%, rgba(255, 255, 255, 0.4), transparent),
-    radial-gradient(1px 1px at 75% 45%, rgba(255, 255, 255, 0.5), transparent),
-    radial-gradient(2px 2px at 10% 65%, rgba(255, 255, 255, 0.4), transparent),
-    radial-gradient(2px 2px at 35% 85%, rgba(255, 255, 255, 0.5), transparent),
-    radial-gradient(2px 2px at 60% 10%, rgba(255, 255, 255, 0.6), transparent),
-    radial-gradient(2px 2px at 80% 30%, rgba(255, 255, 255, 0.5), transparent),
-    radial-gradient(2px 2px at 90% 75%, rgba(255, 255, 255, 0.4), transparent);
-  background-size: 100% 100%;
-  opacity: 0.15;
+    radial-gradient(2px 2px at 25% 5%, rgba(255, 255, 255, 0.9), transparent),
+    radial-gradient(2px 2px at 50% 25%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(2px 2px at 75% 45%, rgba(255, 255, 255, 0.9), transparent),
+    radial-gradient(3px 3px at 10% 65%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(3px 3px at 35% 85%, rgba(255, 255, 255, 0.9), transparent),
+    radial-gradient(3px 3px at 60% 10%, rgba(255, 255, 255, 0.9), transparent),
+    radial-gradient(3px 3px at 80% 30%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(3px 3px at 90% 75%, rgba(255, 255, 255, 0.9), transparent),
+    radial-gradient(2px 2px at 15% 15%, rgba(147, 197, 253, 0.9), transparent),
+    radial-gradient(2px 2px at 40% 60%, rgba(192, 132, 252, 0.9), transparent),
+    radial-gradient(2px 2px at 68% 86%, rgba(103, 232, 249, 0.9), transparent),
+    radial-gradient(2px 2px at 92% 10%, rgba(147, 197, 253, 0.9), transparent),
+    radial-gradient(2px 2px at 28% 72%, rgba(192, 132, 252, 0.9), transparent),
+    radial-gradient(2px 2px at 55% 38%, rgba(103, 232, 249, 0.9), transparent);
+  background-size: 150% 150%;
+  opacity: 0.5;
   z-index: 0;
   pointer-events: none;
+  animation: starTwinkle 10s ease infinite;
+}
+
+@keyframes starTwinkle {
+  0%, 100% { 
+    background-size: 150% 150%;
+    opacity: 0.5; 
+  }
+  50% { 
+    background-size: 155% 155%; 
+    opacity: 0.6;
+  }
 }
 
 /* Style overrides for tabs in cosmic theme */

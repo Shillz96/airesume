@@ -1314,11 +1314,74 @@ export default function ResumeBuilder() {
   useEffect(() => {
     // Check for resume ID in URL parameters
     const resumeIdParam = searchParams.get("id");
+    const isEditMode = searchParams.get("edit") === "true";
+    
     if (resumeIdParam) {
       try {
         const id = parseInt(resumeIdParam, 10);
         if (!isNaN(id)) {
           setResumeId(id);
+          
+          // Check if we have pre-loaded resume data from editing
+          if (isEditMode) {
+            const storedResumeData = localStorage.getItem('editingResume');
+            if (storedResumeData) {
+              try {
+                const parsedData = JSON.parse(storedResumeData);
+                console.log("Found pre-loaded resume data:", parsedData);
+                
+                if (parsedData.resumeData) {
+                  const resumeData = parsedData.resumeData;
+                  
+                  // Process the resume data to ensure it has the proper structure
+                  const completeResume = {
+                    id: resumeData.id,
+                    title: resumeData.title || "Untitled Resume",
+                    personalInfo: {
+                      firstName: resumeData.personalInfo?.firstName || "",
+                      lastName: resumeData.personalInfo?.lastName || "",
+                      email: resumeData.personalInfo?.email || "",
+                      phone: resumeData.personalInfo?.phone || "",
+                      headline: resumeData.personalInfo?.headline || "",
+                      summary: resumeData.personalInfo?.summary || ""
+                    },
+                    experience: Array.isArray(resumeData.experience) ? resumeData.experience.map((exp: any) => ({
+                      ...exp,
+                      id: exp.id || crypto.randomUUID(),
+                    })) : [],
+                    education: Array.isArray(resumeData.education) ? resumeData.education.map((edu: any) => ({
+                      ...edu,
+                      id: edu.id || crypto.randomUUID(),
+                    })) : [],
+                    skills: Array.isArray(resumeData.skills) ? resumeData.skills.map((skill: any) => ({
+                      ...skill,
+                      id: skill.id || crypto.randomUUID(),
+                    })) : [],
+                    projects: Array.isArray(resumeData.projects) ? resumeData.projects.map((project: any) => ({
+                      ...project,
+                      id: project.id || crypto.randomUUID(),
+                    })) : [],
+                    template: resumeData.template || "professional"
+                  };
+                  
+                  // Update the resume state directly with the loaded data
+                  setResume(completeResume as Resume);
+                  setActiveSection("profile");
+                  
+                  // Show success toast
+                  toast({
+                    title: "Resume Loaded Successfully",
+                    description: `"${completeResume.title}" has been loaded for editing`,
+                  });
+                  
+                  // Clear the localStorage to prevent stale data
+                  localStorage.removeItem('editingResume');
+                }
+              } catch (parseError) {
+                console.error("Error parsing stored resume data:", parseError);
+              }
+            }
+          }
         }
       } catch (e) {
         console.error("Error parsing resume ID from URL", e);

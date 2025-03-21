@@ -59,18 +59,18 @@ export default function LandingPage() {
   const { user, loginMutation, registerMutation } = useAuth();
   const { toast } = useToast();
   const { showGuestModal } = useGuestMode();
-  
+
   // Animation refs
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
-  
+
   // Dialog states
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  
+
   // Form setup
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -79,7 +79,7 @@ export default function LandingPage() {
       password: "",
     },
   });
-  
+
   const registerForm = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -89,14 +89,14 @@ export default function LandingPage() {
       plan: "",
     },
   });
-  
+
   // If user is already logged in, redirect to home
   useEffect(() => {
     if (user) {
       setLocation("/");
     }
   }, [user, setLocation]);
-  
+
   // Form submission handlers
   async function onLoginSubmit(values: z.infer<typeof loginSchema>) {
     try {
@@ -111,12 +111,12 @@ export default function LandingPage() {
       // Error is handled in the mutation
     }
   }
-  
+
   async function onRegisterSubmit(values: z.infer<typeof registerSchema>) {
     try {
       // Remove confirmPassword and plan as they're not part of the API schema
       const { confirmPassword, plan, ...userValues } = values;
-      
+
       await registerMutation.mutateAsync(userValues);
       setIsRegisterOpen(false);
       toast({
@@ -128,32 +128,32 @@ export default function LandingPage() {
       // Error is handled in the mutation
     }
   }
-  
+
   // Starfield animation
   useEffect(() => {
     const createStar = () => {
       const star = document.createElement("div");
       star.className = "cosmic-star absolute rounded-full";
-      
+
       // Random size between 1-3px
       const size = Math.random() * 2 + 1;
       star.style.width = `${size}px`;
       star.style.height = `${size}px`;
-      
+
       // Random position
       star.style.left = `${Math.random() * 100}%`;
       star.style.top = `${Math.random() * 100}%`;
-      
+
       // Random opacity
       star.style.opacity = `${Math.random() * 0.5 + 0.3}`;
-      
+
       // Random background color - whites and blues
       const colors = ['#ffffff', '#e1e1ff', '#b3c6ff', '#d6e4ff'];
       star.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-      
+
       // Append to body
       document.querySelector('.cosmic-page')?.appendChild(star);
-      
+
       // Cleanup function
       return () => {
         if (star.parentNode) {
@@ -165,18 +165,18 @@ export default function LandingPage() {
     // Create stars
     const cleanupFns = [];
     const starCount = window.innerWidth < 768 ? 50 : 100;
-    
+
     for (let i = 0; i < starCount; i++) {
       cleanupFns.push(createStar());
     }
-    
+
     // GSAP animations
     if (titleRef.current && subtitleRef.current && ctaRef.current) {
       gsap.fromTo(titleRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1 });
       gsap.fromTo(subtitleRef.current, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 1, delay: 0.3 });
       gsap.fromTo(ctaRef.current, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 1, delay: 0.6 });
     }
-    
+
     // Feature animations on scroll
     if (featuresRef.current) {
       const features = featuresRef.current.querySelectorAll('.feature-card');
@@ -185,7 +185,7 @@ export default function LandingPage() {
         { opacity: 1, y: 0, duration: 0.7, stagger: 0.2, scrollTrigger: { trigger: featuresRef.current, start: "top 80%" } }
       );
     }
-    
+
     return () => {
       cleanupFns.forEach(fn => fn());
     };
@@ -194,11 +194,11 @@ export default function LandingPage() {
   const handleLoginClick = () => {
     setIsLoginOpen(true);
   };
-  
+
   const handleRegisterClick = () => {
     setIsRegisterOpen(true);
   };
-  
+
   // Handle the "Try Free" buttons in pricing cards
   const handleSelectPlan = (plan: string) => {
     setSelectedPlan(plan);
@@ -210,20 +210,20 @@ export default function LandingPage() {
   useEffect(() => {
     const loginBtn = document.getElementById("login-button");
     const registerBtn = document.getElementById("register-button");
-    
+
     if (loginBtn) {
       loginBtn.addEventListener("click", handleLoginClick);
     }
-    
+
     if (registerBtn) {
       registerBtn.addEventListener("click", handleRegisterClick);
     }
-    
+
     return () => {
       if (loginBtn) {
         loginBtn.removeEventListener("click", handleLoginClick);
       }
-      
+
       if (registerBtn) {
         registerBtn.removeEventListener("click", handleRegisterClick);
       }
@@ -234,7 +234,7 @@ export default function LandingPage() {
     <>
       <CosmicBackground />
       <Navbar />
-      
+
       {/* Login Dialog */}
       <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
         <DialogContent className="bg-card/90 backdrop-blur-xl border-white/10 sm:max-w-md">
@@ -313,7 +313,7 @@ export default function LandingPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
       {/* Register Dialog */}
       <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
         <DialogContent className="bg-card/90 backdrop-blur-xl border-white/10 sm:max-w-md">
@@ -401,7 +401,7 @@ export default function LandingPage() {
           </div>
         </DialogContent>
       </Dialog>
-      
+
       {/* Main Content */}
       <div className="container pt-24 pb-10 px-4 md:px-6 mx-auto min-h-screen relative z-10">
         {/* Hero Section */}
@@ -441,7 +441,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        
+
         {/* Features Section */}
         <section className="py-20 relative z-10" ref={featuresRef}>
           <div className="max-w-5xl mx-auto">
@@ -453,7 +453,7 @@ export default function LandingPage() {
                 Everything you need to create professional resumes and find your dream job
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {/* Feature 1 */}
               <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
@@ -465,7 +465,7 @@ export default function LandingPage() {
                   Create ATS-optimized resumes with intelligent suggestions for every section, customizable templates, and real-time feedback.
                 </p>
               </div>
-              
+
               {/* Feature 2 */}
               <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
                 <div className="h-12 w-12 rounded-full bg-purple-500/20 flex items-center justify-center mb-4">
@@ -476,7 +476,7 @@ export default function LandingPage() {
                   Automatically optimize your resume for specific job descriptions, increasing your chances of getting interviews.
                 </p>
               </div>
-              
+
               {/* Feature 3 */}
               <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
                 <div className="h-12 w-12 rounded-full bg-pink-500/20 flex items-center justify-center mb-4">
@@ -487,7 +487,7 @@ export default function LandingPage() {
                   Discover jobs that match your skills and experience with our AI-powered job search and matching algorithm.
                 </p>
               </div>
-              
+
               {/* Feature 4 */}
               <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
                 <div className="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
@@ -498,7 +498,7 @@ export default function LandingPage() {
                   Create and manage multiple resume versions for different job types, industries, or career paths.
                 </p>
               </div>
-              
+
               {/* Feature 5 */}
               <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
                 <div className="h-12 w-12 rounded-full bg-yellow-500/20 flex items-center justify-center mb-4">
@@ -509,7 +509,7 @@ export default function LandingPage() {
                   Identify missing keywords and optimize your resume to pass through Applicant Tracking Systems.
                 </p>
               </div>
-              
+
               {/* Feature 6 */}
               <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
                 <div className="h-12 w-12 rounded-full bg-red-500/20 flex items-center justify-center mb-4">
@@ -523,7 +523,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        
+
         {/* Pricing Section */}
         <section id="pricing" className="py-20 relative z-10">
           <div className="max-w-5xl mx-auto">
@@ -535,7 +535,7 @@ export default function LandingPage() {
                 Choose the plan that fits your needs. All plans include our core features.
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Free Plan */}
               <Card className="cosmic-card border border-white/10 relative flex flex-col h-full">
@@ -576,7 +576,7 @@ export default function LandingPage() {
                   </Button>
                 </CardFooter>
               </Card>
-              
+
               {/* Pro Plan */}
               <Card className="cosmic-card border-2 border-blue-400/50 relative flex flex-col h-full">
                 <div className="absolute -top-4 left-0 right-0 mx-auto w-fit px-4 py-1 bg-blue-500 text-white text-sm font-medium rounded-full">
@@ -623,7 +623,7 @@ export default function LandingPage() {
                   </Button>
                 </CardFooter>
               </Card>
-              
+
               {/* Business Plan */}
               <Card className="cosmic-card border border-white/10 relative flex flex-col h-full">
                 <CardHeader className="pb-4">
@@ -671,7 +671,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        
+
         {/* Testimonials Section */}
         <section className="py-20 relative z-10">
           <div className="max-w-4xl mx-auto">
@@ -683,7 +683,7 @@ export default function LandingPage() {
                 Join thousands of professionals who have accelerated their careers with AIreHire
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
               {/* Testimonial 1 */}
               <div className="cosmic-card border border-white/10 rounded-lg p-6">
@@ -709,7 +709,7 @@ export default function LandingPage() {
                   <Star className="h-5 w-5 fill-current" />
                 </div>
               </div>
-              
+
               {/* Testimonial 2 */}
               <div className="cosmic-card border border-white/10 rounded-lg p-6">
                 <div className="flex items-center mb-4">
@@ -737,7 +737,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        
+
         {/* CTA Section */}
         <section className="py-16 relative z-10">
           <div className="max-w-4xl mx-auto">
@@ -761,7 +761,7 @@ export default function LandingPage() {
           </div>
         </section>
       </div>
-      
+
       {/* Footer */}
       <footer className="border-t border-white/10 py-10 relative z-10">
         <div className="container mx-auto px-4 md:px-6">

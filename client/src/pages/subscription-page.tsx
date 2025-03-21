@@ -28,6 +28,7 @@ import { Separator } from "@/components/ui/separator";
 import { Loader2, CreditCardIcon, ArrowRightIcon, GiftIcon, PlusCircleIcon } from "lucide-react";
 
 import CosmicBackground from "@/components/cosmic-background";
+import { AdminControls } from "@/components/admin-tools";
 import Navbar from "@/components/navbar";
 import PageHeader from "@/components/page-header";
 

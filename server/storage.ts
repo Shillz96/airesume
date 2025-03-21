@@ -753,6 +753,23 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
   
+  async updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined> {
+    // First check if the user exists
+    const existingUser = await this.getUser(id);
+    if (!existingUser) {
+      return undefined;
+    }
+    
+    // Update the user in the database
+    const [updatedUser] = await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, id))
+      .returning();
+      
+    return updatedUser;
+  }
+  
   // Resume operations
   async getResumes(userId: number): Promise<Resume[]> {
     return db.select().from(resumes).where(eq(resumes.userId, userId));

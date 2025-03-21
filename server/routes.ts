@@ -14,6 +14,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
   await setupAuth(app);
   
+  // Route to promote user to admin
+  app.post('/api/admin/make-admin', async (req, res) => {
+    // Check if the user is authenticated
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: 'User must be logged in' });
+    }
+    
+    // Get the requested username to make admin (if not provided, use the current user)
+    const { username } = req.body;
+    
+    try {
+      let userToPromote;
+      
+      if (username) {
+        // If username is provided, try to find that user
+        userToPromote = await storage.getUserByUsername(username);
+        if (!userToPromote) {
+          return res.status(404).json({ error: 'User not found' });
+        }
+      } else {
+        // Otherwise use the currently logged in user
+        userToPromote = req.user;
+      }
+      
+      // Update the user to make them an admin
+      const updatedUser = await storage.updateUser(userToPromote.id, { isAdmin: true });
+      
+      if (!updatedUser) {
+        return res.status(500).json({ error: 'Failed to update user' });
+      }
+      
+      // If the updated user is the current user, update the session as well
+      if (userToPromote.id === req.user.id) {
+        req.login(updatedUser, (err) => {
+          if (err) {
+            return res.status(500).json({ error: 'Error updating session' });
+          }
+          
+          return res.status(200).json(updatedUser);
+        });
+      } else {
+        return res.status(200).json(updatedUser);
+      }
+    } catch (error) {
+      console.error('Error making user admin:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+  
   // API endpoint to test Adzuna API credentials
   app.get('/api/test-adzuna', async (req, res) => {
     try {

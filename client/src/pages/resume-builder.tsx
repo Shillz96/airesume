@@ -124,6 +124,7 @@ export default function ResumeBuilder() {
     projects: [],
     template: 'professional',
     skillsDisplayMode: 'bubbles',
+    sectionOrder: ['experience', 'education', 'skills', 'projects'], // Default section order
   });
 
   // Optimistically update resume in UI
@@ -199,6 +200,7 @@ export default function ResumeBuilder() {
                 projects: sessionData.resume.projects || [],
                 template: sessionData.resume.template || 'professional',
                 skillsDisplayMode: sessionData.resume.skillsDisplayMode || 'bubbles',
+                sectionOrder: sessionData.resume.sectionOrder || ['experience', 'education', 'skills', 'projects'],
               };
               
               // Only restore if there's actual content
@@ -237,6 +239,7 @@ export default function ResumeBuilder() {
           projects: data.projects || [],
           template: data.template || 'professional',
           skillsDisplayMode: data.skillsDisplayMode || 'bubbles',
+          sectionOrder: data.sectionOrder || ['experience', 'education', 'skills', 'projects'],
         };
         setResume(resumeData);
       }
@@ -386,8 +389,20 @@ export default function ResumeBuilder() {
     
     const updatedResume = { ...resume };
     
-    // Handle reordering for different section types
-    if (result.type === 'experience') {
+    // Handle main section reordering (changing the order of entire sections)
+    if (result.type === 'main-section') {
+      const newSectionOrder = [...(updatedResume.sectionOrder || ['experience', 'education', 'skills', 'projects'])];
+      const [removed] = newSectionOrder.splice(sourceIndex, 1);
+      newSectionOrder.splice(destinationIndex, 0, removed);
+      updatedResume.sectionOrder = newSectionOrder;
+      
+      toast({
+        title: "Sections reordered",
+        description: "The order of your resume sections has been updated.",
+      });
+    }
+    // Handle reordering for items within different section types
+    else if (result.type === 'experience') {
       const items = [...updatedResume.experience];
       const [removed] = items.splice(sourceIndex, 1);
       items.splice(destinationIndex, 0, removed);

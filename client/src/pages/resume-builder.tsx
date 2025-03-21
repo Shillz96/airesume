@@ -1084,12 +1084,17 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
   const toggleEdit = () => {
     setIsEditing(!isEditing);
     if (isEditing) {
-      // Apply changes from editedResume to the actual resume
-      onTemplateChange(editedResume.template);
+      // Apply changes from editedResume to the actual resume, including skill display mode
+      const updatedResume = { 
+        ...editedResume,
+        skillsDisplayMode: skillsDisplayMode // Preserve the skills display setting
+      };
+      
+      onTemplateChange(updatedResume.template);
       
       // Dispatch event to update parent component
       const event = new CustomEvent('resumeEdited', {
-        detail: { resume: editedResume }
+        detail: { resume: updatedResume }
       });
       document.dispatchEvent(event);
     }
@@ -1335,6 +1340,23 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
             marginBottom: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
           }}
         >
+          {/* Page break lines for multi-page view (only in preview mode) */}
+          {!isEditing && calculatePages() > 1 && Array.from({ length: calculatePages() - 1 }).map((_, i) => (
+            <div 
+              key={i} 
+              className="page-break" 
+              style={{ 
+                position: 'absolute', 
+                left: 0, 
+                right: 0, 
+                top: `${(i + 1) * 297}mm`, 
+                height: '2px', 
+                backgroundColor: '#e2e8f0',
+                boxShadow: '0 -1px 2px rgba(0,0,0,0.1)'
+              }}
+            />
+          ))}
+          
           {isEditing ? (
             <div className="p-6 bg-white text-black h-full">
               {/* Personal Info Section */}

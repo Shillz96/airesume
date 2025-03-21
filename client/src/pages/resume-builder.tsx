@@ -788,8 +788,20 @@ export default function ResumeBuilder() {
   const toggleSkillsDisplayMode = toggleSkillsDisplay;
   
   // Smart adjust resume content to fit optimally on page(s)
-  const handleSmartAdjust = () => {
+  const handleSmartAdjust = (preAdjustedResume?: Resume) => {
     console.log("Smart Adjust triggered");
+    
+    // If an already adjusted resume is provided, use it directly
+    if (preAdjustedResume) {
+      setResume(preAdjustedResume);
+      
+      // Show success feedback
+      toast({
+        title: "Smart Adjust Complete",
+        description: "Your resume is now optimized for one page.",
+      });
+      return;
+    }
     
     // Immediate feedback to show processing has started
     toast({
@@ -924,7 +936,7 @@ export default function ResumeBuilder() {
     }
     
     // Apply all changes at once to minimize re-renders
-    const adjustedResume = {
+    const optimizedResume = {
       ...resumeCopy,
       experience: limitedExperience,
       education: limitedEducation,
@@ -934,7 +946,7 @@ export default function ResumeBuilder() {
     };
     
     // Update the state with all changes
-    setResume(adjustedResume);
+    setResume(optimizedResume);
     
     // Show success feedback
     toast({

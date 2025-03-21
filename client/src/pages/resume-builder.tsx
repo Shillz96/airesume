@@ -760,7 +760,7 @@ function SkillSuggestions({ resumeId, jobTitle, onApply }: SkillSuggestionsProps
 }
 
 // Preview component for the "Preview" section
-function ResumePreview({ resume }: { resume: Resume }) {
+function ResumePreview({ resume, onTemplateChange }: { resume: Resume; onTemplateChange: (template: string) => void }) {
   const [scale, setScale] = useState(1);
   
   // Function to download the resume
@@ -829,7 +829,7 @@ function ResumePreview({ resume }: { resume: Resume }) {
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
           <div 
             className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === 'professional' ? 'border-2 border-blue-500 shadow-lg' : 'border border-gray-300'}`}
-            onClick={() => handleTemplateChange('professional')}
+            onClick={() => onTemplateChange('professional')}
           >
             <div className="h-32 mb-2">
               <TemplatePreviewProfessional />
@@ -839,7 +839,7 @@ function ResumePreview({ resume }: { resume: Resume }) {
           
           <div 
             className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === 'creative' ? 'border-2 border-blue-500 shadow-lg' : 'border border-gray-300'}`}
-            onClick={() => handleTemplateChange('creative')}
+            onClick={() => onTemplateChange('creative')}
           >
             <div className="h-32 mb-2">
               <TemplatePreviewCreative />
@@ -849,7 +849,7 @@ function ResumePreview({ resume }: { resume: Resume }) {
           
           <div 
             className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === 'executive' ? 'border-2 border-blue-500 shadow-lg' : 'border border-gray-300'}`}
-            onClick={() => handleTemplateChange('executive')}
+            onClick={() => onTemplateChange('executive')}
           >
             <div className="h-32 mb-2">
               <TemplatePreviewExecutive />
@@ -859,7 +859,7 @@ function ResumePreview({ resume }: { resume: Resume }) {
           
           <div 
             className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === 'modern' ? 'border-2 border-blue-500 shadow-lg' : 'border border-gray-300'}`}
-            onClick={() => handleTemplateChange('modern')}
+            onClick={() => onTemplateChange('modern')}
           >
             <div className="h-32 mb-2">
               <TemplatePreviewModern />
@@ -869,7 +869,7 @@ function ResumePreview({ resume }: { resume: Resume }) {
           
           <div 
             className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === 'minimal' ? 'border-2 border-blue-500 shadow-lg' : 'border border-gray-300'}`}
-            onClick={() => handleTemplateChange('minimal')}
+            onClick={() => onTemplateChange('minimal')}
           >
             <div className="h-32 mb-2">
               <TemplatePreviewMinimal />
@@ -879,7 +879,7 @@ function ResumePreview({ resume }: { resume: Resume }) {
           
           <div 
             className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === 'industry' ? 'border-2 border-blue-500 shadow-lg' : 'border border-gray-300'}`}
-            onClick={() => handleTemplateChange('industry')}
+            onClick={() => onTemplateChange('industry')}
           >
             <div className="h-32 mb-2">
               <TemplatePreviewIndustry />
@@ -889,7 +889,7 @@ function ResumePreview({ resume }: { resume: Resume }) {
           
           <div 
             className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === 'bold' ? 'border-2 border-blue-500 shadow-lg' : 'border border-gray-300'}`}
-            onClick={() => handleTemplateChange('bold')}
+            onClick={() => onTemplateChange('bold')}
           >
             <div className="h-32 mb-2">
               <TemplatePreviewBold />

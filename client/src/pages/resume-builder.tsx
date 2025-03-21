@@ -901,7 +901,7 @@ function SkillSuggestions({
 // Preview component for the "Preview" section
 // This component has been replaced by ResumePreviewComponent
 
-function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; onTemplateChange: (template: string) => void }) {
+function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resume: Resume; onTemplateChange: (template: string) => void; onDownload?: () => void }) {
   // Calculate an initial scale that will fit most resumes in the viewport
   // Starting with 0.85 instead of 1.0 to show more content initially
   const [scale, setScale] = useState(0.85); 
@@ -1270,7 +1270,7 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
           <Button
             variant="outline"
             size="sm"
-            onClick={downloadResume}
+            onClick={onDownload || downloadResume}
             className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
           >
             <Download className="h-4 w-4" />
@@ -1525,6 +1525,69 @@ export default function ResumeBuilder() {
   const [showTips, setShowTips] = useState<
     "summary" | "experience" | "skills" | null
   >(null);
+  
+  // Reference to the resume preview component
+  const previewRef = useRef<HTMLDivElement>(null);
+  
+  // Function to download the resume as PDF
+  const downloadResume = async () => {
+    try {
+      // Create a form for PDF generation
+      const formData = new FormData();
+      formData.append('resumeData', JSON.stringify(resume));
+      formData.append('template', resume?.template || 'professional');
+      
+      // Generate a filename with the person's name or a default name
+      const name = resume?.personalInfo?.firstName && resume?.personalInfo?.lastName ? 
+        `${resume.personalInfo.firstName}_${resume.personalInfo.lastName}` : 
+        'Resume';
+      const fileName = `${name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+      
+      toast({
+        title: "Preparing PDF",
+        description: "Generating your resume PDF...",
+      });
+      
+      // Send the resume data to the server for PDF generation
+      const response = await fetch('/api/generate-pdf', {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (!response.ok) throw new Error('Failed to generate PDF');
+      
+      // Get the PDF blob from the response
+      const blob = await response.blob();
+      
+      // Create a URL for the blob
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create a virtual link element for download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      link.click();
+      
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "PDF Downloaded",
+        description: `Your resume has been downloaded as ${fileName}`,
+      });
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      
+      // Fall back to the browser print dialog
+      toast({
+        title: "Using Print Dialog",
+        description: "PDF generation failed. Using browser print dialog instead.",
+        variant: "destructive"
+      });
+      
+      window.print();
+    }
+  };
 
   // Initial resume state
   const [resume, setResume] = useState<Resume>({
@@ -2947,9 +3010,9 @@ export default function ResumeBuilder() {
                     <CosmicButton
                       variant="outline"
                       onClick={downloadResume}
-                      iconLeft={<Printer className="h-4 w-4" />}
+                      iconLeft={<Download className="h-4 w-4" />}
                     >
-                      Print/Save PDF
+                      Download PDF
                     </CosmicButton>
                   </div>
                   <div className="bg-white/5 backdrop-blur-sm p-8 rounded-xl border border-white/10 shadow-xl">
@@ -2971,6 +3034,7 @@ export default function ResumeBuilder() {
                         template: "professional",
                       }}
                       onTemplateChange={handleTemplateChange}
+                      onDownload={downloadResume}
                     />
                   </div>
                 </div>

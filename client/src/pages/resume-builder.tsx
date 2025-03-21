@@ -1609,6 +1609,62 @@ export default function ResumeBuilder() {
     // Run this effect only once on component mount (empty dependency array)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  
+  // Auto-save resume to localStorage when user makes changes
+  useEffect(() => {
+    // Don't auto-save if just initialized with default values
+    if (resume.personalInfo.firstName || resume.personalInfo.lastName || resume.experience.length > 0) {
+      // Save current resume state to localStorage
+      localStorage.setItem('autoSavedResume', JSON.stringify({
+        resumeId: resumeId,
+        resumeData: resume,
+        timestamp: new Date().toISOString()
+      }));
+      
+      console.log("Auto-saved resume to localStorage");
+    }
+  }, [resume, resumeId]);
+  
+  // Check for auto-saved resume data when component mounts
+  useEffect(() => {
+    // Only load from auto-save if we don't already have content in our resume
+    if (!resume.personalInfo.firstName && !resume.personalInfo.lastName && resume.experience.length === 0) {
+      try {
+        const autoSavedData = localStorage.getItem('autoSavedResume');
+        if (autoSavedData) {
+          const parsedData = JSON.parse(autoSavedData);
+          console.log("Found auto-saved resume data:", parsedData);
+          
+          // Check if the data is not too old (within 24 hours)
+          const savedTime = new Date(parsedData.timestamp).getTime();
+          const currentTime = new Date().getTime();
+          const hoursDiff = (currentTime - savedTime) / (1000 * 60 * 60);
+          
+          if (hoursDiff < 24) {
+            // Apply the auto-saved data
+            if (parsedData.resumeData) {
+              setResume(parsedData.resumeData as Resume);
+              
+              // If we have a resumeId saved, use it
+              if (parsedData.resumeId) {
+                setResumeId(parsedData.resumeId);
+              }
+              
+              toast({
+                title: "Recovered Unsaved Changes",
+                description: "Your previously unsaved work has been restored.",
+              });
+            }
+          } else {
+            // Data is too old, clear it
+            localStorage.removeItem('autoSavedResume');
+          }
+        }
+      } catch (error) {
+        console.error("Error loading auto-saved resume:", error);
+      }
+    }
+  }, []);
 
   // Save resume mutation
   const saveResumeMutation = useMutation({
@@ -1635,6 +1691,9 @@ export default function ResumeBuilder() {
       });
 
       queryClient.invalidateQueries({ queryKey: ["/api/resumes"] });
+      
+      // Clear the auto-saved data since we've now properly saved the resume
+      localStorage.removeItem('autoSavedResume');
     },
     onError: (error) => {
       console.error("Error saving resume:", error);

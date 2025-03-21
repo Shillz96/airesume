@@ -14,6 +14,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
   setupAuth(app);
   
+  // API endpoint to test Adzuna API credentials
+  app.get('/api/test-adzuna', async (req, res) => {
+    try {
+      const apiUrl = `https://api.adzuna.com/v1/api/jobs/gb/search/1?app_id=${process.env.ADZUNA_APP_ID}&app_key=${process.env.ADZUNA_API_KEY}&results_per_page=1`;
+      
+      console.log(`Testing Adzuna API: ${apiUrl}`);
+      
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+      
+      res.json({
+        success: true,
+        status: response.status,
+        data: data
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: error.message
+      });
+    }
+  });
+  
   // Configure multer for file uploads
   const uploadDir = path.join(os.tmpdir(), 'resume-uploads');
   

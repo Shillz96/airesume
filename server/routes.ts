@@ -452,6 +452,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Resume Upload and Parsing Route
+  // New endpoint for resume uploads with the updated component
+  app.post("/api/resumes/upload", upload.single('resumeFile'), async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      if (!req.file) {
+        return res.status(400).json({ success: false, error: "No file uploaded" });
+      }
+      
+      const userId = req.user!.id;
+      const filePath = req.file.path;
+      const fileName = req.file.originalname;
+      
+      // Check file format
+      const fileExtension = path.extname(fileName).toLowerCase();
+      if (!['.pdf', '.docx', '.doc', '.txt'].includes(fileExtension)) {
+        fs.unlink(filePath, (err) => {
+          if (err) console.error("Error deleting invalid file:", err);
+        });
+        return res.status(400).json({ 
+          success: false, 
+          error: "Invalid file format. Please upload a PDF, Word document, or TXT file." 
+        });
+      }
+      
+      // Parse the resume file
+      console.log(`Processing resume upload: ${fileName} (${fileExtension})`);
+      const parsedResume = await parseResumeFile(filePath, fileName);
+      
+      // Clean up the uploaded file
+      fs.unlink(filePath, (err) => {
+        if (err) console.error("Error deleting temporary file:", err);
+      });
+      
+      if (parsedResume.success && parsedResume.data) {
+        // Format the resume data to match the expected format
+        const personalInfo = parsedResume.data.personalInfo || {};
+        const resumeTitle = `${personalInfo.firstName || ''} ${personalInfo.lastName || ''} Resume`.trim();
+        
+        // Create resume object with the structure expected by the frontend
+        const resumeData = {
+          title: resumeTitle || 'Uploaded Resume',
+          personalInfo: personalInfo,
+          experience: parsedResume.data.experience || [],
+          education: parsedResume.data.education || [],
+          skills: parsedResume.data.skills || [],
+          projects: parsedResume.data.projects || [],
+          template: "professional",
+          skillsDisplayMode: "bubbles"
+        };
+        
+        // Create the resume in the database
+        const resume = await storage.createResume(userId, {
+          title: resumeTitle || 'Uploaded Resume',
+          content: resumeData,
+          template: 'professional'
+        });
+        
+        // Return the formatted resume data to be used directly in the UI
+        return res.json(resumeData);
+      } else {
+        return res.status(400).json({ 
+          success: false, 
+          error: parsedResume.error || "Failed to parse resume file" 
+        });
+      }
+    } catch (error) {
+      console.error("Resume upload error:", error);
+      res.status(500).json({ 
+        success: false, 
+        error: (error as Error).message || "An error occurred while processing your resume" 
+      });
+    }
+  });
+
   app.post("/api/resumes/parse", upload.single('file'), async (req, res) => {
     // Allow guest access to this endpoint (removed authentication check)
     

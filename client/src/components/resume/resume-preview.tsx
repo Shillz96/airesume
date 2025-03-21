@@ -39,7 +39,7 @@ export default function ResumePreviewComponent({
 }: ResumePreviewComponentProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [previewScale, setPreviewScale] = useState(0.8);
+  const [previewScale, setPreviewScale] = useState(1.0);
   const [viewMode, setViewMode] = useState<"single" | "sideBySide">("single");
   const contentRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -211,37 +211,39 @@ export default function ResumePreviewComponent({
         </Tabs>
       </div>
 
-      {/* Preview and controls */}
-      <div className="relative flex flex-col items-center">
-        {/* Navigation controls (single mode only) */}
-        {viewMode === "single" && totalPages > 1 && (
-          <div className="absolute top-2 left-2 z-10 flex items-center gap-2 bg-blue-900/70 p-1 rounded-md">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 bg-transparent hover:bg-blue-800/50 text-gray-300"
-              onClick={goToPrevPage}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="text-xs text-gray-300">
-              {currentPage} / {totalPages}
-            </span>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 bg-transparent hover:bg-blue-800/50 text-gray-300"
-              onClick={goToNextPage}
-              disabled={currentPage === totalPages}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
+      {/* Controls above the preview */}
+      <div className="flex justify-between items-center w-full mb-3 px-2">
+        {/* Page navigation controls (single mode only) */}
+        <div className="flex items-center gap-2">
+          {viewMode === "single" && totalPages > 1 && (
+            <div className="flex items-center gap-2 bg-blue-900/70 p-1 rounded-md">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 bg-transparent hover:bg-blue-800/50 text-gray-300"
+                onClick={goToPrevPage}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="text-xs text-gray-300">
+                {currentPage} / {totalPages}
+              </span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 bg-transparent hover:bg-blue-800/50 text-gray-300"
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </div>
 
         {/* Zoom and view mode controls */}
-        <div className="absolute top-2 right-2 z-10 flex items-center gap-2 bg-blue-900/70 p-1 rounded-md">
+        <div className="flex items-center gap-2 bg-blue-900/70 p-1 rounded-md">
           <Button
             variant="ghost"
             size="icon"
@@ -271,9 +273,12 @@ export default function ResumePreviewComponent({
             {viewMode === "single" ? "All Pages" : "Single Page"}
           </Button>
         </div>
+      </div>
 
+      {/* Preview container */}
+      <div className="relative flex flex-col items-center">
         {/* Resume preview */}
-        <div className="mt-4 mb-2">{renderPages()}</div>
+        <div className="mb-2">{renderPages()}</div>
 
         {/* Action buttons */}
         <div className="flex gap-2 mt-2">

@@ -171,28 +171,15 @@ export default function SubscriptionPage() {
     },
   });
   
-  // Redirect if guest mode
-  useEffect(() => {
-    if (isGuestMode) {
-      showGuestModal();
-    }
-  }, [isGuestMode, showGuestModal]);
+  // No longer need to show guest modal - guest can browse plans freely
 
-  if (!user && !isGuestMode) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">You need to be logged in</h2>
-          <p className="mb-4">Please log in to view and manage your subscriptions.</p>
-          <Button onClick={() => setLocation("/auth")}>Go to Login</Button>
-        </div>
-      </div>
-    );
-  }
+  // Both guest mode and logged in users can view subscription plans
+  // No redirect needed
   
   const handlePurchasePlan = () => {
     if (isGuestMode) {
-      showGuestModal();
+      // For guests, instead of showing modal, just redirect to signup
+      setLocation("/?register=true");
       return;
     }
     
@@ -213,7 +200,8 @@ export default function SubscriptionPage() {
   
   const handlePurchaseAddon = () => {
     if (isGuestMode) {
-      showGuestModal();
+      // For guests, instead of showing modal, just redirect to signup
+      setLocation("/?register=true");
       return;
     }
     

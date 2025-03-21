@@ -1487,7 +1487,7 @@ export default function ResumeBuilder() {
                           </p>
                         </div>
 
-                        <div className="bg-[rgba(20,30,60,0.6)] border border-blue-900/30 rounded-lg p-4 mt-4">
+                        <div className="cosmic-card p-4 mt-4">
                           <h3 className="text-sm font-medium text-blue-300 mb-1">AI-Powered Summary Suggestions</h3>
                           <p className="text-xs text-gray-400 mb-3">
                             Get professionally crafted summaries based on your resume content
@@ -1578,7 +1578,7 @@ export default function ResumeBuilder() {
                       )}
 
                       {resume.experience.length > 0 && (
-                        <div className="bg-[rgba(20,30,60,0.6)] border border-blue-900/30 rounded-lg p-4 mt-6">
+                        <div className="cosmic-card p-4 mt-6">
                           <h3 className="text-sm font-medium text-blue-300 mb-1">AI-Powered Experience Suggestions</h3>
                           <p className="text-xs text-gray-400 mb-3">
                             Get ATS-optimized bullet points for your experience section
@@ -1802,7 +1802,7 @@ export default function ResumeBuilder() {
                         </DragDropContext>
                       )}
 
-                      <div className="bg-[rgba(20,30,60,0.6)] border border-blue-900/30 rounded-lg p-4 mt-6">
+                      <div className="cosmic-card p-4 mt-6">
                         <h3 className="text-sm font-medium text-blue-300 mb-1">AI-Powered Skills Suggestions</h3>
                         <p className="text-xs text-gray-400 mb-3">
                           Get industry-relevant skills to enhance your resume

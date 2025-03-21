@@ -1831,7 +1831,7 @@ export default function ResumeBuilder() {
                     </Button>
                   </div>
                   <div className="bg-white/5 backdrop-blur-sm p-8 rounded-xl border border-white/10 shadow-xl">
-                    <ResumePreview resume={resume} />
+                    <ResumePreview resume={resume} onTemplateChange={handleTemplateChange} />
                   </div>
                 </div>
               )}

@@ -841,7 +841,10 @@ export default function ResumeBuilder() {
                         ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
                         : "text-blue-300 hover:text-blue-200 hover:bg-blue-900/30"
                     )}
-                    onClick={() => setCurrentTab("experience")}
+                    onClick={() => {
+                      setCurrentTab("experience");
+                      setShowPersonalInfo(false);
+                    }}
                   >
                     <Briefcase className="mr-2 h-4 w-4" />
                     Experience
@@ -857,7 +860,10 @@ export default function ResumeBuilder() {
                         ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
                         : "text-blue-300 hover:text-blue-200 hover:bg-blue-900/30"
                     )}
-                    onClick={() => setCurrentTab("education")}
+                    onClick={() => {
+                      setCurrentTab("education");
+                      setShowPersonalInfo(false);
+                    }}
                   >
                     <GraduationCap className="mr-2 h-4 w-4" />
                     Education
@@ -873,7 +879,10 @@ export default function ResumeBuilder() {
                         ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
                         : "text-blue-300 hover:text-blue-200 hover:bg-blue-900/30"
                     )}
-                    onClick={() => setCurrentTab("skills")}
+                    onClick={() => {
+                      setCurrentTab("skills");
+                      setShowPersonalInfo(false);
+                    }}
                   >
                     <Code className="mr-2 h-4 w-4" />
                     Skills
@@ -889,7 +898,10 @@ export default function ResumeBuilder() {
                         ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
                         : "text-blue-300 hover:text-blue-200 hover:bg-blue-900/30"
                     )}
-                    onClick={() => setCurrentTab("projects")}
+                    onClick={() => {
+                      setCurrentTab("projects");
+                      setShowPersonalInfo(false);
+                    }}
                   >
                     <FolderKanban className="mr-2 h-4 w-4" />
                     Projects

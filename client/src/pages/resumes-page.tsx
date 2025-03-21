@@ -132,109 +132,109 @@ export default function ResumesPage() {
       <main className="pt-24 relative z-10 cosmic-nebula flex-1">
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <div className="px-4 py-6 sm:px-0 h-full flex flex-col pb-16">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold cosmic-text-gradient">My Resumes</h1>
-            <p className="text-gray-300 mt-2">
-              Manage and organize all your resumes in one place
-            </p>
-          </div>
-          
-          <div className="flex space-x-3">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => handleResumeAction('upload')}
-              className="border-white/10 text-gray-200 hover:bg-white/10 hover:text-white"
-            >
-              <Upload className="mr-2 h-4 w-4 text-blue-400" />
-              Upload Resume
-            </Button>
-            
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create New Resume
+            <div className="flex justify-between items-center mb-8">
+              <div>
+                <h1 className="text-3xl font-bold cosmic-text-gradient">My Resumes</h1>
+                <p className="text-gray-300 mt-2">
+                  Manage and organize all your resumes in one place
+                </p>
+              </div>
+              
+              <div className="flex space-x-3">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleResumeAction('upload')}
+                  className="border-white/10 text-gray-200 hover:bg-white/10 hover:text-white"
+                >
+                  <Upload className="mr-2 h-4 w-4 text-blue-400" />
+                  Upload Resume
                 </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px] cosmic-card border-white/10">
-                <DialogHeader>
-                  <DialogTitle className="cosmic-text-gradient text-xl">Create a New Resume</DialogTitle>
-                  <DialogDescription className="text-gray-300">
-                    Choose a template to start building your new resume
-                  </DialogDescription>
-                </DialogHeader>
                 
-                <div className="grid grid-cols-2 gap-4 py-4">
-                  {resumeTemplates.map((template) => (
-                    <div 
-                      key={template.id}
-                      className="border border-white/10 bg-black/40 rounded-lg overflow-hidden hover:border-blue-500 transition-colors cursor-pointer cosmic-card-hover"
-                      onClick={() => handleCreateNewResume(template.id)}
-                    >
-                      <div className={`h-6 ${template.color}`}></div>
-                      <div className="p-4">
-                        <h3 className="font-medium text-white mb-1">{template.name}</h3>
-                        <p className="text-sm text-gray-300">{template.description}</p>
-                      </div>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Create New Resume
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[600px] cosmic-card border-white/10">
+                    <DialogHeader>
+                      <DialogTitle className="cosmic-text-gradient text-xl">Create a New Resume</DialogTitle>
+                      <DialogDescription className="text-gray-300">
+                        Choose a template to start building your new resume
+                      </DialogDescription>
+                    </DialogHeader>
+                    
+                    <div className="grid grid-cols-2 gap-4 py-4">
+                      {resumeTemplates.map((template) => (
+                        <div 
+                          key={template.id}
+                          className="border border-white/10 bg-black/40 rounded-lg overflow-hidden hover:border-blue-500 transition-colors cursor-pointer cosmic-card-hover"
+                          onClick={() => handleCreateNewResume(template.id)}
+                        >
+                          <div className={`h-6 ${template.color}`}></div>
+                          <div className="p-4">
+                            <h3 className="font-medium text-white mb-1">{template.name}</h3>
+                            <p className="text-sm text-gray-300">{template.description}</p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-                
-                <DialogFooter>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => handleCreateNewResume('blank')}
-                    className="border-white/10 text-gray-200 hover:bg-white/10 hover:text-white"
+                    
+                    <DialogFooter>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => handleCreateNewResume('blank')}
+                        className="border-white/10 text-gray-200 hover:bg-white/10 hover:text-white"
+                      >
+                        Start from Scratch
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
+            
+            <div className="mb-8">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-400" />
+                <Input
+                  placeholder="Search your resumes..."
+                  className="pl-10 bg-black/30 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+            </div>
+            
+            <Tabs 
+              defaultValue="my-resumes" 
+              value={activeTab} 
+              onValueChange={setActiveTab}
+              className="cosmic-tabs"
+            >
+              <div className="border-b border-white/10 mb-6">
+                <TabsList className="bg-transparent mb-[-1px]">
+                  <TabsTrigger 
+                    value="my-resumes" 
+                    className="rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:text-blue-400 text-gray-300"
                   >
-                    Start from Scratch
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </div>
-        
-        <div className="mb-8">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-400" />
-            <Input
-              placeholder="Search your resumes..."
-              className="pl-10 bg-black/30 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        </div>
-        
-        <Tabs 
-          defaultValue="my-resumes" 
-          value={activeTab} 
-          onValueChange={setActiveTab}
-          className="cosmic-tabs"
-        >
-          <div className="border-b border-white/10 mb-6">
-            <TabsList className="bg-transparent mb-[-1px]">
-              <TabsTrigger 
-                value="my-resumes" 
-                className="rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:text-blue-400 text-gray-300"
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                My Resumes
-              </TabsTrigger>
-              <TabsTrigger 
-                value="templates" 
-                className="rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:text-blue-400 text-gray-300"
-              >
-                <BarChart2 className="h-4 w-4 mr-2" />
-                Templates
-              </TabsTrigger>
-            </TabsList>
-          </div>
-          
-          <TabsContent value="my-resumes" className="mt-0">
-            {isLoading ? (
+                    <FileText className="h-4 w-4 mr-2" />
+                    My Resumes
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="templates" 
+                    className="rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:text-blue-400 text-gray-300"
+                  >
+                    <BarChart2 className="h-4 w-4 mr-2" />
+                    Templates
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+              
+              <TabsContent value="my-resumes" className="mt-0">
+                {isLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {[...Array(6)].map((_, i) => (
                   <Card key={i} className="overflow-hidden cosmic-card border-white/10">

@@ -88,6 +88,120 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: (error as Error).message });
     }
   });
+  
+  // Endpoint to get the active resume or a sample one if none exists
+  app.get("/api/resumes/active", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const userId = req.user!.id;
+      const resumes = await storage.getResumes(userId);
+      
+      if (resumes.length > 0) {
+        // Return the first resume as the active one
+        return res.json(resumes[0]);
+      }
+      
+      // If no resume exists, create a sample resume
+      const sampleResume = {
+        title: "My Resume",
+        template: "professional",
+        content: {
+          personalInfo: {
+            firstName: "Dylan",
+            lastName: "Spivack",
+            email: "dylan.spivack@gmail.com",
+            phone: "(303) 995-8907",
+            headline: "Junior Developer | Python & JavaScript Programmer",
+            summary: "Aspiring junior programmer with a passion for coding and hands-on experience in website building and Python app development. Currently a student and freelance coder, proficient in Python, JavaScript, and data analysis. Skilled in writing clean, efficient code to automate processes and solve complex problems.",
+          },
+          experience: [
+            {
+              id: "exp-1",
+              title: "Freelance Coder",
+              company: "Self-employed",
+              location: "Denver, CO",
+              startDate: "2025-03",
+              endDate: "Present",
+              description: "Developed and maintained websites for clients using HTML, CSS, and JavaScript, ensuring responsive design and cross-browser compatibility. Built Python apps for data analysis and automation, utilizing libraries like Pandas, NumPy, and Matplotlib to process and visualize data.",
+            },
+            {
+              id: "exp-2",
+              title: "Junior Sales Analyst",
+              company: "Heartland Tax Solutions",
+              location: "Wheat Ridge, CO",
+              startDate: "2017-02",
+              endDate: "2020-09",
+              description: "Analyzed sales data with Python and SQL to uncover trends, boosting monthly conversion rates by 25%. Automated data collection and reporting workflows, saving 10 hours of manual effort weekly.",
+            }
+          ],
+          education: [
+            {
+              id: "edu-1",
+              degree: "Bachelor of Science in Computer Science (In Progress)",
+              institution: "University of Denver",
+              location: "Denver, CO",
+              startDate: "2021-09", 
+              endDate: "Present",
+              description: "Currently pursuing a degree with a focus on software development, data analysis, and algorithms.",
+            },
+            {
+              id: "edu-2",
+              degree: "Associate of Applied Science in Network Security/Programming",
+              institution: "Front Range Community College",
+              location: "Denver, CO",
+              startDate: "2016-08",
+              endDate: "2017-07",
+              description: "Graduated with a 3.5 GPA, focusing on programming and network security.",
+            }
+          ],
+          skills: [
+            { id: "skill-1", name: "Python", proficiency: 4 },
+            { id: "skill-2", name: "JavaScript", proficiency: 3 },
+            { id: "skill-3", name: "SQL", proficiency: 3 },
+            { id: "skill-4", name: "HTML/CSS", proficiency: 4 },
+            { id: "skill-5", name: "Git", proficiency: 3 },
+            { id: "skill-6", name: "Data Analysis", proficiency: 4 },
+          ],
+          projects: [
+            {
+              id: "proj-1",
+              title: "Portfolio Website",
+              description: "Designed and developed a personal portfolio website using HTML, CSS, and JavaScript, showcasing coding projects and skills.",
+              technologies: ["HTML", "CSS", "JavaScript", "Git"],
+              link: "https://github.com/example/portfolio"
+            },
+            {
+              id: "proj-2",
+              title: "Data Analysis App",
+              description: "Developed a Python app for data analysis and visualization, using Pandas, NumPy, and Matplotlib to process and display data.",
+              technologies: ["Python", "Pandas", "NumPy", "Matplotlib", "SQL"],
+              link: "https://github.com/example/data-analysis"
+            }
+          ]
+        }
+      };
+      
+      // Save the sample resume to the database
+      try {
+        const savedResume = await storage.createResume(userId, sampleResume);
+        return res.json(savedResume);
+      } catch (saveError) {
+        console.error("Error saving sample resume:", saveError);
+        // Return the sample resume even if saving fails
+        return res.json({
+          id: -1,
+          userId,
+          ...sampleResume,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        });
+      }
+      
+    } catch (error) {
+      res.status(500).json({ message: (error as Error).message });
+    }
+  });
 
   app.get("/api/resumes/:id", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
@@ -106,6 +220,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: (error as Error).message });
     }
   });
+  
+
 
   app.post("/api/resumes", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
@@ -612,6 +728,263 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // The API Resume Suggestions Route is defined above
 
   // Job Routes
+  
+  // AI-Tailor Resume to a specific job
+  app.post("/api/jobs/:id/tailor-resume", async (req, res) => {
+    // Support for both authenticated users and guest mode
+    try {
+      const jobId = parseInt(req.params.id);
+      const job = await storage.getJob(jobId);
+      
+      if (!job) {
+        return res.status(404).json({ success: false, error: "Job not found" });
+      }
+      
+      let resumeData = null;
+      
+      // If authenticated user, get their resume by ID
+      if (req.isAuthenticated() && req.body.resumeId && req.body.resumeId !== "guest-resume") {
+        const resumeId = parseInt(req.body.resumeId);
+        resumeData = await storage.getResume(resumeId, req.user!.id);
+        if (!resumeData) {
+          return res.status(404).json({ success: false, error: "Resume not found" });
+        }
+      }
+      // For guest mode, use the resume data from the request body
+      else if (req.body.resumeData) {
+        resumeData = req.body.resumeData;
+      }
+      // Neither resume ID or data provided
+      else {
+        return res.status(400).json({ 
+          success: false, 
+          error: "Either resumeId or resumeData must be provided" 
+        });
+      }
+      
+      // Verify API key is configured
+      if (!process.env.OPENAI_API_KEY) {
+        console.warn("OpenAI API key not configured for resume tailoring");
+        return res.status(400).json({ 
+          success: false, 
+          error: "AI service is not properly configured" 
+        });
+      }
+      
+      // Import OpenAI
+      const openAI = (await import('./ai')).openai;
+      
+      try {
+        // Extract skills from the job
+        const jobSkills = job.skills || [];
+        const jobTitle = job.title;
+        const jobDescription = job.description;
+        const jobCompany = job.company;
+          
+        // Prepare resume data
+        const summary = resumeData.content?.personalInfo?.summary || "";
+        const experiences = resumeData.content?.experience || [];
+        const skills = resumeData.content?.skills || [];
+        
+        // Tailor summary to the job
+        const summaryPrompt = `
+          I need a tailored professional summary for a ${jobTitle} position at ${jobCompany}.
+          
+          Original Summary: "${summary}"
+          
+          Job Description: "${jobDescription}"
+          
+          Required Skills: ${jobSkills.join(', ')}
+          
+          Create a tailored professional summary (3-4 sentences) that:
+          1. Highlights relevant experience and skills that match this specific job
+          2. Incorporates keywords from the job description and required skills
+          3. Positions the candidate as an ideal fit for this specific role
+          4. Is concise, professional, and ready to use on a resume
+          
+          Return ONLY the tailored summary text with no additional explanations or formatting.
+        `;
+        
+        const summaryResponse = await openAI.chat.completions.create({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content: "You are an expert resume writer specializing in tailoring resumes to specific job descriptions. You craft professional, concise content that incorporates relevant keywords to pass ATS systems."
+            },
+            {
+              role: "user",
+              content: summaryPrompt
+            }
+          ],
+        });
+        
+        const tailoredSummary = summaryResponse.choices[0].message.content || summary;
+        
+        // Tailor experience bullet points
+        const tailoredExperience = [...experiences];
+        
+        // If there are experiences to tailor
+        if (experiences.length > 0) {
+          // Only tailor the first two experiences for efficiency
+          for (let i = 0; i < Math.min(2, experiences.length); i++) {
+            const exp = experiences[i];
+            const experiencePrompt = `
+              I need to tailor this experience bullet point for a ${jobTitle} position at ${jobCompany}.
+              
+              Original Job Title: ${exp.title}
+              Original Company: ${exp.company}
+              Original Description: "${exp.description}"
+              
+              Job Description: "${jobDescription}"
+              
+              Required Skills: ${jobSkills.join(', ')}
+              
+              Rewrite the description to:
+              1. Highlight aspects that are most relevant to the ${jobTitle} position
+              2. Incorporate keywords from the job description and required skills
+              3. Emphasize measurable achievements and results where possible
+              4. Make it more impactful while keeping approximately the same length
+              
+              Return ONLY the improved description with no additional explanations or formatting.
+            `;
+            
+            const expResponse = await openAI.chat.completions.create({
+              model: "gpt-4o",
+              messages: [
+                {
+                  role: "system",
+                  content: "You are an expert resume writer specializing in tailoring experience descriptions to specific job requirements. You craft professional, achievement-oriented bullet points that incorporate relevant keywords to pass ATS systems."
+                },
+                {
+                  role: "user",
+                  content: experiencePrompt
+                }
+              ],
+            });
+            
+            const tailoredDescription = expResponse.choices[0].message.content || exp.description;
+            tailoredExperience[i] = {
+              ...exp,
+              description: tailoredDescription
+            };
+          }
+        }
+        
+        // Tailor skills - combine existing skills with job skills
+        let existingSkillNames: string[] = [];
+        if (Array.isArray(skills)) {
+          existingSkillNames = skills.map(skill => typeof skill === 'string' ? skill : skill.name);
+        }
+        
+        // Create a set to remove duplicates
+        const skillsSet = new Set([...existingSkillNames, ...jobSkills]);
+        const tailoredSkills = [...skillsSet].slice(0, 10); // Limit to top 10 skills
+        
+        // Create the tailored resume
+        const tailoredResume = {
+          personalInfo: {
+            ...resumeData.content?.personalInfo,
+            summary: tailoredSummary
+          },
+          experience: tailoredExperience,
+          skills: tailoredSkills,
+        };
+        
+        return res.json({
+          success: true,
+          tailoredResume,
+          jobDetails: {
+            id: job.id,
+            title: job.title,
+            company: job.company
+          }
+        });
+        
+      } catch (aiError) {
+        console.error("Error tailoring resume with AI:", aiError);
+        return res.status(500).json({ 
+          success: false, 
+          error: "Failed to tailor resume. Please try again." 
+        });
+      }
+      
+    } catch (error) {
+      console.error("Tailor resume error:", error);
+      res.status(500).json({ 
+        success: false, 
+        error: "An unexpected error occurred" 
+      });
+    }
+  });
+  
+  // Get job by ID
+  app.get("/api/jobs/:id", async (req, res) => {
+    try {
+      const jobId = parseInt(req.params.id);
+      let job = await storage.getJob(jobId);
+      
+      if (!job) {
+        return res.status(404).json({ message: "Job not found" });
+      }
+      
+      // Add saved status if user is authenticated
+      if (req.isAuthenticated()) {
+        const userId = req.user!.id;
+        const savedJobIds = await storage.getSavedJobIds(userId);
+        job = {
+          ...job,
+          saved: savedJobIds.includes(jobId),
+          match: Math.floor(Math.random() * 30) + 60, // Temporary match score
+          isNew: new Date(job.postedAt).getTime() > (Date.now() - 3 * 24 * 60 * 60 * 1000)
+        };
+      } else {
+        job = {
+          ...job,
+          saved: false,
+          match: Math.floor(Math.random() * 30) + 60, // Temporary match score
+          isNew: new Date(job.postedAt).getTime() > (Date.now() - 3 * 24 * 60 * 60 * 1000)
+        };
+      }
+      
+      // Convert postedAt to string format
+      job = {
+        ...job,
+        postedAt: new Date(job.postedAt).toISOString()
+      };
+      
+      res.json(job);
+    } catch (error) {
+      res.status(500).json({ message: (error as Error).message });
+    }
+  });
+  
+  // Apply to job
+  app.post("/api/jobs/:id/apply", async (req, res) => {
+    try {
+      const jobId = parseInt(req.params.id);
+      const job = await storage.getJob(jobId);
+      
+      if (!job) {
+        return res.status(404).json({ message: "Job not found" });
+      }
+      
+      // For authenticated users, save the application
+      if (req.isAuthenticated()) {
+        const userId = req.user!.id;
+        const resumeId = req.body.resumeId || -1;
+        const notes = req.body.notes;
+        
+        await storage.createApplication(userId, jobId, resumeId, notes);
+      }
+      
+      // For all users (including guest mode), return success
+      res.status(200).json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: (error as Error).message });
+    }
+  });
+  
   app.get("/api/jobs", async (req, res) => {
     // Support for guest mode - allow access to job listings without authentication
     try {
@@ -788,238 +1161,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // API for tailoring a resume to a specific job
-  app.post("/api/jobs/:id/tailor-resume", async (req, res) => {
-    try {
-      const jobId = parseInt(req.params.id);
-      const { resumeId } = req.body;
-      
-      if (!resumeId) {
-        return res.status(400).json({ message: "Resume ID is required" });
-      }
-      
-      // Get the job details
-      const job = await storage.getJob(jobId);
-      if (!job) {
-        return res.status(404).json({ message: "Job not found" });
-      }
-      
-      // Get the resume (authenticate if not guest mode)
-      let resume;
-      if (req.isAuthenticated()) {
-        const userId = req.user!.id;
-        resume = await storage.getResume(parseInt(resumeId), userId);
-        if (!resume) {
-          return res.status(404).json({ message: "Resume not found" });
-        }
-      } else if (req.body.resumeData) {
-        // For guest mode, use the provided resume data
-        resume = { content: req.body.resumeData };
-      } else {
-        return res.status(400).json({ message: "Resume data is required for guest mode" });
-      }
-      
-      // Verify API key is configured
-      if (!process.env.OPENAI_API_KEY) {
-        console.warn("OpenAI API key not configured for resume tailoring");
-        return res.status(503).json({ 
-          success: false, 
-          error: "AI service is not properly configured. Please contact the administrator." 
-        });
-      }
-      
-      try {
-        // Import the openai client
-        const { openai } = await import('./ai');
-        
-        // Get relevant job details to use in the AI prompt
-        const jobTitle = job.title;
-        const jobCompany = job.company;
-        const jobDescription = job.description;
-        const jobSkills = job.skills;
-        
-        // Get resume details
-        const resumeContent = resume.content || {};
-        const personalInfo = resumeContent.personalInfo || {};
-        const experience = resumeContent.experience || [];
-        const skills = resumeContent.skills || [];
-        
-        // Create a tailored summary using AI
-        const summaryResponse = await openai.chat.completions.create({
-          model: "gpt-4o",
-          messages: [
-            {
-              role: "system",
-              content: "You are an expert resume writer who specializes in crafting highly targeted professional summaries that are optimized for Applicant Tracking Systems (ATS). You create compelling summaries that highlight a candidate's most relevant qualifications for specific jobs."
-            },
-            {
-              role: "user",
-              content: `Tailor this professional summary to specifically target the following job:
-              
-              Job Title: ${jobTitle}
-              Company: ${jobCompany}
-              Job Description: ${jobDescription}
-              Required Skills: ${jobSkills.join(", ")}
-              
-              Current Resume Summary: "${personalInfo.summary || "Experienced professional with a track record of success."}"
-              
-              Current Experience: ${JSON.stringify(experience)}
-              
-              Current Skills: ${JSON.stringify(skills)}
-              
-              Create a concise, powerful professional summary (4-5 sentences) that:
-              1. Positions the candidate as an ideal fit for this specific role
-              2. Incorporates relevant keywords from the job description
-              3. Highlights the most relevant experience and skills
-              4. Demonstrates value and potential impact
-              5. Is ATS-friendly while remaining engaging to human readers
-              
-              Return only the new summary text with no additional commentary.`
-            }
-          ],
-        });
-        
-        const tailoredSummary = summaryResponse.choices[0].message.content;
-        
-        // Create tailored experience bullet points
-        const experienceResponse = await openai.chat.completions.create({
-          model: "gpt-4o",
-          messages: [
-            {
-              role: "system",
-              content: "You are an expert resume writer who specializes in tailoring experience descriptions to specific job requirements. You create powerful bullet points that demonstrate relevant accomplishments and skills while optimizing for ATS systems."
-            },
-            {
-              role: "user",
-              content: `Enhance these experience descriptions to target the following job:
-              
-              Job Title: ${jobTitle}
-              Company: ${jobCompany}
-              Job Description: ${jobDescription}
-              Required Skills: ${jobSkills.join(", ")}
-              
-              Current Experience: ${JSON.stringify(experience)}
-              
-              For each experience entry, provide 2-3 improved bullet points that:
-              1. Highlight relevant accomplishments and skills for this specific job
-              2. Incorporate keywords from the job description where authentic
-              3. Use strong action verbs and quantifiable results
-              4. Emphasize transferable skills if the experience is not directly related
-              
-              Format your response as a JSON object with the same structure as the input experience array, 
-              but with updated descriptions. Return only the JSON object with no additional explanation.`
-            }
-          ],
-          response_format: { type: "json_object" },
-        });
-        
-        let tailoredExperience;
-        try {
-          const experienceContent = experienceResponse.choices[0].message.content;
-          tailoredExperience = JSON.parse(experienceContent);
-        } catch (error) {
-          console.error("Error parsing tailored experience:", error);
-          tailoredExperience = experience;
-        }
-        
-        // Identify most relevant skills
-        const skillsResponse = await openai.chat.completions.create({
-          model: "gpt-4o",
-          messages: [
-            {
-              role: "system",
-              content: "You are an expert at identifying the most relevant skills for job applications and optimizing skill sections for ATS systems."
-            },
-            {
-              role: "user",
-              content: `Identify the most relevant skills for this job application:
-              
-              Job Title: ${jobTitle}
-              Company: ${jobCompany}
-              Job Description: ${jobDescription}
-              Required Skills: ${jobSkills.join(", ")}
-              
-              Candidate's Current Skills: ${JSON.stringify(skills)}
-              
-              Provide a list of 10-12 skills that:
-              1. Include the most relevant skills the candidate already has
-              2. Include critical skills mentioned in the job description
-              3. Are presented in order of relevance to this specific position
-              4. Are formatted for optimal ATS detection
-              
-              Return only a JSON array of skill strings with no additional explanation.`
-            }
-          ],
-          response_format: { type: "json_object" },
-        });
-        
-        let tailoredSkills;
-        try {
-          const skillsContent = skillsResponse.choices[0].message.content;
-          tailoredSkills = JSON.parse(skillsContent);
-        } catch (error) {
-          console.error("Error parsing tailored skills:", error);
-          // Fall back to combining existing skills with job skills
-          tailoredSkills = [...new Set([
-            ...(Array.isArray(skills) ? skills.map(s => typeof s === 'string' ? s : s.name) : []),
-            ...jobSkills
-          ])];
-        }
-        
-        // Return the tailored resume
-        res.json({
-          success: true,
-          tailoredResume: {
-            personalInfo: {
-              ...personalInfo,
-              summary: tailoredSummary
-            },
-            experience: tailoredExperience || experience,
-            skills: tailoredSkills || skills,
-            education: resumeContent.education || [],
-            projects: resumeContent.projects || []
-          }
-        });
-        
-      } catch (aiError) {
-        console.error("Error using AI to tailor resume:", aiError);
-        
-        // Create a simpler tailored resume without AI
-        const personalInfo = resume.content?.personalInfo || {};
-        const experience = resume.content?.experience || [];
-        const skills = resume.content?.skills || [];
-        
-        // Basic tailoring without AI
-        const basicTailoredResume = {
-          personalInfo: {
-            ...personalInfo,
-            summary: `Experienced ${job.title.toLowerCase()} professional with expertise in ${job.skills.slice(0, 3).join(", ")}. Proven track record of delivering results in fast-paced environments similar to ${job.company}.`
-          },
-          experience: experience,
-          // Combine existing skills with job skills
-          skills: [...new Set([
-            ...(Array.isArray(skills) ? skills.map(s => typeof s === 'string' ? s : s.name) : []),
-            ...job.skills
-          ])],
-          education: resume.content?.education || [],
-          projects: resume.content?.projects || []
-        };
-        
-        res.json({
-          success: true,
-          tailoredResume: basicTailoredResume,
-          aiUnavailable: true
-        });
-      }
-      
-    } catch (error) {
-      console.error("Error tailoring resume:", error);
-      res.status(500).json({ 
-        success: false, 
-        error: "Failed to tailor resume. Please try again later."
-      });
-    }
-  });
+  // The API for tailoring a resume to a specific job is defined above
 
   const httpServer = createServer(app);
   return httpServer;

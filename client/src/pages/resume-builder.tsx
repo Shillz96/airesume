@@ -1566,11 +1566,11 @@ export default function ResumeBuilder() {
       // Generate a clean printable HTML version of the resume
       const printableHTML = generatePrintableHTML(resume);
       
-      // Generate a filename with the person's name or a default name
+      // Generate a clean filename with the person's name or a default name
       const name = resume?.personalInfo?.firstName && resume?.personalInfo?.lastName ? 
-        `${resume.personalInfo.firstName}_${resume.personalInfo.lastName}` : 
+        `${resume.personalInfo.firstName}_${resume.personalInfo.lastName}_Resume` : 
         'Resume';
-      const fileName = `${name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}`;
+      const fileName = `${name.replace(/\s+/g, '_')}`;
       
       toast({
         title: "Preparing Resume",
@@ -1836,7 +1836,7 @@ export default function ResumeBuilder() {
       `;
     }
     
-    // Add auto-print script
+    // Add auto-print script with styles to hide URL in footer
     const printScript = `
       <script>
         window.onload = function() {
@@ -1845,6 +1845,23 @@ export default function ResumeBuilder() {
           }, 1000);
         };
       </script>
+      <style>
+        /* Hide URL/links in print footer */
+        @media print {
+          @page {
+            margin-bottom: 0;
+          }
+          body {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          /* Hide any URLs that might appear in the footer when printing */
+          html {
+            height: 100vh;
+            overflow: hidden;
+          }
+        }
+      </style>
     `;
     
     // Combine all sections

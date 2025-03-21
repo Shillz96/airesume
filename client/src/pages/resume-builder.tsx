@@ -1082,121 +1082,135 @@ export default function ResumeBuilder() {
           </div>
         ) : (
           // Edit mode
-          <div className="flex flex-col xl:flex-row gap-6">
-            {/* Left sidebar with resume sections navigation */}
-            <div className="xl:w-64 shrink-0">
-              <div className="bg-[rgba(10,15,40,0.5)] backdrop-blur-sm rounded-lg border border-indigo-900/30 p-4 sticky top-24">
-                <h3 className="text-lg font-medium mb-4 text-blue-300">Resume Sections</h3>
-                <div className="space-y-2">
-                  <Button
-                    variant={currentTab === "contact" ? "default" : "ghost"}
-                    className={cn(
-                      "w-full justify-start",
-                      currentTab === "contact"
-                        ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                        : "text-blue-300 hover:text-blue-200 hover:bg-blue-900/30"
-                    )}
-                    onClick={() => {
-                      setCurrentTab("contact");
-                      setShowPersonalInfo(true);
-                    }}
-                  >
-                    <User className="mr-2 h-4 w-4" />
-                    Personal Info
-                  </Button>
-                  <Button
-                    variant={currentTab === "summary" ? "default" : "ghost"}
-                    className={cn(
-                      "w-full justify-start",
-                      currentTab === "summary"
-                        ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                        : "text-blue-300 hover:text-blue-200 hover:bg-blue-900/30"
-                    )}
-                    onClick={() => {
-                      setCurrentTab("summary");
-                      setShowPersonalInfo(true);
-                    }}
-                  >
-                    <FileText className="mr-2 h-4 w-4" />
-                    Professional Summary
-                  </Button>
-                  <Button
-                    variant={currentTab === "experience" ? "default" : "ghost"}
-                    className={cn(
-                      "w-full justify-start",
-                      currentTab === "experience"
-                        ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                        : "text-blue-300 hover:text-blue-200 hover:bg-blue-900/30"
-                    )}
-                    onClick={() => {
-                      setCurrentTab("experience");
-                      setShowPersonalInfo(false);
-                    }}
-                  >
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    Experience
-                    {resume.experience.length > 0 && (
-                      <Badge className="ml-auto bg-blue-700">{resume.experience.length}</Badge>
-                    )}
-                  </Button>
-                  <Button
-                    variant={currentTab === "education" ? "default" : "ghost"}
-                    className={cn(
-                      "w-full justify-start",
-                      currentTab === "education"
-                        ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                        : "text-blue-300 hover:text-blue-200 hover:bg-blue-900/30"
-                    )}
-                    onClick={() => {
-                      setCurrentTab("education");
-                      setShowPersonalInfo(false);
-                    }}
-                  >
-                    <GraduationCap className="mr-2 h-4 w-4" />
-                    Education
-                    {resume.education.length > 0 && (
-                      <Badge className="ml-auto bg-blue-700">{resume.education.length}</Badge>
-                    )}
-                  </Button>
-                  <Button
-                    variant={currentTab === "skills" ? "default" : "ghost"}
-                    className={cn(
-                      "w-full justify-start",
-                      currentTab === "skills"
-                        ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                        : "text-blue-300 hover:text-blue-200 hover:bg-blue-900/30"
-                    )}
-                    onClick={() => {
-                      setCurrentTab("skills");
-                      setShowPersonalInfo(false);
-                    }}
-                  >
-                    <Code className="mr-2 h-4 w-4" />
-                    Skills
-                    {resume.skills.length > 0 && (
-                      <Badge className="ml-auto bg-blue-700">{resume.skills.length}</Badge>
-                    )}
-                  </Button>
-                  <Button
-                    variant={currentTab === "projects" ? "default" : "ghost"}
-                    className={cn(
-                      "w-full justify-start",
-                      currentTab === "projects"
-                        ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                        : "text-blue-300 hover:text-blue-200 hover:bg-blue-900/30"
-                    )}
-                    onClick={() => {
-                      setCurrentTab("projects");
-                      setShowPersonalInfo(false);
-                    }}
-                  >
-                    <FolderKanban className="mr-2 h-4 w-4" />
-                    Projects
-                    {resume.projects.length > 0 && (
-                      <Badge className="ml-auto bg-blue-700">{resume.projects.length}</Badge>
-                    )}
-                  </Button>
-                </div>
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <div className="flex flex-col xl:flex-row gap-6">
+              {/* Left sidebar with resume sections navigation */}
+              <div className="xl:w-64 shrink-0">
+                <div className="bg-[rgba(10,15,40,0.5)] backdrop-blur-sm rounded-lg border border-indigo-900/30 p-4 sticky top-24">
+                  <h3 className="text-lg font-medium mb-4 text-blue-300">Resume Sections</h3>
+                  <div className="space-y-2">
+                    {/* Fixed sections (not draggable) */}
+                    <Button
+                      variant={currentTab === "contact" ? "default" : "ghost"}
+                      className={cn(
+                        "w-full justify-start",
+                        currentTab === "contact"
+                          ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                          : "text-blue-300 hover:text-blue-200 hover:bg-blue-900/30"
+                      )}
+                      onClick={() => {
+                        setCurrentTab("contact");
+                        setShowPersonalInfo(true);
+                      }}
+                    >
+                      <User className="mr-2 h-4 w-4" />
+                      Personal Info
+                    </Button>
+                    <Button
+                      variant={currentTab === "summary" ? "default" : "ghost"}
+                      className={cn(
+                        "w-full justify-start",
+                        currentTab === "summary"
+                          ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                          : "text-blue-300 hover:text-blue-200 hover:bg-blue-900/30"
+                      )}
+                      onClick={() => {
+                        setCurrentTab("summary");
+                        setShowPersonalInfo(true);
+                      }}
+                    >
+                      <FileText className="mr-2 h-4 w-4" />
+                      Professional Summary
+                    </Button>
+                    
+                    {/* Draggable sections */}
+                    <div className="mt-3 mb-1">
+                      <div className="flex items-center">
+                        <Move className="h-4 w-4 text-blue-400 mr-2" />
+                        <span className="text-xs text-blue-400 font-medium">Drag to reorder sections</span>
+                      </div>
+                    </div>
+                    
+                    <Droppable droppableId="main-sections" type="main-section">
+                      {(provided) => (
+                        <div 
+                          {...provided.droppableProps}
+                          ref={provided.innerRef}
+                          className="space-y-2 relative py-1 px-0.5"
+                        >
+                          {(resume.sectionOrder || ['experience', 'education', 'skills', 'projects']).map((sectionId, index) => {
+                            // Define the section properties based on the sectionId
+                            const sectionProps = {
+                              experience: {
+                                label: "Experience",
+                                icon: <Briefcase className="mr-2 h-4 w-4" />,
+                                count: resume.experience.length
+                              },
+                              education: {
+                                label: "Education",
+                                icon: <GraduationCap className="mr-2 h-4 w-4" />,
+                                count: resume.education.length
+                              },
+                              skills: {
+                                label: "Skills",
+                                icon: <Code className="mr-2 h-4 w-4" />,
+                                count: resume.skills.length
+                              },
+                              projects: {
+                                label: "Projects",
+                                icon: <FolderKanban className="mr-2 h-4 w-4" />,
+                                count: resume.projects.length
+                              }
+                            };
+                            
+                            const section = sectionProps[sectionId as keyof typeof sectionProps];
+                            
+                            return (
+                              <Draggable 
+                                key={sectionId} 
+                                draggableId={sectionId} 
+                                index={index}
+                              >
+                                {(provided, snapshot) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    className={cn(
+                                      "group relative",
+                                      snapshot.isDragging && "opacity-70"
+                                    )}
+                                  >
+                                    <Button
+                                      variant={currentTab === sectionId ? "default" : "ghost"}
+                                      className={cn(
+                                        "w-full justify-start",
+                                        currentTab === sectionId
+                                          ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                                          : "text-blue-300 hover:text-blue-200 hover:bg-blue-900/30",
+                                        "group-hover:border-blue-500/40"
+                                      )}
+                                      onClick={() => {
+                                        setCurrentTab(sectionId);
+                                        setShowPersonalInfo(false);
+                                      }}
+                                    >
+                                      {section.icon}
+                                      {section.label}
+                                      {section.count > 0 && (
+                                        <Badge className="ml-auto bg-blue-700">{section.count}</Badge>
+                                      )}
+                                    </Button>
+                                  </div>
+                                )}
+                              </Draggable>
+                            );
+                          })}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                  </div>
 
                 <div className="mt-6 pt-4 border-t border-indigo-900/30">
                   <h3 className="text-sm font-medium mb-2 text-blue-300">Template</h3>
@@ -1523,8 +1537,7 @@ export default function ResumeBuilder() {
                           </Button>
                         </div>
                       ) : (
-                        <DragDropContext onDragEnd={handleDragEnd}>
-                          <Droppable droppableId="experience" type="experience">
+                        <Droppable droppableId="experience" type="experience">
                             {(provided) => (
                               <div
                                 {...provided.droppableProps}
@@ -1539,7 +1552,7 @@ export default function ResumeBuilder() {
                               </div>
                             )}
                           </Droppable>
-                        </DragDropContext>
+                        
                       )}
 
                       {resume.experience.length > 0 && (
@@ -1603,7 +1616,6 @@ export default function ResumeBuilder() {
                           </Button>
                         </div>
                       ) : (
-                        <DragDropContext onDragEnd={handleDragEnd}>
                           <Droppable droppableId="education" type="education">
                             {(provided) => (
                               <div
@@ -1619,7 +1631,6 @@ export default function ResumeBuilder() {
                               </div>
                             )}
                           </Droppable>
-                        </DragDropContext>
                       )}
                     </div>
                   )}
@@ -1748,7 +1759,6 @@ export default function ResumeBuilder() {
                           </Dialog>
                         </div>
                       ) : (
-                        <DragDropContext onDragEnd={handleDragEnd}>
                           <Droppable droppableId="skills" type="skills">
                             {(provided) => (
                               <div
@@ -1764,7 +1774,6 @@ export default function ResumeBuilder() {
                               </div>
                             )}
                           </Droppable>
-                        </DragDropContext>
                       )}
 
                       <div className="bg-[rgba(20,30,60,0.6)] border border-blue-900/30 rounded-lg p-4 mt-6">
@@ -1815,7 +1824,6 @@ export default function ResumeBuilder() {
                           </Button>
                         </div>
                       ) : (
-                        <DragDropContext onDragEnd={handleDragEnd}>
                           <Droppable droppableId="projects" type="projects">
                             {(provided) => (
                               <div
@@ -1831,7 +1839,6 @@ export default function ResumeBuilder() {
                               </div>
                             )}
                           </Droppable>
-                        </DragDropContext>
                       )}
                     </div>
                   )}

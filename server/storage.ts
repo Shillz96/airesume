@@ -26,6 +26,7 @@ export interface IStorage {
   // Resume operations
   getResumes(userId: number): Promise<Resume[]>;
   getResume(id: number, userId: number): Promise<Resume | undefined>;
+  getLatestResume(userId: number): Promise<Resume | undefined>;
   createResume(userId: number, resumeData: any): Promise<Resume>;
   updateResume(id: number, userId: number, resumeData: any): Promise<Resume | undefined>;
   deleteResume(id: number, userId: number): Promise<boolean>;
@@ -173,6 +174,22 @@ export class MemStorage implements IStorage {
       return resume;
     }
     return undefined;
+  }
+
+  async getLatestResume(userId: number): Promise<Resume | undefined> {
+    const userResumes = await this.getResumes(userId);
+    
+    if (userResumes.length === 0) {
+      return undefined;
+    }
+    
+    // Sort by updatedAt in descending order (most recent first)
+    userResumes.sort((a, b) => 
+      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    );
+    
+    // Return the most recently updated resume
+    return userResumes[0];
   }
 
   async createResume(userId: number, resumeData: any): Promise<Resume> {
@@ -803,6 +820,15 @@ export class DatabaseStorage implements IStorage {
     const [resume] = await db.select().from(resumes)
       .where(and(eq(resumes.id, id), eq(resumes.userId, userId)));
     return resume;
+  }
+  
+  async getLatestResume(userId: number): Promise<Resume | undefined> {
+    const results = await db.select().from(resumes)
+      .where(eq(resumes.userId, userId))
+      .orderBy(desc(resumes.updatedAt))
+      .limit(1);
+    
+    return results[0];
   }
 
   async createResume(userId: number, resumeData: any): Promise<Resume> {

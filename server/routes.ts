@@ -19,6 +19,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
   await setupAuth(app);
   
+  // Admin API Routes
+  // Stats endpoints for admin dashboard
+  app.get("/api/admin/stats/users", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    try {
+      // Count would normally come from a database query
+      // For in-memory storage, we'll use a simpler approach
+      const count = (await storage.getAllUsers()).length;
+      res.json({ count });
+    } catch (error) {
+      console.error("Error fetching user stats:", error);
+      res.status(500).json({ error: "Failed to fetch user statistics" });
+    }
+  });
+  
+  app.get("/api/admin/stats/resumes", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    try {
+      // Count would normally come from a database query
+      // For in-memory storage, we can estimate based on aggregated user resumes
+      const count = (await storage.getAllResumes()).length;
+      res.json({ count });
+    } catch (error) {
+      console.error("Error fetching resume stats:", error);
+      res.status(500).json({ error: "Failed to fetch resume statistics" });
+    }
+  });
+  
+  app.get("/api/admin/stats/jobs", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    try {
+      // For jobs, we'll use a placeholder count since they're from an external API
+      const jobs = await jobsApiService.searchJobs({});
+      const count = jobs.length;
+      res.json({ count });
+    } catch (error) {
+      console.error("Error fetching job stats:", error);
+      res.status(500).json({ error: "Failed to fetch job statistics" });
+    }
+  });
+  
+  app.get("/api/admin/stats/subscriptions", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    try {
+      // Count would normally come from a database query
+      // For in-memory storage, we'll use a simpler approach
+      const count = (await storage.getAllSubscriptions()).length;
+      res.json({ count });
+    } catch (error) {
+      console.error("Error fetching subscription stats:", error);
+      res.status(500).json({ error: "Failed to fetch subscription statistics" });
+    }
+  });
+  
   // Admin direct login route
   app.post("/api/admin-login", async (req, res) => {
     try {

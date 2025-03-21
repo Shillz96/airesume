@@ -21,6 +21,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined>;
+  getAllUsers(): Promise<User[]>; // For admin dashboard
   
   // Resume operations
   getResumes(userId: number): Promise<Resume[]>;
@@ -28,6 +29,7 @@ export interface IStorage {
   createResume(userId: number, resumeData: any): Promise<Resume>;
   updateResume(id: number, userId: number, resumeData: any): Promise<Resume | undefined>;
   deleteResume(id: number, userId: number): Promise<boolean>;
+  getAllResumes(): Promise<Resume[]>; // For admin dashboard
   
   // Job operations
   getJobs(filters?: { title?: string, location?: string, type?: string, experience?: string }): Promise<Job[]>;
@@ -49,6 +51,7 @@ export interface IStorage {
   createSubscription(subscription: InsertSubscription): Promise<Subscription>;
   updateSubscription(id: number, userId: number, updates: Partial<InsertSubscription>): Promise<Subscription | undefined>;
   cancelSubscription(id: number, userId: number): Promise<boolean>;
+  getAllSubscriptions(): Promise<Subscription[]>; // For admin dashboard
   
   // Add-on operations
   getUserAddons(userId: number): Promise<Addon[]>;

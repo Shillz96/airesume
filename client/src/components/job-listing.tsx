@@ -398,11 +398,15 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
           {job.description}
         </p>
         <div className="flex flex-wrap gap-2 mt-2 mb-4">
-          {job.skills.map((skill, index) => (
-            <span key={index} className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full">
-              {skill}
-            </span>
-          ))}
+          {job.skills && job.skills.length > 0 ? (
+            job.skills.map((skill, index) => (
+              <span key={index} className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full">
+                {skill}
+              </span>
+            ))
+          ) : (
+            <span className="text-xs text-muted-foreground">No specific skills listed</span>
+          )}
         </div>
         <div className="flex justify-between items-center mt-4 text-sm text-gray-400">
           <div className="flex items-center gap-4">

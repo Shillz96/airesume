@@ -1720,7 +1720,16 @@ export default function ResumeBuilder() {
                       key={savedResume.id}
                       className="text-gray-300 hover:text-white cursor-pointer focus:text-white focus:bg-blue-700"
                       onClick={() => {
+                        // First set the resumeId to trigger the query
                         setResumeId(savedResume.id);
+                        
+                        // Also directly update the resume state with the full data
+                        // This ensures all fields are populated immediately
+                        setResume(savedResume);
+                        
+                        // Switch to profile tab to make it clear the resume was loaded
+                        setActiveSection("profile");
+                        
                         toast({
                           title: "Resume Loaded",
                           description: `${savedResume.title} has been loaded.`,

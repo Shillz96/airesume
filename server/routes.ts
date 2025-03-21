@@ -17,7 +17,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API endpoint to test Adzuna API credentials
   app.get('/api/test-adzuna', async (req, res) => {
     try {
-      const apiUrl = `https://api.adzuna.com/v1/api/jobs/gb/search/1?app_id=${process.env.ADZUNA_APP_ID}&app_key=${process.env.ADZUNA_API_KEY}&results_per_page=1`;
+      // Get query parameters from request
+      const what = req.query.what as string | undefined;
+      const where = req.query.where as string | undefined;
+      
+      // Build URL with any provided parameters
+      let apiUrl = `https://api.adzuna.com/v1/api/jobs/gb/search/1?app_id=${process.env.ADZUNA_APP_ID}&app_key=${process.env.ADZUNA_API_KEY}&results_per_page=5`;
+      
+      if (what) {
+        apiUrl += `&what=${encodeURIComponent(what)}`;
+      }
+      
+      if (where) {
+        apiUrl += `&where=${encodeURIComponent(where)}`;
+      }
       
       console.log(`Testing Adzuna API: ${apiUrl}`);
       

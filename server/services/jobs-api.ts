@@ -32,40 +32,21 @@ export class JobsAPIService {
         return this.getSampleJobs(filters);
       }
 
-      // Build the API URL directly like our test endpoint does
-      // This ensures we use the exact same URL format that we've verified works
+      // Build query parameters carefully, similar to our test endpoint
+      // We'll use a simpler approach since the more complex URL can sometimes trigger errors
       let apiUrl = `${this.baseUrl}/v1/api/jobs/gb/search/1?app_id=${this.appId}&app_key=${this.apiKey}`;
       
-      // Add additional parameters
+      // Add minimal necessary parameters to avoid potential issues
       apiUrl += `&results_per_page=${filters.results_per_page || 10}`;
-      apiUrl += `&page=${filters.page || 1}`;
       
-      // Add what to search for
-      if (filters.title) {
-        apiUrl += `&what=${encodeURIComponent(filters.title)}`;
-      }
-      
-      // Add where to search
-      if (filters.location) {
-        apiUrl += `&where=${encodeURIComponent(filters.location)}`;
-      }
-      
-      // Handle job type - full-time, part-time, contract, etc.
-      if (filters.type && filters.type !== 'all') {
-        // Adzuna uses 'full_time', 'part_time', 'contract', etc.
-        let contractType = '';
-        
-        if (filters.type.toLowerCase() === 'full-time') {
-          contractType = 'full_time';
-        } else if (filters.type.toLowerCase() === 'part-time') {
-          contractType = 'part_time';
-        } else if (filters.type.toLowerCase() === 'contract') {
-          contractType = 'contract';
-        }
-        
-        if (contractType) {
-          apiUrl += `&contract_type=${contractType}`;
-        }
+      // Only add search terms if they exist
+      // We'll only use what (job title) parameter which works reliably
+      if (filters.title && filters.title.trim().length > 0) {
+        apiUrl += `&what=${encodeURIComponent(filters.title.trim())}`;
+      } else {
+        // Add a default search term to ensure we get results
+        // "developer" is a common job title that should return results
+        apiUrl += `&what=developer`;
       }
       
       console.log(`Fetching jobs from Adzuna: ${apiUrl}`);

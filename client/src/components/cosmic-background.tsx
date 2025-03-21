@@ -2,98 +2,73 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 
 export default function CosmicBackground() {
   const [isClient, setIsClient] = useState(false);
-  const starfieldRef = useRef<HTMLDivElement | null>(null);
-  const animationFrameRef = useRef<NodeJS.Timeout | null>(null);
+  // We are not using separate animation styles to avoid injection issues
+  // Instead, we'll use the CSS file entries
 
-  // Memoized shooting star creation function
-  const createShootingStar = useCallback(() => {
-    const starfield = starfieldRef.current;
-    if (!starfield) return;
-
-    const star = document.createElement('div');
-    star.className = 'shooting-star';
-
-    const startX = Math.random() * 100;
-    const startY = Math.random() * 100;
-    const angle = Math.random() * 60 - 30; // Wider angle range
-    const duration = Math.random() * 0.5 + 0.5; // 0.5s to 1s
-
-    star.style.top = `${startY}%`;
-    star.style.left = `${startX}%`;
-    star.style.transform = `rotate(${angle}deg)`;
-    star.style.animationDuration = `${duration}s`;
-    star.style.background = 'linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.8), rgba(255,255,255,0))';
-
-    starfield.appendChild(star);
-
-    // Cleanup
-    star.addEventListener('animationend', () => {
-      if (star.parentNode) {
-        star.parentNode.removeChild(star);
-      }
-    });
-  }, []);
+  // Create stars manually to ensure they're visible
+  const generateStars = () => {
+    const stars = [];
+    for (let i = 0; i < 150; i++) {
+      const size = Math.random() * 2 + 1;
+      const opacity = Math.random() * 0.7 + 0.3;
+      const animDuration = Math.random() * 4 + 2;
+      const animDelay = Math.random() * 2;
+      
+      stars.push(
+        <div
+          key={i}
+          className="star absolute bg-white rounded-full"
+          style={{
+            width: `${size}px`,
+            height: `${size}px`,
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+            opacity,
+            animation: `twinkle ${animDuration}s infinite ${animDelay}s`,
+            boxShadow: '0 0 4px rgba(255,255,255,0.3)',
+          }}
+        />
+      );
+    }
+    return stars;
+  };
 
   useEffect(() => {
     setIsClient(true);
-
-    const spawnStars = () => {
+    
+    // Manually create shooting stars
+    const starfield = document.querySelector('.starfield');
+    if (!starfield) return;
+    
+    const createShootingStar = () => {
+      const star = document.createElement('div');
+      star.className = 'shooting-star';
+      
+      // Set random position and angle
+      const startX = Math.random() * 100;
+      const startY = Math.random() * 100;
+      const angle = Math.random() * 60 - 30;
+      
+      star.style.top = `${startY}%`;
+      star.style.left = `${startX}%`;
+      star.style.transform = `rotate(${angle}deg)`;
+      
+      starfield.appendChild(star);
+      
+      // Remove star after animation
+      setTimeout(() => {
+        if (star.parentNode === starfield) {
+          starfield.removeChild(star);
+        }
+      }, 1000);
+    };
+    
+    // Create shooting stars at random intervals
+    const interval = setInterval(() => {
       createShootingStar();
-      const nextSpawn = Math.random() * 2000 + 2000; // 2-4 seconds
-      animationFrameRef.current = setTimeout(spawnStars, nextSpawn);
-    };
-
-    spawnStars();
-
-    return () => {
-      if (animationFrameRef.current) {
-        clearTimeout(animationFrameRef.current);
-      }
-    };
-  }, [createShootingStar]);
-
-  useEffect(() => {
-    // Add these keyframes to the stylesheet
-    const style = document.createElement('style');
-    style.innerHTML = `
-      @keyframes twinkle {
-        0%, 100% { opacity: 0.3; }
-        50% { opacity: 1; }
-      }
-
-      @keyframes shooting-star {
-        0% { transform: translate(0, 0) rotate(var(--angle)); opacity: 1; }
-        100% { transform: translate(-500px, 500px) rotate(var(--angle)); opacity: 0; }
-      }
-
-      @keyframes pulse-slow {
-        0%, 100% { transform: scale(1); opacity: 0.25; }
-        50% { transform: scale(1.05); opacity: 0.35; }
-      }
-
-      @keyframes pulse-slow2 {
-        0%, 100% { transform: scale(1); opacity: 0.2; }
-        50% { transform: scale(1.1); opacity: 0.3; }
-      }
-
-      @keyframes pulse-slow3 {
-        0%, 100% { transform: scale(1); opacity: 0.15; }
-        50% { transform: scale(1.08); opacity: 0.25; }
-      }
-
-      .shooting-star {
-        position: absolute;
-        width: 100px;
-        height: 2px;
-        animation: shooting-star 1s linear;
-        will-change: transform, opacity;
-      }
-    `;
-    document.head.appendChild(style);
-
-    return () => {
-      document.head.removeChild(style);
-    };
+    }, Math.random() * 2000 + 2000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   if (!isClient) return null;
@@ -102,27 +77,9 @@ export default function CosmicBackground() {
     <div className="cosmic-container relative w-full h-full overflow-hidden">
       {/* Starfield Background */}
       <div 
-        ref={starfieldRef}
         className="starfield absolute inset-0 pointer-events-none bg-gradient-to-b from-gray-900 via-black to-gray-900"
       >
-        {[...Array(150)].map((_, i) => {
-          const size = Math.random() * 2 + 1;
-          return (
-            <div
-              key={i}
-              className="star absolute bg-white rounded-full"
-              style={{
-                width: `${size}px`,
-                height: `${size}px`,
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                opacity: Math.random() * 0.7 + 0.3,
-                animation: `twinkle ${Math.random() * 4 + 2}s infinite ${Math.random()}s`,
-                boxShadow: '0 0 4px rgba(255,255,255,0.3)',
-              }}
-            />
-          );
-        })}
+        {generateStars()}
       </div>
 
       {/* Enhanced Nebula Layers */}

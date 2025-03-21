@@ -180,18 +180,36 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
     if (suggestionType === "skill") {
       return (
         <TabsList className="grid w-full grid-cols-3 h-7">
-          <TabsTrigger className="px-2 py-0 text-xs" value="technical" onClick={() => generateSuggestions("technical")}>Technical</TabsTrigger>
-          <TabsTrigger className="px-2 py-0 text-xs" value="soft" onClick={() => generateSuggestions("soft")}>Soft</TabsTrigger>
-          <TabsTrigger className="px-2 py-0 text-xs" value="industry" onClick={() => generateSuggestions("industry")}>Industry</TabsTrigger>
+          <TabsTrigger className="px-2 py-0 text-xs" value="technical" onClick={() => {
+            setActiveTab("technical");
+            generateSuggestions("technical");
+          }}>Technical</TabsTrigger>
+          <TabsTrigger className="px-2 py-0 text-xs" value="soft" onClick={() => {
+            setActiveTab("soft");
+            generateSuggestions("soft");
+          }}>Soft</TabsTrigger>
+          <TabsTrigger className="px-2 py-0 text-xs" value="industry" onClick={() => {
+            setActiveTab("industry");
+            generateSuggestions("industry");
+          }}>Industry</TabsTrigger>
         </TabsList>
       );
     }
     
     return (
       <TabsList className="grid w-full grid-cols-3 h-7">
-        <TabsTrigger className="px-2 py-0 text-xs" value="short" onClick={() => generateSuggestions("short")}>Short</TabsTrigger>
-        <TabsTrigger className="px-2 py-0 text-xs" value="medium" onClick={() => generateSuggestions("medium")}>Medium</TabsTrigger>
-        <TabsTrigger className="px-2 py-0 text-xs" value="long" onClick={() => generateSuggestions("long")}>Long</TabsTrigger>
+        <TabsTrigger className="px-2 py-0 text-xs" value="short" onClick={() => {
+          setActiveTab("short");
+          generateSuggestions("short");
+        }}>Short</TabsTrigger>
+        <TabsTrigger className="px-2 py-0 text-xs" value="medium" onClick={() => {
+          setActiveTab("medium");
+          generateSuggestions("medium");
+        }}>Medium</TabsTrigger>
+        <TabsTrigger className="px-2 py-0 text-xs" value="long" onClick={() => {
+          setActiveTab("long");
+          generateSuggestions("long");
+        }}>Long</TabsTrigger>
       </TabsList>
     );
   };

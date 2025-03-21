@@ -1153,9 +1153,17 @@ export default function ResumeBuilder() {
       const updatedExperience = [...resume.experience];
       const lastIndex = updatedExperience.length - 1;
       
+      // Get the current description
+      const currentDescription = updatedExperience[lastIndex].description;
+      
+      // Append the new bullet point if not empty
+      const newDescription = currentDescription 
+        ? `${currentDescription}\n• ${bulletPoint}` 
+        : `• ${bulletPoint}`;
+      
       updatedExperience[lastIndex] = {
         ...updatedExperience[lastIndex],
-        description: bulletPoint
+        description: newDescription
       };
       
       setResume({
@@ -1164,8 +1172,8 @@ export default function ResumeBuilder() {
       });
       
       toast({
-        title: "Bullet point applied",
-        description: "AI-generated bullet point has been applied to your experience.",
+        title: "Bullet point added",
+        description: "AI-generated bullet point has been added to your experience.",
       });
     } else {
       // Create a new experience item with the bullet point
@@ -1175,7 +1183,7 @@ export default function ResumeBuilder() {
         company: "Company Name",
         startDate: "2022-01",
         endDate: "Present",
-        description: bulletPoint
+        description: `• ${bulletPoint}`
       };
       
       setResume({
@@ -1195,11 +1203,20 @@ export default function ResumeBuilder() {
   
   // Apply AI summary to personal info
   const handleApplySummary = (summary: string) => {
-    updatePersonalInfo("summary", summary);
+    // Check if we already have content in the summary
+    const currentSummary = resume.personalInfo.summary;
+    
+    // If the summary is empty, just use the suggestion
+    // Otherwise, append the new suggestion with a space
+    const newSummary = currentSummary 
+      ? `${currentSummary} ${summary}` 
+      : summary;
+    
+    updatePersonalInfo("summary", newSummary);
     
     toast({
-      title: "Summary applied",
-      description: "AI-generated summary has been applied to your resume.",
+      title: "Summary enhanced",
+      description: "AI-generated content has been added to your summary.",
     });
   };
   
@@ -1513,19 +1530,30 @@ export default function ResumeBuilder() {
                           <ResumeTips 
                             resumeId={resumeId} 
                             onApplySuggestion={(suggestion) => {
+                              // Check if we already have content in the summary
+                              const currentSummary = resume.personalInfo.summary;
+                              
+                              // If the summary is empty, just use the suggestion
+                              // Otherwise, append the new suggestion with a space
+                              const newSummary = currentSummary 
+                                ? `${currentSummary} ${suggestion}` 
+                                : suggestion;
+                              
                               setResume({
                                 ...resume,
                                 personalInfo: {
                                   ...resume.personalInfo,
-                                  summary: suggestion
+                                  summary: newSummary
                                 }
                               });
+                              
                               toast({
-                                title: "Summary Applied",
-                                description: "AI-generated summary has been applied to your resume."
+                                title: "Summary Enhanced",
+                                description: "AI-generated content has been added to your summary."
                               });
                             }}
                             suggestionType="summary"
+                            multiSelect={true}
                           />
                         </div>
                       </div>

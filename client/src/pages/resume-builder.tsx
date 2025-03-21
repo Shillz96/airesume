@@ -1570,47 +1570,49 @@ export default function ResumeBuilder() {
       const name = resume?.personalInfo?.firstName && resume?.personalInfo?.lastName ? 
         `${resume.personalInfo.firstName}_${resume.personalInfo.lastName}` : 
         'Resume';
-      const fileName = `${name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
       
       toast({
-        title: "Preparing PDF",
-        description: "Generating your resume PDF...",
+        title: "Preparing Resume",
+        description: "Generating printable version of your resume...",
       });
       
-      // Send the resume data to the server for PDF generation
+      // Send the resume data to the server
       const response = await fetch('/api/generate-pdf', {
         method: 'POST',
         body: formData
       });
       
-      if (!response.ok) throw new Error('Failed to generate PDF');
+      if (!response.ok) throw new Error('Failed to generate printable version');
       
-      // Get the PDF blob from the response
+      // Get the blob from the response (HTML with auto-print script)
       const blob = await response.blob();
       
       // Create a URL for the blob
       const url = window.URL.createObjectURL(blob);
       
-      // Create a virtual link element for download
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileName;
-      link.click();
+      // Open the HTML in a new window for printing
+      const printWindow = window.open(url, '_blank');
       
-      // Clean up
-      window.URL.revokeObjectURL(url);
+      if (!printWindow) {
+        throw new Error('Popup blocked. Please allow popups for this site.');
+      }
+      
+      // Clean up the blob URL after the window is opened
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 1000);
       
       toast({
-        title: "PDF Downloaded",
-        description: `Your resume has been downloaded as ${fileName}`,
+        title: "Print Dialog Opened",
+        description: "The print dialog should open automatically in the new window.",
       });
     } catch (error) {
-      console.error('Error downloading PDF:', error);
+      console.error('Error generating printable version:', error);
       
       // Fall back to the browser print dialog
       toast({
         title: "Using Print Dialog",
-        description: "PDF generation failed. Using browser print dialog instead.",
+        description: "Failed to generate optimized version. Using standard print dialog instead.",
         variant: "destructive"
       });
       

@@ -2178,38 +2178,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create HTML content for the resume
       const htmlContent = generateResumeHTML(resumeData, template);
       
-      // Launch puppeteer
-      const browser = await puppeteer.launch({
-        headless: 'new',
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-      });
+      // Add print-specific CSS to automatically trigger printing when opened
+      const printReadyHTML = htmlContent.replace('</head>', `
+        <style>
+          @media print {
+            @page {
+              size: A4;
+              margin: 10mm;
+            }
+            body {
+              print-color-adjust: exact !important;
+              -webkit-print-color-adjust: exact !important;
+            }
+          }
+        </style>
+        <script>
+          // Auto-print when loaded
+          window.onload = function() {
+            setTimeout(function() {
+              window.print();
+            }, 1000);
+          };
+        </script>
+        </head>
+      `);
       
-      const page = await browser.newPage();
+      // Instead of using Puppeteer which requires Chrome to be installed,
+      // we'll just send the HTML back to the client
       
-      // Set the content to the HTML string
-      await page.setContent(htmlContent, { 
-        waitUntil: 'networkidle0',
-        timeout: 30000
-      });
+      // Set a filename based on the person's name
+      const { firstName, lastName } = resumeData.personalInfo || {};
+      const fullName = [firstName, lastName].filter(Boolean).join('_') || 'Resume';
+      const fileName = `${fullName}_${new Date().toISOString().split('T')[0]}.html`;
       
-      // Set the PDF options for A4 size
-      const pdfBuffer = await page.pdf({
-        format: 'A4',
-        printBackground: true,
-        margin: {
-          top: '10mm',
-          right: '10mm',
-          bottom: '10mm',
-          left: '10mm'
-        }
-      });
-      
-      // Close the browser
-      await browser.close();
-      
-      // Send the PDF as a response
-      res.contentType('application/pdf');
-      res.send(pdfBuffer);
+      // Send the HTML as a response
+      res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+      res.setHeader('Content-Type', 'text/html');
+      res.send(printReadyHTML);
       
     } catch (error) {
       console.error('Error generating PDF:', error);

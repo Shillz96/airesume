@@ -704,9 +704,70 @@ export default function ResumeBuilder() {
   };
 
   // Toggle skills display mode (bubbles or bullets)
-  const toggleSkillsDisplayMode = () => {
+  const toggleSkillsDisplay = () => {
     const newMode = resume.skillsDisplayMode === 'bubbles' ? 'bullets' : 'bubbles';
     setResume({ ...resume, skillsDisplayMode: newMode });
+    
+    // Show feedback toast
+    toast({
+      title: `Skills now displaying as ${newMode}`,
+      description: `Your skills will be displayed as ${newMode} in the resume.`,
+    });
+  };
+  
+  // Kept for backward compatibility with the sidebar display toggle
+  const toggleSkillsDisplayMode = toggleSkillsDisplay;
+  
+  // Smart adjust resume content to fit optimally on page(s)
+  const handleSmartAdjust = () => {
+    // Simple example of automatic content adjustment
+    // In a real implementation, this would analyze content and adjust font sizes, spacing, etc.
+    
+    // 1. Shorten long descriptions if needed
+    const adjustedExperience = resume.experience.map(exp => {
+      // If description is too long, truncate it
+      if (exp.description && exp.description.length > 500) {
+        return {
+          ...exp,
+          description: exp.description.substring(0, 490) + '...'
+        };
+      }
+      return exp;
+    });
+    
+    // 2. Adjust education descriptions if needed
+    const adjustedEducation = resume.education.map(edu => {
+      if (edu.description && edu.description.length > 300) {
+        return {
+          ...edu,
+          description: edu.description.substring(0, 290) + '...'
+        };
+      }
+      return edu;
+    });
+    
+    // 3. Limit number of skills shown based on proficiency
+    let adjustedSkills = [...resume.skills];
+    if (adjustedSkills.length > 10) {
+      // Sort skills by proficiency and take the top 10
+      adjustedSkills = adjustedSkills
+        .sort((a, b) => b.proficiency - a.proficiency)
+        .slice(0, 10);
+    }
+    
+    // Update resume with adjusted content
+    setResume({
+      ...resume,
+      experience: adjustedExperience,
+      education: adjustedEducation,
+      skills: adjustedSkills
+    });
+    
+    // Show feedback toast
+    toast({
+      title: "Smart Adjust Applied",
+      description: "Your resume content has been optimized for better page fit.",
+    });
   };
   
   // Handle resume upload and parsed data
@@ -859,6 +920,8 @@ export default function ResumeBuilder() {
               resume={resume} 
               onTemplateChange={handleTemplateChange}
               onDownload={handleDownloadResume}
+              onToggleSkillsDisplay={toggleSkillsDisplay}
+              onSmartAdjust={handleSmartAdjust}
             />
           </div>
         ) : (

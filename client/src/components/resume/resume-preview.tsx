@@ -13,6 +13,11 @@ import {
 } from "@/components/resume-template";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { 
+  Switch 
+} from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Download,
   ChevronLeft,
@@ -20,12 +25,19 @@ import {
   FileText,
   Printer,
   Eye,
+  ListFilter,
+  CircleDashed,
+  Sparkles,
+  LayoutList,
+  CircleDot,
 } from "lucide-react";
 
 interface ResumePreviewComponentProps {
   resume: Resume;
   onTemplateChange: (template: string) => void;
   onDownload?: () => void;
+  onToggleSkillsDisplay?: () => void;
+  onSmartAdjust?: () => void;
 }
 
 /**
@@ -36,6 +48,8 @@ export default function ResumePreviewComponent({
   resume,
   onTemplateChange,
   onDownload,
+  onToggleSkillsDisplay,
+  onSmartAdjust,
 }: ResumePreviewComponentProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -181,34 +195,98 @@ export default function ResumePreviewComponent({
 
       {/* Template selection tabs */}
       <div className="bg-[rgba(10,15,25,0.5)] p-3 rounded-lg backdrop-blur-lg border border-indigo-800/30">
-        <Tabs
-          defaultValue={resume.template}
-          onValueChange={onTemplateChange}
-          className="w-full"
-        >
-          <TabsList className="w-full grid grid-cols-4 md:grid-cols-7 h-auto p-1 bg-[rgba(30,40,80,0.3)]">
-            {[
-              "professional",
-              "modern",
-              "minimal",
-              "creative",
-              "executive",
-              "industry",
-              "bold",
-            ].map((template) => (
-              <TabsTrigger
-                key={template}
-                value={template}
-                className={cn(
-                  "py-1 px-2 text-xs capitalize hover:text-blue-300 data-[state=active]:bg-blue-900/50",
-                  "data-[state=active]:text-blue-50 data-[state=active]:shadow-none"
-                )}
-              >
-                {template}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+        <div className="flex flex-col md:flex-row justify-between gap-4 mb-3">
+          <Tabs
+            defaultValue={resume.template}
+            onValueChange={onTemplateChange}
+            className="w-full"
+          >
+            <TabsList className="w-full grid grid-cols-4 md:grid-cols-7 h-auto p-1 bg-[rgba(30,40,80,0.3)]">
+              {[
+                "professional",
+                "modern",
+                "minimal",
+                "creative",
+                "executive",
+                "industry",
+                "bold",
+              ].map((template) => (
+                <TabsTrigger
+                  key={template}
+                  value={template}
+                  className={cn(
+                    "py-1 px-2 text-xs capitalize hover:text-blue-300 data-[state=active]:bg-blue-900/50",
+                    "data-[state=active]:text-blue-50 data-[state=active]:shadow-none"
+                  )}
+                >
+                  {template}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        </div>
+        
+        {/* Resume formatting options */}
+        <div className="flex flex-wrap gap-4 p-2 bg-[rgba(20,30,60,0.5)] rounded-md">
+          {/* Skills display mode toggle */}
+          <div className="flex items-center gap-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center space-x-2">
+                    <Switch 
+                      id="skills-display-mode" 
+                      checked={resume.skillsDisplayMode === 'bubbles'}
+                      onCheckedChange={onToggleSkillsDisplay}
+                      className="data-[state=checked]:bg-blue-600"
+                    />
+                    <Label 
+                      htmlFor="skills-display-mode" 
+                      className="cursor-pointer text-xs text-blue-300"
+                    >
+                      {resume.skillsDisplayMode === 'bubbles' ? (
+                        <div className="flex items-center gap-1">
+                          <CircleDot className="w-3 h-3" />
+                          <span>Bubbles</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <ListFilter className="w-3 h-3" />
+                          <span>Bullets</span>
+                        </div>
+                      )}
+                    </Label>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Toggle between bubbles or bullets for skills display</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          
+          {/* Smart adjust button */}
+          <div className="flex items-center">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onSmartAdjust}
+                    className="h-7 px-2 text-xs gap-1 bg-[rgba(30,40,80,0.5)] hover:bg-blue-800/50 border-blue-800/30 text-blue-300"
+                  >
+                    <Sparkles className="w-3 h-3" />
+                    Smart Adjust
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Automatically adjust content for optimal fit</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </div>
       </div>
 
       {/* Controls above the preview */}

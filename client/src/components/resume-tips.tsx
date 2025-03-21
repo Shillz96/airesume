@@ -17,49 +17,71 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [appliedSuggestions, setAppliedSuggestions] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>("medium");
+  // Initialize default active tab based on suggestion type
+  const getDefaultTab = () => {
+    if (suggestionType === "skill") return "technical";
+    return "medium"; // Default for summary and bullet
+  };
+  
+  const [activeTab, setActiveTab] = useState<string>(getDefaultTab());
   const { toast } = useToast();
 
   const generateSuggestions = async (length: string = "medium") => {
     setIsGenerating(true);
     setActiveTab(length);
-
-    // If we don't have a valid resumeId, use fallback suggestions
-    if (!resumeId || resumeId === "new") {
-      // For skills, we need to handle different category options
-      if (suggestionType === "skill") {
-        setSuggestions(getFallbackSuggestions(length as any, suggestionType));
-      } else {
-        setSuggestions(getFallbackSuggestions(length as "short" | "medium" | "long", suggestionType));
+    
+    // Clear the previous suggestions to give better visual feedback
+    setSuggestions([]);
+    
+    // Set a small timeout to ensure the UI updates before making the API call
+    // This helps give a clearer visual indication that the refresh is happening
+    setTimeout(async () => {
+      // If we don't have a valid resumeId, use fallback suggestions
+      if (!resumeId || resumeId === "new") {
+        // For skills, we need to handle different category options
+        if (suggestionType === "skill") {
+          setSuggestions(getFallbackSuggestions(length as any, suggestionType));
+        } else {
+          setSuggestions(getFallbackSuggestions(length as "short" | "medium" | "long", suggestionType));
+        }
+        setIsGenerating(false);
+        return;
       }
-      setIsGenerating(false);
-      return;
-    }
 
-    try {
-      // Add a random seed to get different results each time
-      const randomSeed = Math.floor(Math.random() * 10000);
-      const endpoint = `/api/resumes/${resumeId}/suggestions?type=${suggestionType}&length=${length}&seed=${randomSeed}`;
-      const res = await apiRequest("GET", endpoint);
-      const data = await res.json();
-      
-      if (data.success && data.suggestions && Array.isArray(data.suggestions)) {
-        setSuggestions(data.suggestions.slice(0, 3));
-      } else {
-        // Fallback if API doesn't return expected format
-        setSuggestions(getFallbackSuggestions(length as "short" | "medium" | "long", suggestionType));
+      try {
+        // Add a random seed to get different results each time
+        const randomSeed = Math.floor(Math.random() * 10000);
+        const endpoint = `/api/resumes/${resumeId}/suggestions?type=${suggestionType}&length=${length}&seed=${randomSeed}`;
+        const res = await apiRequest("GET", endpoint);
+        const data = await res.json();
+        
+        if (data.success && data.suggestions && Array.isArray(data.suggestions)) {
+          setSuggestions(data.suggestions.slice(0, 3));
+        } else {
+          // Fallback if API doesn't return expected format
+          if (suggestionType === "skill") {
+            setSuggestions(getFallbackSuggestions(length as any, suggestionType));
+          } else {
+            setSuggestions(getFallbackSuggestions(length as "short" | "medium" | "long", suggestionType));
+          }
+        }
+      } catch (error) {
+        console.error(`Error generating ${suggestionType} suggestions:`, error);
+        // Choose the right fallback based on suggestion type
+        if (suggestionType === "skill") {
+          setSuggestions(getFallbackSuggestions(length as any, suggestionType));
+        } else {
+          setSuggestions(getFallbackSuggestions(length as "short" | "medium" | "long", suggestionType));
+        }
+        toast({
+          title: "Couldn't generate suggestions",
+          description: "Using sample suggestions instead. Try again later.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsGenerating(false);
       }
-    } catch (error) {
-      console.error(`Error generating ${suggestionType} suggestions:`, error);
-      setSuggestions(getFallbackSuggestions(length as "short" | "medium" | "long", suggestionType));
-      toast({
-        title: "Couldn't generate suggestions",
-        description: "Using sample suggestions instead. Try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsGenerating(false);
-    }
+    }, 100); // Small delay for better UX
   };
 
   const getFallbackSuggestions = (length: "short" | "medium" | "long", type: string) => {
@@ -143,12 +165,13 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
     ];
   };
 
-  // Generate initial suggestions if not already loaded
+  // Generate initial suggestions or when component props change
   React.useEffect(() => {
-    if (suggestions.length === 0 && !isGenerating) {
+    // Reset state when resumeId or suggestionType changes
+    if (!isGenerating) {
       generateSuggestions(activeTab);
     }
-  }, [suggestions, isGenerating]);
+  }, [resumeId, suggestionType]);
 
   const getTipTitle = () => {
     switch (suggestionType) {

@@ -84,6 +84,7 @@ import SummarySuggestions from "@/components/resume/summary-suggestions";
 import ExperienceSuggestions from "@/components/resume/experience-suggestions";
 import SkillSuggestions from "@/components/resume/skills-suggestions";
 import ResumePreviewComponent from "@/components/resume/resume-preview";
+import ResumeUpload from "@/components/resume/resume-upload";
 
 import AIAssistant from "@/components/ai-assistant";
 import CosmicBackground from "@/components/cosmic-background";

@@ -4,11 +4,13 @@ import fetch from 'node-fetch';
 // Real-world job API service to fetch job listings
 export class JobsAPIService {
   private apiKey: string | undefined;
+  private appId: string | undefined;
   private baseUrl: string;
 
   constructor() {
-    // We'll pull the API key from environment variables
-    this.apiKey = process.env.JOBS_API_KEY;
+    // We'll pull the API keys from environment variables
+    this.apiKey = process.env.ADZUNA_API_KEY;
+    this.appId = process.env.ADZUNA_APP_ID;
     this.baseUrl = 'https://api.adzuna.com/v1/api/jobs';
   }
 
@@ -24,16 +26,16 @@ export class JobsAPIService {
     results_per_page?: number
   }): Promise<Job[]> {
     try {
-      // If no API key, throw error
-      if (!this.apiKey) {
-        console.warn("Using sample jobs because JOBS_API_KEY is not set");
+      // If no API key or appId, use sample data
+      if (!this.apiKey || !this.appId) {
+        console.warn("Using sample jobs because Adzuna API credentials are not set");
         return this.getSampleJobs(filters);
       }
 
       // Build query parameters
       const params = new URLSearchParams();
-      params.append('app_id', 'your-app-id'); // You'll need to register with Adzuna or another job API
-      params.append('app_key', this.apiKey);
+      params.append('app_id', this.appId); // Adzuna app ID
+      params.append('app_key', this.apiKey); // Adzuna API key
       params.append('results_per_page', String(filters.results_per_page || 10));
       params.append('page', String(filters.page || 1));
       
@@ -48,31 +50,42 @@ export class JobsAPIService {
       }
       
       // Handle job type - full-time, part-time, contract, etc.
-      if (filters.type) {
-        params.append('contract_type', filters.type === 'Full-time' ? '1' : 
-                                      filters.type === 'Part-time' ? '2' : 
-                                      filters.type === 'Contract' ? '3' : '1');
+      if (filters.type && filters.type !== 'all') {
+        // Adzuna uses 'full_time', 'part_time', 'contract', etc.
+        let contractType = '';
+        
+        if (filters.type.toLowerCase() === 'full-time') {
+          contractType = 'full_time';
+        } else if (filters.type.toLowerCase() === 'part-time') {
+          contractType = 'part_time';
+        } else if (filters.type.toLowerCase() === 'contract') {
+          contractType = 'contract';
+        }
+        
+        if (contractType) {
+          params.append('contract_type', contractType);
+        }
       }
       
-      // Handle experience level
-      if (filters.experience) {
-        // Note: This depends on the specific API - some may not support this directly
-        // You might need to filter results after fetching
-      }
-      
-      // Make the API request
+      // Make the API request to Adzuna
+      console.log(`Fetching jobs from Adzuna: ${this.baseUrl}/us/search/1?${params.toString()}`);
       const response = await fetch(`${this.baseUrl}/us/search/1?${params.toString()}`);
       
       if (!response.ok) {
-        throw new Error(`Jobs API request failed with status ${response.status}`);
+        throw new Error(`Adzuna API request failed with status ${response.status}: ${await response.text()}`);
       }
       
       const data = await response.json();
       
       // Transform the API response into our Job schema
-      return this.transformJobsData(data.results);
+      if (data.results && Array.isArray(data.results)) {
+        return this.transformJobsData(data.results);
+      } else {
+        console.warn("Unexpected Adzuna API response format", data);
+        return this.getSampleJobs(filters);
+      }
     } catch (error) {
-      console.error("Error fetching jobs from API:", error);
+      console.error("Error fetching jobs from Adzuna API:", error);
       // If there's an error, fall back to sample data rather than failing completely
       return this.getSampleJobs(filters);
     }
@@ -83,29 +96,21 @@ export class JobsAPIService {
    */
   async getJobById(id: number): Promise<Job | undefined> {
     try {
-      // If no API key, throw error to use sample data
-      if (!this.apiKey) {
-        console.warn("Using sample job because JOBS_API_KEY is not set");
-        throw new Error("No API key");
+      // If no API key or appId, use sample data
+      if (!this.apiKey || !this.appId) {
+        console.warn("Using sample job because Adzuna API credentials are not set");
+        throw new Error("No API credentials");
       }
       
-      // In a real implementation, you would fetch a specific job from the API
-      // Most job APIs allow you to fetch details for a specific job
-      // Since the implementation depends on the specific API, this is a placeholder
-      const params = new URLSearchParams();
-      params.append('app_id', 'your-app-id');
-      params.append('app_key', this.apiKey);
+      // Adzuna doesn't have a direct endpoint for a single job by ID
+      // We'd typically need to get the job from our database where we've stored
+      // the API details, or do a new search with specific parameters
       
-      const response = await fetch(`${this.baseUrl}/us/job/${id}?${params.toString()}`);
+      // For this implementation, we'll just return a sample job
+      // In a real-world app, we would store job IDs and metadata in our database
+      console.warn("Getting job by ID not directly supported by Adzuna API, using sample job");
       
-      if (!response.ok) {
-        throw new Error(`Job API request failed with status ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      // Transform the API response into our Job schema
-      return this.transformJobData(data);
+      return this.getSampleJobs({}).find(job => job.id === id);
     } catch (error) {
       console.error(`Error fetching job ${id} from API:`, error);
       // Fall back to sample data
@@ -124,18 +129,45 @@ export class JobsAPIService {
    * Transform a single job from the API to our schema
    */
   private transformJobData(apiJob: any, index?: number): Job {
+    // Adzuna API returns jobs with a different structure
     const id = apiJob.id || index || Math.floor(Math.random() * 10000);
     
+    // Get description - Adzuna provides this in the 'description' field
+    const description = apiJob.description || 'No description provided';
+    
     // Extract skills from description
-    const skills = this.extractSkillsFromDescription(apiJob.description || '');
+    const skills = this.extractSkillsFromDescription(description);
+    
+    // Parse location - Adzuna provides this as area array or location.display_name
+    let location = 'Remote';
+    if (apiJob.location && apiJob.location.display_name) {
+      location = apiJob.location.display_name;
+    } else if (apiJob.location && apiJob.location.area && Array.isArray(apiJob.location.area)) {
+      location = apiJob.location.area.join(', ');
+    }
+    
+    // Get contract type (full-time, part-time, etc.)
+    let type = 'Full-time';
+    if (apiJob.contract_type) {
+      // Convert contract_type to more friendly format
+      if (apiJob.contract_type === 'full_time') {
+        type = 'Full-time';
+      } else if (apiJob.contract_type === 'part_time') {
+        type = 'Part-time';
+      } else if (apiJob.contract_type === 'contract' || apiJob.contract_type === 'temporary') {
+        type = 'Contract';
+      } else {
+        type = apiJob.contract_type;
+      }
+    }
     
     return {
       id: id,
       title: apiJob.title || 'Unknown Position',
-      company: apiJob.company?.display_name || 'Unknown Company',
-      location: apiJob.location?.display_name || 'Remote',
-      type: apiJob.contract_time || 'Full-time',
-      description: apiJob.description || 'No description provided',
+      company: apiJob.company && apiJob.company.display_name ? apiJob.company.display_name : 'Unknown Company',
+      location: location,
+      type: type,
+      description: description,
       skills: skills,
       postedAt: new Date(apiJob.created || Date.now()),
       expiresAt: null,

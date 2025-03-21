@@ -2168,6 +2168,354 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // PDF Generation Endpoint
+  app.post('/api/generate-pdf', upload.none(), async (req, res) => {
+    try {
+      const resumeData = JSON.parse(req.body.resumeData);
+      const template = req.body.template || 'professional';
+      console.log('Generating PDF for resume template:', template);
+      
+      // Create HTML content for the resume
+      const htmlContent = generateResumeHTML(resumeData, template);
+      
+      // Launch puppeteer
+      const browser = await puppeteer.launch({
+        headless: 'new',
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+      });
+      
+      const page = await browser.newPage();
+      
+      // Set the content to the HTML string
+      await page.setContent(htmlContent, { 
+        waitUntil: 'networkidle0',
+        timeout: 30000
+      });
+      
+      // Set the PDF options for A4 size
+      const pdfBuffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        margin: {
+          top: '10mm',
+          right: '10mm',
+          bottom: '10mm',
+          left: '10mm'
+        }
+      });
+      
+      // Close the browser
+      await browser.close();
+      
+      // Send the PDF as a response
+      res.contentType('application/pdf');
+      res.send(pdfBuffer);
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      res.status(500).json({ 
+        error: 'Failed to generate PDF',
+        message: error.message
+      });
+    }
+  });
+  
+  /**
+   * Generates HTML content for a resume based on the provided data and template
+   */
+  function generateResumeHTML(resumeData: any, template: string): string {
+    // Basic styling for the resume
+    const styles = `
+      <style>
+        body {
+          font-family: 'Arial', sans-serif;
+          line-height: 1.5;
+          color: #333;
+          margin: 0;
+          padding: 0;
+        }
+        .resume-container {
+          width: 100%;
+          max-width: 210mm;
+          margin: 0 auto;
+          padding: 20px;
+          box-sizing: border-box;
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+        .header h1 {
+          margin: 0;
+          font-size: 28px;
+          color: #2a3f5f;
+        }
+        .header .contact {
+          margin-top: 10px;
+          font-size: 14px;
+        }
+        .section {
+          margin-bottom: 20px;
+        }
+        .section-title {
+          font-size: 20px;
+          font-weight: bold;
+          border-bottom: 2px solid #2a3f5f;
+          margin-bottom: 10px;
+          padding-bottom: 5px;
+          color: #2a3f5f;
+        }
+        .experience-item, .education-item, .project-item {
+          margin-bottom: 15px;
+        }
+        .item-header {
+          display: flex;
+          justify-content: space-between;
+          font-weight: bold;
+        }
+        .item-title {
+          font-weight: bold;
+        }
+        .item-subtitle {
+          font-style: italic;
+        }
+        .item-date {
+          color: #666;
+        }
+        .item-description {
+          margin-top: 5px;
+        }
+        .skills-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        .skill-item {
+          background-color: #f5f5f5;
+          border-radius: 3px;
+          padding: 5px 10px;
+          font-size: 14px;
+        }
+        
+        /* Professional template */
+        .professional .header {
+          text-align: center;
+        }
+        
+        /* Modern template */
+        .modern .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .modern .section-title {
+          color: #0072b1;
+          border-bottom-color: #0072b1;
+        }
+        
+        /* Creative template */
+        .creative .header {
+          background-color: #9c27b0;
+          color: white;
+          padding: 30px;
+          margin: -20px -20px 20px -20px;
+          border-radius: 5px 5px 0 0;
+        }
+        .creative .header h1 {
+          color: white;
+        }
+        .creative .section-title {
+          color: #9c27b0;
+          border-bottom-color: #9c27b0;
+        }
+        
+        /* Executive template */
+        .executive .header {
+          border-bottom: 3px double #333;
+          padding-bottom: 20px;
+        }
+        .executive .section-title {
+          font-size: 18px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+        
+        /* Minimal template */
+        .minimal {
+          font-family: 'Helvetica', sans-serif;
+        }
+        .minimal .section-title {
+          font-weight: normal;
+          border-bottom: 1px solid #ddd;
+        }
+        
+        /* Industry template */
+        .industry .header {
+          background-color: #006699;
+          color: white;
+          padding: 20px;
+          margin: -20px -20px 20px -20px;
+        }
+        .industry .header h1 {
+          color: white;
+        }
+        .industry .section-title {
+          background-color: #f2f2f2;
+          padding: 5px 10px;
+          border-left: 4px solid #006699;
+          border-bottom: none;
+        }
+        
+        /* Bold template */
+        .bold .header h1 {
+          font-size: 32px;
+          text-transform: uppercase;
+        }
+        .bold .section-title {
+          font-size: 22px;
+          text-transform: uppercase;
+          border-bottom: 3px solid #e91e63;
+          color: #e91e63;
+        }
+      </style>
+    `;
+    
+    // Get personal info
+    const { firstName, lastName, email, phone, headline, summary } = resumeData.personalInfo || {};
+    const fullName = [firstName, lastName].filter(Boolean).join(' ') || 'Your Name';
+    
+    // Generate header section
+    const headerSection = `
+      <div class="header">
+        <h1>${fullName}</h1>
+        ${headline ? `<div class="headline">${headline}</div>` : ''}
+        <div class="contact">
+          ${email ? `<span>${email}</span> | ` : ''}
+          ${phone ? `<span>${phone}</span>` : ''}
+        </div>
+      </div>
+    `;
+    
+    // Generate summary section
+    const summarySection = summary ? `
+      <div class="section">
+        <div class="section-title">Summary</div>
+        <div class="summary-content">${summary}</div>
+      </div>
+    ` : '';
+    
+    // Generate experience section
+    let experienceSection = '';
+    if (resumeData.experience && resumeData.experience.length > 0) {
+      const experienceItems = resumeData.experience
+        .map((exp: any) => `
+          <div class="experience-item">
+            <div class="item-header">
+              <span class="item-title">${exp.title || ''}</span>
+              <span class="item-date">${exp.startDate || ''} - ${exp.endDate || 'Present'}</span>
+            </div>
+            <div class="item-subtitle">${exp.company || ''}</div>
+            <div class="item-description">${exp.description || ''}</div>
+          </div>
+        `)
+        .join('');
+      
+      experienceSection = `
+        <div class="section">
+          <div class="section-title">Experience</div>
+          ${experienceItems}
+        </div>
+      `;
+    }
+    
+    // Generate education section
+    let educationSection = '';
+    if (resumeData.education && resumeData.education.length > 0) {
+      const educationItems = resumeData.education
+        .map((edu: any) => `
+          <div class="education-item">
+            <div class="item-header">
+              <span class="item-title">${edu.degree || ''}</span>
+              <span class="item-date">${edu.startDate || ''} - ${edu.endDate || ''}</span>
+            </div>
+            <div class="item-subtitle">${edu.institution || ''}</div>
+            ${edu.description ? `<div class="item-description">${edu.description}</div>` : ''}
+          </div>
+        `)
+        .join('');
+      
+      educationSection = `
+        <div class="section">
+          <div class="section-title">Education</div>
+          ${educationItems}
+        </div>
+      `;
+    }
+    
+    // Generate skills section
+    let skillsSection = '';
+    if (resumeData.skills && resumeData.skills.length > 0) {
+      const skillItems = resumeData.skills
+        .map((skill: any) => `<div class="skill-item">${skill.name || ''}</div>`)
+        .join('');
+      
+      skillsSection = `
+        <div class="section">
+          <div class="section-title">Skills</div>
+          <div class="skills-list">
+            ${skillItems}
+          </div>
+        </div>
+      `;
+    }
+    
+    // Generate projects section
+    let projectsSection = '';
+    if (resumeData.projects && resumeData.projects.length > 0) {
+      const projectItems = resumeData.projects
+        .map((project: any) => `
+          <div class="project-item">
+            <div class="item-title">${project.title || ''}</div>
+            <div class="item-description">${project.description || ''}</div>
+            ${project.technologies && project.technologies.length ? 
+              `<div class="item-technologies">Technologies: ${project.technologies.join(', ')}</div>` : ''}
+            ${project.link ? `<div class="item-link">Link: ${project.link}</div>` : ''}
+          </div>
+        `)
+        .join('');
+      
+      projectsSection = `
+        <div class="section">
+          <div class="section-title">Projects</div>
+          ${projectItems}
+        </div>
+      `;
+    }
+    
+    // Combine all sections
+    return `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${fullName} - Resume</title>
+        ${styles}
+      </head>
+      <body>
+        <div class="resume-container ${template || 'professional'}">
+          ${headerSection}
+          ${summarySection}
+          ${experienceSection}
+          ${educationSection}
+          ${skillsSection}
+          ${projectsSection}
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
   const httpServer = createServer(app);
   return httpServer;
 }

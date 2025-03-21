@@ -38,6 +38,7 @@ interface ResumePreviewComponentProps {
   onDownload?: () => void;
   onToggleSkillsDisplay?: () => void;
   onSmartAdjust?: () => void;
+  onEdit?: () => void; // Added edit functionality
 }
 
 /**
@@ -50,6 +51,7 @@ export default function ResumePreviewComponent({
   onDownload,
   onToggleSkillsDisplay,
   onSmartAdjust,
+  onEdit,
 }: ResumePreviewComponentProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);

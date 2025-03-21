@@ -1496,21 +1496,6 @@ export default function ResumeBuilder() {
                           <li>Include keywords relevant to your target position</li>
                         </ul>
                       </div>
-                      <Button 
-                        type="button" 
-                        onClick={() => {
-                          setShowTips("summary");
-                          // Scroll to the AI Resume Assistant section
-                          document.querySelector('.cosmic-card .flex .text-blue-400')?.scrollIntoView({ 
-                            behavior: 'smooth',
-                            block: 'center'
-                          });
-                        }}
-                        className="mt-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 flex items-center"
-                      >
-                        <Sparkles className="h-4 w-4 mr-2" />
-                        View AI Suggestions
-                      </Button>
                     </div>
                   </div>
                   
@@ -1542,6 +1527,7 @@ export default function ResumeBuilder() {
                             }}
                             suggestionType="summary"
                           />
+                        </div>
                         </div>
                       </div>
                     </div>

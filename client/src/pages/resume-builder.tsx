@@ -1320,7 +1320,9 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
       >
         <div
           ref={previewRef}
-          className="transition-all duration-300 mx-auto bg-white shadow-lg print:shadow-none"
+          className="resume-content-container transition-all duration-300 mx-auto bg-white shadow-lg print:shadow-none"
+          data-font-scale={fontScale.toString()}
+          data-spacing-scale={spacingScale.toString()}
           style={{
             transform: `scale(${scale})`,
             width: "210mm", // A4 width

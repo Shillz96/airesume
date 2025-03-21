@@ -137,7 +137,7 @@ export default function ResumesPage() {
   };
 
   // Handle resume actions
-  const handleResumeAction = (action: string, id?: string | number) => {
+  const handleResumeAction = async (action: string, id?: string | number) => {
     if (isGuestMode && (action === 'edit' || action === 'delete' || action === 'duplicate')) {
       showGuestModal();
       return;
@@ -145,7 +145,39 @@ export default function ResumesPage() {
 
     switch(action) {
       case 'edit':
-        navigate(`/resume-builder?id=${id}`);
+        try {
+          // Show loading toast
+          toast({
+            title: "Loading Resume",
+            description: "Preparing to edit resume...",
+          });
+          
+          // Directly fetch the resume data before navigating
+          const response = await fetch(`/api/resumes/${id}`);
+          
+          if (!response.ok) {
+            throw new Error(`Error fetching resume: ${response.status}`);
+          }
+          
+          const resumeData = await response.json();
+          console.log("Resume to edit:", resumeData);
+          
+          // Store resume data in localStorage for resume-builder to use
+          localStorage.setItem('editingResume', JSON.stringify({
+            resumeData,
+            timestamp: new Date().toISOString()
+          }));
+          
+          // Navigate to edit page
+          navigate(`/resume-builder?id=${id}&edit=true`);
+        } catch (error) {
+          console.error("Error loading resume for editing:", error);
+          toast({
+            title: "Error Loading Resume",
+            description: "Failed to load resume for editing. Please try again.",
+            variant: "destructive",
+          });
+        }
         break;
       case 'download':
         toast({
@@ -381,7 +413,7 @@ export default function ResumesPage() {
                       </div>
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 flex items-end justify-center p-4 transition-opacity duration-300">
                         <Button 
-                          onClick={() => navigate(`/resume-builder?id=${resume.id?.toString()}`)}
+                          onClick={() => handleResumeAction('edit', resume.id)}
                           className="bg-blue-600 hover:bg-blue-700 text-white"
                         >
                           Edit Resume

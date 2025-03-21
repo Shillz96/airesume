@@ -1778,26 +1778,89 @@ export default function ResumeBuilder() {
                     <DropdownMenuItem
                       key={savedResume.id}
                       className="text-gray-300 hover:text-white cursor-pointer focus:text-white focus:bg-blue-700"
-                      onClick={() => {
+                      onClick={async () => {
                         try {
                           // Ensure we have a valid resume ID before using it
                           if (savedResume && typeof savedResume.id === 'number') {
                             console.log("Loading resume with ID:", savedResume.id);
-                            setResumeId(savedResume.id);
-                            setActiveSection("profile");
                             
-                            // Force the resume ID change to be applied immediately
-                            setTimeout(() => {
-                              // This ensures the query will re-run
-                              queryClient.invalidateQueries({ 
-                                queryKey: ["/api/resumes", savedResume.id] 
-                              });
-                            }, 100);
-                            
+                            // Show loading toast
                             toast({
                               title: "Loading Resume",
                               description: `Loading ${savedResume.title || "Untitled Resume"}...`,
                             });
+                            
+                            // Directly fetch the resume data instead of relying on useQuery
+                            try {
+                              const response = await fetch(`/api/resumes/${savedResume.id}`);
+                              
+                              if (!response.ok) {
+                                throw new Error(`Error fetching resume: ${response.status}`);
+                              }
+                              
+                              const resumeData = await response.json();
+                              console.log("Direct fetch resume data:", JSON.stringify(resumeData, null, 2));
+                              
+                              // Process the resume data
+                              const completeResume = {
+                                id: resumeData.id,
+                                title: resumeData.title || "Untitled Resume",
+                                personalInfo: {
+                                  firstName: resumeData.personalInfo?.firstName || "",
+                                  lastName: resumeData.personalInfo?.lastName || "",
+                                  email: resumeData.personalInfo?.email || "",
+                                  phone: resumeData.personalInfo?.phone || "",
+                                  headline: resumeData.personalInfo?.headline || "",
+                                  summary: resumeData.personalInfo?.summary || ""
+                                },
+                                experience: Array.isArray(resumeData.experience) ? resumeData.experience.map((exp: any) => ({
+                                  ...exp,
+                                  id: exp.id || crypto.randomUUID(),
+                                })) : [],
+                                education: Array.isArray(resumeData.education) ? resumeData.education.map((edu: any) => ({
+                                  ...edu,
+                                  id: edu.id || crypto.randomUUID(),
+                                })) : [],
+                                skills: Array.isArray(resumeData.skills) ? resumeData.skills.map((skill: any) => ({
+                                  ...skill,
+                                  id: skill.id || crypto.randomUUID(),
+                                })) : [],
+                                projects: Array.isArray(resumeData.projects) ? resumeData.projects.map((project: any) => ({
+                                  ...project,
+                                  id: project.id || crypto.randomUUID(),
+                                })) : [],
+                                template: resumeData.template || "professional"
+                              };
+                              
+                              // Set the resume ID and update the UI state
+                              setResumeId(savedResume.id);
+                              setActiveSection("profile");
+                              
+                              // Force a complete state update by creating a brand new object
+                              setResume(completeResume as Resume);
+                              
+                              // Set a debug flag in local storage
+                              localStorage.setItem('lastLoadedResume', JSON.stringify({
+                                resumeId: completeResume.id,
+                                firstName: completeResume.personalInfo.firstName,
+                                lastName: completeResume.personalInfo.lastName,
+                                timestamp: new Date().toISOString()
+                              }));
+                              
+                              // Show success toast
+                              toast({
+                                title: "Resume Loaded Successfully",
+                                description: `"${completeResume.title}" has been loaded with ${completeResume.experience.length} experiences, ${completeResume.skills.length} skills, and ${completeResume.education.length} education entries.`,
+                              });
+                              
+                            } catch (fetchError) {
+                              console.error("Error fetching resume data:", fetchError);
+                              toast({
+                                title: "Error Loading Resume",
+                                description: "Failed to fetch resume data. Please try again.",
+                                variant: "destructive",
+                              });
+                            }
                           } else {
                             console.error("Invalid resume ID:", savedResume);
                             toast({

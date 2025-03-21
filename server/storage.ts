@@ -749,6 +749,11 @@ export class DatabaseStorage implements IStorage {
       isAdmin: insertUser.isAdmin ?? false
     };
     
+    // Make sure the password is properly formatted (should already be hashed by auth.ts)
+    if (!userToInsert.password.includes('.')) {
+      console.warn('WARNING: Creating user with unhashed password - this is likely a bug');
+    }
+    
     const [user] = await db.insert(users).values(userToInsert).returning();
     return user;
   }

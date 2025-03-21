@@ -259,31 +259,39 @@ export default function LandingPage() {
                 AIreHire
               </span>
             </div>
-            <div className="hidden md:flex md:items-center md:space-x-6">
-              <a href="#features" className="text-gray-300 hover:text-white text-sm font-medium transition-colors duration-200">
-                Features
-              </a>
-              <a href="#pricing" className="text-gray-300 hover:text-white text-sm font-medium transition-colors duration-200">
-                Pricing
-              </a>
-              <a href="#faq" className="text-gray-300 hover:text-white text-sm font-medium transition-colors duration-200">
-                FAQ
-              </a>
-              <Button
-                variant="outline"
-                size="sm"
-                className="ml-3"
-                onClick={() => setIsLoginOpen(true)}
-              >
-                Log in
-              </Button>
-              <Button
-                size="sm"
-                className="ml-3"
-                onClick={() => setIsRegisterOpen(true)}
-              >
-                Sign up
-              </Button>
+            <div className="hidden md:flex md:items-center md:justify-center flex-1 mx-8">
+              <div className="flex justify-center w-full space-x-10">
+                <Link href="/dashboard" className="text-gray-300 hover:text-white text-sm font-medium transition-colors duration-200">
+                  Dashboard
+                </Link>
+                <Link href="/resumes" className="text-gray-300 hover:text-white text-sm font-medium transition-colors duration-200">
+                  Resumes
+                </Link>
+                <Link href="/resume-builder" className="text-gray-300 hover:text-white text-sm font-medium transition-colors duration-200">
+                  Resume Builder
+                </Link>
+                <Link href="/job-finder" className="text-gray-300 hover:text-white text-sm font-medium transition-colors duration-200">
+                  Job Finder
+                </Link>
+                <Link href="/subscription" className="text-gray-300 hover:text-white text-sm font-medium transition-colors duration-200">
+                  Subscription
+                </Link>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsLoginOpen(true)}
+                >
+                  Log in
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => setIsRegisterOpen(true)}
+                >
+                  Sign up
+                </Button>
+              </div>
             </div>
             <div className="md:hidden">
               <Button

@@ -276,14 +276,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Resume Upload and Parsing Route
   app.post("/api/resumes/parse", upload.single('file'), async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
+    // Allow guest access to this endpoint (removed authentication check)
     
     try {
       if (!req.file) {
         return res.status(400).json({ success: false, error: "No file uploaded" });
       }
       
-      const userId = req.user!.id;
+      // If user is authenticated, use their ID; otherwise use a placeholder for guest mode
+      const userId = req.isAuthenticated() ? req.user!.id : -1;
       const filePath = req.file.path;
       const fileName = req.file.originalname;
       
@@ -324,18 +325,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const personalInfo = parsedResume.data.personalInfo || {};
           const resumeTitle = `${personalInfo.firstName || ''} ${personalInfo.lastName || ''} Resume`.trim();
           
-          // Create the resume entry in database
-          const resume = await storage.createResume(userId, {
-            title: resumeTitle || 'My Resume',
-            content: parsedResume.data,
-            template: 'professional'
-          });
-          
-          // Return both the parsed data and the created resume
-          res.json({
-            ...parsedResume,
-            resumeId: resume.id
-          });
+          // Only save to database if user is authenticated
+          if (req.isAuthenticated()) {
+            // Create the resume entry in database
+            const resume = await storage.createResume(userId, {
+              title: resumeTitle || 'My Resume',
+              content: parsedResume.data,
+              template: 'professional'
+            });
+            
+            // Return both the parsed data and the created resume
+            return res.json({
+              ...parsedResume,
+              resumeId: resume.id
+            });
+          } else {
+            // For guest mode, just return the parsed data without saving to DB
+            return res.json({
+              ...parsedResume,
+              guestMode: true,
+              message: "Resume parsed successfully. Create an account to save this resume."
+            });
+          }
         } catch (dbError) {
           console.error("Error saving resume to database:", dbError);
           // Still return the parsed data even if saving to DB failed

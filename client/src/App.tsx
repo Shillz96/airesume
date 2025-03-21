@@ -10,6 +10,7 @@ import HomePage from "@/pages/home-page";
 import ResumeBuilder from "@/pages/resume-builder";
 import ResumesPage from "@/pages/resumes-page";
 import JobFinder from "@/pages/job-finder";
+import JobDetails from "@/pages/job-details";
 import { ProtectedRoute } from "./lib/protected-route";
 
 import Navbar from "@/components/navbar";
@@ -21,6 +22,7 @@ function Router() {
       <ProtectedRoute path="/resume-builder" component={ResumeBuilder} />
       <ProtectedRoute path="/resumes" component={ResumesPage} />
       <ProtectedRoute path="/job-finder" component={JobFinder} />
+      <ProtectedRoute path="/job/:id" component={JobDetails} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>

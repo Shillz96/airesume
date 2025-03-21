@@ -31,25 +31,15 @@ export default function JobDetails() {
   
   // Fetch job details
   const { data: job, isLoading, error } = useQuery<Job>({
-    queryKey: ["/api/jobs", params?.id],
-    queryFn: async () => {
-      const queryFn = getQueryFn({ on401: "returnNull" });
-      return queryFn({ 
-        queryKey: [`/api/jobs/${params?.id}`],
-      });
-    },
+    queryKey: [`/api/jobs/${params?.id}`],
+    queryFn: getQueryFn({ on401: "returnNull" }),
     enabled: !!params?.id,
   });
   
   // Fetch user's resumes
   const { data: resume } = useQuery({
     queryKey: ["/api/resumes/active"],
-    queryFn: async () => {
-      const queryFn = getQueryFn({ on401: "returnNull" });
-      return queryFn({ 
-        queryKey: ["/api/resumes/active"],
-      });
-    },
+    queryFn: getQueryFn({ on401: "returnNull" }),
     enabled: !!user,
   });
   

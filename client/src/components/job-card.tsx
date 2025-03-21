@@ -215,7 +215,7 @@ export default function JobCard({ job }: JobCardProps) {
           <Button 
             variant="outline" 
             size="sm"
-            onClick={() => handleAuthRequiredAction(tailorResume)}
+            onClick={() => handleAuthRequiredAction(handleTailorResume)}
             className="border-blue-500/30 text-blue-300 hover:bg-blue-900/30 hover:border-blue-500/50"
           >
             <Cpu className="h-4 w-4 mr-1.5 animate-pulse" />

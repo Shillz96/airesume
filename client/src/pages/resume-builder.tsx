@@ -58,14 +58,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { 
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+
 import AIAssistant from "@/components/ai-assistant";
 
 // Component for professional summary AI suggestions
@@ -476,7 +469,7 @@ export default function ResumeBuilder() {
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [resumeId, setResumeId] = useState<number | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   
   // Initial resume state
   const [resume, setResume] = useState<Resume>({
@@ -928,7 +921,14 @@ export default function ResumeBuilder() {
                       />
                       <Button 
                         type="button" 
-                        onClick={() => setIsDialogOpen(true)}
+                        onClick={() => {
+                          setActiveSection("profile");
+                          // Scroll to the AI Resume Assistant section
+                          document.querySelector('.cosmic-card .flex .text-blue-400')?.scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'center'
+                          });
+                        }}
                         className="mt-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 flex items-center"
                       >
                         <Sparkles className="h-4 w-4 mr-2" />
@@ -1273,32 +1273,6 @@ export default function ResumeBuilder() {
           </div>
         </div>
       </main>
-      
-      {/* AI Assistant Dialog for Summary Generation */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent 
-          className="sm:max-w-[550px] bg-[rgba(10,12,24,0.95)] backdrop-blur-md border-[rgba(255,255,255,0.1)] text-white"
-        >
-          <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
-              <Cpu className="h-5 w-5 text-blue-400" />
-              Generate Professional Summary
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-2">
-            <AIAssistant 
-              resumeId={resumeId?.toString()}
-              onApplySummary={(summary) => {
-                handleApplySummary(summary);
-                setIsDialogOpen(false);
-              }}
-              resume={resume}
-              activeTab="profile"
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

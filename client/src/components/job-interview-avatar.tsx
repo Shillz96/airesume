@@ -90,7 +90,7 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
   };
 
   return (
-    <Card className="cosmic-card mb-8 overflow-hidden" ref={cardRef}>
+    <Card className="cosmic-card h-full overflow-hidden" ref={cardRef}>
       <CardHeader className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 pb-3">
         <CardTitle className="text-xl text-white flex items-center">
           <Bot className="mr-2 h-5 w-5 text-blue-400" />

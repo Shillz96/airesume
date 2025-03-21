@@ -95,7 +95,7 @@ export default function RecentActivity() {
         Recent Activity
       </h2>
       
-      <Card className="cosmic-card mt-4" ref={cardRef}>
+      <Card className="cosmic-card mt-4 h-full" ref={cardRef}>
         <CardHeader className="pb-2">
           <CardTitle className="text-lg text-white font-medium">Activity Timeline</CardTitle>
         </CardHeader>

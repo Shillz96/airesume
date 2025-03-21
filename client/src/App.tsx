@@ -4,6 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
+import { AuthDialogProvider, useAuthDialog } from "@/hooks/use-auth-dialog";
 import { GuestModeProvider } from "@/hooks/use-guest-mode";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home-page";
@@ -19,6 +20,7 @@ import { ProtectedRoute } from "./lib/protected-route";
 import Navbar from "@/components/navbar";
 import GoAdminLink from "@/components/go-admin-link";
 import QuickLogin from "@/components/quick-login";
+import AuthDialog from "@/components/auth-dialog";
 
 function Router() {
   // Manual check for admin-access path to handle direct navigation
@@ -46,6 +48,7 @@ function Router() {
 function AppContent() {
   const [location] = useLocation();
   const { user } = useAuth();
+  const { isOpen, activeTab, closeDialog } = useAuthDialog();
   
   // Only show navbar when not on landing page or if authenticated
   const showNavbar = location !== "/" || user;
@@ -85,6 +88,12 @@ function AppContent() {
       <GoAdminLink />
       {/* Quick login for the admin user */}
       <QuickLogin />
+      {/* Auth dialog for login/register */}
+      <AuthDialog 
+        isOpen={isOpen} 
+        onOpenChange={closeDialog}
+        defaultTab={activeTab}
+      />
     </div>
   );
 }
@@ -94,8 +103,10 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <GuestModeProvider>
-          <AppContent />
-          <Toaster />
+          <AuthDialogProvider>
+            <AppContent />
+            <Toaster />
+          </AuthDialogProvider>
         </GuestModeProvider>
       </AuthProvider>
     </QueryClientProvider>

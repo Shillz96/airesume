@@ -23,6 +23,8 @@ interface Job {
   id: string;
   title: string;
   company: string;
+  level?: string; // e.g., Junior, Senior
+  industry?: string; // e.g., Tech, Finance
 }
 
 interface JobInterviewAvatarProps {
@@ -36,143 +38,156 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [customJobTitle, setCustomJobTitle] = useState("");
   const [customCompanyName, setCustomCompanyName] = useState("");
+  const [customJobLevel, setCustomJobLevel] = useState("");
+  const [customIndustry, setCustomIndustry] = useState("");
   const [isRegenerating, setIsRegenerating] = useState(false);
-  
+  const [questions, setQuestions] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
   const cardRef = useRef<HTMLDivElement>(null);
   const avatarRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
-  
-  const defaultJob = {
+
+  const defaultJob: Job = {
     id: "default",
     title: "Software Engineer",
-    company: "Tech Innovators Inc."
+    company: "Tech Innovators Inc.",
+    level: "Mid-level",
+    industry: "Technology",
   };
-  
-  const activeJob = job || {
+
+  const activeJob: Job = job || {
     ...defaultJob,
     title: customJobTitle || defaultJob.title,
-    company: customCompanyName || defaultJob.company
+    company: customCompanyName || defaultJob.company,
+    level: customJobLevel || defaultJob.level,
+    industry: customIndustry || defaultJob.industry,
   };
-  
-  const defaultQuestions = [
-    `Tell me about a time you used a key skill related to ${activeJob.title} roles.`,
-    `How do you approach challenges in ${activeJob.title} positions?`,
-    `Why are you interested in working as a ${activeJob.title} at ${activeJob.company}?`,
-  ];
-  
-  const [questions, setQuestions] = useState(defaultQuestions);
 
   useEffect(() => {
-    if (titleRef.current) {
-      gsap.fromTo(
-        titleRef.current,
-        { y: 10, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6, delay: 0.2, ease: "power2.out" }
-      );
-    }
-    
-    if (cardRef.current) {
-      gsap.fromTo(
-        cardRef.current,
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.7, delay: 0.4, ease: "power2.out" }
-      );
-    }
-    
-    if (avatarRef.current) {
-      gsap.fromTo(
-        avatarRef.current,
-        { scale: 0.8, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.6, delay: 0.8, ease: "back.out" }
-      );
-    }
+    // Initial animation
+    gsap.fromTo(titleRef.current, { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" });
+    gsap.fromTo(cardRef.current, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, delay: 0.4, ease: "power2.out" });
+    gsap.fromTo(avatarRef.current, { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, delay: 0.8, ease: "back.out" });
+
+    // Generate initial questions
+    if (!questions.length) regenerateQuestions();
   }, []);
 
-  // Update questions when job title or company is changed
   useEffect(() => {
-    if (customJobTitle || customCompanyName) {
+    if (customJobTitle || customCompanyName || customJobLevel || customIndustry) {
       regenerateQuestions();
     }
-  }, [customJobTitle, customCompanyName]);
+  }, [customJobTitle, customCompanyName, customJobLevel, customIndustry]);
 
   const handleSpeak = () => {
     setIsSpeaking(true);
-    setTimeout(() => setIsSpeaking(false), 2000);
+    const utterance = new SpeechSynthesisUtterance(questions[currentQuestion]);
+    speechSynthesis.speak(utterance);
+    utterance.onend = () => setIsSpeaking(false);
   };
 
-  const handleSubmitResponse = () => {
+  const handleSubmitResponse = async () => {
     if (!userResponse.trim()) return;
-    
-    // Set feedback based on response length
-    if (userResponse.length < 50) {
-      setFeedback("Your answer is too brief. Try to provide more specific examples and details.");
-    } else if (userResponse.length > 500) {
-      setFeedback("Good answer, but try to be more concise. Aim for 1-2 minutes when speaking.");
-    } else {
-      setFeedback("Good answer! You provided a balanced response with relevant details.");
-    }
-    
-    // Move to next question if available
-    if (currentQuestion < questions.length - 1) {
-      setTimeout(() => {
-        setCurrentQuestion(currentQuestion + 1);
-        setUserResponse("");
-        setFeedback("");
-      }, 3000);
-    }
-  };
-  
-  const regenerateQuestions = () => {
+
     setIsRegenerating(true);
-    
-    // In a real app, this would call an AI service
-    // For now, we'll simulate with a timeout and use template strings
-    setTimeout(() => {
-      const jobTitle = customJobTitle || activeJob.title;
-      const company = customCompanyName || activeJob.company;
-      
-      const newQuestions = [
-        `Tell me about your experience with ${jobTitle} technologies and how you've applied them in previous roles.`,
-        `Describe a challenging project you worked on as a ${jobTitle} and how you overcame obstacles.`,
-        `What interests you most about the ${jobTitle} position at ${company} and how do you see yourself contributing?`,
-      ];
-      
-      setQuestions(newQuestions);
+    try {
+      // Simulate AI feedback (replace with actual API call)
+      const feedbackResponse = await generateFeedback(userResponse, questions[currentQuestion], activeJob);
+      setFeedback(feedbackResponse);
+
+      if (currentQuestion < questions.length - 1) {
+        setTimeout(() => {
+          setCurrentQuestion(currentQuestion + 1);
+          setUserResponse("");
+          setFeedback("");
+        }, 3000);
+      }
+    } catch (err) {
+      setError("Failed to generate feedback. Please try again.");
+    } finally {
       setIsRegenerating(false);
-      setFeedback("");
-      setUserResponse("");
-    }, 1500);
+    }
   };
-  
+
+  const regenerateQuestions = async () => {
+    setIsRegenerating(true);
+    setError(null);
+
+    try {
+      // Simulate API call to AI service (e.g., Grok API)
+      const newQuestions = await fetchInterviewQuestions(activeJob);
+      setQuestions(newQuestions);
+      setCurrentQuestion(0);
+      setUserResponse("");
+      setFeedback("");
+    } catch (err) {
+      setError("Failed to generate questions. Using defaults.");
+      setQuestions([
+        `Tell me about your experience as a ${activeJob.title}.`,
+        `What challenges have you faced in ${activeJob.industry} roles?`,
+        `Why do you want to work at ${activeJob.company}?`,
+      ]);
+    } finally {
+      setIsRegenerating(false);
+    }
+  };
+
+  // Simulated AI service calls (replace with real API integration)
+  const fetchInterviewQuestions = async (job: Job): Promise<string[]> => {
+    // Example prompt for an AI like Grok
+    const prompt = `Generate 3 unique, professional interview questions for a ${job.level} ${job.title} position at ${job.company} in the ${job.industry} industry.`;
+    // Simulate API response
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve([
+          `Can you describe a specific situation where you utilized your skills as a ${job.title} to solve a problem at a ${job.industry} company?`,
+          `How do you stay updated with the latest trends in ${job.industry}, and how would you apply them at ${job.company}?`,
+          `What unique value do you bring to ${job.company} as a ${job.level} ${job.title}?`,
+        ]);
+      }, 1000);
+    });
+  };
+
+  const generateFeedback = async (response: string, question: string, job: Job): Promise<string> => {
+    // Example prompt for feedback
+    const prompt = `Analyze this response to the question "${question}" for a ${job.title} role: "${response}". Provide constructive feedback on clarity, relevance, and detail.`;
+    // Simulate API response
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        if (response.length < 50) {
+          resolve("Your response is too short. Provide more details and examples to demonstrate your expertise.");
+        } else if (response.length > 500) {
+          resolve("Your response is detailed but overly long. Aim for concise, focused answers (1-2 minutes when speaking).");
+        } else {
+          resolve("Well-structured response! It’s clear and relevant. Consider adding a specific example to strengthen it further.");
+        }
+      }, 500);
+    });
+  };
+
   const resetInterview = () => {
     setCurrentQuestion(0);
     setUserResponse("");
     setFeedback("");
+    setError(null);
   };
 
   return (
     <div className="h-full flex flex-col">
-      <h2 
-        ref={titleRef}
-        className="cosmic-page-title text-2xl flex items-center"
-      >
+      <h2 ref={titleRef} className="cosmic-page-title text-2xl flex items-center">
         <Bot className="mr-2 h-5 w-5 text-blue-400" />
         Interview Practice AI
       </h2>
-      
+
       <Card className="cosmic-card mt-4 flex-1 flex flex-col" ref={cardRef}>
         <CardHeader className="pb-2 flex-shrink-0">
           <div className="flex justify-between items-center">
             <CardTitle className="text-lg text-white font-medium">Practice Session</CardTitle>
-            
             <div className="flex space-x-2">
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="text-gray-400 border-gray-700 hover:text-blue-300 hover:border-blue-500/50"
-                  >
+                  <Button variant="outline" size="sm" className="text-gray-400 border-gray-700 hover:text-blue-300">
                     <Settings className="h-3.5 w-3.5 mr-1" />
                     Customize
                   </Button>
@@ -200,37 +215,54 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
                         className="bg-white/5 border-white/10 text-white"
                       />
                     </div>
-                    <Button 
-                      onClick={regenerateQuestions}
-                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                    >
+                    <div className="space-y-2">
+                      <Label htmlFor="job-level">Job Level</Label>
+                      <Input
+                        id="job-level"
+                        placeholder="e.g. Senior"
+                        value={customJobLevel}
+                        onChange={(e) => setCustomJobLevel(e.target.value)}
+                        className="bg-white/5 border-white/10 text-white"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="industry">Industry</Label>
+                      <Input
+                        id="industry"
+                        placeholder="e.g. Technology"
+                        value={customIndustry}
+                        onChange={(e) => setCustomIndustry(e.target.value)}
+                        className="bg-white/5 border-white/10 text-white"
+                      />
+                    </div>
+                    <Button onClick={regenerateQuestions} className="w-full bg-gradient-to-r from-blue-600 to-purple-600">
                       <Zap className="h-3.5 w-3.5 mr-1" />
                       Generate Questions
                     </Button>
                   </div>
                 </PopoverContent>
               </Popover>
-              
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
-                className="text-gray-400 border-gray-700 hover:text-blue-300 hover:border-blue-500/50"
+                className="text-gray-400 border-gray-700 hover:text-blue-300"
                 onClick={regenerateQuestions}
                 disabled={isRegenerating}
               >
-                <RefreshCcw className={`h-3.5 w-3.5 mr-1 ${isRegenerating ? 'animate-spin' : ''}`} />
+                <RefreshCcw className={`h-3.5 w-3.5 mr-1 ${isRegenerating ? "animate-spin" : ""}`} />
                 New Questions
               </Button>
             </div>
           </div>
           <CardDescription className="text-gray-300">
-            Practice your interview skills for {activeJob.title} positions
+            Practice your interview skills for {activeJob.title} at {activeJob.company}
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="p-6 space-y-4 flex-1 overflow-auto">
+          {error && <p className="text-red-400">{error}</p>}
           <div className="flex items-start gap-4">
-            <div 
+            <div
               ref={avatarRef}
               className={`w-16 h-16 rounded-full bg-gradient-to-r from-blue-600/30 to-purple-600/30 border border-white/10 flex items-center justify-center ${
                 isSpeaking ? "cosmic-avatar-pulse shadow-lg shadow-blue-500/20" : ""
@@ -238,7 +270,6 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
             >
               <Bot className="h-8 w-8 text-blue-400" />
             </div>
-            
             <div className="flex-1">
               <p className="text-white font-medium mb-2 text-lg">
                 {isRegenerating ? (
@@ -246,31 +277,31 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
                     <RefreshCw className="h-3.5 w-3.5 mr-2 animate-spin text-blue-400" />
                     Generating new questions...
                   </span>
-                ) : (
+                ) : questions.length ? (
                   questions[currentQuestion]
+                ) : (
+                  "No questions available."
                 )}
               </p>
-              <Button 
-                onClick={handleSpeak} 
+              <Button
+                onClick={handleSpeak}
                 variant="outline"
                 size="sm"
-                className="text-blue-400 border-blue-800/50 hover:bg-blue-900/30 hover:text-blue-300"
-                disabled={isRegenerating}
+                className="text-blue-400 border-blue-800/50 hover:bg-blue-900/30"
+                disabled={isRegenerating || !questions.length}
               >
                 <Play className="h-3 w-3 mr-1" />
                 Hear Question
               </Button>
             </div>
           </div>
-          
           <Textarea
             className="min-h-[100px] bg-white/5 border-white/10 text-white"
             value={userResponse}
             onChange={(e) => setUserResponse(e.target.value)}
             placeholder="Type your response here..."
-            disabled={isRegenerating}
+            disabled={isRegenerating || !questions.length}
           />
-          
           {feedback && (
             <div className="p-3 bg-white/5 rounded-lg border border-white/10">
               <h4 className="text-sm font-medium flex items-center text-amber-400 mb-1">
@@ -281,10 +312,10 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
             </div>
           )}
         </CardContent>
-        
+
         <CardFooter className="p-4 bg-white/5 border-t border-white/10 flex justify-between">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             className="text-gray-400 border-gray-700 hover:text-gray-300"
             onClick={resetInterview}
@@ -293,11 +324,10 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
             <RefreshCw className="h-3 w-3 mr-1" />
             Reset
           </Button>
-          
-          <Button 
-            onClick={handleSubmitResponse} 
+          <Button
+            onClick={handleSubmitResponse}
             size="sm"
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            className="bg-gradient-to-r from-blue-600 to-purple-600"
             disabled={!userResponse.trim() || isRegenerating}
           >
             <Send className="h-3 w-3 mr-1" />

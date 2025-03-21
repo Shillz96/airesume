@@ -2,11 +2,19 @@ import React, { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Trash2 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import ResumeTips from "@/components/resume-tips";
 import Navbar from "@/components/navbar";
+import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
+import { 
+  Download, Loader2, Plus, Minus, Maximize2, FileText, 
+  Check, Zap, EyeOff, Eye, FileImage, X, Move,
+  GraduationCap, Briefcase, Code, Award, FolderKanban,
+  FolderOpen, Save, Upload, Cpu, RefreshCw, Sparkles,
+  Printer, ChevronDown, User
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import ResumeTemplate, {
   ProfessionalTemplate,
   CreativeTemplate,
@@ -37,35 +45,8 @@ import { Resume } from "@/components/resume-template";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { CosmicButton } from "@/components/cosmic-button";
 import RichTextEditor from "@/components/rich-text-editor";
-import {
-  FileText,
-  GraduationCap,
-  Briefcase,
-  Code,
-  Award,
-  FolderKanban,
-  FolderOpen,
-  Save,
-  Upload,
-  Loader2,
-  Cpu,
-  Check,
-  RefreshCw,
-  Sparkles,
-  Plus,
-  Maximize2,
-  Printer,
-  ChevronDown,
-  Download,
-  Minus,
-  User,
-  X,
-  Zap,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import {
   Accordion,
   AccordionContent,
@@ -903,147 +884,336 @@ function SkillSuggestions({
 // Preview component for the "Preview" section
 // This component has been replaced by ResumePreviewComponent
 
-function ResumePreviewComponent({ 
-  resume, 
-  onTemplateChange, 
-  onDownload 
-}: { 
-  resume: Resume; 
-  onTemplateChange: (template: string) => void; 
-  onDownload?: () => void 
-}) {
+function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resume: Resume; onTemplateChange: (template: string) => void; onDownload?: () => void }) {
+  // Local state for downloading
   const [isDownloading, setIsDownloading] = useState(false);
-  const [scale, setScale] = useState(0.85);
-  const [isFullScreen, setIsFullScreen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedResume, setEditedResume] = useState<Resume>(resume);
-  const [fontScale, setFontScale] = useState(1);
-  const [spacingScale, setSpacingScale] = useState(1);
-  const previewRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
-
-  // State for section order and visibility
-  const [sectionOrder, setSectionOrder] = useState<string[]>([
-    'personalInfo',
-    'summary',
-    'experience',
-    'education',
-    'skills',
-    'projects'
-  ]);
-  const [visibleSections, setVisibleSections] = useState<Record<string, boolean>>({
-    personalInfo: true,
-    summary: true,
-    experience: true,
-    education: true,
-    skills: true,
-    projects: true
-  });
-
-  // Handle drag and drop
-  const onDragEnd = (result: any) => {
-    if (!result.destination) return;
-
-    const newOrder = Array.from(sectionOrder);
-    const [reorderedItem] = newOrder.splice(result.source.index, 1);
-    newOrder.splice(result.destination.index, 0, reorderedItem);
-
-    setSectionOrder(newOrder);
-    toast({
-      title: "Section Reordered",
-      description: "Resume sections have been rearranged.",
-    });
-  };
-
-  // Toggle section visibility
-  const toggleSection = (section: string) => {
-    setVisibleSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
-  };
-
-  // Calculate pages based on content height
-  const calculatePages = () => {
-    if (!previewRef.current) return 1;
-    
-    const pageHeight = 297 * 3.78; // A4 height in pixels
-    const contentHeight = previewRef.current.scrollHeight;
-    return Math.ceil(contentHeight / pageHeight);
-  };
-
+  
+  // Function to handle download with progress indicator
   const handleDownload = async () => {
+    if (isDownloading) return; // Prevent multiple clicks
+    
     setIsDownloading(true);
+    
     try {
       if (onDownload) {
         await onDownload();
       } else {
+        // Fallback to print dialog if no download function provided
         window.print();
       }
     } catch (error) {
       console.error('Download error:', error);
+      // Fallback to print dialog
       window.print();
     } finally {
       setIsDownloading(false);
     }
   };
+  // Calculate an initial scale that will fit most resumes in the viewport
+  // Starting with 0.85 instead of 1.0 to show more content initially
+  const [scale, setScale] = useState(0.85); 
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isAutoAdjusting, setIsAutoAdjusting] = useState(false);
+  const [editedResume, setEditedResume] = useState<Resume>(resume);
+  const [fontScale, setFontScale] = useState(1); // For auto-adjusting font size
+  const [spacingScale, setSpacingScale] = useState(1); // For auto-adjusting spacing
+  const previewRef = useRef<HTMLDivElement>(null);
+  const resumeContainerRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
-  const toggleFullScreen = () => setIsFullScreen(!isFullScreen);
-  
+  // Generate actual PDF file for download
+  const downloadResume = async () => {
+    try {
+      // First set optimal settings for PDF generation
+      const originalScale = scale;
+      const originalFontScale = fontScale;
+      const originalSpacingScale = spacingScale;
+      
+      // Set to 100% scale, reset font and spacing scales to 1
+      setScale(1.0);
+      setFontScale(1);
+      setSpacingScale(1);
+      
+      // Add a loading toast to show progress
+      toast({
+        title: "Preparing PDF",
+        description: "Optimizing your resume for PDF download...",
+      });
+      
+      // Wait for the scale changes to apply
+      setTimeout(async () => {
+        if (!previewRef.current) return;
+        
+        // Create a virtual link element
+        const link = document.createElement('a');
+        
+        // Generate a filename with the person's name (if available) or a default name
+        const name = resume?.personalInfo?.firstName && resume?.personalInfo?.lastName ? 
+          `${resume.personalInfo.firstName}_${resume.personalInfo.lastName}` : 
+          'Resume';
+        const fileName = `${name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+        
+        // Try server-side PDF generation first, then fall back to print dialog
+        try {
+          // Create a form to send to the server for PDF generation
+          const formData = new FormData();
+          formData.append('resumeData', JSON.stringify(resume));
+          formData.append('template', resume.template || 'professional');
+          
+          // Send the resume data to the server for PDF generation
+          const response = await fetch('/api/generate-pdf', {
+            method: 'POST',
+            body: formData
+          });
+          
+          if (!response.ok) throw new Error('Failed to generate PDF');
+          
+          // Get the PDF blob from the response
+          const blob = await response.blob();
+          
+          // Create a URL for the blob
+          const url = window.URL.createObjectURL(blob);
+          
+          // Set up the download link
+          link.href = url;
+          link.download = fileName;
+          link.click();
+          
+          // Clean up
+          window.URL.revokeObjectURL(url);
+          
+          toast({
+            title: "PDF Downloaded",
+            description: `Your resume has been downloaded as ${fileName}`,
+          });
+        } catch (error) {
+          console.error('Error downloading PDF from server:', error);
+          
+          // If server-side generation fails, try client-side printing
+          toast({
+            title: "Using Print Dialog",
+            description: "Server PDF generation failed. Using browser print dialog instead.",
+          });
+          
+          // Add print-specific styles to the document
+          const style = document.createElement('style');
+          style.id = 'print-resume-style';
+          style.innerHTML = `
+            @media print {
+              body * {
+                visibility: hidden;
+              }
+              #${previewRef.current.id || 'resume-preview'}, #${previewRef.current.id || 'resume-preview'} * {
+                visibility: visible;
+              }
+              #${previewRef.current.id || 'resume-preview'} {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 210mm;
+                height: 297mm;
+                margin: 0;
+                padding: 0;
+                transform: scale(1) !important;
+              }
+            }
+          `;
+          document.head.appendChild(style);
+          
+          // Create a unique id for the preview element if it doesn't have one
+          if (!previewRef.current.id) {
+            previewRef.current.id = 'resume-preview';
+          }
+          
+          // Trigger print dialog after a brief delay
+          setTimeout(() => {
+            window.print();
+            
+            // Remove the print styles after printing
+            setTimeout(() => {
+              const printStyle = document.getElementById('print-resume-style');
+              if (printStyle) document.head.removeChild(printStyle);
+            }, 1000);
+          }, 500);
+        }
+        
+        // Restore the original scales
+        setTimeout(() => {
+          setScale(originalScale);
+          setFontScale(originalFontScale);
+          setSpacingScale(originalSpacingScale);
+        }, 1000);
+      }, 300);
+    } catch (error) {
+      console.error('Error preparing PDF download:', error);
+      
+      // Fall back to basic print dialog as last resort
+      window.print();
+      
+      toast({
+        title: "Using Print Dialog",
+        description: "There was an issue preparing the PDF. Using browser print dialog instead.",
+        variant: "destructive"
+      });
+      
+      // Reset the scales
+      setScale(0.85);
+      setFontScale(1);
+      setSpacingScale(1);
+    }
+  };
+
+  // Toggle fullscreen mode
+  const toggleFullScreen = () => {
+    setIsFullScreen(!isFullScreen);
+  };
+
+  // Toggle edit mode
   const toggleEdit = () => {
     setIsEditing(!isEditing);
     if (isEditing) {
+      // Apply changes from editedResume to the actual resume
       onTemplateChange(editedResume.template);
-      const event = new CustomEvent('resumeEdited', { detail: { resume: editedResume } });
+      
+      // Dispatch event to update parent component
+      const event = new CustomEvent('resumeEdited', {
+        detail: { resume: editedResume }
+      });
       document.dispatchEvent(event);
     }
   };
 
-  // Update resume sections when editing
+  // Handle field changes in the edit mode
   const handleFieldChange = (
     section: string,
     field: string,
-    value: any,
+    value: string,
     index?: number
   ) => {
     setEditedResume((prev) => {
       const newResume = { ...prev };
+      
       if (section === "personalInfo") {
-        newResume.personalInfo = { ...newResume.personalInfo, [field]: value };
-      } else if (index !== undefined) {
-        if (section === "experience") {
-          newResume.experience = [...newResume.experience];
-          newResume.experience[index] = { ...newResume.experience[index], [field]: value };
-        } else if (section === "education") {
-          newResume.education = [...newResume.education];
-          newResume.education[index] = { ...newResume.education[index], [field]: value };
-        } else if (section === "skills") {
-          newResume.skills = [...newResume.skills];
-          newResume.skills[index] = { ...newResume.skills[index], [field]: value };
-        }
+        newResume.personalInfo = { 
+          ...newResume.personalInfo, 
+          [field]: value 
+        };
+      } else if (section === "experience" && typeof index === 'number') {
+        newResume.experience = [...newResume.experience];
+        newResume.experience[index] = { 
+          ...newResume.experience[index], 
+          [field]: value 
+        };
+      } else if (section === "education" && typeof index === 'number') {
+        newResume.education = [...newResume.education];
+        newResume.education[index] = { 
+          ...newResume.education[index], 
+          [field]: value 
+        };
+      } else if (section === "skills" && typeof index === 'number') {
+        newResume.skills = [...newResume.skills];
+        newResume.skills[index] = { 
+          ...newResume.skills[index], 
+          [field]: value 
+        };
       }
+      
       return newResume;
     });
   };
 
+  // Auto-adjust feature to fit content on one page
+  const autoAdjust = () => {
+    setIsAutoAdjusting(true);
+    
+    // First reset to default scale to get accurate measurements
+    setScale(1.0);
+    
+    // Intelligent scaling algorithm to fit content
+    setTimeout(() => {
+      if (!previewRef.current) {
+        setIsAutoAdjusting(false);
+        return;
+      }
+      
+      const contentHeight = previewRef.current.scrollHeight;
+      const containerHeight = 297 * 3.78; // A4 height in pixels (297mm converted to px)
+      
+      // Calculate the required scaling factors
+      const heightRatio = containerHeight / contentHeight;
+      
+      // Log for debugging
+      console.log('Content height:', contentHeight, 'Container height:', containerHeight, 'Ratio:', heightRatio);
+      
+      // Apply the scaling depending on whether content is too large
+      if (heightRatio < 1) {
+        // Content is too large, scale down the font and spacing gradually
+        
+        // Calculate optimal font scaling - more gentle reduction for minor overflows
+        let newFontScale = 1;
+        if (heightRatio >= 0.9) { // Minor overflow (less than 10%)
+          newFontScale = Math.max(0.9, heightRatio * 0.98);
+        } else if (heightRatio >= 0.8) { // Moderate overflow (10-20%)
+          newFontScale = Math.max(0.8, heightRatio * 0.95);
+        } else { // Major overflow (>20%)
+          newFontScale = Math.max(0.7, heightRatio * 0.9);
+        }
+        
+        // Spacing can be reduced more aggressively than font size
+        const newSpacingScale = Math.max(0.7, heightRatio * 0.85);
+        
+        // Set new scales
+        setFontScale(newFontScale);
+        setSpacingScale(newSpacingScale);
+        
+        // Also adjust the view scale for better visibility if content is very large
+        if (heightRatio < 0.7) {
+          // For very large content, zoom out to see more
+          setScale(0.8);
+        } else {
+          // For moderately large content, keep scale at 0.85
+          setScale(0.85);
+        }
+        
+        toast({
+          title: "Smart Fit Applied",
+          description: `Content adjusted to fit on one page (${Math.round(newFontScale * 100)}% text scale)`,
+        });
+      } else {
+        // Content fits already, reset to default
+        setFontScale(1);
+        setSpacingScale(1);
+        
+        // Set view scale to show the full page
+        setScale(0.85);
+        
+        toast({
+          title: "Smart Fit Reset",
+          description: "Your content already fits on one page. Using default sizes.",
+        });
+      }
+      
+      setIsAutoAdjusting(false);
+    }, 500);
+  };
+  
+  // Keep editedResume in sync with resume props changes
   useEffect(() => {
     setEditedResume(resume);
   }, [resume]);
-
+  
   return (
     <div className="space-y-4">
-      {/* Enhanced Controls */}
+      {/* Controls */}
       <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
         <div className="flex items-center gap-2">
           <h3 className="text-lg font-medium text-white">Resume Preview</h3>
           <Badge variant="outline" className="text-blue-300 border-blue-300/30">
             {Math.round(scale * 100)}%
           </Badge>
-          <Badge variant="outline" className="text-blue-300 border-blue-300/30">
-            {calculatePages()} Page{calculatePages() > 1 ? 's' : ''}
-          </Badge>
         </div>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
@@ -1065,6 +1235,21 @@ function ResumePreviewComponent({
           <Button
             variant="outline"
             size="sm"
+            onClick={autoAdjust}
+            disabled={isAutoAdjusting}
+            className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
+            title="Automatically adjust font size and spacing to fit content on one page without changing zoom level"
+          >
+            {isAutoAdjusting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Zap className="h-4 w-4" />
+            )}
+            Smart Fit
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={toggleFullScreen}
             className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
           >
@@ -1077,15 +1262,24 @@ function ResumePreviewComponent({
             onClick={toggleEdit}
             className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
           >
-            {isEditing ? <Check className="h-4 w-4" /> : <FileText className="h-4 w-4" />}
-            {isEditing ? "Save" : "Edit"}
+            {isEditing ? (
+              <>
+                <Check className="h-4 w-4" />
+                Save
+              </>
+            ) : (
+              <>
+                <FileText className="h-4 w-4" />
+                Edit
+              </>
+            )}
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={handleDownload}
-            disabled={isDownloading}
             className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
+            disabled={isDownloading}
           >
             {isDownloading ? (
               <Loader2 className="h-4 w-4 animate-spin mr-1" />
@@ -1097,197 +1291,195 @@ function ResumePreviewComponent({
         </div>
       </div>
 
-      {/* Resume Preview with Multiple Pages */}
+      {/* Resume Preview */}
       <div
+        ref={resumeContainerRef}
         className={cn(
-          "bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-xl overflow-auto",
-          isFullScreen ? "fixed inset-0 z-50 m-0 p-8 bg-black/90" : "p-4 h-[80vh]"
+          "bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-xl overflow-auto scroll-smooth",
+          isFullScreen
+            ? "fixed inset-0 z-50 m-0 p-8 bg-black/90"
+            : "p-4 h-[80vh] flex items-center justify-center" // Center the preview vertically and horizontally
         )}
       >
         <div
           ref={previewRef}
-          className="transition-all duration-300 mx-auto bg-white shadow-lg"
+          className="resume-content-container transition-all duration-300 mx-auto bg-white shadow-lg print:shadow-none"
+          data-font-scale={fontScale.toString()}
+          data-spacing-scale={spacingScale.toString()}
           style={{
             transform: `scale(${scale})`,
-            width: "210mm",
-            fontSize: `${fontScale * 100}%`,
-            lineHeight: `${spacingScale * 1.5}`,
-            transformOrigin: "top center",
+            width: "210mm", // A4 width
+            minHeight: "297mm", // A4 height (minimum to ensure proper proportions)
+            maxHeight: "297mm", // A4 height (maximum to ensure proper proportions)
+            transformOrigin: "center", // Center transform origin for better viewing 
+            fontSize: `${fontScale * 100}%`, // Dynamic font scaling
+            lineHeight: `${spacingScale * 1.5}`, // Dynamic line height scaling
+            overflowY: isEditing ? "auto" : "hidden", // Hide overflow when not editing
+            boxShadow: "0 4px 24px rgba(0, 0, 0, 0.15)", // Add shadow for better visibility
+            marginTop: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
+            marginBottom: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
           }}
         >
           {isEditing ? (
-            <DragDropContext onDragEnd={onDragEnd}>
-              <Droppable droppableId="sections">
-                {(provided) => (
-                  <div
-                    className="p-6 bg-white text-black min-h-[297mm]"
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                  >
-                    {sectionOrder.map((section, index) => (
-                      visibleSections[section] && (
-                        <Draggable key={section} draggableId={section} index={index}>
-                          {(provided) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              className="mb-4 p-4 border border-gray-200 rounded bg-gray-50"
-                            >
-                              <div className="flex justify-between items-center mb-2">
-                                <h3 className="text-lg font-semibold capitalize">{section}</h3>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => toggleSection(section)}
-                                  className="text-red-500 hover:text-red-700"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-
-                              {section === 'personalInfo' && (
-                                <div className="space-y-4">
-                                  <Input
-                                    value={editedResume.personalInfo.firstName + " " + editedResume.personalInfo.lastName}
-                                    onChange={(e) => {
-                                      const [firstName, ...lastNameParts] = e.target.value.split(" ");
-                                      handleFieldChange("personalInfo", "firstName", firstName || "");
-                                      handleFieldChange("personalInfo", "lastName", lastNameParts.join(" ") || "");
-                                    }}
-                                    className="text-xl font-bold"
-                                  />
-                                  <div className="grid grid-cols-2 gap-4">
-                                    <Input
-                                      value={editedResume.personalInfo.email}
-                                      onChange={(e) => handleFieldChange("personalInfo", "email", e.target.value)}
-                                      placeholder="Email"
-                                    />
-                                    <Input
-                                      value={editedResume.personalInfo.phone}
-                                      onChange={(e) => handleFieldChange("personalInfo", "phone", e.target.value)}
-                                      placeholder="Phone"
-                                    />
-                                  </div>
-                                </div>
-                              )}
-
-                              {section === 'summary' && (
-                                <RichTextEditor
-                                  value={editedResume.personalInfo.summary}
-                                  onChange={(value) => handleFieldChange("personalInfo", "summary", value)}
-                                  placeholder="Professional Summary"
-                                />
-                              )}
-
-                              {section === 'experience' && editedResume.experience.map((exp, idx) => (
-                                <div key={exp.id} className="mb-4">
-                                  <Input
-                                    value={exp.title}
-                                    onChange={(e) => handleFieldChange("experience", "title", e.target.value, idx)}
-                                    placeholder="Job Title"
-                                  />
-                                  <Input
-                                    value={exp.company}
-                                    onChange={(e) => handleFieldChange("experience", "company", e.target.value, idx)}
-                                    placeholder="Company"
-                                  />
-                                  <RichTextEditor
-                                    value={exp.description}
-                                    onChange={(value) => handleFieldChange("experience", "description", value, idx)}
-                                    placeholder="Description"
-                                  />
-                                </div>
-                              ))}
-
-                              {section === 'education' && editedResume.education.map((edu, idx) => (
-                                <div key={edu.id} className="mb-4">
-                                  <Input
-                                    value={edu.degree}
-                                    onChange={(e) => handleFieldChange("education", "degree", e.target.value, idx)}
-                                    placeholder="Degree"
-                                  />
-                                  <Input
-                                    value={edu.institution}
-                                    onChange={(e) => handleFieldChange("education", "institution", e.target.value, idx)}
-                                    placeholder="Institution"
-                                  />
-                                </div>
-                              ))}
-
-                              {section === 'skills' && (
-                                <div className="grid grid-cols-2 gap-2">
-                                  {editedResume.skills.map((skill, idx) => (
-                                    <Input
-                                      key={skill.id}
-                                      value={skill.name}
-                                      onChange={(e) => handleFieldChange("skills", "name", e.target.value, idx)}
-                                    />
-                                  ))}
-                                </div>
-                              )}
-
-                              {section === 'projects' && editedResume.projects.map((proj, idx) => (
-                                <div key={proj.id} className="mb-4">
-                                  <Input
-                                    value={proj.title}
-                                    onChange={(e) => handleFieldChange("projects", "title", e.target.value, idx)}
-                                    placeholder="Project Title"
-                                  />
-                                  <RichTextEditor
-                                    value={proj.description}
-                                    onChange={(value) => handleFieldChange("projects", "description", value, idx)}
-                                    placeholder="Description"
-                                  />
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </Draggable>
-                      )
-                    ))}
-                    {provided.placeholder}
+            <div className="p-6 bg-white text-black h-full">
+              {/* Personal Info Section */}
+              <div className="mb-6 pb-4 border-b border-gray-200">
+                <h2 className="text-2xl font-bold mb-2">
+                  <Input
+                    value={editedResume.personalInfo.firstName + " " + editedResume.personalInfo.lastName}
+                    onChange={(e) => {
+                      const [firstName, ...lastNameParts] = e.target.value.split(" ");
+                      handleFieldChange("personalInfo", "firstName", firstName || "");
+                      handleFieldChange("personalInfo", "lastName", lastNameParts.join(" ") || "");
+                    }}
+                    className="border border-gray-200 p-1 text-2xl font-bold w-full bg-white"
+                  />
+                </h2>
+                <div className="flex flex-wrap gap-3 text-sm mb-4">
+                  <div className="flex-1 min-w-[200px]">
+                    <label className="text-xs text-gray-500 block mb-1">Email</label>
+                    <Input
+                      value={editedResume.personalInfo.email}
+                      onChange={(e) => handleFieldChange("personalInfo", "email", e.target.value)}
+                      className="border border-gray-200 p-1 text-sm w-full bg-white"
+                      placeholder="Email"
+                    />
                   </div>
-                )}
-              </Droppable>
-            </DragDropContext>
+                  <div className="flex-1 min-w-[200px]">
+                    <label className="text-xs text-gray-500 block mb-1">Phone</label>
+                    <Input
+                      value={editedResume.personalInfo.phone}
+                      onChange={(e) => handleFieldChange("personalInfo", "phone", e.target.value)}
+                      className="border border-gray-200 p-1 text-sm w-full bg-white"
+                      placeholder="Phone"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <RichTextEditor
+                    label="Professional Summary"
+                    value={editedResume.personalInfo.summary}
+                    onChange={(value) => handleFieldChange("personalInfo", "summary", value)}
+                    placeholder="Professional Summary"
+                    rows={4}
+                  />
+                </div>
+              </div>
+              
+              {/* Experience Section */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-3">Experience</h3>
+                {editedResume.experience.map((exp, index) => (
+                  <div key={exp.id} className="mb-4 pb-4 border-b border-gray-100">
+                    <div className="flex flex-wrap gap-3 mb-2">
+                      <div className="flex-1 min-w-[200px]">
+                        <label className="text-xs text-gray-500 block mb-1">Job Title</label>
+                        <Input
+                          value={exp.title}
+                          onChange={(e) => handleFieldChange("experience", "title", e.target.value, index)}
+                          className="border border-gray-200 p-1 text-sm w-full bg-white"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-[200px]">
+                        <label className="text-xs text-gray-500 block mb-1">Company</label>
+                        <Input
+                          value={exp.company}
+                          onChange={(e) => handleFieldChange("experience", "company", e.target.value, index)}
+                          className="border border-gray-200 p-1 text-sm w-full bg-white"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-3 mb-2">
+                      <div className="flex-1 min-w-[200px]">
+                        <label className="text-xs text-gray-500 block mb-1">Start Date</label>
+                        <Input
+                          value={exp.startDate}
+                          onChange={(e) => handleFieldChange("experience", "startDate", e.target.value, index)}
+                          className="border border-gray-200 p-1 text-sm w-full bg-white"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-[200px]">
+                        <label className="text-xs text-gray-500 block mb-1">End Date</label>
+                        <Input
+                          value={exp.endDate}
+                          onChange={(e) => handleFieldChange("experience", "endDate", e.target.value, index)}
+                          className="border border-gray-200 p-1 text-sm w-full bg-white"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <RichTextEditor
+                        label="Description"
+                        value={exp.description}
+                        onChange={(value) => handleFieldChange("experience", "description", value, index)}
+                        placeholder="Job description and achievements"
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Skills Section */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-3">Skills</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                  {editedResume.skills.map((skill, index) => (
+                    <div key={skill.id} className="border border-gray-200 rounded p-2">
+                      <Input
+                        value={skill.name}
+                        onChange={(e) => handleFieldChange("skills", "name", e.target.value, index)}
+                        className="border-none p-0 text-sm w-full"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Education Section - Simplified */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-3">Education</h3>
+                {editedResume.education.map((edu, index) => (
+                  <div key={edu.id} className="mb-4 pb-4 border-b border-gray-100">
+                    <div className="flex flex-wrap gap-3 mb-2">
+                      <div className="flex-1 min-w-[200px]">
+                        <label className="text-xs text-gray-500 block mb-1">Degree</label>
+                        <Input
+                          value={edu.degree}
+                          onChange={(e) => handleFieldChange("education", "degree", e.target.value, index)}
+                          className="border border-gray-200 p-1 text-sm w-full bg-white"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-[200px]">
+                        <label className="text-xs text-gray-500 block mb-1">Institution</label>
+                        <Input
+                          value={edu.institution}
+                          onChange={(e) => handleFieldChange("education", "institution", e.target.value, index)}
+                          className="border border-gray-200 p-1 text-sm w-full bg-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           ) : (
-            <div className="p-8 bg-white text-black">
-              {/* Render resume with page breaks */}
-              {sectionOrder.map((section, index) => (
-                visibleSections[section] && (
-                  <div key={section} className="mb-8">
-                    {section === 'personalInfo' && (
-                      <div>
-                        <h1>{editedResume.personalInfo.firstName} {editedResume.personalInfo.lastName}</h1>
-                        <p>{editedResume.personalInfo.email} | {editedResume.personalInfo.phone}</p>
-                      </div>
-                    )}
-                    {section === 'summary' && editedResume.personalInfo.summary && (
-                      <div>
-                        <h2>Summary</h2>
-                        <p>{editedResume.personalInfo.summary}</p>
-                      </div>
-                    )}
-                    {section === 'experience' && editedResume.experience.length > 0 && (
-                      <ResumeExperienceSection experiences={editedResume.experience} onUpdate={() => {}} />
-                    )}
-                    {section === 'education' && editedResume.education.length > 0 && (
-                      <ResumeEducationSection education={editedResume.education} onUpdate={() => {}} />
-                    )}
-                    {section === 'skills' && editedResume.skills.length > 0 && (
-                      <ResumeSkillsSection skills={editedResume.skills} onUpdate={() => {}} />
-                    )}
-                    {section === 'projects' && editedResume.projects.length > 0 && (
-                      <ResumeProjectsSection projects={editedResume.projects} onUpdate={() => {}} />
-                    )}
-                    {/* Add page break after each section if needed */}
-                    {index < sectionOrder.length - 1 && calculatePages() > 1 && (
-                      <div style={{ pageBreakAfter: 'always' }}></div>
-                    )}
-                  </div>
-                )
-              ))}
+            <div className="bg-white text-black p-8">
+              {resume.template === "creative" ? (
+                <CreativeTemplate resume={resume} />
+              ) : resume.template === "executive" ? (
+                <ExecutiveTemplate resume={resume} />
+              ) : resume.template === "modern" ? (
+                <ModernTemplate resume={resume} />
+              ) : resume.template === "minimal" ? (
+                <MinimalTemplate resume={resume} />
+              ) : resume.template === "industry" ? (
+                <IndustryTemplate resume={resume} />
+              ) : resume.template === "bold" ? (
+                <BoldTemplate resume={resume} />
+              ) : (
+                <ProfessionalTemplate resume={resume} />
+              )}
             </div>
           )}
         </div>

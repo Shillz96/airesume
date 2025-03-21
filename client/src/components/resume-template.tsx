@@ -734,31 +734,65 @@ export default function ResumeTemplate({ resume, onTemplateChange }: ResumeTempl
             variant="outline" 
             size="sm" 
             className="text-xs"
-            onClick={() => {
-              // Create a form to post data
-              const form = document.createElement('form');
-              form.method = 'POST';
-              form.action = '/api/generate-pdf';
-              form.target = '_blank';
-              
-              // Add resume data as hidden input
-              const resumeInput = document.createElement('input');
-              resumeInput.type = 'hidden';
-              resumeInput.name = 'resumeData';
-              resumeInput.value = JSON.stringify(resume);
-              form.appendChild(resumeInput);
-              
-              // Add template as hidden input
-              const templateInput = document.createElement('input');
-              templateInput.type = 'hidden';
-              templateInput.name = 'template';
-              templateInput.value = resume.template || 'professional';
-              form.appendChild(templateInput);
-              
-              // Append to body, submit and remove
-              document.body.appendChild(form);
-              form.submit();
-              document.body.removeChild(form);
+            onClick={async () => {
+              try {
+                // Create a form for PDF generation
+                const formData = new FormData();
+                formData.append('resumeData', JSON.stringify(resume));
+                formData.append('template', resume.template || 'professional');
+                
+                // Generate a filename with the person's name or a default name
+                const name = resume?.personalInfo?.firstName && resume?.personalInfo?.lastName ? 
+                  `${resume.personalInfo.firstName}_${resume.personalInfo.lastName}` : 
+                  'Resume';
+                const fileName = `${name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+                
+                // Send the resume data to the server for PDF generation
+                const response = await fetch('/api/generate-pdf', {
+                  method: 'POST',
+                  body: formData
+                });
+                
+                if (!response.ok) throw new Error('Failed to generate PDF');
+                
+                // Get the PDF blob from the response
+                const blob = await response.blob();
+                
+                // Create a URL for the blob
+                const url = window.URL.createObjectURL(blob);
+                
+                // Create a virtual link element for download
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = fileName;
+                link.click();
+                
+                // Clean up
+                window.URL.revokeObjectURL(url);
+              } catch (error) {
+                console.error('Error downloading PDF:', error);
+                // Fall back to the form submission method
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/api/generate-pdf';
+                form.target = '_blank';
+                
+                const resumeInput = document.createElement('input');
+                resumeInput.type = 'hidden';
+                resumeInput.name = 'resumeData';
+                resumeInput.value = JSON.stringify(resume);
+                form.appendChild(resumeInput);
+                
+                const templateInput = document.createElement('input');
+                templateInput.type = 'hidden';
+                templateInput.name = 'template';
+                templateInput.value = resume.template || 'professional';
+                form.appendChild(templateInput);
+                
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+              }
             }}
           >
             <Download className="h-3 w-3 mr-1" /> Download PDF

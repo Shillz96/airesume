@@ -538,16 +538,16 @@ export default function LandingPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Free Plan */}
-              <Card className="cosmic-card border border-white/10 relative">
-                <CardHeader>
+              <Card className="cosmic-card border border-white/10 relative flex flex-col h-full">
+                <CardHeader className="pb-4">
                   <CardTitle className="text-xl">Basic</CardTitle>
                   <CardDescription>For individuals just getting started</CardDescription>
-                  <div className="mt-4">
+                  <div className="mt-2">
                     <span className="text-3xl font-bold">Free</span>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <ul className="space-y-2">
+                <CardContent className="flex-1 space-y-4 pb-6">
+                  <ul className="space-y-2 text-gray-300">
                     <li className="flex items-start">
                       <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
                       <span>1 Resume Creation</span>
@@ -566,7 +566,7 @@ export default function LandingPage() {
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="mt-auto pt-0">
                   <Button 
                     className="w-full"
                     variant="outline"
@@ -578,20 +578,20 @@ export default function LandingPage() {
               </Card>
               
               {/* Pro Plan */}
-              <Card className="cosmic-card border-2 border-blue-400/50 relative">
+              <Card className="cosmic-card border-2 border-blue-400/50 relative flex flex-col h-full">
                 <div className="absolute -top-4 left-0 right-0 mx-auto w-fit px-4 py-1 bg-blue-500 text-white text-sm font-medium rounded-full">
                   Most Popular
                 </div>
-                <CardHeader>
+                <CardHeader className="pb-4">
                   <CardTitle className="text-xl">Pro</CardTitle>
                   <CardDescription>For individuals actively job hunting</CardDescription>
-                  <div className="mt-4">
+                  <div className="mt-2">
                     <span className="text-3xl font-bold">$15</span>
                     <span className="text-muted-foreground">/month</span>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <ul className="space-y-2">
+                <CardContent className="flex-1 space-y-4 pb-6">
+                  <ul className="space-y-2 text-gray-300">
                     <li className="flex items-start">
                       <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
                       <span>Unlimited Resume Creations</span>
@@ -614,7 +614,7 @@ export default function LandingPage() {
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="mt-auto pt-0">
                   <Button 
                     className="w-full cosmic-btn-glow"
                     onClick={() => handleSelectPlan("Pro")}
@@ -625,17 +625,17 @@ export default function LandingPage() {
               </Card>
               
               {/* Business Plan */}
-              <Card className="cosmic-card border border-white/10 relative">
-                <CardHeader>
+              <Card className="cosmic-card border border-white/10 relative flex flex-col h-full">
+                <CardHeader className="pb-4">
                   <CardTitle className="text-xl">Enterprise</CardTitle>
                   <CardDescription>For career professionals and teams</CardDescription>
-                  <div className="mt-4">
+                  <div className="mt-2">
                     <span className="text-3xl font-bold">$29</span>
                     <span className="text-muted-foreground">/month</span>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <ul className="space-y-2">
+                <CardContent className="flex-1 space-y-4 pb-6">
+                  <ul className="space-y-2 text-gray-300">
                     <li className="flex items-start">
                       <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
                       <span>All Pro Features</span>
@@ -658,7 +658,7 @@ export default function LandingPage() {
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="mt-auto pt-0">
                   <Button 
                     className="w-full"
                     variant="outline"
@@ -789,7 +789,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-white/10 text-center text-gray-400 text-sm">
-            <p>&copy; {new Date().getFullYear()} AIreHire. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} AIreHire. All rights reserved.</p>
           </div>
         </div>
       </footer>

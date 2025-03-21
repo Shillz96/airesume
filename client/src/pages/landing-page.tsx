@@ -524,153 +524,153 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Pricing Section */}
-        <section id="pricing" className="py-20 relative z-10">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold cosmic-text-gradient">
-                Simple, Transparent Pricing
-              </h2>
-              <p className="mt-4 text-lg text-gray-300">
-                Choose the plan that fits your needs. All plans include our core features.
-              </p>
-            </div>
+     {/* Pricing Section */}
+<section id="pricing" className="py-20 relative z-10">
+  <div className="max-w-5xl mx-auto">
+    <div className="text-center mb-16">
+      <h2 className="text-3xl md:text-4xl font-bold cosmic-text-gradient">
+        Simple, Transparent Pricing
+      </h2>
+      <p className="mt-4 text-lg text-gray-300">
+        Choose the plan that fits your needs. All plans include our core features.
+      </p>
+    </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Free Plan */}
-              <Card className="cosmic-card border border-white/10 relative flex flex-col h-full">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-xl">Basic</CardTitle>
-                  <CardDescription>For individuals just getting started</CardDescription>
-                  <div className="mt-2">
-                    <span className="text-3xl font-bold">Free</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="flex-1 space-y-4 pb-6">
-                  <ul className="space-y-2 text-gray-300">
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-                      <span>1 Resume Creation</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-                      <span>Basic AI Resume Tips</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-                      <span>10 Job Matches Per Month</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-                      <span>Access to Basic Templates</span>
-                    </li>
-                  </ul>
-                </CardContent>
-                <CardFooter className="mt-auto pt-0">
-                  <Button 
-                    className="w-full"
-                    variant="outline"
-                    onClick={() => handleSelectPlan("Basic")}
-                  >
-                    Get Started Free
-                  </Button>
-                </CardFooter>
-              </Card>
-
-              {/* Pro Plan */}
-              <Card className="cosmic-card border-2 border-blue-400/50 relative flex flex-col h-full">
-                <div className="absolute -top-4 left-0 right-0 mx-auto w-fit px-4 py-1 bg-blue-500 text-white text-sm font-medium rounded-full">
-                  Most Popular
-                </div>
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-xl">Pro</CardTitle>
-                  <CardDescription>For individuals actively job hunting</CardDescription>
-                  <div className="mt-2">
-                    <span className="text-3xl font-bold">$15</span>
-                    <span className="text-muted-foreground">/month</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="flex-1 space-y-4 pb-6">
-                  <ul className="space-y-2 text-gray-300">
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-                      <span>Unlimited Resume Creations</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-                      <span>Advanced AI Resume Suggestions</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-                      <span>Unlimited Job Matches</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-                      <span>Resume Tailoring for Each Job</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-                      <span>Application Tracking Dashboard</span>
-                    </li>
-                  </ul>
-                </CardContent>
-                <CardFooter className="mt-auto pt-0">
-                  <Button 
-                    className="w-full cosmic-btn-glow"
-                    onClick={() => handleSelectPlan("Pro")}
-                  >
-                    Start Pro Plan
-                  </Button>
-                </CardFooter>
-              </Card>
-
-              {/* Business Plan */}
-              <Card className="cosmic-card border border-white/10 relative flex flex-col h-full">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-xl">Enterprise</CardTitle>
-                  <CardDescription>For career professionals and teams</CardDescription>
-                  <div className="mt-2">
-                    <span className="text-3xl font-bold">$29</span>
-                    <span className="text-muted-foreground">/month</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="flex-1 space-y-4 pb-6">
-                  <ul className="space-y-2 text-gray-300">
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-                      <span>All Pro Features</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-                      <span>Premium Resume Templates</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-                      <span>Priority AI Assistance</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-                      <span>Advanced Career Insights</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-                      <span>Team Collaboration Features</span>
-                    </li>
-                  </ul>
-                </CardContent>
-                <CardFooter className="mt-auto pt-0">
-                  <Button 
-                    className="w-full"
-                    variant="outline"
-                    onClick={() => handleSelectPlan("Enterprise")}
-                  >
-                    Start Enterprise Plan
-                  </Button>
-                </CardFooter>
-              </Card>
-            </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* Free Plan */}
+      <Card className="cosmic-card border border-white/10 relative flex flex-col h-full">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl text-white">Basic</CardTitle>
+          <CardDescription className="text-gray-300">For individuals just getting started</CardDescription>
+          <div className="mt-2">
+            <span className="text-3xl font-bold text-white">Free</span>
           </div>
-        </section>
+        </CardHeader>
+        <CardContent className="flex-1 space-y-2 pb-6">
+          <ul className="space-y-2 text-gray-300">
+            <li className="flex items-start">
+              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+              <span>1 Resume Creation</span>
+            </li>
+            <li className="flex items-start">
+              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+              <span>Basic AI Resume Tips</span>
+            </li>
+            <li className="flex items-start">
+              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+              <span>10 Job Matches Per Month</span>
+            </li>
+            <li className="flex items-start">
+              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+              <span>Access to Basic Templates</span>
+            </li>
+          </ul>
+        </CardContent>
+        <CardFooter className="mt-auto pt-0">
+          <Button
+            className="w-full"
+            variant="outline"
+            onClick={() => handleSelectPlan("Basic")}
+          >
+            Get Started Free
+          </Button>
+        </CardFooter>
+      </Card>
+
+      {/* Pro Plan */}
+      <Card className="cosmic-card border-2 border-blue-400/50 relative flex flex-col h-full">
+        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-fit px-4 py-1 bg-blue-500 text-white text-sm font-medium rounded-full">
+          Most Popular
+        </div>
+        <CardHeader className="pb-4 pt-8"> {/* Added pt-8 to account for the badge */}
+          <CardTitle className="text-xl text-white">Pro</CardTitle>
+          <CardDescription className="text-gray-300">For individuals actively job hunting</CardDescription>
+          <div className="mt-2">
+            <span className="text-3xl font-bold text-white">$15</span>
+            <span className="text-muted-foreground">/month</span>
+          </div>
+        </CardHeader>
+        <CardContent className="flex-1 space-y-2 pb-6">
+          <ul className="space-y-2 text-gray-300">
+            <li className="flex items-start">
+              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+              <span>Unlimited Resume Creations</span>
+            </li>
+            <li className="flex items-start">
+              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+              <span>Advanced AI Resume Suggestions</span>
+            </li>
+            <li className="flex items-start">
+              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+              <span>Unlimited Job Matches</span>
+            </li>
+            <li className="flex items-start">
+              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+              <span>Resume Tailoring for Each Job</span>
+            </li>
+            <li className="flex items-start">
+              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+              <span>Application Tracking Dashboard</span>
+            </li>
+          </ul>
+        </CardContent>
+        <CardFooter className="mt-auto pt-0">
+          <Button
+            className="w-full cosmic-btn-glow"
+            onClick={() => handleSelectPlan("Pro")}
+          >
+            Start Pro Plan
+          </Button>
+        </CardFooter>
+      </Card>
+
+      {/* Business Plan */}
+      <Card className="cosmic-card border border-white/10 relative flex flex-col h-full">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl text-white">Enterprise</CardTitle>
+          <CardDescription className="text-gray-300">For career professionals and teams</CardDescription>
+          <div className="mt-2">
+            <span className="text-3xl font-bold text-white">$29</span>
+            <span className="text-muted-foreground">/month</span>
+          </div>
+        </CardHeader>
+        <CardContent className="flex-1 space-y-2 pb-6">
+          <ul className="space-y-2 text-gray-300">
+            <li className="flex items-start">
+              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+              <span>All Pro Features</span>
+            </li>
+            <li className="flex items-start">
+              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+              <span>Premium Resume Templates</span>
+            </li>
+            <li className="flex items-start">
+              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+              <span>Priority AI Assistance</span>
+            </li>
+            <li className="flex items-start">
+              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+              <span>Advanced Career Insights</span>
+            </li>
+            <li className="flex items-start">
+              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
+              <span>Team Collaboration Features</span>
+            </li>
+          </ul>
+        </CardContent>
+        <CardFooter className="mt-auto pt-0">
+          <Button
+            className="w-full"
+            variant="outline"
+            onClick={() => handleSelectPlan("Enterprise")}
+          >
+            Start Enterprise Plan
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
+  </div>
+</section>
 
         {/* Testimonials Section */}
         <section className="py-20 relative z-10">

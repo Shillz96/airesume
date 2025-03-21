@@ -911,13 +911,12 @@ function ResumePreview({
   // Get toast from useToast hook at the component level
   const { toast } = useToast();
   
-  // Auto-adjust feature to fit content on one page
+  // Auto-adjust feature to fit content on one page without changing zoom
   const autoAdjust = () => {
     setIsAutoAdjusting(true);
     const previewElement = previewRef.current;
     if (!previewElement) return;
 
-    const containerHeight = previewElement.parentElement?.clientHeight || 0;
     const contentHeight = previewElement.scrollHeight;
     const a4Height = 297 * 3.78; // A4 height in pixels (297mm at 96dpi)
 
@@ -927,11 +926,13 @@ function ResumePreview({
     // Store the message for notification
     let feedbackMessage = "";
     
-    // Step 1: Adjust the appearance of the text in the resume
+    // Adjust the appearance of the text in the resume
     if (contentRatio > 1) {
       // Content doesn't fit - reduce font size and spacing based on how much it overflows
-      const fontReduction = Math.max(0.65, 1 / (contentRatio * 1.1)); // More aggressive reduction
-      const spacingReduction = Math.max(0.5, 1 / (contentRatio * 1.2)); // Even more aggressive for spacing
+      // Calculate more aggressive reductions for content that exceeds the page more dramatically
+      const overflowFactor = contentRatio > 1.5 ? 1.3 : (contentRatio > 1.25 ? 1.2 : 1.1);
+      const fontReduction = Math.max(0.65, 1 / (contentRatio * overflowFactor));
+      const spacingReduction = Math.max(0.5, 1 / (contentRatio * (overflowFactor + 0.1)));
       
       setFontScale(fontReduction);
       setSpacingScale(spacingReduction);
@@ -985,20 +986,13 @@ function ResumePreview({
       feedbackMessage = "Resume already fits on one page perfectly";
     }
     
-    // Step 2: Adjust the view scale for the container
-    if (contentHeight > containerHeight) {
-      const newScale = (containerHeight / contentHeight) * 0.9; // Slight reduction to ensure visibility
-      setScale(Math.max(0.5, newScale));
-    } else {
-      setScale(0.85); // Default scale to see more content
-    }
-
+    // Don't change the scale/zoom - maintain the current view scale
     setIsAutoAdjusting(false);
     
     // Show feedback to user using the component-level toast
     toast({
-      title: "Auto-adjust applied",
-      description: feedbackMessage,
+      title: "Smart Fit Applied",
+      description: feedbackMessage + " (only text and spacing were adjusted, zoom level was not changed)",
       duration: 3000,
     });
   };
@@ -1143,13 +1137,14 @@ function ResumePreview({
             onClick={autoAdjust}
             disabled={isAutoAdjusting}
             className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
+            title="Automatically adjust font size and spacing to fit content on one page without changing zoom level"
           >
             {isAutoAdjusting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Zap className="h-4 w-4" />
             )}
-            Auto Adjust
+            Smart Fit
           </Button>
           <Button
             variant="outline"

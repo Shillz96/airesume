@@ -115,6 +115,21 @@ export default function ResumePreviewComponent({
       window.print();
     }
   };
+  
+  // Force recalculation of preview after template changes or content adjustments
+  useEffect(() => {
+    // Force recalculation of content height
+    if (contentRef.current) {
+      const height = contentRef.current.scrollHeight;
+      const pageHeight = 841; // A4 height in pixels
+      setTotalPages(Math.ceil(height / pageHeight));
+      
+      // Force reflow by slightly changing scale and then reverting
+      const currentScale = previewScale;
+      setPreviewScale(currentScale - 0.01);
+      setTimeout(() => setPreviewScale(currentScale), 50);
+    }
+  }, [resume.template, resume.experience, resume.skills, resume.education, resume.personalInfo]);
 
   // Render the resume pages based on view mode
   const renderPages = () => {

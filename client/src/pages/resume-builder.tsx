@@ -720,24 +720,49 @@ export default function ResumeBuilder() {
   
   // Smart adjust resume content to fit optimally on page(s)
   const handleSmartAdjust = () => {
-    // Simple example of automatic content adjustment
-    // In a real implementation, this would analyze content and adjust font sizes, spacing, etc.
+    console.log("Smart Adjust triggered");
     
-    // 1. Shorten long descriptions if needed
-    const adjustedExperience = resume.experience.map(exp => {
+    // Deep copy the resume to work with
+    const resumeCopy = JSON.parse(JSON.stringify(resume));
+    
+    // 1. Reduce lengthy content - shorten experience descriptions
+    let contentAdjusted = false;
+    const adjustedExperience = resumeCopy.experience.map(exp => {
       // If description is too long, truncate it
       if (exp.description && exp.description.length > 500) {
+        contentAdjusted = true;
+        // Make each bullet point shorter if possible
+        let newDescription = exp.description;
+        
+        // If it has bullet points, shorten each one
+        if (exp.description.includes('•')) {
+          const bullets = exp.description.split('•').filter(Boolean);
+          newDescription = bullets
+            .map(bullet => {
+              // Trim and shorten long bullet points
+              const trimmed = bullet.trim();
+              return trimmed.length > 100 ? 
+                `• ${trimmed.substring(0, 95)}...` : 
+                `• ${trimmed}`;
+            })
+            .join('\n');
+        } else {
+          // Just trim the whole description
+          newDescription = exp.description.substring(0, 490) + '...';
+        }
+        
         return {
           ...exp,
-          description: exp.description.substring(0, 490) + '...'
+          description: newDescription
         };
       }
       return exp;
     });
     
-    // 2. Adjust education descriptions if needed
-    const adjustedEducation = resume.education.map(edu => {
+    // 2. Adjust education descriptions
+    const adjustedEducation = resumeCopy.education.map(edu => {
       if (edu.description && edu.description.length > 300) {
+        contentAdjusted = true;
         return {
           ...edu,
           description: edu.description.substring(0, 290) + '...'
@@ -746,28 +771,61 @@ export default function ResumeBuilder() {
       return edu;
     });
     
-    // 3. Limit number of skills shown based on proficiency
-    let adjustedSkills = [...resume.skills];
+    // 3. Prioritize skills by proficiency
+    let adjustedSkills = [...resumeCopy.skills];
     if (adjustedSkills.length > 10) {
-      // Sort skills by proficiency and take the top 10
+      contentAdjusted = true;
+      // Sort skills by proficiency and take the top skills
       adjustedSkills = adjustedSkills
         .sort((a, b) => b.proficiency - a.proficiency)
         .slice(0, 10);
     }
     
+    // 4. Truncate lengthy summaries
+    let adjustedSummary = resumeCopy.personalInfo.summary;
+    if (adjustedSummary && adjustedSummary.length > 600) {
+      contentAdjusted = true;
+      adjustedSummary = adjustedSummary.substring(0, 590) + '...';
+    }
+    
     // Update resume with adjusted content
-    setResume({
-      ...resume,
+    const adjustedResume = {
+      ...resumeCopy,
       experience: adjustedExperience,
       education: adjustedEducation,
-      skills: adjustedSkills
-    });
+      skills: adjustedSkills,
+      personalInfo: {
+        ...resumeCopy.personalInfo,
+        summary: adjustedSummary
+      }
+    };
     
-    // Show feedback toast
-    toast({
-      title: "Smart Adjust Applied",
-      description: "Your resume content has been optimized for better page fit.",
-    });
+    // Only update if changes were made
+    if (contentAdjusted) {
+      setResume(adjustedResume);
+      // Show feedback toast
+      toast({
+        title: "Smart Adjust Applied",
+        description: "Your resume content has been optimized for better page fit.",
+      });
+    } else {
+      // No changes needed
+      toast({
+        title: "Resume Already Optimized",
+        description: "Your resume content is already well-balanced for page fit.",
+      });
+    }
+    
+    // Force a recalculation of preview layout
+    setTimeout(() => {
+      // Trigger a small UI update to force reflow
+      setPreviewScale(prev => {
+        // Toggle slightly and back to force redraw
+        const temp = prev - 0.01;
+        setTimeout(() => setPreviewScale(prev), 50);
+        return temp;
+      });
+    }, 100);
   };
   
   // Handle resume upload and parsed data

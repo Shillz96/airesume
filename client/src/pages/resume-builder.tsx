@@ -10,7 +10,14 @@ import ResumeTemplate, {
   ModernTemplate,
   MinimalTemplate,
   IndustryTemplate,
-  BoldTemplate
+  BoldTemplate,
+  TemplatePreviewProfessional,
+  TemplatePreviewCreative,
+  TemplatePreviewExecutive,
+  TemplatePreviewModern,
+  TemplatePreviewMinimal,
+  TemplatePreviewIndustry,
+  TemplatePreviewBold
 } from "@/components/resume-template";
 import { 
   ResumeExperienceSection, 
@@ -819,8 +826,76 @@ function ResumePreview({ resume }: { resume: Resume }) {
       {/* Template selection */}
       <div className="mt-8">
         <h3 className="text-lg font-medium mb-4">Choose a Template</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Template options would go here */}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div 
+            className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === 'professional' ? 'border-2 border-blue-500 shadow-lg' : 'border border-gray-300'}`}
+            onClick={() => handleTemplateChange('professional')}
+          >
+            <div className="h-32 mb-2">
+              <TemplatePreviewProfessional />
+            </div>
+            <h4 className="font-medium text-center">Professional</h4>
+          </div>
+          
+          <div 
+            className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === 'creative' ? 'border-2 border-blue-500 shadow-lg' : 'border border-gray-300'}`}
+            onClick={() => handleTemplateChange('creative')}
+          >
+            <div className="h-32 mb-2">
+              <TemplatePreviewCreative />
+            </div>
+            <h4 className="font-medium text-center">Creative</h4>
+          </div>
+          
+          <div 
+            className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === 'executive' ? 'border-2 border-blue-500 shadow-lg' : 'border border-gray-300'}`}
+            onClick={() => handleTemplateChange('executive')}
+          >
+            <div className="h-32 mb-2">
+              <TemplatePreviewExecutive />
+            </div>
+            <h4 className="font-medium text-center">Executive</h4>
+          </div>
+          
+          <div 
+            className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === 'modern' ? 'border-2 border-blue-500 shadow-lg' : 'border border-gray-300'}`}
+            onClick={() => handleTemplateChange('modern')}
+          >
+            <div className="h-32 mb-2">
+              <TemplatePreviewModern />
+            </div>
+            <h4 className="font-medium text-center">Modern</h4>
+          </div>
+          
+          <div 
+            className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === 'minimal' ? 'border-2 border-blue-500 shadow-lg' : 'border border-gray-300'}`}
+            onClick={() => handleTemplateChange('minimal')}
+          >
+            <div className="h-32 mb-2">
+              <TemplatePreviewMinimal />
+            </div>
+            <h4 className="font-medium text-center">Minimal</h4>
+          </div>
+          
+          <div 
+            className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === 'industry' ? 'border-2 border-blue-500 shadow-lg' : 'border border-gray-300'}`}
+            onClick={() => handleTemplateChange('industry')}
+          >
+            <div className="h-32 mb-2">
+              <TemplatePreviewIndustry />
+            </div>
+            <h4 className="font-medium text-center">Industry</h4>
+          </div>
+          
+          <div 
+            className={`cursor-pointer p-3 rounded-lg transition-all ${resume.template === 'bold' ? 'border-2 border-blue-500 shadow-lg' : 'border border-gray-300'}`}
+            onClick={() => handleTemplateChange('bold')}
+          >
+            <div className="h-32 mb-2">
+              <TemplatePreviewBold />
+            </div>
+            <h4 className="font-medium text-center">Bold</h4>
+          </div>
         </div>
       </div>
     </div>

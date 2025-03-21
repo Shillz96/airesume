@@ -706,6 +706,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: (error as Error).message });
     }
   });
+  
+  // Apply tailored resume content to an existing resume
+  app.post("/api/resumes/:id/apply-tailored", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const userId = req.user!.id;
+      const resumeId = parseInt(req.params.id);
+      const tailoredContent = req.body;
+      
+      // Get the existing resume
+      const resume = await storage.getResume(resumeId, userId);
+      if (!resume) {
+        return res.status(404).json({ message: "Resume not found" });
+      }
+      
+      // Extract tailored content sections
+      const { personalInfo, experience, skills } = tailoredContent;
+      
+      // Create updated resume object
+      const updatedResumeData = {
+        ...resume,
+        content: {
+          ...resume.content,
+          personalInfo: {
+            ...resume.content?.personalInfo,
+            ...personalInfo
+          },
+          experience: experience || resume.content?.experience,
+          skills: skills || resume.content?.skills
+        }
+      };
+      
+      // Update resume in storage
+      const updatedResume = await storage.updateResume(resumeId, userId, updatedResumeData);
+      
+      res.json({
+        success: true,
+        resume: updatedResume
+      });
+    } catch (error) {
+      console.error("Error applying tailored content:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to apply tailored content to resume"
+      });
+    }
+  });
 
   app.delete("/api/resumes/:id", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);

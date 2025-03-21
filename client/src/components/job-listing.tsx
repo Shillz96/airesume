@@ -196,15 +196,63 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
     applyToJob();
   };
 
-  const handleApplyTailored = () => {
-    if (onTailoredResumeApplied && tailoredResume) {
-      onTailoredResumeApplied(tailoredResume);
+  // Mutation to apply the tailored resume to the active resume
+  const { mutate: applyTailoredResume, isPending: isApplyingTailored } = useMutation({
+    mutationFn: async () => {
+      if (!tailoredResume) {
+        throw new Error("No tailored resume available");
+      }
+      
+      // For guest mode, use the callback
+      if (!resume.id) {
+        if (onTailoredResumeApplied) {
+          onTailoredResumeApplied(tailoredResume);
+          return { success: true };
+        }
+        throw new Error("Cannot apply tailored resume in guest mode without callback");
+      }
+      
+      // For authenticated users, call the API
+      const res = await apiRequest(
+        "POST", 
+        `/api/resumes/${resume.id}/apply-tailored`, 
+        tailoredResume
+      );
+      
+      return await res.json();
+    },
+    onSuccess: () => {
       toast({
         title: "Tailored Resume Applied",
         description: "The tailored resume has been applied to your resume builder.",
       });
       setDialogOpen(false);
-    }
+    },
+    onError: (error: Error) => {
+      console.error("Error applying tailored resume:", error);
+      
+      // For guest mode, fallback to callback
+      if (onTailoredResumeApplied && tailoredResume) {
+        onTailoredResumeApplied(tailoredResume);
+        
+        toast({
+          title: "Tailored Resume Applied",
+          description: "The tailored resume has been applied to your resume builder.",
+        });
+        
+        setDialogOpen(false);
+      } else {
+        toast({
+          title: "Error Applying Tailored Resume",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    },
+  });
+
+  const handleApplyTailored = () => {
+    applyTailoredResume();
   };
 
   // Format display date

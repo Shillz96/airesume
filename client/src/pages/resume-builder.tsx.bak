@@ -1528,7 +1528,6 @@ export default function ResumeBuilder() {
                             suggestionType="summary"
                           />
                         </div>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -1586,68 +1585,36 @@ export default function ResumeBuilder() {
                       <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
                       <div className="relative z-10">
                         <div className="flex items-center mb-4">
-                          <Briefcase className="h-5 w-5 mr-2 text-blue-400" />
-                          <h3 className="font-medium text-white">Experience Tips</h3>
+                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
+                          <h3 className="font-medium text-white">AI Experience Assistant</h3>
                         </div>
                         
-                        <div className="text-xs text-gray-300 mt-3 bg-white/5 p-3 rounded-lg">
-                          <p className="mb-2 text-blue-300 font-medium">Tips for effective bullet points:</p>
-                          <ul className="list-disc pl-4 space-y-1">
-                            <li>Start with strong action verbs</li>
-                            <li>Include metrics and achievements</li>
-                            <li>Use industry-specific keywords</li>
-                            <li>Highlight results, not just responsibilities</li>
-                          </ul>
-                        </div>
-                        
-                        <div className="mt-4 flex">
-                          {showTips === "experience" ? (
-                            <div className="w-full">
-                              <ResumeTips 
-                                resumeId={resumeId} 
-                                onApplySuggestion={(bulletPoint) => {
-                                  if (resume.experience.length > 0) {
-                                    // Apply to the most recent experience item
-                                    const updatedExperience = [...resume.experience];
-                                    const lastIndex = updatedExperience.length - 1;
-                                    
-                                    updatedExperience[lastIndex] = {
-                                      ...updatedExperience[lastIndex],
-                                      description: bulletPoint
-                                    };
-                                    
-                                    setResume({
-                                      ...resume,
-                                      experience: updatedExperience
-                                    });
-                                  }
-                                  setShowTips(null);
-                                  toast({
-                                    title: "Bullet point applied",
-                                    description: "AI-generated bullet point has been applied to your experience."
-                                  });
-                                }}
-                                suggestionType="bullet"
-                              />
-                              <Button
-                                onClick={() => setShowTips(null)}
-                                variant="ghost"
-                                size="sm"
-                                className="mt-2 w-full text-gray-400 hover:text-white"
-                              >
-                                Cancel
-                              </Button>
-                            </div>
-                          ) : (
-                            <Button
-                              onClick={() => setShowTips("experience")}
-                              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                              size="sm"
-                            >
-                              <Cpu className="h-4 w-4 mr-2" />
-                              Get AI Suggestions
-                            </Button>
-                          )}
+                        <div className="w-full">
+                          <ResumeTips 
+                            resumeId={resumeId} 
+                            onApplySuggestion={(bulletPoint) => {
+                              if (resume.experience.length > 0) {
+                                // Apply to the most recent experience item
+                                const updatedExperience = [...resume.experience];
+                                const lastIndex = updatedExperience.length - 1;
+                                
+                                updatedExperience[lastIndex] = {
+                                  ...updatedExperience[lastIndex],
+                                  description: bulletPoint
+                                };
+                                
+                                setResume({
+                                  ...resume,
+                                  experience: updatedExperience
+                                });
+                              }
+                              toast({
+                                title: "Bullet point applied",
+                                description: "AI-generated bullet point has been applied to your experience."
+                              });
+                            }}
+                            suggestionType="bullet"
+                          />
                         </div>
                       </div>
                     </div>

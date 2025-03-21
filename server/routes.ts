@@ -787,8 +787,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const experience = resume.content?.experience || [];
       const skills = resume.content?.skills || [];
       
-      // Import the openai client from ai.ts
-      const response = await (await import('./ai')).openai.chat.completions.create({
+      // Use the imported openai client
+      const response = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [
           {
@@ -878,8 +878,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Extract job data
       const { title, company, description, skills: jobSkills = [] } = job;
       
-      // Import the openai client from ai.ts
-      const response = await (await import('./ai')).openai.chat.completions.create({
+      // Use the imported openai client
+      const response = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [
           {
@@ -1070,8 +1070,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Import OpenAI
-      const openAI = (await import('./ai')).openai;
+      // Use the imported openai client
+      const openAI = openai;
       
       try {
         // Extract skills from the job

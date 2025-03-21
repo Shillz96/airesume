@@ -1609,7 +1609,20 @@ export default function ResumeBuilder() {
   
   // Function to generate a clean, printable HTML version of the resume
   function generatePrintableHTML(resumeData: Resume): string {
-    // Basic styling for the resume
+    // Get current Smart Fit settings if they exist in the window object
+    const smartFit = {
+      // Check the previewRef's ResumePreviewComponent if possible
+      fontScale: document.querySelector('.resume-content-container')?.getAttribute('data-font-scale') || '1',
+      spacingScale: document.querySelector('.resume-content-container')?.getAttribute('data-spacing-scale') || '1'
+    };
+    
+    // Convert to numbers
+    const fontScale = parseFloat(smartFit.fontScale);
+    const spacingScale = parseFloat(smartFit.spacingScale);
+    
+    console.log('Print with Smart Fit settings:', { fontScale, spacingScale });
+    
+    // Basic styling for the resume with Smart Fit adjustments applied
     const styles = `
       <style>
         @media print {
@@ -1621,11 +1634,12 @@ export default function ResumeBuilder() {
         
         body {
           font-family: 'Arial', sans-serif;
-          line-height: 1.5;
+          line-height: ${1.5 * spacingScale};
           color: #333;
           margin: 0;
           padding: 0;
           background: white;
+          font-size: ${16 * fontScale}px;
         }
         
         .resume-container {
@@ -1639,35 +1653,35 @@ export default function ResumeBuilder() {
         
         .header {
           text-align: center;
-          margin-bottom: 20px;
+          margin-bottom: ${20 * spacingScale}px;
         }
         
         .header h1 {
           margin: 0;
-          font-size: 28px;
+          font-size: ${28 * fontScale}px;
           color: #2a3f5f;
         }
         
         .header .contact {
-          margin-top: 10px;
-          font-size: 14px;
+          margin-top: ${10 * spacingScale}px;
+          font-size: ${14 * fontScale}px;
         }
         
         .section {
-          margin-bottom: 20px;
+          margin-bottom: ${20 * spacingScale}px;
         }
         
         .section-title {
-          font-size: 18px;
+          font-size: ${18 * fontScale}px;
           font-weight: bold;
           border-bottom: 2px solid #2a3f5f;
-          margin-bottom: 10px;
-          padding-bottom: 5px;
+          margin-bottom: ${10 * spacingScale}px;
+          padding-bottom: ${5 * spacingScale}px;
           color: #2a3f5f;
         }
         
         .experience-item, .education-item, .project-item {
-          margin-bottom: 15px;
+          margin-bottom: ${15 * spacingScale}px;
         }
         
         .item-header {
@@ -1689,20 +1703,20 @@ export default function ResumeBuilder() {
         }
         
         .item-description {
-          margin-top: 5px;
+          margin-top: ${5 * spacingScale}px;
         }
         
         .skills-list {
           display: flex;
           flex-wrap: wrap;
-          gap: 10px;
+          gap: ${10 * spacingScale}px;
         }
         
         .skill-item {
           background-color: #f5f5f5;
           border-radius: 3px;
-          padding: 3px 8px;
-          font-size: 14px;
+          padding: ${3 * spacingScale}px ${8 * spacingScale}px;
+          font-size: ${14 * fontScale}px;
         }
       </style>
     `;

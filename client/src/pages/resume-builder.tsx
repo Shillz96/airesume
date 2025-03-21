@@ -900,7 +900,9 @@ function SkillSuggestions({
 // This component has been replaced by ResumePreviewComponent
 
 function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; onTemplateChange: (template: string) => void }) {
-  const [scale, setScale] = useState(1.0); // Default scale set to show full page
+  // Calculate an initial scale that will fit most resumes in the viewport
+  // Starting with 0.85 instead of 1.0 to show more content initially
+  const [scale, setScale] = useState(0.85); 
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isAutoAdjusting, setIsAutoAdjusting] = useState(false);
@@ -914,11 +916,23 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
   // Generate actual PDF file for download
   const downloadResume = async () => {
     try {
-      // First set the scale to 1 to ensure proper PDF generation
+      // First set optimal settings for PDF generation
       const originalScale = scale;
-      setScale(1.0);
+      const originalFontScale = fontScale;
+      const originalSpacingScale = spacingScale;
       
-      // Wait for the scale change to apply
+      // Set to 100% scale, reset font and spacing scales to 1
+      setScale(1.0);
+      setFontScale(1);
+      setSpacingScale(1);
+      
+      // Add a loading toast to show progress
+      toast({
+        title: "Preparing PDF",
+        description: "Optimizing your resume for PDF download...",
+      });
+      
+      // Wait for the scale changes to apply
       setTimeout(async () => {
         if (!previewRef.current) return;
         
@@ -931,20 +945,8 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
           'Resume';
         const fileName = `${name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
         
+        // Try server-side PDF generation first, then fall back to print dialog
         try {
-          // Display print dialog message to user
-          toast({
-            title: "Using Print Dialog",
-            description: "PDF generation API failed. Using browser print dialog instead.",
-          });
-          
-          // Set timeout to allow toast to display before print dialog
-          setTimeout(() => {
-            // Use print dialog as primary method until server-side PDF generation is fixed
-            window.print();
-          }, 1000);
-          
-          /* Server-side PDF generation temporarily disabled
           // Create a form to send to the server for PDF generation
           const formData = new FormData();
           formData.append('resumeData', JSON.stringify(resume));
@@ -976,32 +978,80 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
             title: "PDF Downloaded",
             description: `Your resume has been downloaded as ${fileName}`,
           });
-          */
         } catch (error) {
-          console.error('Error downloading PDF:', error);
+          console.error('Error downloading PDF from server:', error);
           
-          // Fallback to window.print() if the API fails
-          window.print();
-          
+          // If server-side generation fails, try client-side printing
           toast({
             title: "Using Print Dialog",
-            description: "PDF generation API failed. Using browser print dialog instead.",
-            variant: "destructive"
+            description: "Server PDF generation failed. Using browser print dialog instead.",
           });
+          
+          // Add print-specific styles to the document
+          const style = document.createElement('style');
+          style.id = 'print-resume-style';
+          style.innerHTML = `
+            @media print {
+              body * {
+                visibility: hidden;
+              }
+              #${previewRef.current.id || 'resume-preview'}, #${previewRef.current.id || 'resume-preview'} * {
+                visibility: visible;
+              }
+              #${previewRef.current.id || 'resume-preview'} {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 210mm;
+                height: 297mm;
+                margin: 0;
+                padding: 0;
+                transform: scale(1) !important;
+              }
+            }
+          `;
+          document.head.appendChild(style);
+          
+          // Create a unique id for the preview element if it doesn't have one
+          if (!previewRef.current.id) {
+            previewRef.current.id = 'resume-preview';
+          }
+          
+          // Trigger print dialog after a brief delay
+          setTimeout(() => {
+            window.print();
+            
+            // Remove the print styles after printing
+            setTimeout(() => {
+              const printStyle = document.getElementById('print-resume-style');
+              if (printStyle) document.head.removeChild(printStyle);
+            }, 1000);
+          }, 500);
         }
         
-        // Restore the original scale
-        setScale(originalScale);
-      }, 100);
+        // Restore the original scales
+        setTimeout(() => {
+          setScale(originalScale);
+          setFontScale(originalFontScale);
+          setSpacingScale(originalSpacingScale);
+        }, 1000);
+      }, 300);
     } catch (error) {
       console.error('Error preparing PDF download:', error);
-      window.print(); // Fallback
+      
+      // Fall back to basic print dialog as last resort
+      window.print();
       
       toast({
         title: "Using Print Dialog",
         description: "There was an issue preparing the PDF. Using browser print dialog instead.",
         variant: "destructive"
       });
+      
+      // Reset the scales
+      setScale(0.85);
+      setFontScale(1);
+      setSpacingScale(1);
     }
   };
 
@@ -1068,6 +1118,9 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
   const autoAdjust = () => {
     setIsAutoAdjusting(true);
     
+    // First reset to default scale to get accurate measurements
+    setScale(1.0);
+    
     // Intelligent scaling algorithm to fit content
     setTimeout(() => {
       if (!previewRef.current) {
@@ -1076,28 +1129,55 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
       }
       
       const contentHeight = previewRef.current.scrollHeight;
-      const containerHeight = 297 * 3.78; // A4 height in pixels
+      const containerHeight = 297 * 3.78; // A4 height in pixels (297mm converted to px)
       
       // Calculate the required scaling factors
       const heightRatio = containerHeight / contentHeight;
       
+      // Log for debugging
+      console.log('Content height:', contentHeight, 'Container height:', containerHeight, 'Ratio:', heightRatio);
+      
       // Apply the scaling depending on whether content is too large
       if (heightRatio < 1) {
-        // Content is too large, scale down the font and spacing
-        const newFontScale = Math.max(0.7, heightRatio * 0.95); // Don't go below 70%
-        const newSpacingScale = Math.max(0.7, heightRatio * 0.9);
+        // Content is too large, scale down the font and spacing gradually
         
+        // Calculate optimal font scaling - more gentle reduction for minor overflows
+        let newFontScale = 1;
+        if (heightRatio >= 0.9) { // Minor overflow (less than 10%)
+          newFontScale = Math.max(0.9, heightRatio * 0.98);
+        } else if (heightRatio >= 0.8) { // Moderate overflow (10-20%)
+          newFontScale = Math.max(0.8, heightRatio * 0.95);
+        } else { // Major overflow (>20%)
+          newFontScale = Math.max(0.7, heightRatio * 0.9);
+        }
+        
+        // Spacing can be reduced more aggressively than font size
+        const newSpacingScale = Math.max(0.7, heightRatio * 0.85);
+        
+        // Set new scales
         setFontScale(newFontScale);
         setSpacingScale(newSpacingScale);
         
+        // Also adjust the view scale for better visibility if content is very large
+        if (heightRatio < 0.7) {
+          // For very large content, zoom out to see more
+          setScale(0.8);
+        } else {
+          // For moderately large content, keep scale at 0.85
+          setScale(0.85);
+        }
+        
         toast({
           title: "Smart Fit Applied",
-          description: `Content adjusted to fit on one page (${Math.round(newFontScale * 100)}% scale)`,
+          description: `Content adjusted to fit on one page (${Math.round(newFontScale * 100)}% text scale)`,
         });
       } else {
         // Content fits already, reset to default
         setFontScale(1);
         setSpacingScale(1);
+        
+        // Set view scale to show the full page
+        setScale(0.85);
         
         toast({
           title: "Smart Fit Reset",
@@ -1201,25 +1281,27 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
       <div
         ref={resumeContainerRef}
         className={cn(
-          "bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-xl overflow-auto",
+          "bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-xl overflow-auto scroll-smooth",
           isFullScreen
             ? "fixed inset-0 z-50 m-0 p-8 bg-black/90"
-            : "p-4 h-[80vh] flex items-start justify-center" // Center the preview and use flexbox
+            : "p-4 h-[80vh] flex items-center justify-center" // Center the preview vertically and horizontally
         )}
       >
         <div
           ref={previewRef}
-          className="transition-all duration-300 mx-auto bg-white shadow-lg"
+          className="transition-all duration-300 mx-auto bg-white shadow-lg print:shadow-none"
           style={{
             transform: `scale(${scale})`,
             width: "210mm", // A4 width
             minHeight: "297mm", // A4 height (minimum to ensure proper proportions)
             maxHeight: "297mm", // A4 height (maximum to ensure proper proportions)
-            transformOrigin: "top center",
+            transformOrigin: "center", // Center transform origin for better viewing 
             fontSize: `${fontScale * 100}%`, // Dynamic font scaling
             lineHeight: `${spacingScale * 1.5}`, // Dynamic line height scaling
             overflowY: isEditing ? "auto" : "hidden", // Hide overflow when not editing
             boxShadow: "0 4px 24px rgba(0, 0, 0, 0.15)", // Add shadow for better visibility
+            marginTop: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
+            marginBottom: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
           }}
         >
           {isEditing ? (

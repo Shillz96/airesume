@@ -491,7 +491,7 @@ export default function AIAssistant({
   };
 
   // The floating button
-  const FloatingButton = () => (
+  const FloatingAIButton = () => (
     <div className="fixed bottom-6 right-6 z-50">
       {!isDialogOpen ? (
         <Button
@@ -681,7 +681,7 @@ export default function AIAssistant({
   );
 
   // The full-screen dialog for larger screens
-  const ChatDialog = () => (
+  const AIAssistantDialog = () => (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogContent className="sm:max-w-[500px] bg-[rgba(10,12,24,0.95)] backdrop-blur-md border-[rgba(255,255,255,0.1)] text-white">
         <DialogHeader>

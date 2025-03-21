@@ -882,6 +882,8 @@ function SkillSuggestions({
   );
 }
 
+// ... (previous imports remain unchanged)
+
 // Preview component for the "Preview" section
 function ResumePreview({
   resume,
@@ -891,10 +893,63 @@ function ResumePreview({
   onTemplateChange: (template: string) => void;
 }) {
   const [scale, setScale] = useState(1);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isAutoAdjusting, setIsAutoAdjusting] = useState(false);
+  const [editedResume, setEditedResume] = useState<Resume>(resume);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   // Function to download the resume
   const downloadResume = () => {
     window.print(); // Simplified for demo; replace with actual PDF generation in production
+  };
+
+  // Auto-adjust feature to fit content
+  const autoAdjust = () => {
+    setIsAutoAdjusting(true);
+    const previewElement = previewRef.current;
+    if (!previewElement) return;
+
+    const containerHeight = previewElement.parentElement?.clientHeight || 0;
+    const contentHeight = previewElement.scrollHeight;
+
+    if (contentHeight > containerHeight) {
+      const newScale = (containerHeight / contentHeight) * scale;
+      setScale(Math.max(0.5, newScale));
+    } else {
+      setScale(1);
+    }
+    setIsAutoAdjusting(false);
+  };
+
+  // Toggle full screen view
+  const toggleFullScreen = () => {
+    setIsFullScreen(!isFullScreen);
+  };
+
+  // Handle edit toggle
+  const toggleEdit = () => {
+    setIsEditing(!isEditing);
+    if (isEditing) {
+      // Save changes when exiting edit mode
+      setResume(editedResume);
+    }
+  };
+
+  // Update edited resume fields
+  const handleFieldChange = (section: string, field: string, value: string) => {
+    setEditedResume((prev) => {
+      if (section === "personalInfo") {
+        return {
+          ...prev,
+          personalInfo: {
+            ...prev.personalInfo,
+            [field]: value,
+          },
+        };
+      }
+      return prev;
+    });
   };
 
   // Get the appropriate template component based on resume.template
@@ -913,39 +968,86 @@ function ResumePreview({
                 ? BoldTemplate
                 : ProfessionalTemplate; // Default to professional
 
+  // Update edited resume when the main resume changes
+  useEffect(() => {
+    setEditedResume(resume);
+  }, [resume]);
+
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-medium text-secondary-900">
-          Resume Preview
-        </h3>
+      {/* Controls */}
+      <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
+        <div className="flex items-center gap-2">
+          <h3 className="text-lg font-medium text-white">Resume Preview</h3>
+          <Badge variant="outline" className="text-blue-300 border-blue-300/30">
+            {Math.round(scale * 100)}%
+          </Badge>
+        </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setScale(Math.max(0.5, scale - 0.1))}
             disabled={scale <= 0.5}
-            className="flex items-center"
+            className="flex items-center text-white border-white/20 hover:bg-white/10"
           >
             <Minus className="h-4 w-4" />
           </Button>
-          <span className="flex items-center text-sm px-2">
-            {Math.round(scale * 100)}%
-          </span>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setScale(Math.min(1.5, scale + 0.1))}
             disabled={scale >= 1.5}
-            className="flex items-center"
+            className="flex items-center text-white border-white/20 hover:bg-white/10"
           >
             <Plus className="h-4 w-4" />
           </Button>
           <Button
             variant="outline"
             size="sm"
+            onClick={autoAdjust}
+            disabled={isAutoAdjusting}
+            className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
+          >
+            {isAutoAdjusting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Zap className="h-4 w-4" />
+            )}
+            Auto Adjust
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleFullScreen}
+            className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
+          >
+            <Maximize2 className="h-4 w-4" />
+            {isFullScreen ? "Exit Full Screen" : "Full Screen"}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleEdit}
+            className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
+          >
+            {isEditing ? (
+              <>
+                <Check className="h-4 w-4" />
+                Save
+              </>
+            ) : (
+              <>
+                <FileText className="h-4 w-4" />
+                Edit
+              </>
+            )}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={downloadResume}
-            className="flex items-center gap-1 ml-2"
+            className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
           >
             <Download className="h-4 w-4" />
             Download PDF
@@ -953,14 +1055,109 @@ function ResumePreview({
         </div>
       </div>
 
-      <div className="bg-white border border-secondary-200 rounded-lg overflow-hidden shadow-lg p-8">
+      {/* Resume Preview */}
+      <div
+        className={cn(
+          "bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-xl overflow-auto",
+          isFullScreen
+            ? "fixed inset-0 z-50 m-0 p-8 bg-black/90"
+            : "p-8 max-h-[70vh]"
+        )}
+      >
         <div
-          className="transition-all duration-300 origin-top"
-          style={{ transform: `scale(${scale})` }}
+          ref={previewRef}
+          className="transition-all duration-300 mx-auto"
+          style={{
+            transform: `scale(${scale})`,
+            width: "210mm", // A4 width
+            minHeight: "297mm", // A4 height
+            transformOrigin: isFullScreen ? "center" : "top",
+          }}
         >
-          <TemplateComponent resume={resume} />
+          {isEditing ? (
+            <div className="p-4 bg-white text-black">
+              <h2 className="text-2xl font-bold mb-2">
+                <Input
+                  value={editedResume.personalInfo.firstName + " " + editedResume.personalInfo.lastName}
+                  onChange={(e) => {
+                    const [firstName, ...lastNameParts] = e.target.value.split(" ");
+                    handleFieldChange("personalInfo", "firstName", firstName || "");
+                    handleFieldChange("personalInfo", "lastName", lastNameParts.join(" ") || "");
+                  }}
+                  className="border-none p-0 text-2xl font-bold"
+                />
+              </h2>
+              <div className="flex gap-2 text-sm mb-4">
+                <Input
+                  value={editedResume.personalInfo.email}
+                  onChange={(e) => handleFieldChange("personalInfo", "email", e.target.value)}
+                  className="border-none p-0 text-sm"
+                  placeholder="Email"
+                />
+                <span>|</span>
+                <Input
+                  value={editedResume.personalInfo.phone}
+                  onChange={(e) => handleFieldChange("personalInfo", "phone", e.target.value)}
+                  className="border-none p-0 text-sm"
+                  placeholder="Phone"
+                />
+              </div>
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold mb-1">Summary</h3>
+                <Textarea
+                  value={editedResume.personalInfo.summary}
+                  onChange={(e) => handleFieldChange("personalInfo", "summary", e.target.value)}
+                  className="border-none p-0 text-sm"
+                  placeholder="Professional Summary"
+                />
+              </div>
+              {/* Add more editable fields as needed */}
+              <TemplateComponent resume={editedResume} />
+            </div>
+          ) : (
+            <div className="bg-white text-black p-8">
+              <TemplateComponent resume={resume} />
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Template Selection */}
+      <div className="mt-8">
+        <h3 className="text-lg font-medium mb-4 text-white">Choose a Template</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {[
+            { name: "professional", preview: TemplatePreviewProfessional },
+            { name: "creative", preview: TemplatePreviewCreative },
+            { name: "executive", preview: TemplatePreviewExecutive },
+            { name: "modern", preview: TemplatePreviewModern },
+            { name: "minimal", preview: TemplatePreviewMinimal },
+            { name: "industry", preview: TemplatePreviewIndustry },
+            { name: "bold", preview: TemplatePreviewBold },
+          ].map((template) => (
+            <div
+              key={template.name}
+              className={cn(
+                "cursor-pointer p-3 rounded-lg transition-all",
+                resume.template === template.name
+                  ? "border-2 border-blue-500 shadow-lg"
+                  : "border border-white/20"
+              )}
+              onClick={() => onTemplateChange(template.name)}
+            >
+              <div className="h-32 mb-2">
+                <template.preview />
+              </div>
+              <h4 className="font-medium text-center text-white capitalize">{template.name}</h4>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ... (rest of the ResumeBuilder component remains unchanged)
 
       {/* Template selection */}
       <div className="mt-8">

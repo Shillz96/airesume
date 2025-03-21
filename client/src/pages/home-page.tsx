@@ -8,6 +8,7 @@ import RecentActivity from "@/components/recent-activity";
 import JobSearchProgress from "@/components/job-search-progress";
 import JobInterviewAvatar from "@/components/job-interview-avatar";
 import SubscriptionStatus from "@/components/subscription-status";
+import PageHeader from "@/components/page-header";
 import { Rocket, User, LayoutDashboard, UserCheck, Calendar, Search, Clock, Briefcase } from "lucide-react";
 
 export default function HomePage() {
@@ -83,20 +84,22 @@ export default function HomePage() {
       <CosmicBackground />
       <Navbar />
       <div className="container pt-24 pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
-        <div className="flex items-center justify-between mb-6" ref={welcomeRef}>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight cosmic-text-gradient">
-              Welcome back, <span className="cosmic-text-gradient">{user?.username}</span>!
-            </h1>
-            <p className="text-muted-foreground">
-              Navigate your career journey with AI-powered tools and insights.
-            </p>
-          </div>
-          <div className="ml-4" ref={rocketRef}>
-            <div className="bg-[hsl(260,100%,60%)] bg-opacity-20 p-3 rounded-full cosmic-glow">
-              <Rocket size={24} className="text-white" />
-            </div>
-          </div>
+        <div ref={welcomeRef}>
+          <PageHeader
+            title={
+              <span className="cosmic-text-gradient">
+                Welcome back, {user?.username}!
+              </span>
+            }
+            subtitle="Navigate your career journey with AI-powered tools and insights."
+            actions={
+              <div ref={rocketRef}>
+                <div className="bg-[hsl(260,100%,60%)] bg-opacity-20 p-3 rounded-full cosmic-glow">
+                  <Rocket size={24} className="text-white" />
+                </div>
+              </div>
+            }
+          />
         </div>
         
         <SubscriptionStatus />

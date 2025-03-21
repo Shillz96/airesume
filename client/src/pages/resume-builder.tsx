@@ -3,6 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useLocation } from "wouter";
 import ResumeTips from "@/components/resume-tips";
 import Navbar from "@/components/navbar";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
@@ -67,6 +68,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogClose,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -184,29 +186,47 @@ export default function ResumeBuilder() {
       return res.json();
     },
     enabled: !!resumeId,
-    onSuccess: (data) => {
-      if (data && data.id) {
-        // Initialize empty arrays for sections that might be missing
-        const resumeData = {
-          ...data,
-          experience: data.experience || [],
-          education: data.education || [],
-          skills: data.skills || [],
-          projects: data.projects || [],
-          template: data.template || 'professional',
-          skillsDisplayMode: data.skillsDisplayMode || 'bubbles',
-        };
-        setResume(resumeData);
-      }
-    },
-    onError: (error: Error) => {
-      toast({
-        title: 'Error loading resume',
-        description: error.message || 'An error occurred while loading your resume.',
-        variant: 'destructive',
-      });
-    },
   });
+
+  // Handle resume data loading success
+  React.useEffect(() => {
+    const fetchResume = async () => {
+      if (resumeId === 'new') {
+        return;
+      }
+      
+      try {
+        const res = await apiRequest('GET', `/api/resumes/${resumeId}`);
+        const data = await res.json();
+        
+        if (data && data.id) {
+          // Initialize empty arrays for sections that might be missing
+          const resumeData = {
+            ...data,
+            experience: data.experience || [],
+            education: data.education || [],
+            skills: data.skills || [],
+            projects: data.projects || [],
+            template: data.template || 'professional',
+            skillsDisplayMode: data.skillsDisplayMode || 'bubbles',
+          };
+          setResume(resumeData);
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          toast({
+            title: 'Error loading resume',
+            description: error.message || 'An error occurred while loading your resume.',
+            variant: 'destructive',
+          });
+        }
+      }
+    };
+    
+    if (resumeId && resumeId !== 'new') {
+      fetchResume();
+    }
+  }, [resumeId, toast]);
 
   // Handle adding a new experience entry
   const handleAddExperience = () => {

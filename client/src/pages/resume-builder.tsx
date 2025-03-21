@@ -1127,21 +1127,7 @@ export default function ResumeBuilder() {
                     </DropdownMenuContent>
                   </DropdownMenu>
 
-                  <div className="mt-4">
-                    <Button 
-                      variant="outline" 
-                      className="w-full justify-between mt-2 bg-[rgba(30,40,80,0.5)] border-blue-800/20 text-blue-300"
-                      onClick={toggleSkillsDisplayMode}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Code className="h-4 w-4" />
-                        Skills Display:
-                      </div>
-                      <Badge className="ml-2 bg-blue-900/60 hover:bg-blue-800">
-                        {resume.skillsDisplayMode === 'bubbles' ? 'Bubbles' : 'Bullets'}
-                      </Badge>
-                    </Button>
-                  </div>
+                  {/* Skills display toggle moved to preview component */}
 
                   <div className="mt-6">
                     <Button 

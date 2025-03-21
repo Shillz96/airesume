@@ -136,13 +136,13 @@ function SummarySuggestions({ resumeId, onApply }: SummarySuggestionsProps) {
           {summaries.map((summary, index) => (
             <div 
               key={index} 
-              className="bg-white p-3 rounded-md border border-secondary-200 text-sm relative group"
+              className="bg-[rgba(20,30,70,0.6)] p-3 rounded-md border border-blue-500/30 text-sm relative group backdrop-blur-sm"
             >
-              <p className="text-secondary-600">{summary}</p>
+              <p className="text-gray-200">{summary}</p>
               <Button
                 onClick={() => onApply(summary)}
                 size="sm"
-                className="mt-2 w-full flex items-center justify-center gap-1"
+                className="mt-2 w-full flex items-center justify-center gap-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0"
               >
                 <Check className="h-3 w-3" />
                 Use this summary
@@ -156,7 +156,7 @@ function SummarySuggestions({ resumeId, onApply }: SummarySuggestionsProps) {
             }}
             variant="ghost"
             size="sm"
-            className="w-full flex items-center justify-center gap-1 mt-2"
+            className="w-full flex items-center justify-center gap-1 mt-2 text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
           >
             <RefreshCw className="h-3 w-3" />
             Generate different suggestions
@@ -258,13 +258,13 @@ function ExperienceSuggestions({ resumeId, jobTitle, onApply }: ExperienceSugges
           {bulletPoints.map((bulletPoint, index) => (
             <div 
               key={index} 
-              className="bg-white p-3 rounded-md border border-secondary-200 text-sm relative group"
+              className="bg-[rgba(20,30,70,0.6)] p-3 rounded-md border border-blue-500/30 text-sm relative group backdrop-blur-sm"
             >
-              <p className="text-secondary-600">{bulletPoint}</p>
+              <p className="text-gray-200">{bulletPoint}</p>
               <Button
                 onClick={() => onApply(bulletPoint)}
                 size="sm"
-                className="mt-2 w-full flex items-center justify-center gap-1"
+                className="mt-2 w-full flex items-center justify-center gap-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0"
               >
                 <Check className="h-3 w-3" />
                 Use this bullet point
@@ -278,7 +278,7 @@ function ExperienceSuggestions({ resumeId, jobTitle, onApply }: ExperienceSugges
             }}
             variant="ghost"
             size="sm"
-            className="w-full flex items-center justify-center gap-1 mt-2"
+            className="w-full flex items-center justify-center gap-1 mt-2 text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
           >
             <RefreshCw className="h-3 w-3" />
             Generate different bullet points
@@ -401,12 +401,12 @@ function SkillSuggestions({ resumeId, jobTitle, onApply }: SkillSuggestionsProps
             {skills.map((skill, index) => (
               <Badge 
                 key={index} 
-                variant="secondary"
-                className="py-1 px-3 cursor-pointer hover:bg-primary-100 flex items-center gap-1"
+                variant="outline"
+                className="py-1 px-3 cursor-pointer hover:bg-blue-600/30 flex items-center gap-1 bg-[rgba(20,30,70,0.6)] text-blue-100 border-blue-500/30 backdrop-blur-sm"
                 onClick={() => onApply(skill)}
               >
                 {skill}
-                <span className="text-xs text-primary-500">
+                <span className="text-xs text-blue-400">
                   <Plus className="h-3 w-3" />
                 </span>
               </Badge>
@@ -419,7 +419,7 @@ function SkillSuggestions({ resumeId, jobTitle, onApply }: SkillSuggestionsProps
             }}
             variant="ghost"
             size="sm"
-            className="w-full flex items-center justify-center gap-1 mt-2"
+            className="w-full flex items-center justify-center gap-1 mt-2 text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
           >
             <RefreshCw className="h-3 w-3" />
             Generate different skills

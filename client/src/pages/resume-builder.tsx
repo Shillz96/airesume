@@ -2032,8 +2032,8 @@ export default function ResumeBuilder() {
                   )}
 
                   {/* Welcome Banner - only show when resume is empty */}
-                  {!resume.personalInfo.firstName &&
-                    !resume.personalInfo.lastName && (
+                  {!resume?.personalInfo?.firstName &&
+                    !resume?.personalInfo?.lastName && (
                       <div className="md:col-span-3 mb-4">
                         <div className="cosmic-card border border-blue-500/30 bg-blue-900/20 p-6 rounded-lg relative overflow-hidden backdrop-blur-sm">
                           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>

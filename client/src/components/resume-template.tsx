@@ -32,7 +32,6 @@ export interface Resume {
   projects: any[];
   template: string;
   skillsDisplayMode?: 'bubbles' | 'bullets';
-  sectionOrder?: string[]; // Add this field for customizable section order
 }
 
 interface TemplateOptionProps {

@@ -8,6 +8,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import os from "os";
+import { jobsApiService } from "./services/jobs-api";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
@@ -1042,9 +1043,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const type = req.query.type as string | undefined;
       const experience = req.query.experience as string | undefined;
       const isGuest = req.query.guest === 'true';
+      const page = req.query.page ? parseInt(req.query.page as string) : 1;
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
       
-      // Get jobs with filtering
-      let jobs = await storage.getJobs({ title, location, type, experience });
+      // Get jobs with filtering from the jobs API service instead of storage
+      let jobs = await jobsApiService.searchJobs({ 
+        title, 
+        location, 
+        type, 
+        experience,
+        page,
+        results_per_page: limit
+      });
       
       // If user is authenticated, get their resume for matching
       let primaryResume = null;

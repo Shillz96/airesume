@@ -62,7 +62,11 @@ export const jobSchema = createInsertSchema(jobs).pick({
 });
 
 export type InsertJob = z.infer<typeof jobSchema>;
-export type Job = typeof jobs.$inferSelect;
+export type Job = typeof jobs.$inferSelect & {
+  match?: number;       // Match percentage with user's resume
+  isNew?: boolean;      // Whether the job is recent
+  saved?: boolean;      // Whether the job is saved by the user
+};
 
 // Saved Jobs table
 export const savedJobs = pgTable("saved_jobs", {

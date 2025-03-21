@@ -13,6 +13,7 @@ import JobFinder from "@/pages/job-finder";
 import JobDetails from "@/pages/job-details";
 import SubscriptionPage from "@/pages/subscription-page";
 import LandingPage from "@/pages/landing-page";
+import AdminAccess from "@/pages/admin-access";
 import { ProtectedRoute } from "./lib/protected-route";
 
 import Navbar from "@/components/navbar";
@@ -27,6 +28,7 @@ function Router() {
       <ProtectedRoute path="/job-finder" component={JobFinder} />
       <ProtectedRoute path="/job/:id" component={JobDetails} />
       <ProtectedRoute path="/subscription" component={SubscriptionPage} />
+      <Route path="/admin-access" component={AdminAccess} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -52,7 +54,8 @@ function AppContent() {
       "/resume-builder",
       "/resumes",
       "/job-finder",
-      "/subscription"
+      "/subscription",
+      "/admin-access"
     ];
     
     // Check if we're on a valid path

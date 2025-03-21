@@ -2079,7 +2079,7 @@ export default function ResumeBuilder() {
                           </Label>
                           <Input
                             id="firstName"
-                            value={resume.personalInfo.firstName}
+                            value={resume?.personalInfo?.firstName || ""}
                             onChange={(e) =>
                               updatePersonalInfo("firstName", e.target.value)
                             }
@@ -2092,7 +2092,7 @@ export default function ResumeBuilder() {
                           </Label>
                           <Input
                             id="lastName"
-                            value={resume.personalInfo.lastName}
+                            value={resume?.personalInfo?.lastName || ""}
                             onChange={(e) =>
                               updatePersonalInfo("lastName", e.target.value)
                             }
@@ -2106,7 +2106,7 @@ export default function ResumeBuilder() {
                           <Input
                             id="email"
                             type="email"
-                            value={resume.personalInfo.email}
+                            value={resume?.personalInfo?.email || ""}
                             onChange={(e) =>
                               updatePersonalInfo("email", e.target.value)
                             }

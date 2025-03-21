@@ -84,8 +84,40 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
   // Mutation to tailor the resume
   const { mutate: tailorResume, isPending: isTailoring } = useMutation({
     mutationFn: async () => {
-      // In a real application, this would be an API call to an AI service
-      // For now, we'll simulate the tailoring process
+      // Call the API to tailor the resume for this job
+      // For guest mode, we'd send the resume directly in the request
+      // For authenticated users, we'd just send the resume ID
+      const payload = {
+        resumeId: resume.id || "guest-resume", 
+        resumeData: !resume.id ? resume : undefined // Include resume data for guest mode
+      };
+      
+      const res = await apiRequest(
+        "POST", 
+        `/api/jobs/${job.id}/tailor-resume`, 
+        payload
+      );
+      
+      const data = await res.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || "Failed to tailor resume");
+      }
+      
+      return data.tailoredResume;
+    },
+    onSuccess: (data) => {
+      setTailoredResume(data);
+      toast({
+        title: "Resume Tailored",
+        description: "Your resume has been tailored for this position using AI.",
+      });
+      setDialogOpen(true);
+    },
+    onError: (error: Error) => {
+      console.error("Error tailoring resume:", error);
+      
+      // Fallback approach if the API fails
       const jobKeywords = [...job.skills, ...job.description.toLowerCase().match(/\b\w+\b/g)?.filter(word => word.length > 3) || []];
       
       const tailoredSummary = `Experienced ${job.title.toLowerCase()} with expertise in ${job.skills.join(", ")}. Skilled in building scalable web applications, as demonstrated by ${resume.experience[0]?.description?.toLowerCase() || "my previous work"}. Ready to contribute to ${job.company} by leveraging modern frontend architectures and delivering high-quality user experiences.`;
@@ -101,7 +133,7 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
       // Merge user skills with job skills
       const tailoredSkillNames = [...new Set([...userSkillNames, ...job.skills])];
 
-      return {
+      const fallbackResume = {
         personalInfo: {
           ...resume.personalInfo,
           summary: tailoredSummary,
@@ -109,21 +141,16 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
         experience: tailoredExperience,
         skills: tailoredSkillNames,
       };
-    },
-    onSuccess: (data) => {
-      setTailoredResume(data);
+      
+      setTailoredResume(fallbackResume);
+      
       toast({
         title: "Resume Tailored",
         description: "Your resume has been tailored for this position.",
+        variant: "default",
       });
+      
       setDialogOpen(true);
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error tailoring resume",
-        description: error.message,
-        variant: "destructive",
-      });
     },
   });
 

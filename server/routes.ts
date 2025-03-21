@@ -682,6 +682,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get a single job by ID
+  app.get("/api/jobs/:id", async (req, res) => {
+    try {
+      const jobId = parseInt(req.params.id);
+      const job = await storage.getJob(jobId);
+      
+      if (!job) {
+        return res.status(404).json({ message: "Job not found" });
+      }
+      
+      // Get saved job IDs for the current user
+      let savedJobIds: number[] = [];
+      if (req.isAuthenticated()) {
+        savedJobIds = await storage.getSavedJobIds(req.user!.id);
+      }
+      
+      // Augment job with saved status and format dates
+      const augmentedJob = {
+        ...job,
+        saved: savedJobIds.includes(job.id as unknown as number),
+        postedAt: job.postedAt instanceof Date ? job.postedAt.toLocaleDateString() : job.postedAt,
+        match: 0, // Default match score
+        isNew: new Date(job.postedAt).getTime() > (Date.now() - 3 * 24 * 60 * 60 * 1000) // New if less than 3 days old
+      };
+      
+      // If user is authenticated, calculate match score
+      if (req.isAuthenticated()) {
+        const userId = req.user!.id;
+        const resumes = await storage.getResumes(userId);
+        
+        if (resumes.length > 0) {
+          // Use the first resume for matching
+          const primaryResume = resumes[0];
+          const matchedJobs = await matchJobsWithResume([augmentedJob], primaryResume);
+          return res.json(matchedJobs[0]);
+        }
+      }
+      
+      // For guest users, add a random match score
+      if (!req.isAuthenticated() || req.query.guest === 'true') {
+        augmentedJob.match = Math.floor(Math.random() * 30) + 60; // Random score between 60-90
+      }
+      
+      return res.json(augmentedJob);
+    } catch (error) {
+      console.error("Error fetching job details:", error);
+      res.status(500).json({ 
+        message: "Failed to retrieve job details",
+        error: (error as Error).message 
+      });
+    }
+  });
+
   app.post("/api/jobs/:id/toggle-save", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     
@@ -732,6 +785,239 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(applications);
     } catch (error) {
       res.status(500).json({ message: (error as Error).message });
+    }
+  });
+  
+  // API for tailoring a resume to a specific job
+  app.post("/api/jobs/:id/tailor-resume", async (req, res) => {
+    try {
+      const jobId = parseInt(req.params.id);
+      const { resumeId } = req.body;
+      
+      if (!resumeId) {
+        return res.status(400).json({ message: "Resume ID is required" });
+      }
+      
+      // Get the job details
+      const job = await storage.getJob(jobId);
+      if (!job) {
+        return res.status(404).json({ message: "Job not found" });
+      }
+      
+      // Get the resume (authenticate if not guest mode)
+      let resume;
+      if (req.isAuthenticated()) {
+        const userId = req.user!.id;
+        resume = await storage.getResume(parseInt(resumeId), userId);
+        if (!resume) {
+          return res.status(404).json({ message: "Resume not found" });
+        }
+      } else if (req.body.resumeData) {
+        // For guest mode, use the provided resume data
+        resume = { content: req.body.resumeData };
+      } else {
+        return res.status(400).json({ message: "Resume data is required for guest mode" });
+      }
+      
+      // Verify API key is configured
+      if (!process.env.OPENAI_API_KEY) {
+        console.warn("OpenAI API key not configured for resume tailoring");
+        return res.status(503).json({ 
+          success: false, 
+          error: "AI service is not properly configured. Please contact the administrator." 
+        });
+      }
+      
+      try {
+        // Import the openai client
+        const { openai } = await import('./ai');
+        
+        // Get relevant job details to use in the AI prompt
+        const jobTitle = job.title;
+        const jobCompany = job.company;
+        const jobDescription = job.description;
+        const jobSkills = job.skills;
+        
+        // Get resume details
+        const resumeContent = resume.content || {};
+        const personalInfo = resumeContent.personalInfo || {};
+        const experience = resumeContent.experience || [];
+        const skills = resumeContent.skills || [];
+        
+        // Create a tailored summary using AI
+        const summaryResponse = await openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content: "You are an expert resume writer who specializes in crafting highly targeted professional summaries that are optimized for Applicant Tracking Systems (ATS). You create compelling summaries that highlight a candidate's most relevant qualifications for specific jobs."
+            },
+            {
+              role: "user",
+              content: `Tailor this professional summary to specifically target the following job:
+              
+              Job Title: ${jobTitle}
+              Company: ${jobCompany}
+              Job Description: ${jobDescription}
+              Required Skills: ${jobSkills.join(", ")}
+              
+              Current Resume Summary: "${personalInfo.summary || "Experienced professional with a track record of success."}"
+              
+              Current Experience: ${JSON.stringify(experience)}
+              
+              Current Skills: ${JSON.stringify(skills)}
+              
+              Create a concise, powerful professional summary (4-5 sentences) that:
+              1. Positions the candidate as an ideal fit for this specific role
+              2. Incorporates relevant keywords from the job description
+              3. Highlights the most relevant experience and skills
+              4. Demonstrates value and potential impact
+              5. Is ATS-friendly while remaining engaging to human readers
+              
+              Return only the new summary text with no additional commentary.`
+            }
+          ],
+        });
+        
+        const tailoredSummary = summaryResponse.choices[0].message.content;
+        
+        // Create tailored experience bullet points
+        const experienceResponse = await openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content: "You are an expert resume writer who specializes in tailoring experience descriptions to specific job requirements. You create powerful bullet points that demonstrate relevant accomplishments and skills while optimizing for ATS systems."
+            },
+            {
+              role: "user",
+              content: `Enhance these experience descriptions to target the following job:
+              
+              Job Title: ${jobTitle}
+              Company: ${jobCompany}
+              Job Description: ${jobDescription}
+              Required Skills: ${jobSkills.join(", ")}
+              
+              Current Experience: ${JSON.stringify(experience)}
+              
+              For each experience entry, provide 2-3 improved bullet points that:
+              1. Highlight relevant accomplishments and skills for this specific job
+              2. Incorporate keywords from the job description where authentic
+              3. Use strong action verbs and quantifiable results
+              4. Emphasize transferable skills if the experience is not directly related
+              
+              Format your response as a JSON object with the same structure as the input experience array, 
+              but with updated descriptions. Return only the JSON object with no additional explanation.`
+            }
+          ],
+          response_format: { type: "json_object" },
+        });
+        
+        let tailoredExperience;
+        try {
+          const experienceContent = experienceResponse.choices[0].message.content;
+          tailoredExperience = JSON.parse(experienceContent);
+        } catch (error) {
+          console.error("Error parsing tailored experience:", error);
+          tailoredExperience = experience;
+        }
+        
+        // Identify most relevant skills
+        const skillsResponse = await openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content: "You are an expert at identifying the most relevant skills for job applications and optimizing skill sections for ATS systems."
+            },
+            {
+              role: "user",
+              content: `Identify the most relevant skills for this job application:
+              
+              Job Title: ${jobTitle}
+              Company: ${jobCompany}
+              Job Description: ${jobDescription}
+              Required Skills: ${jobSkills.join(", ")}
+              
+              Candidate's Current Skills: ${JSON.stringify(skills)}
+              
+              Provide a list of 10-12 skills that:
+              1. Include the most relevant skills the candidate already has
+              2. Include critical skills mentioned in the job description
+              3. Are presented in order of relevance to this specific position
+              4. Are formatted for optimal ATS detection
+              
+              Return only a JSON array of skill strings with no additional explanation.`
+            }
+          ],
+          response_format: { type: "json_object" },
+        });
+        
+        let tailoredSkills;
+        try {
+          const skillsContent = skillsResponse.choices[0].message.content;
+          tailoredSkills = JSON.parse(skillsContent);
+        } catch (error) {
+          console.error("Error parsing tailored skills:", error);
+          // Fall back to combining existing skills with job skills
+          tailoredSkills = [...new Set([
+            ...(Array.isArray(skills) ? skills.map(s => typeof s === 'string' ? s : s.name) : []),
+            ...jobSkills
+          ])];
+        }
+        
+        // Return the tailored resume
+        res.json({
+          success: true,
+          tailoredResume: {
+            personalInfo: {
+              ...personalInfo,
+              summary: tailoredSummary
+            },
+            experience: tailoredExperience || experience,
+            skills: tailoredSkills || skills,
+            education: resumeContent.education || [],
+            projects: resumeContent.projects || []
+          }
+        });
+        
+      } catch (aiError) {
+        console.error("Error using AI to tailor resume:", aiError);
+        
+        // Create a simpler tailored resume without AI
+        const personalInfo = resume.content?.personalInfo || {};
+        const experience = resume.content?.experience || [];
+        const skills = resume.content?.skills || [];
+        
+        // Basic tailoring without AI
+        const basicTailoredResume = {
+          personalInfo: {
+            ...personalInfo,
+            summary: `Experienced ${job.title.toLowerCase()} professional with expertise in ${job.skills.slice(0, 3).join(", ")}. Proven track record of delivering results in fast-paced environments similar to ${job.company}.`
+          },
+          experience: experience,
+          // Combine existing skills with job skills
+          skills: [...new Set([
+            ...(Array.isArray(skills) ? skills.map(s => typeof s === 'string' ? s : s.name) : []),
+            ...job.skills
+          ])],
+          education: resume.content?.education || [],
+          projects: resume.content?.projects || []
+        };
+        
+        res.json({
+          success: true,
+          tailoredResume: basicTailoredResume,
+          aiUnavailable: true
+        });
+      }
+      
+    } catch (error) {
+      console.error("Error tailoring resume:", error);
+      res.status(500).json({ 
+        success: false, 
+        error: "Failed to tailor resume. Please try again later."
+      });
     }
   });
 

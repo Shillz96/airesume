@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useGuestMode } from "@/hooks/use-guest-mode";
@@ -21,13 +21,26 @@ export default function Navbar() {
   const { isGuestMode } = useGuestMode();
   const { openLogin, openRegister } = useAuthDialog();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(true); // Set to true for cosmic theme
-  
+  const [darkMode, setDarkMode] = useState(() => {
+    // Load dark mode preference from local storage
+    const savedMode = localStorage.getItem("darkMode");
+    return savedMode ? JSON.parse(savedMode) : true;
+  });
+
   const navbarRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const navItemsRef = useRef<(HTMLAnchorElement | null)[]>([]);
   const userMenuRef = useRef<HTMLDivElement>(null);
-  
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const particleCountRef = useRef(0);
+
+  // Persist dark mode preference
+  useEffect(() => {
+    localStorage.setItem("darkMode", JSON.stringify(darkMode));
+    document.documentElement.classList.toggle("dark", darkMode);
+  }, [darkMode]);
+
+  // Animations and mouse trail effect
   useEffect(() => {
     // Logo animation
     if (logoRef.current) {
@@ -37,23 +50,23 @@ export default function Navbar() {
         { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
       );
     }
-    
+
     // Nav items staggered animation
     if (navItemsRef.current.length > 0) {
       gsap.fromTo(
         navItemsRef.current,
         { opacity: 0, y: -15 },
-        { 
-          opacity: 1, 
-          y: 0, 
-          duration: 0.4, 
-          stagger: 0.1, 
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.4,
+          stagger: 0.1,
           ease: "power2.out",
-          delay: 0.2
+          delay: 0.2,
         }
       );
     }
-    
+
     // User menu animation
     if (userMenuRef.current) {
       gsap.fromTo(
@@ -62,56 +75,70 @@ export default function Navbar() {
         { opacity: 1, scale: 1, duration: 0.5, delay: 0.4, ease: "back.out(1.7)" }
       );
     }
-    
-    // Create a mouse trail effect on navbar
+
+    // Mobile menu animation
+    if (mobileMenuRef.current) {
+      gsap.fromTo(
+        mobileMenuRef.current,
+        { x: "100%", opacity: 0 },
+        {
+          x: "0%",
+          opacity: 1,
+          duration: 0.5,
+          ease: "power3.out",
+          when: mobileMenuOpen ? "enter" : "exit",
+        }
+      );
+    }
+
+    // Mouse trail effect with optimization
     const createTrailParticle = (e: MouseEvent) => {
-      if (!navbarRef.current) return;
-      
-      const particle = document.createElement('div');
-      particle.className = 'trail-particle';
-      
-      // Set position at mouse cursor
+      if (!navbarRef.current || particleCountRef.current >= 20) return;
+      particleCountRef.current += 1;
+
+      const particle = document.createElement("div");
+      particle.className = "trail-particle";
       particle.style.left = `${e.clientX}px`;
       particle.style.top = `${e.clientY}px`;
-      
+      particle.style.background = `hsl(${Math.random() * 360}, 70%, 70%)`;
+      particle.style.width = `${Math.random() * 4 + 2}px`;
+      particle.style.height = particle.style.width;
+
       document.body.appendChild(particle);
-      
-      // Animate and remove
+
       gsap.to(particle, {
         opacity: 0,
         scale: 0,
         duration: 0.8,
+        ease: "power2.out",
         onComplete: () => {
           if (particle.parentNode) {
             particle.parentNode.removeChild(particle);
+            particleCountRef.current -= 1;
           }
-        }
+        },
       });
     };
-    
-    // Add mouse trail only when moving within the navbar
+
     const handleMouseMove = (e: MouseEvent) => {
-      // Only create particles occasionally to avoid performance issues
       if (Math.random() > 0.8) {
-        createTrailParticle(e);
+        requestAnimationFrame(() => createTrailParticle(e));
       }
     };
-    
+
     const navbar = navbarRef.current;
     if (navbar) {
-      navbar.addEventListener('mousemove', handleMouseMove);
+      navbar.addEventListener("mousemove", handleMouseMove);
     }
-    
+
     return () => {
       if (navbar) {
-        navbar.removeEventListener('mousemove', handleMouseMove);
+        navbar.removeEventListener("mousemove", handleMouseMove);
       }
     };
-  }, []);
+  }, [mobileMenuOpen]);
 
-  // Remove the conditional rendering check so navbar shows for both guests and logged-in users
-
-  // Show dashboard items only for logged-in or guest users
+  // Show dashboard items for both logged-in and guest users
   const navItems = [
     { path: "/dashboard", label: "Dashboard", icon: <Home className="h-4 w-4 mr-1" /> },
     { path: "/resumes", label: "Resumes", icon: <FileText className="h-4 w-4 mr-1" /> },
@@ -120,35 +147,36 @@ export default function Navbar() {
     { path: "/subscription", label: "Subscription", icon: <CreditCard className="h-4 w-4 mr-1" /> },
   ];
 
-  // For Guest Mode or authenticated users
+  // Get user initials
   let initials = "GU"; // Default Guest User
   if (user) {
     initials = user.username
-      .split(' ')
-      .map(name => name[0])
-      .join('')
+      .split(" ")
+      .map((name) => name[0])
+      .join("")
       .toUpperCase()
       .substring(0, 2);
   }
 
-  function toggleDarkMode() {
-    setDarkMode(!darkMode);
-    // Implementation would go here if we add dark mode support
-  }
+  const toggleDarkMode = () => {
+    setDarkMode((prev) => !prev);
+  };
 
-  function handleLogout() {
+  const handleLogout = () => {
     logoutMutation.mutate();
-  }
-  
-  // Get icon color based on active state
-  function getIconColor(isActive: boolean) {
-    return isActive ? "text-blue-400" : "text-gray-400"; 
-  }
+    setMobileMenuOpen(false);
+  };
+
+  const getIconColor = (isActive: boolean) => {
+    return isActive ? "text-blue-400" : "text-gray-400";
+  };
 
   return (
-    <nav 
-      className="cosmic-navbar"
+    <nav
+      className="cosmic-navbar fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-lg shadow-lg border-b border-white/10"
       ref={navbarRef}
+      role="navigation"
+      aria-label="Main navigation"
     >
       <div className="content-container max-w-7xl mx-auto" style={{ 
         paddingLeft: "var(--space-4)",
@@ -163,6 +191,7 @@ export default function Navbar() {
             <Link 
               href={user ? "/dashboard" : "/"} 
               className="flex items-center cosmic-text-gradient font-bold text-xl cursor-pointer"
+              aria-label="AIreHire Home"
             >
               <Rocket className="mr-2 h-5 w-5" />
               AIreHire
@@ -176,12 +205,13 @@ export default function Navbar() {
                 <a 
                   key={item.path} 
                   href={item.path}
-                  ref={el => navItemsRef.current[index] = el}
+                  ref={(el) => (navItemsRef.current[index] = el)}
                   className={`${
                     location === item.path
                       ? "border-blue-500 text-blue-400"
                       : "border-transparent text-gray-300 hover:border-gray-500 hover:text-gray-100"
                   } inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium cursor-pointer transition-colors duration-200`}
+                  aria-current={location === item.path ? "page" : undefined}
                 >
                   <span className={getIconColor(location === item.path)}>{item.icon}</span>
                   {item.label}
@@ -189,6 +219,8 @@ export default function Navbar() {
               ))}
             </div>
           </div>
+
+          {/* Right side - user menu */}
           <div 
             className="hidden sm:ml-6 sm:flex sm:items-center"
             ref={userMenuRef}
@@ -198,14 +230,14 @@ export default function Navbar() {
               size="icon"
               onClick={toggleDarkMode}
               className="ml-3 text-gray-300 hover:text-white hover:bg-white/10"
-              aria-label="Toggle dark mode"
+              aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
             >
               {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="ml-3 relative">
+                <Button variant="ghost" size="icon" className="ml-3 relative" aria-label="User menu">
                   <Avatar className="h-8 w-8 cosmic-glow">
                     <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold">
                       {initials}
@@ -226,7 +258,7 @@ export default function Navbar() {
                     <DropdownMenuItem>
                       <a 
                         href="/subscription"
-                        className="cursor-pointer text-gray-200 hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white"
+                        className="cursor-pointer text-gray-200 hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white w-full flex items-center"
                       >
                         <CreditCard className="mr-2 h-4 w-4 text-purple-400" /> 
                         Subscription
@@ -272,13 +304,15 @@ export default function Navbar() {
             </DropdownMenu>
           </div>
 
+          {/* Mobile menu toggle */}
           <div className="-mr-2 flex items-center sm:hidden">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="inline-flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/10"
-              aria-label="Open main menu"
+              aria-label={mobileMenuOpen ? "Close main menu" : "Open main menu"}
+              aria-expanded={mobileMenuOpen}
             >
               {mobileMenuOpen ? (
                 <X className="block h-6 w-6" aria-hidden="true" />
@@ -292,7 +326,10 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="sm:hidden bg-black/50 backdrop-blur-lg cosmic-nebula shadow-lg">
+        <div
+          className="sm:hidden bg-gradient-to-b from-blue-900/80 to-purple-900/80 backdrop-blur-lg shadow-lg border-t border-white/10"
+          ref={mobileMenuRef}
+        >
           <div style={{ 
             paddingTop: "var(--space-2)", 
             paddingBottom: "var(--space-3)", 
@@ -307,9 +344,10 @@ export default function Navbar() {
                 className={`${
                   location === item.path
                     ? "bg-blue-900/30 border-blue-500 text-blue-300"
-                    : "border-transparent text-gray-300 hover:bg-white/5 hover:border-gray-400 hover:text-gray-100"
-                } flex items-center pl-3 pr-4 py-3 border-l-4 text-base font-medium cursor-pointer`}
+                    : "border-transparent text-gray-300 hover:bg-white/10 hover:border-gray-400 hover:text-gray-100"
+                } flex items-center pl-3 pr-4 py-3 border-l-4 text-base font-medium cursor-pointer transition-colors duration-200`}
                 onClick={() => setMobileMenuOpen(false)}
+                aria-current={location === item.path ? "page" : undefined}
               >
                 <span className={`${getIconColor(location === item.path)} mr-3`}>{item.icon}</span>
                 {item.label}
@@ -335,7 +373,7 @@ export default function Navbar() {
                 size="icon"
                 onClick={toggleDarkMode}
                 className="ml-auto text-gray-300 hover:text-white hover:bg-white/10"
-                aria-label="Toggle dark mode"
+                aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
               >
                 {darkMode ? <Sun className="h-6 w-6" /> : <Moon className="h-6 w-6" />}
               </Button>

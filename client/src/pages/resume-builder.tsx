@@ -11,7 +11,7 @@ import {
   Check, Zap, EyeOff, Eye, FileImage, X, Move,
   GraduationCap, Briefcase, Code, Award, FolderKanban,
   FolderOpen, Save, Upload, Cpu, RefreshCw, Sparkles,
-  Printer, ChevronDown, User
+  Printer, ChevronDown, User, LayoutGrid, LayoutTemplate
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -1079,6 +1079,11 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
   // Toggle fullscreen mode
   const toggleFullScreen = () => {
     setIsFullScreen(!isFullScreen);
+  };
+
+  // Toggle page layout between vertical and side-by-side
+  const togglePageLayout = () => {
+    setSideBySideLayout(!sideBySideLayout);
   };
 
   // Toggle edit mode

@@ -43,6 +43,7 @@ import {
   Code,
   Award,
   FolderKanban,
+  FolderOpen,
   Save,
   Upload,
   Loader2,
@@ -82,6 +83,14 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import AIAssistant from "@/components/ai-assistant";
 
@@ -1841,7 +1850,7 @@ export default function ResumeBuilder() {
               <DropdownMenuContent className="w-56 bg-gray-900/95 border border-gray-800">
                 <DropdownMenuLabel className="text-gray-300">Your Saved Resumes</DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-gray-700" />
-                {userResumes && userResumes.length > 0 ? (
+                {Array.isArray(userResumes) && userResumes.length > 0 ? (
                   userResumes.map((savedResume: any) => (
                     <DropdownMenuItem
                       key={savedResume.id}

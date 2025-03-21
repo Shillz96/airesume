@@ -738,7 +738,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Get the resume and job data
       const resume = await storage.getResume(resumeId, userId);
-      const job = await storage.getJob(jobId);
+      const job = await jobsApiService.getJobById(jobId);
       
       if (!resume) {
         return res.status(404).json({ success: false, error: "Resume not found" });
@@ -919,7 +919,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Support for both authenticated users and guest mode
     try {
       const jobId = parseInt(req.params.id);
-      const job = await storage.getJob(jobId);
+      const job = await jobsApiService.getJobById(jobId);
       
       if (!job) {
         return res.status(404).json({ success: false, error: "Job not found" });

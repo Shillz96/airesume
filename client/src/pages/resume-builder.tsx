@@ -920,8 +920,8 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
   const [skillsDisplayMode, setSkillsDisplayMode] = useState<'bubbles' | 'bullets'>('bubbles');
   const [spacingScale, setSpacingScale] = useState(1); // For auto-adjusting spacing
   const [numPages, setNumPages] = useState(1); // Track number of pages
+  const [sideBySideLayout, setSideBySideLayout] = useState(false); // For toggling between vertical and side-by-side layout
   const [showMultiPage, setShowMultiPage] = useState(true); // Toggle between single page and multi-page view
-  const [sideBySideLayout, setSideBySideLayout] = useState(false); // Toggle between vertical and side-by-side layout
   const previewRef = useRef<HTMLDivElement>(null);
   const resumeContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -1275,6 +1275,25 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
           <Button
             variant="outline"
             size="sm"
+            onClick={togglePageLayout}
+            className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
+            title="Toggle between vertical and side-by-side page layout"
+          >
+            {sideBySideLayout ? (
+              <>
+                <LayoutTemplate className="h-4 w-4" />
+                <span className="hidden sm:inline ml-1">Vertical</span>
+              </>
+            ) : (
+              <>
+                <LayoutGrid className="h-4 w-4" />
+                <span className="hidden sm:inline ml-1">Side by Side</span>
+              </>
+            )}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={toggleFullScreen}
             className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
           >
@@ -1326,28 +1345,83 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
             : "p-4 h-[80vh] flex items-center justify-center" // Center the preview vertically and horizontally
         )}
       >
-        <div
-          ref={previewRef}
-          className="resume-content-container transition-all duration-300 mx-auto bg-white shadow-lg print:shadow-none"
-          data-font-scale={fontScale.toString()}
-          data-spacing-scale={spacingScale.toString()}
-          style={{
-            transform: `scale(${scale})`,
-            width: "210mm", // A4 width
-            minHeight: "297mm", // A4 height (minimum to ensure proper proportions)
-            maxHeight: isEditing ? "297mm" : calculatePages() > 1 ? `${calculatePages() * 297}mm` : "297mm", // Allow multiple pages in preview
-            height: isEditing ? "297mm" : calculatePages() > 1 ? `${calculatePages() * 297}mm` : "297mm", // Same height as maxHeight
-            transformOrigin: "top center", // Top center for better multi-page viewing
-            fontSize: `${fontScale * 100}%`, // Dynamic font scaling
-            lineHeight: `${spacingScale * 1.5}`, // Dynamic line height scaling
-            overflowY: isEditing ? "auto" : "visible", // Show overflow for multi-page in preview
-            boxShadow: "0 4px 24px rgba(0, 0, 0, 0.15)", // Add shadow for better visibility
-            marginTop: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
-            marginBottom: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
-          }}
+        {/* Side-by-side layout container */}
+        <div 
+          className={cn(
+            "flex flex-wrap gap-8 justify-center",
+            sideBySideLayout && calculatePages() > 1 ? "flex-row" : "flex-col",
+            sideBySideLayout && calculatePages() > 1 ? "items-start" : "items-center"
+          )}
         >
-          {/* Page break lines for multi-page view (only in preview mode) */}
-          {!isEditing && calculatePages() > 1 && Array.from({ length: calculatePages() - 1 }).map((_, i) => (
+          {/* For side-by-side layout, we create separate divs for each page */}
+          {sideBySideLayout && calculatePages() > 1 && !isEditing ? (
+            // Side-by-side pages layout
+            Array.from({ length: calculatePages() }).map((_, pageIndex) => (
+              <div
+                key={`page-${pageIndex}`}
+                className="resume-page-container transition-all duration-300 bg-white shadow-lg print:shadow-none mb-8"
+                style={{
+                  transform: `scale(${scale})`,
+                  width: "210mm", // A4 width
+                  height: "297mm", // A4 height
+                  overflow: "hidden",
+                  position: "relative",
+                  transformOrigin: "top center",
+                  boxShadow: "0 4px 24px rgba(0, 0, 0, 0.15)",
+                  fontSize: `${fontScale * 100}%`,
+                  lineHeight: `${spacingScale * 1.5}`,
+                }}
+              >
+                <div 
+                  className="absolute inset-0 p-8"
+                  style={{
+                    top: pageIndex > 0 ? `-${pageIndex * 297}mm` : "0",
+                  }}
+                >
+                  <div className="bg-white text-black h-full overflow-hidden">
+                    {resume.template === "creative" ? (
+                      <CreativeTemplate resume={resume} />
+                    ) : resume.template === "executive" ? (
+                      <ExecutiveTemplate resume={resume} />
+                    ) : resume.template === "modern" ? (
+                      <ModernTemplate resume={resume} />
+                    ) : resume.template === "minimal" ? (
+                      <MinimalTemplate resume={resume} />
+                    ) : resume.template === "industry" ? (
+                      <IndustryTemplate resume={resume} />
+                    ) : resume.template === "bold" ? (
+                      <BoldTemplate resume={resume} />
+                    ) : (
+                      <ProfessionalTemplate resume={resume} />
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            // Regular vertical layout - single content container
+            <div
+              ref={previewRef}
+              className="resume-content-container transition-all duration-300 mx-auto bg-white shadow-lg print:shadow-none"
+              data-font-scale={fontScale.toString()}
+              data-spacing-scale={spacingScale.toString()}
+              style={{
+                transform: `scale(${scale})`,
+                width: "210mm", // A4 width
+                minHeight: "297mm", // A4 height (minimum to ensure proper proportions)
+                maxHeight: isEditing ? "297mm" : calculatePages() > 1 ? `${calculatePages() * 297}mm` : "297mm", // Allow multiple pages in preview
+                height: isEditing ? "297mm" : calculatePages() > 1 ? `${calculatePages() * 297}mm` : "297mm", // Same height as maxHeight
+                transformOrigin: "top center", // Top center for better multi-page viewing
+                fontSize: `${fontScale * 100}%`, // Dynamic font scaling
+                lineHeight: `${spacingScale * 1.5}`, // Dynamic line height scaling
+                overflowY: isEditing ? "auto" : "visible", // Show overflow for multi-page in preview
+                boxShadow: "0 4px 24px rgba(0, 0, 0, 0.15)", // Add shadow for better visibility
+                marginTop: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
+                marginBottom: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
+              }}
+            >
+              {/* Page break lines for multi-page view (only in preview mode) */}
+              {!isEditing && calculatePages() > 1 && Array.from({ length: calculatePages() - 1 }).map((_, i) => (
             <div 
               key={i} 
               className="page-break" 

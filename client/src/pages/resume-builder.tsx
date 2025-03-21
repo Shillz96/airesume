@@ -183,50 +183,33 @@ export default function ResumeBuilder() {
       }
       
       const res = await apiRequest('GET', `/api/resumes/${resumeId}`);
-      return res.json();
-    },
-    enabled: !!resumeId,
-  });
-
-  // Handle resume data loading success
-  React.useEffect(() => {
-    const fetchResume = async () => {
-      if (resumeId === 'new') {
-        return;
+      const data = await res.json();
+      
+      if (data && data.id) {
+        // Initialize empty arrays for sections that might be missing
+        const resumeData = {
+          ...data,
+          experience: data.experience || [],
+          education: data.education || [],
+          skills: data.skills || [],
+          projects: data.projects || [],
+          template: data.template || 'professional',
+          skillsDisplayMode: data.skillsDisplayMode || 'bubbles',
+        };
+        setResume(resumeData);
       }
       
-      try {
-        const res = await apiRequest('GET', `/api/resumes/${resumeId}`);
-        const data = await res.json();
-        
-        if (data && data.id) {
-          // Initialize empty arrays for sections that might be missing
-          const resumeData = {
-            ...data,
-            experience: data.experience || [],
-            education: data.education || [],
-            skills: data.skills || [],
-            projects: data.projects || [],
-            template: data.template || 'professional',
-            skillsDisplayMode: data.skillsDisplayMode || 'bubbles',
-          };
-          setResume(resumeData);
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          toast({
-            title: 'Error loading resume',
-            description: error.message || 'An error occurred while loading your resume.',
-            variant: 'destructive',
-          });
-        }
-      }
-    };
-    
-    if (resumeId && resumeId !== 'new') {
-      fetchResume();
-    }
-  }, [resumeId, toast]);
+      return data;
+    },
+    enabled: !!resumeId,
+    onError: (error: Error) => {
+      toast({
+        title: 'Error loading resume',
+        description: error.message || 'An error occurred while loading your resume.',
+        variant: 'destructive',
+      });
+    },
+  });
 
   // Handle adding a new experience entry
   const handleAddExperience = () => {

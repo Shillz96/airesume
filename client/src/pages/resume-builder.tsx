@@ -1028,7 +1028,7 @@ export default function ResumeBuilder() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050A24] text-gray-100 flex flex-col">
+    <div className="min-h-screen cosmic-page text-gray-100 flex flex-col">
       <Navbar />
       <CosmicBackground />
 
@@ -1120,7 +1120,7 @@ export default function ResumeBuilder() {
           <div className="flex flex-col xl:flex-row gap-6">
             {/* Left sidebar with resume sections navigation */}
             <div className="xl:w-64 shrink-0">
-              <div className="bg-[rgba(10,15,40,0.5)] backdrop-blur-sm rounded-lg border border-indigo-900/30 p-4 sticky top-24">
+              <div className="cosmic-card p-4 sticky top-24">
                 <h3 className="text-lg font-medium mb-4 text-blue-300">Resume Sections</h3>
                 <div className="space-y-2">
                   <Button
@@ -1343,7 +1343,7 @@ export default function ResumeBuilder() {
                     <ResumeUpload onUploadSuccess={handleResumeUpload} />
                   </div>
                 )}
-                <div className="bg-[rgba(10,15,40,0.5)] backdrop-blur-sm rounded-lg border border-indigo-900/30 p-5">
+                <div className="cosmic-card p-5">
                   {/* Personal Info Section */}
                   {showPersonalInfo && (
                     <Tabs 

@@ -700,7 +700,8 @@ export default function LandingPage() {
       </footer>
       
       {/* Custom styles for this page */}
-      <style jsx global>{`
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .cosmic-text-gradient {
           background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899);
           -webkit-background-clip: text;
@@ -728,7 +729,8 @@ export default function LandingPage() {
           opacity: 0.6;
           z-index: 5;
         }
-      `}</style>
+        `
+      }} />
     </div>
   );
 }

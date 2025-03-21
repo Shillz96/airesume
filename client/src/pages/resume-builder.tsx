@@ -2119,7 +2119,7 @@ export default function ResumeBuilder() {
                           </Label>
                           <Input
                             id="phone"
-                            value={resume.personalInfo.phone}
+                            value={resume?.personalInfo?.phone || ""}
                             onChange={(e) =>
                               updatePersonalInfo("phone", e.target.value)
                             }
@@ -2135,7 +2135,7 @@ export default function ResumeBuilder() {
                       </Label>
                       <Input
                         id="headline"
-                        value={resume.personalInfo.headline}
+                        value={resume?.personalInfo?.headline || ""}
                         onChange={(e) =>
                           updatePersonalInfo("headline", e.target.value)
                         }
@@ -2150,7 +2150,7 @@ export default function ResumeBuilder() {
                       </Label>
                       <Textarea
                         id="summary"
-                        value={resume.personalInfo.summary}
+                        value={resume?.personalInfo?.summary || ""}
                         onChange={(e) =>
                           updatePersonalInfo("summary", e.target.value)
                         }
@@ -2193,7 +2193,7 @@ export default function ResumeBuilder() {
                             onApplySuggestion={(suggestion) => {
                               // Check if we already have content in the summary
                               const currentSummary =
-                                resume.personalInfo.summary;
+                                resume?.personalInfo?.summary || "";
 
                               // If the summary is empty, just use the suggestion
                               // Otherwise, append the new suggestion with a space
@@ -2249,7 +2249,7 @@ export default function ResumeBuilder() {
 
                           setResume({
                             ...resume,
-                            experience: [...resume.experience, newExperience],
+                            experience: [...(resume?.experience || []), newExperience],
                           });
                         }}
                         className="flex items-center space-x-1 border-white/10 text-blue-400 hover:bg-white/10 hover:text-white"
@@ -2286,7 +2286,7 @@ export default function ResumeBuilder() {
                           <ResumeTips
                             resumeId={resumeId}
                             onApplySuggestion={(bulletPoint) => {
-                              if (resume.experience.length > 0) {
+                              if (resume?.experience?.length > 0) {
                                 // Apply to the most recent experience item
                                 const updatedExperience = [
                                   ...resume.experience,
@@ -2351,7 +2351,7 @@ export default function ResumeBuilder() {
 
                         setResume({
                           ...resume,
-                          education: [...resume.education, newEducation],
+                          education: [...(resume?.education || []), newEducation],
                         });
                       }}
                       className="flex items-center space-x-1 border-white/10 text-blue-400 hover:bg-white/10 hover:text-white"
@@ -2394,7 +2394,7 @@ export default function ResumeBuilder() {
 
                           setResume({
                             ...resume,
-                            skills: [...resume.skills, newSkill],
+                            skills: [...(resume?.skills || []), newSkill],
                           });
                         }}
                         className="flex items-center space-x-1 border-white/10 text-blue-400 hover:bg-white/10 hover:text-white"
@@ -2444,7 +2444,7 @@ export default function ResumeBuilder() {
                             resumeId={resumeId}
                             onApplySuggestion={(skill) => {
                               if (
-                                !resume.skills.some(
+                                !resume?.skills?.some(
                                   (s) =>
                                     s.name.toLowerCase() ===
                                     skill.toLowerCase(),
@@ -2458,7 +2458,7 @@ export default function ResumeBuilder() {
 
                                 setResume({
                                   ...resume,
-                                  skills: [...resume.skills, newSkill],
+                                  skills: [...(resume?.skills || []), newSkill],
                                 });
 
                                 toast({

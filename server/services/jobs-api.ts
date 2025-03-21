@@ -182,25 +182,40 @@ export class JobsAPIService {
    */
   async getJobById(id: number): Promise<Job | undefined> {
     try {
-      // If no API key or appId, use sample data
-      if (!this.apiKey || !this.appId) {
-        console.warn("Using sample job because Adzuna API credentials are not set");
-        throw new Error("No API credentials");
+      // Try to fetch all jobs first - most of the time we'll have already fetched them
+      // when browsing the job listings
+      const allJobs = await this.searchJobs({});
+      
+      // Find the job with the matching ID
+      const job = allJobs.find(job => job.id === id);
+      
+      if (job) {
+        return job;
       }
       
-      // Adzuna doesn't have a direct endpoint for a single job by ID
-      // We'd typically need to get the job from our database where we've stored
-      // the API details, or do a new search with specific parameters
+      // If we can't find the job, create a synthetic job for demo purposes
+      // In a real application, we would either store the jobs in a database
+      // or use an API that supports direct job retrieval
+      console.log(`Creating synthetic job with ID ${id} for demo purposes`);
       
-      // For this implementation, we'll just return a sample job
-      // In a real-world app, we would store job IDs and metadata in our database
-      console.warn("Getting job by ID not directly supported by Adzuna API, using sample job");
-      
-      return this.getSampleJobs({}).find(job => job.id === id);
+      return {
+        id: id,
+        title: `Job #${id}`,
+        company: "Example Company",
+        location: "United States",
+        type: "Full-time",
+        description: `This is a job posting with ID ${id}. The position requires expertise in software development, collaboration skills, and problem-solving abilities.`,
+        skills: ["JavaScript", "React", "Node.js", "Problem Solving"],
+        postedAt: new Date(),
+        expiresAt: null,
+        applyUrl: "#",
+        match: 80,
+        isNew: true,
+        saved: false
+      };
     } catch (error) {
-      console.error(`Error fetching job ${id} from API:`, error);
-      // Fall back to sample data
-      return this.getSampleJobs({}).find(job => job.id === id);
+      console.error(`Error in getJobById for job ${id}:`, error);
+      return undefined;
     }
   }
   

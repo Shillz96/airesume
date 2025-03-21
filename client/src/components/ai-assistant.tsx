@@ -77,6 +77,24 @@ export default function AIAssistant({
   const [tailoredContent, setTailoredContent] = useState<TailoredContent | null>(null);
   // This component should handle its own visibility state rather than relying on parent containers
   const [isVisible, setIsVisible] = useState(false);
+  
+  // Custom setter for visibility that interacts with the global state
+  const setAssistantVisibility = (visible: boolean) => {
+    if (visible && globalAssistantVisible) {
+      // If another assistant is already visible, don't show this one
+      toast({
+        title: "AI Assistant already open",
+        description: "Please close the other AI assistant window first.",
+        variant: "default",
+      });
+      return;
+    }
+    
+    // Update global state
+    globalAssistantVisible = visible;
+    // Update component state
+    setIsVisible(visible);
+  };
   const [chatMode, setChatMode] = useState<'general' | 'job-specific'>('general');
   const [userInput, setUserInput] = useState("");
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -125,6 +143,16 @@ export default function AIAssistant({
         { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
       );
     }
+  }, [isVisible]);
+  
+  // Clean up global state when component unmounts
+  useEffect(() => {
+    return () => {
+      // Reset the global flag if this component was the one that set it
+      if (isVisible) {
+        globalAssistantVisible = false;
+      }
+    };
   }, [isVisible]);
 
   // Welcome message based on active tab
@@ -643,7 +671,7 @@ export default function AIAssistant({
         {!isVisible ? (
           <Button
             ref={aiButtonRef}
-            onClick={() => setIsVisible(true)}
+            onClick={() => setAssistantVisibility(true)}
             className="w-14 h-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transition-all"
           >
             <Cpu className="h-6 w-6" />
@@ -702,7 +730,7 @@ export default function AIAssistant({
                   variant="ghost" 
                   size="icon" 
                   className="h-7 w-7 text-gray-400 hover:text-white hover:bg-white/10" 
-                  onClick={() => setIsVisible(false)}
+                  onClick={() => setAssistantVisibility(false)}
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -919,7 +947,7 @@ export default function AIAssistant({
 
       {/* Full screen dialog for larger screens */}
       <Dialog open={isVisible} onOpenChange={(open) => {
-        setIsVisible(open);
+        setAssistantVisibility(open);
         if (!open) setMinimized(false);
       }}>
         <DialogContent

@@ -8,6 +8,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import os from "os";
+import puppeteer from "puppeteer";
 import { jobsApiService } from "./services/jobs-api";
 
 export async function registerRoutes(app: Express): Promise<Server> {

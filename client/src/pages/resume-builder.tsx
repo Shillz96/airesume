@@ -899,7 +899,7 @@ function SkillSuggestions({
 // This component has been replaced by ResumePreviewComponent
 
 function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; onTemplateChange: (template: string) => void }) {
-  const [scale, setScale] = useState(0.85); // Initial scale set to see more of the resume
+  const [scale, setScale] = useState(1.0); // Default scale set to show full page
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isAutoAdjusting, setIsAutoAdjusting] = useState(false);
@@ -910,9 +910,84 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
   const resumeContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  // Function to download the resume
-  const downloadResume = () => {
-    window.print(); // Simplified for demo; replace with actual PDF generation in production
+  // Generate actual PDF file for download
+  const downloadResume = async () => {
+    try {
+      // First set the scale to 1 to ensure proper PDF generation
+      const originalScale = scale;
+      setScale(1.0);
+      
+      // Wait for the scale change to apply
+      setTimeout(async () => {
+        if (!previewRef.current) return;
+        
+        // Create a virtual link element
+        const link = document.createElement('a');
+        
+        // Generate a filename with the person's name (if available) or a default name
+        const name = resume?.personalInfo?.firstName && resume?.personalInfo?.lastName ? 
+          `${resume.personalInfo.firstName}_${resume.personalInfo.lastName}` : 
+          'Resume';
+        const fileName = `${name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+        
+        try {
+          // Create a form to send to the server for PDF generation
+          const formData = new FormData();
+          formData.append('resumeData', JSON.stringify(resume));
+          formData.append('template', resume.template || 'professional');
+          
+          // Send the resume data to the server for PDF generation
+          const response = await fetch('/api/generate-pdf', {
+            method: 'POST',
+            body: formData
+          });
+          
+          if (!response.ok) throw new Error('Failed to generate PDF');
+          
+          // Get the PDF blob from the response
+          const blob = await response.blob();
+          
+          // Create a URL for the blob
+          const url = window.URL.createObjectURL(blob);
+          
+          // Set up the download link
+          link.href = url;
+          link.download = fileName;
+          link.click();
+          
+          // Clean up
+          window.URL.revokeObjectURL(url);
+          
+          toast({
+            title: "PDF Downloaded",
+            description: `Your resume has been downloaded as ${fileName}`,
+          });
+        } catch (error) {
+          console.error('Error downloading PDF:', error);
+          
+          // Fallback to window.print() if the API fails
+          window.print();
+          
+          toast({
+            title: "Using Print Dialog",
+            description: "PDF generation API failed. Using browser print dialog instead.",
+            variant: "destructive"
+          });
+        }
+        
+        // Restore the original scale
+        setScale(originalScale);
+      }, 100);
+    } catch (error) {
+      console.error('Error preparing PDF download:', error);
+      window.print(); // Fallback
+      
+      toast({
+        title: "Using Print Dialog",
+        description: "There was an issue preparing the PDF. Using browser print dialog instead.",
+        variant: "destructive"
+      });
+    }
   };
 
   // Toggle fullscreen mode
@@ -926,8 +1001,12 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
     if (isEditing) {
       // Apply changes from editedResume to the actual resume
       onTemplateChange(editedResume.template);
-      // Here you would normally dispatch an event or call a callback
-      // to update the parent component's resume state
+      
+      // Dispatch event to update parent component
+      const event = new CustomEvent('resumeEdited', {
+        detail: { resume: editedResume }
+      });
+      document.dispatchEvent(event);
     }
   };
 
@@ -939,27 +1018,86 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
     index?: number
   ) => {
     setEditedResume((prev) => {
-      // Implement field change logic here
-      return { ...prev };
+      const newResume = { ...prev };
+      
+      if (section === "personalInfo") {
+        newResume.personalInfo = { 
+          ...newResume.personalInfo, 
+          [field]: value 
+        };
+      } else if (section === "experience" && typeof index === 'number') {
+        newResume.experience = [...newResume.experience];
+        newResume.experience[index] = { 
+          ...newResume.experience[index], 
+          [field]: value 
+        };
+      } else if (section === "education" && typeof index === 'number') {
+        newResume.education = [...newResume.education];
+        newResume.education[index] = { 
+          ...newResume.education[index], 
+          [field]: value 
+        };
+      } else if (section === "skills" && typeof index === 'number') {
+        newResume.skills = [...newResume.skills];
+        newResume.skills[index] = { 
+          ...newResume.skills[index], 
+          [field]: value 
+        };
+      }
+      
+      return newResume;
     });
   };
 
-  // Auto-adjust feature to fit content on one page without changing zoom
+  // Auto-adjust feature to fit content on one page
   const autoAdjust = () => {
     setIsAutoAdjusting(true);
     
-    // Logic to adjust font size and spacing
+    // Intelligent scaling algorithm to fit content
     setTimeout(() => {
-      setFontScale(0.9); // Example adjustment
-      setSpacingScale(0.9); // Example adjustment
-      setIsAutoAdjusting(false);
+      if (!previewRef.current) {
+        setIsAutoAdjusting(false);
+        return;
+      }
       
-      toast({
-        title: "Smart Fit Applied",
-        description: "Font size and spacing have been adjusted to fit content on one page.",
-      });
+      const contentHeight = previewRef.current.scrollHeight;
+      const containerHeight = 297 * 3.78; // A4 height in pixels
+      
+      // Calculate the required scaling factors
+      const heightRatio = containerHeight / contentHeight;
+      
+      // Apply the scaling depending on whether content is too large
+      if (heightRatio < 1) {
+        // Content is too large, scale down the font and spacing
+        const newFontScale = Math.max(0.7, heightRatio * 0.95); // Don't go below 70%
+        const newSpacingScale = Math.max(0.7, heightRatio * 0.9);
+        
+        setFontScale(newFontScale);
+        setSpacingScale(newSpacingScale);
+        
+        toast({
+          title: "Smart Fit Applied",
+          description: `Content adjusted to fit on one page (${Math.round(newFontScale * 100)}% scale)`,
+        });
+      } else {
+        // Content fits already, reset to default
+        setFontScale(1);
+        setSpacingScale(1);
+        
+        toast({
+          title: "Smart Fit Reset",
+          description: "Your content already fits on one page. Using default sizes.",
+        });
+      }
+      
+      setIsAutoAdjusting(false);
     }, 500);
   };
+  
+  // Keep editedResume in sync with resume props changes
+  useEffect(() => {
+    setEditedResume(resume);
+  }, [resume]);
   
   return (
     <div className="space-y-4">
@@ -1046,21 +1184,22 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
 
       {/* Resume Preview */}
       <div
+        ref={resumeContainerRef}
         className={cn(
           "bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-xl overflow-auto",
           isFullScreen
             ? "fixed inset-0 z-50 m-0 p-8 bg-black/90"
-            : "p-4 h-[70vh]" // Fixed height container with reduced padding
+            : "p-4 h-[80vh]" // Increased height for better visibility
         )}
       >
         <div
           ref={previewRef}
-          className="transition-all duration-300 mx-auto"
+          className="transition-all duration-300 mx-auto bg-white"
           style={{
             transform: `scale(${scale})`,
             width: "210mm", // A4 width
-            height: "297mm", // A4 height (fixed to ensure one page)
-            transformOrigin: isFullScreen ? "center" : "top",
+            minHeight: "297mm", // A4 height (minimum to ensure proper proportions)
+            transformOrigin: "top center",
             fontSize: `${fontScale * 100}%`, // Dynamic font scaling
             lineHeight: `${spacingScale * 1.5}`, // Dynamic line height scaling
           }}

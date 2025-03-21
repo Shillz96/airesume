@@ -70,16 +70,44 @@ interface SummarySuggestionsProps {
 type SummaryLength = 'short' | 'medium' | 'long';
 
 function SummarySuggestions({ resumeId, onApply }: SummarySuggestionsProps) {
+  const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [summaries, setSummaries] = useState<string[]>([]);
   const [lastUsedLength, setLastUsedLength] = useState<SummaryLength>('medium');
   const [generationCount, setGenerationCount] = useState(0);
+  const [refreshCount, setRefreshCount] = useState<Record<SummaryLength, number>>({
+    short: 0,
+    medium: 0,
+    long: 0
+  });
   
   // Generate AI summaries with length option
   const handleGenerateSummaries = async (length: SummaryLength = 'medium') => {
     setIsGenerating(true);
-    setLastUsedLength(length);
-    setGenerationCount(prev => prev + 1);
+    
+    // Reset refresh count if changing length type
+    if (lastUsedLength !== length) {
+      setLastUsedLength(length);
+      setGenerationCount(prev => prev + 1);
+      setRefreshCount(prev => ({...prev, [length]: 0}));
+    } else {
+      // Increment refresh count for this length type
+      const newRefreshCount = refreshCount[length] + 1;
+      
+      // Only allow up to 5 refreshes per length type
+      if (newRefreshCount <= 5) {
+        setRefreshCount(prev => ({...prev, [length]: newRefreshCount}));
+        setGenerationCount(prev => prev + 1);
+      } else {
+        toast({
+          title: "Refresh limit reached",
+          description: "You've reached the maximum number of refreshes. Try a different length option.",
+          variant: "default",
+        });
+        setIsGenerating(false);
+        return;
+      }
+    }
     
     // Generate sample summaries based on resume content
     const getFallbackSummaries = (length: SummaryLength) => {
@@ -252,16 +280,44 @@ interface ExperienceSuggestionsProps {
 type BulletLength = 'short' | 'medium' | 'long';
 
 function ExperienceSuggestions({ resumeId, jobTitle, onApply }: ExperienceSuggestionsProps) {
+  const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [bulletPoints, setBulletPoints] = useState<string[]>([]);
   const [lastUsedLength, setLastUsedLength] = useState<BulletLength>('medium');
   const [generationCount, setGenerationCount] = useState(0);
+  const [refreshCount, setRefreshCount] = useState<Record<BulletLength, number>>({
+    short: 0,
+    medium: 0,
+    long: 0
+  });
   
   // Generate AI bullet points for experience section with length options
   const handleGenerateBulletPoints = async (length: BulletLength = 'medium') => {
     setIsGenerating(true);
-    setLastUsedLength(length);
-    setGenerationCount(prev => prev + 1);
+    
+    // Reset refresh count if changing length type
+    if (lastUsedLength !== length) {
+      setLastUsedLength(length);
+      setGenerationCount(prev => prev + 1);
+      setRefreshCount(prev => ({...prev, [length]: 0}));
+    } else {
+      // Increment refresh count for this length type
+      const newRefreshCount = refreshCount[length] + 1;
+      
+      // Only allow up to 5 refreshes per length type
+      if (newRefreshCount <= 5) {
+        setRefreshCount(prev => ({...prev, [length]: newRefreshCount}));
+        setGenerationCount(prev => prev + 1);
+      } else {
+        toast({
+          title: "Refresh limit reached",
+          description: "You've reached the maximum number of refreshes. Try a different style option.",
+          variant: "default",
+        });
+        setIsGenerating(false);
+        return;
+      }
+    }
     
     // Generate fallback bullet points based on job title and length
     const getFallbackBulletPoints = (length: BulletLength) => {
@@ -448,16 +504,44 @@ interface SkillSuggestionsProps {
 type SkillsCategory = 'technical' | 'soft' | 'industry';
 
 function SkillSuggestions({ resumeId, jobTitle, onApply }: SkillSuggestionsProps) {
+  const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [skills, setSkills] = useState<string[]>([]);
   const [lastUsedCategory, setLastUsedCategory] = useState<SkillsCategory>('technical');
   const [generationCount, setGenerationCount] = useState(0);
+  const [refreshCount, setRefreshCount] = useState<Record<SkillsCategory, number>>({
+    technical: 0,
+    soft: 0,
+    industry: 0
+  });
   
   // Generate AI skill suggestions with category options
   const handleGenerateSkills = async (category: SkillsCategory = 'technical') => {
     setIsGenerating(true);
-    setLastUsedCategory(category);
-    setGenerationCount(prev => prev + 1);
+    
+    // Reset refresh count if changing category type
+    if (lastUsedCategory !== category) {
+      setLastUsedCategory(category);
+      setGenerationCount(prev => prev + 1);
+      setRefreshCount(prev => ({...prev, [category]: 0}));
+    } else {
+      // Increment refresh count for this category
+      const newRefreshCount = refreshCount[category] + 1;
+      
+      // Only allow up to 5 refreshes per category
+      if (newRefreshCount <= 5) {
+        setRefreshCount(prev => ({...prev, [category]: newRefreshCount}));
+        setGenerationCount(prev => prev + 1);
+      } else {
+        toast({
+          title: "Refresh limit reached",
+          description: "You've reached the maximum number of refreshes. Try a different skill category.",
+          variant: "default",
+        });
+        setIsGenerating(false);
+        return;
+      }
+    }
     
     // Generate fallback skills based on job title and category
     const getFallbackSkills = (category: SkillsCategory) => {

@@ -14,16 +14,22 @@ export function ProtectedRoute({
   const { user, isLoading } = useAuth();
   const { isGuestMode } = useGuestMode();
 
-  // If not logged in, enable guest mode via URL parameter
+  // Check URL for guest parameter without modifying it
   useEffect(() => {
     if (!user && !isGuestMode && !isLoading) {
-      // Only modify the URL if we're not already on the auth page
+      // Only check if we're not already on the auth page
       if (!window.location.pathname.includes('/auth')) {
-        const currentUrl = new URL(window.location.href);
-        currentUrl.searchParams.set('guest', 'true');
-        window.history.replaceState({}, '', currentUrl.toString());
-        // Force a page reload to apply the guest mode
-        window.location.reload();
+        // Check if we have the guest parameter in the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const hasGuestParam = urlParams.has('guest');
+        
+        // If no guest parameter exists, add it without reloading
+        if (!hasGuestParam) {
+          const currentUrl = new URL(window.location.href);
+          currentUrl.searchParams.set('guest', 'true');
+          window.history.replaceState({}, '', currentUrl.toString());
+          // No page reload needed - the useGuestMode hook will handle this parameter change
+        }
       }
     }
   }, [user, isGuestMode, isLoading]);

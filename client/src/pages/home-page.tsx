@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import Navbar from "@/components/navbar";
 import DashboardStats from "@/components/dashboard-stats";
 import RecentActivity from "@/components/recent-activity";
+import JobInterviewAvatar from "@/components/job-interview-avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { Rocket } from "lucide-react";
 import gsap from "gsap";
@@ -114,9 +115,9 @@ export default function HomePage() {
       
       <Navbar />
       
-      <main className="pt-24 relative z-10 cosmic-nebula">
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-4 py-6 sm:px-0">
+      <main className="pt-24 relative z-10 cosmic-nebula min-h-[calc(100vh-64px)]">
+        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 h-full">
+          <div className="px-4 py-6 sm:px-0 h-full flex flex-col">
             <div className="mb-8 flex items-center" ref={welcomeRef}>
               <div>
                 <h1 className="cosmic-page-title text-3xl">

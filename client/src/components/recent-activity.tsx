@@ -6,7 +6,8 @@ import {
   CardTitle 
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Activity, FileText, Briefcase } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Clock, Activity, FileText, Briefcase, Lightbulb } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
@@ -148,8 +149,74 @@ export default function RecentActivity() {
               ))}
             </ul>
           ) : (
-            <div className="px-4 py-10 sm:px-6 text-center text-gray-400">
-              <p>No recent activity found. Start by creating a resume or searching for jobs.</p>
+            <div className="px-4 py-6 sm:px-6">
+              <div className="text-center text-gray-400 mb-4">
+                <p>No recent activity found. Let's get started with your job search journey!</p>
+              </div>
+              
+              {/* Suggested actions for new users */}
+              <div className="space-y-4 mt-6">
+                <h3 className="text-sm font-medium text-blue-400 mb-2">Suggested Actions</h3>
+                
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10 transition-all hover:bg-white/10">
+                  <div className="flex items-center">
+                    <div className="p-2 bg-blue-500/20 rounded-full mr-3">
+                      <FileText className="h-5 w-5 text-blue-400" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-white">Create Your First Resume</h4>
+                      <p className="text-xs text-gray-400 mt-1">Build a professional resume with AI-powered assistance</p>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="mt-3 text-xs text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 w-full"
+                    onClick={() => window.location.href = '/resume-builder'}
+                  >
+                    Get Started
+                  </Button>
+                </div>
+                
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10 transition-all hover:bg-white/10">
+                  <div className="flex items-center">
+                    <div className="p-2 bg-purple-500/20 rounded-full mr-3">
+                      <Briefcase className="h-5 w-5 text-purple-400" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-white">Explore Job Matches</h4>
+                      <p className="text-xs text-gray-400 mt-1">Discover jobs that match your skills and experience</p>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="mt-3 text-xs text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 w-full"
+                    onClick={() => window.location.href = '/job-finder'}
+                  >
+                    Explore Jobs
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Daily Tip */}
+              <div className="mt-6">
+                <h3 className="text-sm font-medium text-blue-400 mb-2">Daily Tip</h3>
+                <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-lg p-4 border border-white/10">
+                  <div className="flex items-start">
+                    <div className="p-2 bg-amber-500/20 rounded-full mr-3 mt-1">
+                      <Lightbulb className="h-4 w-4 text-amber-400" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-white">Resume Optimization</h4>
+                      <p className="text-xs text-gray-300 mt-1">
+                        Tailor your resume for each job application to increase your chances by 30%! 
+                        Use our AI-Assistant to highlight the most relevant skills and experience.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </CardContent>

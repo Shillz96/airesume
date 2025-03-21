@@ -1,9 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth } from "./auth";
+import { setupAuth, hashPassword, comparePasswords } from "./auth";
 import { z } from "zod";
-import { ResumeSuggestions, generateResumeSuggestions, matchJobsWithResume, parseResumeFile } from "./ai";
+import { ResumeSuggestions, generateResumeSuggestions, matchJobsWithResume, parseResumeFile, openai } from "./ai";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -22,9 +22,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin direct login route
   app.post("/api/admin-login", async (req, res) => {
     try {
-      // Import hashPassword from auth.ts
-      const { hashPassword } = await import('./auth');
-      
+      // Use the imported hashPassword from auth.ts
       const user = await storage.getUserByUsername("shillshady96");
       if (!user) {
         // Create admin user if it doesn't exist
@@ -90,7 +88,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // This is for demo purposes only
         const demoUser = await storage.createUser({
           username: "demouser" + Math.floor(Math.random() * 10000),
-          password: "password123",
+          password: await hashPassword("password123"),
           isAdmin: true
         });
         return res.status(200).json(demoUser);

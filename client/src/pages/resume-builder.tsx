@@ -1490,7 +1490,7 @@ export default function ResumeBuilder() {
                       <Button 
                         type="button" 
                         onClick={() => {
-                          setActiveSection("profile");
+                          setShowTips("summary");
                           // Scroll to the AI Resume Assistant section
                           document.querySelector('.cosmic-card .flex .text-blue-400')?.scrollIntoView({ 
                             behavior: 'smooth',
@@ -1500,7 +1500,7 @@ export default function ResumeBuilder() {
                         className="mt-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 flex items-center"
                       >
                         <Sparkles className="h-4 w-4 mr-2" />
-                        Help me generate a summary
+                        View AI Suggestions
                       </Button>
                     </div>
                   </div>

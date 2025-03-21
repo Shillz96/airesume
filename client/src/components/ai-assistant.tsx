@@ -59,7 +59,8 @@ interface ChatMessage {
  isTyping?: boolean;
 }
 
-// Global state to ensure only one AI Assistant is visible
+// Global state to ensure only floating AI Assistant is visible
+let globalFloatingAssistantVisible = false;
 let globalAssistantVisible = false;
 
 export default function AIAssistant({
@@ -106,16 +107,18 @@ export default function AIAssistant({
 
  // Custom setter for visibility
  const setAssistantVisibility = (visible: boolean) => {
- if (visible && globalAssistantVisible) {
- toast({
- title: "AI Assistant already open",
- description: "Please close the other AI assistant window first.",
- variant: "default",
- });
- return;
- }
- globalAssistantVisible = visible;
- setIsVisible(visible);
+   if (!activeTab) { // Only apply global visibility check for floating assistant
+     if (visible && globalFloatingAssistantVisible) {
+       toast({
+         title: "AI Assistant already open",
+         description: "Please close the other AI assistant window first.",
+         variant: "default",
+       });
+       return;
+     }
+     globalFloatingAssistantVisible = visible;
+   }
+   setIsVisible(visible);
  };
 
  // Animations

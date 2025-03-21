@@ -1598,9 +1598,17 @@ export default function ResumeBuilder() {
                                 const updatedExperience = [...resume.experience];
                                 const lastIndex = updatedExperience.length - 1;
                                 
+                                // Get the current description
+                                const currentDescription = updatedExperience[lastIndex].description;
+                                
+                                // Append the new bullet point if not empty
+                                const newDescription = currentDescription 
+                                  ? `${currentDescription}\n• ${bulletPoint}` 
+                                  : `• ${bulletPoint}`;
+                                
                                 updatedExperience[lastIndex] = {
                                   ...updatedExperience[lastIndex],
-                                  description: bulletPoint
+                                  description: newDescription
                                 };
                                 
                                 setResume({
@@ -1609,11 +1617,12 @@ export default function ResumeBuilder() {
                                 });
                               }
                               toast({
-                                title: "Bullet point applied",
-                                description: "AI-generated bullet point has been applied to your experience."
+                                title: "Bullet point added",
+                                description: "AI-generated bullet point has been added to your experience."
                               });
                             }}
                             suggestionType="bullet"
+                            multiSelect={true}
                           />
                         </div>
                       </div>
@@ -1707,6 +1716,16 @@ export default function ResumeBuilder() {
                         });
                       }}
                     />
+                    
+                    <div className="mt-2 text-xs text-gray-300 bg-white/5 p-3 rounded-lg">
+                      <p className="mb-2 text-blue-300 font-medium">Tips for showcasing skills:</p>
+                      <ul className="list-disc pl-4 space-y-1">
+                        <li>Include a mix of technical and soft skills</li>
+                        <li>Prioritize skills mentioned in job descriptions</li>
+                        <li>Be honest about your proficiency levels</li>
+                        <li>Group similar skills together</li>
+                      </ul>
+                    </div>
                   </div>
                   
                   {/* Tips for Skills */}
@@ -1715,72 +1734,42 @@ export default function ResumeBuilder() {
                       <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
                       <div className="relative z-10">
                         <div className="flex items-center mb-4">
-                          <Code className="h-5 w-5 mr-2 text-blue-400" />
-                          <h3 className="font-medium text-white">Skills Tips</h3>
+                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
+                          <h3 className="font-medium text-white">AI Skills Assistant</h3>
                         </div>
                         
-                        <div className="text-xs text-gray-300 mt-3 bg-white/5 p-3 rounded-lg">
-                          <p className="mb-2 text-blue-300 font-medium">Tips for showcasing skills:</p>
-                          <ul className="list-disc pl-4 space-y-1">
-                            <li>Include a mix of technical and soft skills</li>
-                            <li>Prioritize skills mentioned in job descriptions</li>
-                            <li>Be honest about your proficiency levels</li>
-                            <li>Group similar skills together</li>
-                          </ul>
-                        </div>
-                        
-                        <div className="mt-4 flex">
-                          {showTips === "skills" ? (
-                            <div className="w-full">
-                              <ResumeTips 
-                                resumeId={resumeId} 
-                                onApplySuggestion={(skill) => {
-                                  if (!resume.skills.some(s => s.name.toLowerCase() === skill.toLowerCase())) {
-                                    const newSkill = {
-                                      id: `skill-${Date.now()}`,
-                                      name: skill,
-                                      proficiency: 3
-                                    };
-                                    
-                                    setResume({
-                                      ...resume,
-                                      skills: [...resume.skills, newSkill]
-                                    });
-                                    
-                                    toast({
-                                      title: "Skill added",
-                                      description: `"${skill}" has been added to your skills.`
-                                    });
-                                  } else {
-                                    toast({
-                                      title: "Skill already exists",
-                                      description: `"${skill}" is already in your skills list.`,
-                                      variant: "destructive"
-                                    });
-                                  }
-                                  setShowTips(null);
-                                }}
-                                suggestionType="skill"
-                              />
-                              <Button
-                                onClick={() => setShowTips(null)}
-                                variant="ghost"
-                                size="sm"
-                                className="mt-2 w-full text-gray-400 hover:text-white"
-                              >
-                                Cancel
-                              </Button>
-                            </div>
-                          ) : (
-                            <Button
-                              onClick={() => setShowTips("skills")}
-                              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                              size="sm"
-                            >
-                              <Cpu className="h-4 w-4 mr-2" />
-                              Get AI Suggestions
-                            </Button>
-                          )}
+
+                        <div className="w-full">
+                          <ResumeTips 
+                            resumeId={resumeId} 
+                            onApplySuggestion={(skill) => {
+                              if (!resume.skills.some(s => s.name.toLowerCase() === skill.toLowerCase())) {
+                                const newSkill = {
+                                  id: `skill-${Date.now()}`,
+                                  name: skill,
+                                  proficiency: 3
+                                };
+                                
+                                setResume({
+                                  ...resume,
+                                  skills: [...resume.skills, newSkill]
+                                });
+                                
+                                toast({
+                                  title: "Skill added",
+                                  description: `"${skill}" has been added to your skills.`
+                                });
+                              } else {
+                                toast({
+                                  title: "Skill already exists",
+                                  description: `"${skill}" is already in your skills list.`,
+                                  variant: "destructive"
+                                });
+                              }
+                            }}
+                            suggestionType="skill"
+                            multiSelect={true}
+                          />
                         </div>
                       </div>
                     </div>

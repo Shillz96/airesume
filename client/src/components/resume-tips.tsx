@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Check, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -10,10 +10,12 @@ interface ResumeTipsProps {
   resumeId?: string | number | null;
   onApplySuggestion: (suggestion: string) => void;
   suggestionType: "summary" | "bullet" | "skill";
+  multiSelect?: boolean;
 }
 
-export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType }: ResumeTipsProps) {
+export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType, multiSelect = false }: ResumeTipsProps) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [appliedSuggestions, setAppliedSuggestions] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("medium");
   const { toast } = useToast();
@@ -214,28 +216,84 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
                 <div className="animate-spin h-6 w-6 border-2 border-blue-500 rounded-full border-t-transparent"></div>
               </div>
             ) : (
-              suggestions.map((suggestion, index) => (
-                <div 
-                  key={index} 
-                  className="p-2 rounded-md bg-white/10 border border-blue-500/20 hover:border-blue-500/40 transition-all cursor-pointer"
-                  onClick={() => onApplySuggestion(suggestion)}
-                >
-                  <p className="text-xs text-white leading-relaxed">{suggestion}</p>
-                  <div className="flex justify-end mt-1">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-6 px-2 text-xs text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onApplySuggestion(suggestion);
+              <>
+                {multiSelect && appliedSuggestions.length > 0 && (
+                  <div className="mb-2">
+                    <h4 className="text-xs font-medium text-blue-300 mb-1">Applied Suggestions</h4>
+                    <div className="space-y-1.5">
+                      {appliedSuggestions.map((applied, idx) => (
+                        <div key={`applied-${idx}`} className="flex items-start p-1.5 rounded-md bg-blue-800/20 border border-blue-500/30">
+                          <div className="flex-grow">
+                            <p className="text-xs text-blue-100 leading-relaxed">{applied}</p>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-5 w-5 p-0 ml-1 text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
+                            onClick={() => {
+                              setAppliedSuggestions(appliedSuggestions.filter((_, i) => i !== idx));
+                            }}
+                          >
+                            <Check className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                <h4 className="text-xs font-medium text-blue-300 mb-1">Available Suggestions</h4>
+                {suggestions.map((suggestion, index) => {
+                  const isApplied = appliedSuggestions.includes(suggestion);
+                  return (
+                    <div 
+                      key={index} 
+                      className={`p-2 rounded-md bg-white/10 border transition-all cursor-pointer ${
+                        isApplied 
+                          ? "border-blue-500/40 bg-blue-800/20" 
+                          : "border-blue-500/20 hover:border-blue-500/40"
+                      }`}
+                      onClick={() => {
+                        if (multiSelect) {
+                          if (!isApplied) {
+                            const newApplied = [...appliedSuggestions, suggestion];
+                            setAppliedSuggestions(newApplied);
+                            onApplySuggestion(suggestion);
+                          }
+                        } else {
+                          onApplySuggestion(suggestion);
+                        }
                       }}
                     >
-                      Apply
-                    </Button>
-                  </div>
-                </div>
-              ))
+                      <p className="text-xs text-white leading-relaxed">{suggestion}</p>
+                      <div className="flex justify-end mt-1">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-6 px-2 text-xs text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (multiSelect) {
+                              if (!isApplied) {
+                                const newApplied = [...appliedSuggestions, suggestion];
+                                setAppliedSuggestions(newApplied);
+                                onApplySuggestion(suggestion);
+                              }
+                            } else {
+                              onApplySuggestion(suggestion);
+                            }
+                          }}
+                        >
+                          {multiSelect ? (
+                            isApplied ? <Check className="h-4 w-4 mr-1" /> : <Plus className="h-4 w-4 mr-1" />
+                          ) : null}
+                          {multiSelect ? (isApplied ? "Added" : "Add") : "Apply"}
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </>
             )}
           </div>
         </Tabs>

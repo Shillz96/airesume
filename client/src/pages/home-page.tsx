@@ -4,6 +4,7 @@ import DashboardStats from "@/components/dashboard-stats";
 import RecentActivity from "@/components/recent-activity";
 import JobInterviewAvatar from "@/components/job-interview-avatar";
 import JobSearchProgress from "@/components/job-search-progress";
+import CosmicBackground from "@/components/cosmic-background";
 import { useAuth } from "@/hooks/use-auth";
 import { Rocket } from "lucide-react";
 import gsap from "gsap";
@@ -96,24 +97,7 @@ export default function HomePage() {
   
   return (
     <div className="cosmic-page">
-      {/* Starfield Background */}
-      <div className="starfield absolute inset-0 pointer-events-none">
-        {[...Array(100)].map((_, i) => (
-          <div
-            key={i}
-            className="star absolute bg-white rounded-full"
-            style={{
-              width: `${Math.random() * 2 + 1}px`,
-              height: `${Math.random() * 2 + 1}px`,
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              opacity: Math.random() * 0.5 + 0.2,
-              animation: `twinkle ${Math.random() * 3 + 2}s infinite`,
-            }}
-          />
-        ))}
-      </div>
-      
+      <CosmicBackground />
       <Navbar />
       
       <main className="pt-24 pb-16 relative z-10 cosmic-nebula flex-1">

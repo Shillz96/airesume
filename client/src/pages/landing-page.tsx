@@ -524,7 +524,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-     {/* Pricing Section */}
+{/* Pricing Section */}
 <section id="pricing" className="py-20 relative z-10">
   <div className="max-w-5xl mx-auto">
     <div className="text-center mb-16">
@@ -538,7 +538,7 @@ export default function LandingPage() {
 
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
       {/* Free Plan */}
-      <Card className="cosmic-card border border-white/10 relative flex flex-col h-full">
+      <Card className="relative flex flex-col h-full bg-gradient-to-b from-blue-900/50 to-purple-900/50 border border-white/10 rounded-xl">
         <CardHeader className="pb-4">
           <CardTitle className="text-xl text-white">Basic</CardTitle>
           <CardDescription className="text-gray-300">For individuals just getting started</CardDescription>
@@ -547,7 +547,7 @@ export default function LandingPage() {
           </div>
         </CardHeader>
         <CardContent className="flex-1 space-y-2 pb-6">
-          <ul className="space-y-2 text-gray-300">
+          <ul className="space-y-2 text-gray-300 text-sm">
             <li className="flex items-start">
               <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
               <span>1 Resume Creation</span>
@@ -568,8 +568,7 @@ export default function LandingPage() {
         </CardContent>
         <CardFooter className="mt-auto pt-0">
           <Button
-            className="w-full"
-            variant="outline"
+            className="w-full bg-black/50 text-white border border-white/20 hover:bg-black/70"
             onClick={() => handleSelectPlan("Basic")}
           >
             Get Started Free
@@ -578,11 +577,11 @@ export default function LandingPage() {
       </Card>
 
       {/* Pro Plan */}
-      <Card className="cosmic-card border-2 border-blue-400/50 relative flex flex-col h-full">
+      <Card className="relative flex flex-col h-full bg-gradient-to-b from-blue-900/50 to-purple-900/50 border-2 border-blue-400/50 rounded-xl">
         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-fit px-4 py-1 bg-blue-500 text-white text-sm font-medium rounded-full">
           Most Popular
         </div>
-        <CardHeader className="pb-4 pt-8"> {/* Added pt-8 to account for the badge */}
+        <CardHeader className="pb-4 pt-8">
           <CardTitle className="text-xl text-white">Pro</CardTitle>
           <CardDescription className="text-gray-300">For individuals actively job hunting</CardDescription>
           <div className="mt-2">
@@ -591,7 +590,7 @@ export default function LandingPage() {
           </div>
         </CardHeader>
         <CardContent className="flex-1 space-y-2 pb-6">
-          <ul className="space-y-2 text-gray-300">
+          <ul className="space-y-2 text-gray-300 text-sm">
             <li className="flex items-start">
               <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
               <span>Unlimited Resume Creations</span>
@@ -616,7 +615,7 @@ export default function LandingPage() {
         </CardContent>
         <CardFooter className="mt-auto pt-0">
           <Button
-            className="w-full cosmic-btn-glow"
+            className="w-full bg-blue-600 text-white hover:bg-blue-700"
             onClick={() => handleSelectPlan("Pro")}
           >
             Start Pro Plan
@@ -625,7 +624,7 @@ export default function LandingPage() {
       </Card>
 
       {/* Business Plan */}
-      <Card className="cosmic-card border border-white/10 relative flex flex-col h-full">
+      <Card className="relative flex flex-col h-full bg-gradient-to-b from-blue-900/50 to-purple-900/50 border border-white/10 rounded-xl">
         <CardHeader className="pb-4">
           <CardTitle className="text-xl text-white">Enterprise</CardTitle>
           <CardDescription className="text-gray-300">For career professionals and teams</CardDescription>
@@ -635,7 +634,7 @@ export default function LandingPage() {
           </div>
         </CardHeader>
         <CardContent className="flex-1 space-y-2 pb-6">
-          <ul className="space-y-2 text-gray-300">
+          <ul className="space-y-2 text-gray-300 text-sm">
             <li className="flex items-start">
               <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
               <span>All Pro Features</span>
@@ -660,8 +659,7 @@ export default function LandingPage() {
         </CardContent>
         <CardFooter className="mt-auto pt-0">
           <Button
-            className="w-full"
-            variant="outline"
+            className="w-full bg-black/50 text-white border border-white/20 hover:bg-black/70"
             onClick={() => handleSelectPlan("Enterprise")}
           >
             Start Enterprise Plan

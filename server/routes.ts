@@ -506,8 +506,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate experience bullet points for a specific job
       if (experienceOnly) {
         try {
-          // Import the openai client from ai.ts
-          const response = await (await import('./ai')).openai.chat.completions.create({
+          // Use the imported openai client
+          const response = await openai.chat.completions.create({
             model: "gpt-4o",
             messages: [
               {
@@ -576,8 +576,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate skill suggestions
       if (skillsOnly) {
         try {
-          // Import the openai client from ai.ts
-          const response = await (await import('./ai')).openai.chat.completions.create({
+          // Use the imported openai client
+          const response = await openai.chat.completions.create({
             model: "gpt-4o",
             messages: [
               {
@@ -666,8 +666,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate professional summaries
       if (summaryOnly) {
         try {
-          // Import the openai client from ai.ts
-          const response = await (await import('./ai')).openai.chat.completions.create({
+          // Use the imported openai client
+          const response = await openai.chat.completions.create({
             model: "gpt-4o",
             messages: [
               {

@@ -716,6 +716,16 @@ export default function ResumeBuilder() {
     <div className="min-h-screen bg-black cosmic-background">
       <Navbar />
       
+      {/* AI Assistant Floating Chatbot */}
+      <AIAssistant 
+        resumeId={resumeId?.toString()}
+        onApplySummary={handleApplySummary}
+        onApplyBulletPoint={handleApplyBulletPoint}
+        onApplySkill={handleApplySkill}
+        resume={resume}
+        activeTab={activeSection}
+      />
+      
       <main className="container mx-auto pt-24 pb-20 px-4">
         {/* Page Header */}
         <div className="mb-8 flex justify-between items-center">

@@ -1,38 +1,36 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import React, { useState, useEffect, useCallback } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useParams } from "wouter";
+import { apiRequest } from "@/lib/queryClient";
 import { cn } from "@/lib/utils";
-import { useLocation } from "wouter";
-import ResumeTips from "@/components/resume-tips";
+import { CosmicButton } from "@/components/cosmic-button";
+import CosmicBackground from "@/components/cosmic-background";
 import Navbar from "@/components/navbar";
-import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { 
-  Download, Loader2, Plus, Minus, Maximize2, FileText, 
-  Check, Zap, EyeOff, Eye, FileImage, X, Move,
-  GraduationCap, Briefcase, Code, Award, FolderKanban,
-  FolderOpen, Save, Upload, Cpu, ChevronDown, User,
-  Sparkles, RefreshCw, Printer, ChevronLeft, ChevronRight
+  User, 
+  Briefcase, 
+  GraduationCap, 
+  Code, 
+  FileText, 
+  Save, 
+  Upload, 
+  Eye, 
+  Download, 
+  PlusCircle, 
+  Brain, 
+  Sparkles, 
+  EyeOff, 
+  Lightbulb,
+  Package,
+  ListFilter,
+  CircleDot
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import ResumeTemplate, {
-  ProfessionalTemplate,
-  CreativeTemplate,
-  ExecutiveTemplate,
-  ModernTemplate,
-  MinimalTemplate,
-  IndustryTemplate,
-  BoldTemplate,
-  TemplatePreviewProfessional,
-  TemplatePreviewCreative,
-  TemplatePreviewExecutive,
-  TemplatePreviewModern,
-  TemplatePreviewMinimal,
-  TemplatePreviewIndustry,
-  TemplatePreviewBold,
-} from "@/components/resume-template";
-import {
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { 
   ResumeExperienceSection,
   ResumeEducationSection,
   ResumeSkillsSection,
@@ -40,54 +38,32 @@ import {
   ExperienceItem,
   EducationItem,
   SkillItem,
-  ProjectItem,
+  ProjectItem
 } from "@/components/resume-section";
-import { Resume } from "@/components/resume-template";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { CosmicButton } from "@/components/cosmic-button";
-import RichTextEditor from "@/components/rich-text-editor";
+import { 
+  DndContext, 
+  closestCenter, 
+  MouseSensor,
+  TouchSensor,
+  DragOverlay,
+  useSensor, 
+  useSensors,
+  DragStartEvent,
+  DragEndEvent
+} from '@dnd-kit/core';
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-// Import refactored component files
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy
+} from '@dnd-kit/sortable';
+import { useToast } from "@/hooks/use-toast";
+import ResumeUpload from "@/components/resume/resume-upload";
+import ResumePreviewComponent from "@/components/resume/resume-preview";
+import AIAssistant from "@/components/ai-assistant";
 import SummarySuggestions from "@/components/resume/summary-suggestions";
 import ExperienceSuggestions from "@/components/resume/experience-suggestions";
 import SkillSuggestions from "@/components/resume/skills-suggestions";
-import ResumePreviewComponent from "@/components/resume/resume-preview";
-import ResumeUpload from "@/components/resume/resume-upload";
-
-import AIAssistant from "@/components/ai-assistant";
-import CosmicBackground from "@/components/cosmic-background";
+import RichTextEditor from "@/components/rich-text-editor";
 
 /**
  * The main Resume Builder page component
@@ -95,718 +71,323 @@ import CosmicBackground from "@/components/cosmic-background";
  * Includes AI-powered suggestions and template switching
  */
 export default function ResumeBuilder() {
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-  const [showPersonalInfo, setShowPersonalInfo] = useState(true);
-  const [currentTab, setCurrentTab] = useState("contact");
-  const resumeContentRef = useRef<HTMLDivElement>(null);
-  const { id: resumeId } = useParams<{ id: string }>();
-  const history = useLocation()[1];
+  // Extract resume ID from URL if editing an existing resume
+  const params = useParams();
+  const resumeId = params?.id;
 
-  const printTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Initialize empty resume data
-  const [resume, setResume] = useState<Resume>({
-    id: '',
-    title: 'My Resume',
+  // State for the resume data
+  const [resume, setResume] = useState({
+    id: resumeId || "",
+    title: "My Professional Resume",
     personalInfo: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      headline: '',
-      summary: '',
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      headline: "",
+      summary: ""
     },
-    experience: [],
-    education: [],
-    skills: [],
-    projects: [],
-    template: 'professional',
-    skillsDisplayMode: 'bubbles',
+    experience: [] as ExperienceItem[],
+    education: [] as EducationItem[],
+    skills: [] as SkillItem[],
+    projects: [] as ProjectItem[],
+    template: "professional", // Default template
+    skillsDisplayMode: "bubbles" // 'bubbles' or 'bullets'
   });
 
-  // Optimistically update resume in UI
-  const updateResumeLocally = (updates: Partial<Resume>) => {
-    setResume((prev) => ({ ...prev, ...updates }));
-  };
+  // UI state
+  const [currentTab, setCurrentTab] = useState("contact");
+  const [showPersonalInfo, setShowPersonalInfo] = useState(true);
+  const [showPreview, setShowPreview] = useState(false);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
+  const [draggedItemType, setDraggedItemType] = useState<"experience" | "education" | "skills" | "projects" | null>(null);
+  
+  const { toast } = useToast();
+  
+  // Sensors for drag and drop functionality
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200,
+        tolerance: 8,
+      },
+    })
+  );
 
-  // Resume save mutation
-  const saveResumeMutation = useMutation({
-    mutationFn: async (resumeData: Resume) => {
-      setIsLoading(true);
-      try {
-        // If we have an ID, update the existing resume
-        if (resumeId && resumeId !== 'new') {
-          const res = await apiRequest('PATCH', `/api/resumes/${resumeId}`, resumeData);
-          return res.json();
-        } 
-        // Otherwise create a new resume
-        else {
-          const res = await apiRequest('POST', '/api/resumes', resumeData);
-          return res.json();
-        }
-      } finally {
-        setIsLoading(false);
+  // Fetch resume data if editing an existing resume
+  const { isLoading: isLoadingResume } = useQuery({
+    queryKey: ["resume", resumeId],
+    enabled: !!resumeId,
+    queryFn: async () => {
+      const data = await apiRequest(`/api/resumes/${resumeId}`);
+      if (data) {
+        setResume({
+          ...resume,
+          ...data,
+          id: data.id || resumeId || "",
+          title: data.title || "My Professional Resume",
+          personalInfo: {
+            ...resume.personalInfo,
+            ...(data.personalInfo || {})
+          },
+          experience: Array.isArray(data.experience) ? data.experience : [],
+          education: Array.isArray(data.education) ? data.education : [],
+          skills: Array.isArray(data.skills) ? data.skills : [],
+          projects: Array.isArray(data.projects) ? data.projects : [],
+          template: data.template || "professional",
+          skillsDisplayMode: data.skillsDisplayMode || "bubbles"
+        });
       }
+      return data;
+    }
+  });
+
+  // Mutation for saving the resume
+  const { mutate, isLoading } = useMutation({
+    mutationFn: async (resumeData: Resume) => {
+      // If we have a resume ID, update it, otherwise create a new one
+      const endpoint = resumeId 
+        ? `/api/resumes/${resumeId}` 
+        : '/api/resumes';
+      
+      return await apiRequest(endpoint, {
+        method: resumeId ? 'PUT' : 'POST',
+        data: resumeData
+      });
     },
     onSuccess: (data) => {
-      if (data.id && resumeId === 'new') {
-        // Navigate to the edit page for the newly created resume
-        toast({
-          title: 'Resume created successfully',
-          description: 'Your resume has been saved.',
-        });
-        history(`/resume-builder/${data.id}`);
-      } else {
-        toast({
-          title: 'Resume saved successfully',
-          description: 'Your changes have been saved.',
-        });
+      // If this was a new resume, update the URL to include the new ID
+      if (!resumeId && data?.id) {
+        window.history.pushState(null, '', `/resume-builder/${data.id}`);
       }
-      queryClient.invalidateQueries({ queryKey: ['/api/resumes'] });
+      
+      toast({
+        title: "Resume saved successfully",
+        description: "Your resume has been saved to your account.",
+      });
     },
     onError: (error: Error) => {
       toast({
-        title: 'Error saving resume',
-        description: error.message || 'An error occurred while saving your resume.',
-        variant: 'destructive',
+        title: "Failed to save resume",
+        description: error.message || "An unexpected error occurred. Please try again.",
+        variant: "destructive",
       });
-    },
-  });
-
-  // Load resume data if editing an existing resume
-  const { isLoading: isLoadingResume } = useQuery({
-    queryKey: ['/api/resumes', resumeId],
-    queryFn: async () => {
-      if (resumeId === 'new') {
-        // For new resumes, check for session data first
-        try {
-          const sessionDataStr = localStorage.getItem('resumeBuilderSessionData');
-          if (sessionDataStr) {
-            const sessionData = JSON.parse(sessionDataStr);
-            
-            // Only restore session data for new resumes
-            if (sessionData.resumeId === 'new' && sessionData.resume) {
-              console.log('Found session data for new resume, restoring state');
-              
-              // Ensure we have all required properties
-              const resumeData = {
-                ...sessionData.resume,
-                experience: sessionData.resume.experience || [],
-                education: sessionData.resume.education || [],
-                skills: sessionData.resume.skills || [],
-                projects: sessionData.resume.projects || [],
-                template: sessionData.resume.template || 'professional',
-                skillsDisplayMode: sessionData.resume.skillsDisplayMode || 'bubbles',
-              };
-              
-              // Only restore if there's actual content
-              const hasContent = resumeData.experience.length > 0 || 
-                resumeData.education.length > 0 || 
-                resumeData.skills.length > 0 ||
-                (resumeData.personalInfo?.firstName || resumeData.personalInfo?.summary);
-              
-              if (hasContent) {
-                setResume(resumeData);
-                
-                toast({
-                  title: 'Resume restored from session',
-                  description: 'Your previous unsaved work has been loaded.',
-                });
-              }
-            }
-          }
-        } catch (err) {
-          console.error('Failed to load session data:', err);
-        }
-        return null;
-      }
-      
-      // For existing resumes, fetch from server
-      const res = await apiRequest('GET', `/api/resumes/${resumeId}`);
-      const data = await res.json();
-      
-      if (data && data.id) {
-        // Initialize empty arrays for sections that might be missing
-        const resumeData = {
-          ...data,
-          experience: data.experience || [],
-          education: data.education || [],
-          skills: data.skills || [],
-          projects: data.projects || [],
-          template: data.template || 'professional',
-          skillsDisplayMode: data.skillsDisplayMode || 'bubbles',
-        };
-        setResume(resumeData);
-      }
-      
-      return data;
-    },
-    enabled: !!resumeId,
-    onError: (error: Error) => {
-      toast({
-        title: 'Error loading resume',
-        description: error.message || 'An error occurred while loading your resume.',
-        variant: 'destructive',
-      });
-    },
+    }
   });
   
-  // Save resume to localStorage whenever it changes
+  // Mutation for downloading the resume as PDF
+  const { mutate: downloadResume, isLoading: isDownloading } = useMutation({
+    mutationFn: async () => {
+      return await apiRequest(`/api/resumes/${resumeId || 'temp'}/download`, {
+        method: 'POST',
+        data: resumeId ? { id: resumeId } : resume,
+        responseType: 'blob' // Important for binary data
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Failed to download resume",
+        description: error.message || "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+  
+  // Load resume from localStorage on initial render
   useEffect(() => {
-    // Don't save if it's the initial empty resume with no content
-    const hasContent = resume.experience.length > 0 || 
-      resume.education.length > 0 || 
-      resume.skills.length > 0 || 
-      resume.projects.length > 0 ||
-      resume.personalInfo.firstName || 
-      resume.personalInfo.lastName || 
-      resume.personalInfo.summary;
+    if (!resumeId) {
+      try {
+        const savedData = localStorage.getItem('resumeBuilderSessionData');
+        if (savedData) {
+          const { resume: savedResume, timestamp, resumeId: savedId } = JSON.parse(savedData);
+          
+          // Only load if the saved resume is for the same ID or if this is a new resume
+          if (!resumeId || savedId === resumeId) {
+            // Check if the data is recent (within the last 24 hours)
+            const savedDate = new Date(timestamp);
+            const now = new Date();
+            const hoursSinceSaved = (now.getTime() - savedDate.getTime()) / (1000 * 60 * 60);
+            
+            if (hoursSinceSaved < 24) {
+              setResume(savedResume);
+              console.log('Loaded resume from session storage');
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load resume from session storage:', err);
+      }
+    }
+  }, [resumeId]);
+  
+  // Update a single field in the resume
+  const updateResumeLocally = useCallback((updates: Partial<Resume>) => {
+    setResume(prev => {
+      const updated = { ...prev, ...updates };
       
-    if (!hasContent) {
-      return;
-    }
-    
-    try {
-      const sessionData = {
-        resume,
-        timestamp: new Date().toISOString(),
-        resumeId
-      };
-      localStorage.setItem('resumeBuilderSessionData', JSON.stringify(sessionData));
-      console.log('Resume automatically saved to session storage');
-    } catch (err) {
-      console.error('Failed to save resume to session storage:', err);
-    }
-  }, [resume, resumeId]);
-
-  // Handle adding a new experience entry
-  const handleAddExperience = () => {
+      // Save to localStorage for session persistence
+      try {
+        const sessionData = {
+          resume: updated,
+          timestamp: new Date().toISOString(),
+          resumeId
+        };
+        localStorage.setItem('resumeBuilderSessionData', JSON.stringify(sessionData));
+      } catch (err) {
+        console.error('Failed to save resume to session storage:', err);
+      }
+      
+      return updated;
+    });
+  }, [resumeId]);
+  
+  // Update personal info fields
+  const updatePersonalInfo = useCallback((field: string, value: string) => {
+    setResume(prev => ({
+      ...prev,
+      personalInfo: {
+        ...prev.personalInfo,
+        [field]: value
+      }
+    }));
+  }, []);
+  
+  // Add new items to different sections
+  const addExperience = useCallback(() => {
     const newExperience: ExperienceItem = {
       id: crypto.randomUUID(),
-      title: '',
-      company: '',
-      startDate: '',
-      endDate: '',
-      description: '',
+      title: "",
+      company: "",
+      startDate: "",
+      endDate: "",
+      description: ""
     };
     
-    setResume({
-      ...resume,
-      experience: [...resume.experience, newExperience],
-    });
-  };
-
-  // Handle adding a new education entry
-  const handleAddEducation = () => {
+    setResume(prev => ({
+      ...prev,
+      experience: [...prev.experience, newExperience]
+    }));
+  }, []);
+  
+  const addEducation = useCallback(() => {
     const newEducation: EducationItem = {
       id: crypto.randomUUID(),
-      degree: '',
-      institution: '',
-      startDate: '',
-      endDate: '',
-      description: '',
+      degree: "",
+      institution: "",
+      startDate: "",
+      endDate: "",
+      description: ""
     };
     
-    setResume({
-      ...resume,
-      education: [...resume.education, newEducation],
-    });
-  };
-
-  // Handle adding a new skill
-  const handleAddSkill = (skillName: string) => {
-    // Check if skill already exists
-    const skillExists = resume.skills.some(
-      (s) => s.name.toLowerCase() === skillName.toLowerCase()
-    );
+    setResume(prev => ({
+      ...prev,
+      education: [...prev.education, newEducation]
+    }));
+  }, []);
+  
+  const addSkill = useCallback(() => {
+    const newSkill: SkillItem = {
+      id: crypto.randomUUID(),
+      name: "",
+      proficiency: 80
+    };
     
-    if (skillExists) {
+    setResume(prev => ({
+      ...prev,
+      skills: [...prev.skills, newSkill]
+    }));
+  }, []);
+  
+  const addProject = useCallback(() => {
+    const newProject: ProjectItem = {
+      id: crypto.randomUUID(),
+      title: "",
+      description: "",
+      technologies: []
+    };
+    
+    setResume(prev => ({
+      ...prev,
+      projects: [...prev.projects, newProject]
+    }));
+  }, []);
+  
+  // Handle saving the resume
+  const handleSaveResume = useCallback(() => {
+    mutate(resume);
+  }, [mutate, resume]);
+  
+  // Handle downloading the resume as PDF
+  const handleDownloadResume = useCallback(() => {
+    // If we don't have a resume ID yet, save first and then download
+    if (!resumeId) {
       toast({
-        title: 'Skill already exists',
-        description: 'This skill is already in your resume.',
+        title: "Saving resume first",
+        description: "Please save your resume before downloading.",
       });
       return;
     }
     
-    const newSkill: SkillItem = {
-      id: crypto.randomUUID(),
-      name: skillName,
-      proficiency: 85,
-    };
-    
-    setResume({
-      ...resume,
-      skills: [...resume.skills, newSkill],
-    });
-  };
-
-  // Handle adding a new project
-  const handleAddProject = () => {
-    const newProject: ProjectItem = {
-      id: crypto.randomUUID(),
-      title: '',
-      description: '',
-      technologies: [],
-    };
-    
-    setResume({
-      ...resume,
-      projects: [...resume.projects, newProject],
-    });
-  };
-
-  // Update the resume when sections are changed by their respective components
-  const handleExperienceUpdate = (experiences: ExperienceItem[]) => {
-    setResume({ ...resume, experience: experiences });
-  };
-
-  const handleEducationUpdate = (education: EducationItem[]) => {
-    setResume({ ...resume, education });
-  };
-
-  const handleSkillsUpdate = (skills: SkillItem[]) => {
-    setResume({ ...resume, skills });
-  };
-
-  const handleProjectsUpdate = (projects: ProjectItem[]) => {
-    setResume({ ...resume, projects });
-  };
-
-  // Handle drag and drop reordering of sections
-  const handleDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-    
-    const sourceIndex = result.source.index;
-    const destinationIndex = result.destination.index;
-    
-    // Skip if item didn't move
-    if (sourceIndex === destinationIndex) return;
-    
-    const updatedResume = { ...resume };
-    
-    // Handle reordering for different section types
-    if (result.type === 'experience') {
-      const items = [...updatedResume.experience];
-      const [removed] = items.splice(sourceIndex, 1);
-      items.splice(destinationIndex, 0, removed);
-      updatedResume.experience = items;
-    } else if (result.type === 'education') {
-      const items = [...updatedResume.education];
-      const [removed] = items.splice(sourceIndex, 1);
-      items.splice(destinationIndex, 0, removed);
-      updatedResume.education = items;
-    } else if (result.type === 'skills') {
-      const items = [...updatedResume.skills];
-      const [removed] = items.splice(sourceIndex, 1);
-      items.splice(destinationIndex, 0, removed);
-      updatedResume.skills = items;
-    } else if (result.type === 'projects') {
-      const items = [...updatedResume.projects];
-      const [removed] = items.splice(sourceIndex, 1);
-      items.splice(destinationIndex, 0, removed);
-      updatedResume.projects = items;
-    }
-    
-    setResume(updatedResume);
-  };
-
-  // Save resume function
-  const handleSaveResume = () => {
-    saveResumeMutation.mutate(resume);
-  };
-
-  // Generate a printable HTML version of the resume for downloading
-  function generatePrintableHTML(resumeData: Resume): string {
-    // Determine which template to use
-    let templateContent;
-    switch (resumeData.template) {
-      case 'creative':
-        templateContent = `<div id="resume-template-creative">${document.getElementById('resume-preview')?.innerHTML || ''}</div>`;
-        break;
-      case 'executive':
-        templateContent = `<div id="resume-template-executive">${document.getElementById('resume-preview')?.innerHTML || ''}</div>`;
-        break;
-      case 'modern':
-        templateContent = `<div id="resume-template-modern">${document.getElementById('resume-preview')?.innerHTML || ''}</div>`;
-        break;
-      case 'minimal':
-        templateContent = `<div id="resume-template-minimal">${document.getElementById('resume-preview')?.innerHTML || ''}</div>`;
-        break;
-      case 'industry':
-        templateContent = `<div id="resume-template-industry">${document.getElementById('resume-preview')?.innerHTML || ''}</div>`;
-        break;
-      case 'bold':
-        templateContent = `<div id="resume-template-bold">${document.getElementById('resume-preview')?.innerHTML || ''}</div>`;
-        break;
-      case 'professional':
-      default:
-        templateContent = `<div id="resume-template-professional">${document.getElementById('resume-preview')?.innerHTML || ''}</div>`;
-        break;
-    }
-
-    // Create the full HTML document with styling
-    return `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>${resumeData.title || 'Resume'}</title>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-            
-            body {
-              font-family: 'Inter', sans-serif;
-              margin: 0;
-              padding: 0;
-              background: white;
-              color: #374151;
-              font-size: 10pt;
-              line-height: 1.4;
-            }
-            
-            * {
-              box-sizing: border-box;
-            }
-            
-            h1, h2, h3, h4, h5, h6 {
-              margin-top: 0;
-              font-weight: 600;
-              color: #111827;
-            }
-            
-            h1 {
-              font-size: 18pt;
-              margin-bottom: 4pt;
-            }
-            
-            h2 {
-              font-size: 14pt;
-              margin-bottom: 4pt;
-              color: #1f2937;
-            }
-            
-            h3 {
-              font-size: 12pt;
-              margin-bottom: 2pt;
-            }
-            
-            h4 {
-              font-size: 11pt;
-              margin-bottom: 2pt;
-            }
-            
-            p {
-              margin: 0 0 8pt;
-            }
-            
-            a {
-              color: #2563eb;
-              text-decoration: none;
-            }
-            
-            ul, ol {
-              margin-top: 0;
-              padding-left: 16pt;
-            }
-            
-            li {
-              margin-bottom: 2pt;
-            }
-            
-            .skill-tag {
-              display: inline-block;
-              background: #e5e7eb;
-              border-radius: 4pt;
-              padding: 2pt 6pt;
-              margin-right: 4pt;
-              margin-bottom: 4pt;
-              font-size: 9pt;
-            }
-            
-            .page {
-              width: 8.5in;
-              height: 11in;
-              padding: 0.5in;
-              box-shadow: none;
-              background: white;
-              position: relative;
-              page-break-after: always;
-            }
-            
-            .section {
-              margin-bottom: 12pt;
-            }
-            
-            .section-title {
-              margin-bottom: 6pt;
-              font-weight: 600;
-              font-size: 12pt;
-              color: #1f2937;
-              border-bottom: 1pt solid #e5e7eb;
-              padding-bottom: 2pt;
-            }
-            
-            .header {
-              margin-bottom: 16pt;
-              text-align: center;
-            }
-            
-            .name {
-              font-size: 18pt;
-              font-weight: 700;
-              margin-bottom: 2pt;
-              color: #111827;
-            }
-            
-            .contact-info {
-              display: flex;
-              justify-content: center;
-              flex-wrap: wrap;
-              gap: 8pt;
-              margin-bottom: 8pt;
-              font-size: 9pt;
-            }
-            
-            .contact-item {
-              display: inline-flex;
-              align-items: center;
-            }
-            
-            .summary {
-              margin-bottom: 16pt;
-              text-align: center;
-              font-size: 10pt;
-              color: #4b5563;
-              max-width: 80%;
-              margin-left: auto;
-              margin-right: auto;
-            }
-            
-            .item {
-              margin-bottom: 10pt;
-            }
-            
-            .item-header {
-              display: flex;
-              justify-content: space-between;
-              margin-bottom: 2pt;
-            }
-            
-            .item-title {
-              font-weight: 600;
-              font-size: 11pt;
-              color: #111827;
-            }
-            
-            .item-subtitle {
-              font-weight: 500;
-              font-size: 10pt;
-              color: #4b5563;
-            }
-            
-            .item-date {
-              font-size: 9pt;
-              color: #6b7280;
-              white-space: nowrap;
-            }
-            
-            .item-content {
-              font-size: 10pt;
-              color: #4b5563;
-            }
-            
-            .skills-container {
-              display: flex;
-              flex-wrap: wrap;
-              gap: 4pt;
-              margin-bottom: 12pt;
-            }
-            
-            /* Template-specific styling */
-            #resume-template-modern .header {
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              text-align: left;
-              padding-bottom: 10pt;
-              border-bottom: 2pt solid #3b82f6;
-            }
-            
-            #resume-template-modern .name {
-              font-size: 20pt;
-              margin-bottom: 0;
-            }
-            
-            #resume-template-modern .contact-info {
-              justify-content: flex-start;
-              flex-direction: column;
-              align-items: flex-end;
-              gap: 2pt;
-            }
-            
-            #resume-template-modern .section-title {
-              border-bottom: none;
-              color: #3b82f6;
-              font-size: 12pt;
-            }
-            
-            #resume-template-executive .header {
-              text-align: left;
-              border-bottom: 3pt double #111827;
-              padding-bottom: 10pt;
-              margin-bottom: 20pt;
-            }
-            
-            #resume-template-executive .name {
-              font-size: 20pt;
-              text-transform: uppercase;
-              letter-spacing: 1pt;
-            }
-            
-            #resume-template-executive .contact-info {
-              justify-content: flex-start;
-              gap: 16pt;
-            }
-            
-            #resume-template-executive .section-title {
-              font-size: 14pt;
-              text-transform: uppercase;
-              letter-spacing: 1pt;
-              border-bottom: 1pt solid #111827;
-            }
-            
-            #resume-template-executive .summary {
-              text-align: left;
-              max-width: 100%;
-              font-style: italic;
-            }
-            
-            @media print {
-              body {
-                margin: 0;
-                padding: 0;
-              }
-              
-              .page {
-                box-shadow: none;
-                margin: 0;
-                padding: 0.5in;
-                width: 8.5in;
-                height: 11in;
-              }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="page">
-            ${templateContent}
-          </div>
-        </body>
-      </html>
-    `;
-  }
-
-  // Handle downloading the resume
-  const handleDownloadResume = () => {
-    const title = resume.title || 'resume';
-    const fileName = `${title.replace(/\s+/g, '_').toLowerCase()}.pdf`;
-    
-    // First make sure to save any pending changes
-    if (resumeId !== 'new') {
-      saveResumeMutation.mutate(resume);
-    }
-
-    try {
-      // If we have a valid resumeId, use the server-side PDF generation
-      if (resumeId && resumeId !== 'new') {
-        window.open(`/api/resumes/${resumeId}/download?filename=${fileName}`, '_blank');
-      } else {
-        // Otherwise use client-side HTML generation and browser print dialog
-        const printWindow = window.open('', '_blank');
-        if (printWindow) {
-          printWindow.document.write(generatePrintableHTML(resume));
-          printWindow.document.close();
-          
-          // Allow time for styles to load, then print
-          if (printTimeoutRef.current) {
-            clearTimeout(printTimeoutRef.current);
-          }
-          
-          printTimeoutRef.current = setTimeout(() => {
-            printWindow.print();
-            // printWindow.close();
-          }, 500);
-        } else {
-          toast({
-            title: 'Popup blocked',
-            description: 'Please allow popups for this site to download your resume.',
-            variant: 'destructive',
-          });
-        }
+    downloadResume(undefined, {
+      onSuccess: (data) => {
+        // Create a temporary link and click it to download the file
+        const url = window.URL.createObjectURL(new Blob([data], { type: 'application/pdf' }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${resume.title || 'resume'}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        toast({
+          title: "Resume downloaded",
+          description: "Your resume has been downloaded as a PDF.",
+        });
       }
-    } catch (error) {
-      console.error('Error downloading resume:', error);
-      toast({
-        title: 'Error downloading resume',
-        description: 'An error occurred while downloading your resume. Please try again.',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  // Handle template change
-  const handleTemplateChange = (template: string) => {
-    setResume({ ...resume, template });
-    // Save template choice if we're editing an existing resume
-    if (resumeId && resumeId !== 'new') {
-      const templateUpdate = { ...resume, template };
-      saveResumeMutation.mutate(templateUpdate);
-    }
-  };
-
+    });
+  }, [downloadResume, resumeId, resume.title, toast]);
+  
   // Toggle between edit and preview modes
-  const togglePreviewMode = () => {
-    setShowPreview(!showPreview);
-  };
-
-  // Toggle skills display mode (bubbles or bullets)
-  const toggleSkillsDisplay = () => {
-    const newMode = resume.skillsDisplayMode === 'bubbles' ? 'bullets' : 'bubbles';
-    setResume({ ...resume, skillsDisplayMode: newMode });
+  const togglePreviewMode = useCallback(() => {
+    setShowPreview(prev => !prev);
+  }, []);
+  
+  // Handle template changes
+  const handleTemplateChange = useCallback((template: string) => {
+    updateResumeLocally({ template });
+  }, [updateResumeLocally]);
+  
+  // Toggle skills display mode between bubbles and bullets
+  const toggleSkillsDisplay = useCallback(() => {
+    const newMode = resume.skillsDisplayMode === "bubbles" ? "bullets" : "bubbles";
+    
+    // Update the resume with the new skills display mode
+    updateResumeLocally({ 
+      skillsDisplayMode: newMode 
+    });
     
     // Show feedback toast
     toast({
       title: `Skills now displaying as ${newMode}`,
       description: `Your skills will be displayed as ${newMode} in the resume.`,
     });
-  };
+  }, [resume.skillsDisplayMode, updateResumeLocally, toast]);
   
   // Kept for backward compatibility with the sidebar display toggle
   const toggleSkillsDisplayMode = toggleSkillsDisplay;
   
   // Smart adjust resume content to fit optimally on page(s)
-  const handleSmartAdjust = (preAdjustedResume?: Resume) => {
+  const handleSmartAdjust = useCallback(() => {
     console.log("Smart Adjust triggered");
-    
-    // If an already adjusted resume is provided, use it directly
-    if (preAdjustedResume) {
-      setResume(preAdjustedResume);
-      
-      // Show success feedback
-      toast({
-        title: "Smart Adjust Complete",
-        description: "Your resume is now optimized for one page.",
-      });
-      return;
-    }
-    
-    // Immediate feedback to show processing has started
-    toast({
-      title: "Smart Adjust Started",
-      description: "Processing your resume...",
+    toast({ 
+      title: "Smart Adjust Started", 
+      description: "Processing your resume..." 
     });
     
     // Create a copy of resume to work with
@@ -953,7 +534,7 @@ export default function ResumeBuilder() {
       title: "Smart Adjust Complete",
       description: "Your resume is now optimized for one page.",
     });
-  };
+  }, [resume, setResume, toast]);
   
   // Handle resume upload and parsed data
   const handleResumeUpload = (uploadedResumeData: Partial<Resume>) => {
@@ -1038,6 +619,182 @@ export default function ResumeBuilder() {
     setCurrentTab("contact");
     setShowPersonalInfo(true);
   };
+
+  // Handle drag start event for section items
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    setActiveDragId(active.id as string);
+    
+    const id = active.id as string;
+    
+    // Determine which section the dragged item belongs to
+    if (resume.experience.find(item => item.id === id)) {
+      setDraggedItemType("experience");
+    } else if (resume.education.find(item => item.id === id)) {
+      setDraggedItemType("education");
+    } else if (resume.skills.find(item => item.id === id)) {
+      setDraggedItemType("skills");
+    } else if (resume.projects.find(item => item.id === id)) {
+      setDraggedItemType("projects");
+    }
+  };
+  
+  // Handle drag end event for section items (reorder)
+  const handleDragEnd = (result: DragEndEvent) => {
+    const { active, over } = result;
+    
+    if (!over) {
+      setActiveDragId(null);
+      setDraggedItemType(null);
+      return;
+    }
+    
+    if (active.id !== over.id) {
+      // Reorder based on the section type
+      if (draggedItemType === "experience") {
+        setResume(prev => {
+          const oldIndex = prev.experience.findIndex(item => item.id === active.id);
+          const newIndex = prev.experience.findIndex(item => item.id === over.id);
+          
+          return {
+            ...prev,
+            experience: arrayMove(prev.experience, oldIndex, newIndex)
+          };
+        });
+      } else if (draggedItemType === "education") {
+        setResume(prev => {
+          const oldIndex = prev.education.findIndex(item => item.id === active.id);
+          const newIndex = prev.education.findIndex(item => item.id === over.id);
+          
+          return {
+            ...prev,
+            education: arrayMove(prev.education, oldIndex, newIndex)
+          };
+        });
+      } else if (draggedItemType === "skills") {
+        setResume(prev => {
+          const oldIndex = prev.skills.findIndex(item => item.id === active.id);
+          const newIndex = prev.skills.findIndex(item => item.id === over.id);
+          
+          return {
+            ...prev,
+            skills: arrayMove(prev.skills, oldIndex, newIndex)
+          };
+        });
+      } else if (draggedItemType === "projects") {
+        setResume(prev => {
+          const oldIndex = prev.projects.findIndex(item => item.id === active.id);
+          const newIndex = prev.projects.findIndex(item => item.id === over.id);
+          
+          return {
+            ...prev,
+            projects: arrayMove(prev.projects, oldIndex, newIndex)
+          };
+        });
+      }
+    }
+    
+    // Reset drag state
+    setActiveDragId(null);
+    setDraggedItemType(null);
+  };
+  
+  // Generate HTML for a printable version of the resume
+  function generatePrintableHTML(resumeData: Resume): string {
+    // This would be implemented to convert the resume data to HTML
+    // based on the selected template
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>${resumeData.title}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+            .resume-container { max-width: 8.5in; margin: 0 auto; padding: 0.5in; }
+            .header { text-align: center; margin-bottom: 20px; }
+            .name { font-size: 24px; font-weight: bold; }
+            .contact-info { font-size: 12px; color: #666; }
+            .section { margin-bottom: 15px; }
+            .section-title { font-size: 16px; font-weight: bold; border-bottom: 1px solid #ccc; margin-bottom: 8px; }
+            .item { margin-bottom: 10px; }
+            .item-header { display: flex; justify-content: space-between; }
+            .item-title { font-weight: bold; }
+            .item-subtitle { color: #666; }
+            .item-date { color: #666; font-size: 12px; }
+            .item-description { font-size: 12px; margin-top: 5px; }
+            .skills-list { display: flex; flex-wrap: wrap; gap: 5px; }
+            .skill-item { background: #f0f0f0; padding: 3px 8px; border-radius: 3px; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="resume-container">
+            <div class="header">
+              <div class="name">${resumeData.personalInfo.firstName} ${resumeData.personalInfo.lastName}</div>
+              <div class="contact-info">
+                ${resumeData.personalInfo.email} | ${resumeData.personalInfo.phone}
+              </div>
+              <div class="headline">${resumeData.personalInfo.headline}</div>
+            </div>
+            
+            <div class="section">
+              <div class="section-title">Summary</div>
+              <div class="item-description">${resumeData.personalInfo.summary}</div>
+            </div>
+            
+            <div class="section">
+              <div class="section-title">Experience</div>
+              ${resumeData.experience.map(exp => `
+                <div class="item">
+                  <div class="item-header">
+                    <div class="item-title">${exp.title} - <span class="item-subtitle">${exp.company}</span></div>
+                    <div class="item-date">${exp.startDate} - ${exp.endDate}</div>
+                  </div>
+                  <div class="item-description">${exp.description}</div>
+                </div>
+              `).join('')}
+            </div>
+            
+            <div class="section">
+              <div class="section-title">Education</div>
+              ${resumeData.education.map(edu => `
+                <div class="item">
+                  <div class="item-header">
+                    <div class="item-title">${edu.degree} - <span class="item-subtitle">${edu.institution}</span></div>
+                    <div class="item-date">${edu.startDate} - ${edu.endDate}</div>
+                  </div>
+                  <div class="item-description">${edu.description}</div>
+                </div>
+              `).join('')}
+            </div>
+            
+            <div class="section">
+              <div class="section-title">Skills</div>
+              <div class="skills-list">
+                ${resumeData.skills.map(skill => `
+                  <div class="skill-item">${skill.name}</div>
+                `).join('')}
+              </div>
+            </div>
+            
+            ${resumeData.projects.length > 0 ? `
+              <div class="section">
+                <div class="section-title">Projects</div>
+                ${resumeData.projects.map(project => `
+                  <div class="item">
+                    <div class="item-title">${project.title}</div>
+                    <div class="item-description">${project.description}</div>
+                    ${project.technologies && project.technologies.length > 0 ? `
+                      <div class="item-description">Technologies: ${project.technologies.join(', ')}</div>
+                    ` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+        </body>
+      </html>
+    `;
+  }
 
   return (
     <div className="min-h-screen cosmic-page text-gray-100 flex flex-col">
@@ -1237,7 +994,7 @@ export default function ResumeBuilder() {
                       setShowPersonalInfo(false);
                     }}
                   >
-                    <FolderKanban className="mr-2 h-4 w-4" />
+                    <Package className="mr-2 h-4 w-4" />
                     Projects
                     {resume.projects.length > 0 && (
                       <Badge className="ml-auto bg-blue-700">{resume.projects.length}</Badge>
@@ -1245,672 +1002,492 @@ export default function ResumeBuilder() {
                   </Button>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-indigo-900/30">
-                  <h3 className="text-sm font-medium mb-2 text-blue-300">Template</h3>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="w-full justify-between bg-[rgba(30,40,80,0.5)] border-blue-800/20 text-blue-300">
-                        <span className="capitalize">{resume.template}</span>
-                        <ChevronDown className="h-4 w-4 ml-2 opacity-50" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56 bg-[rgba(20,30,60,0.95)] backdrop-blur-md border-blue-900/40">
-                      <DropdownMenuLabel className="text-gray-400">Choose Template</DropdownMenuLabel>
-                      <DropdownMenuSeparator className="bg-blue-900/40" />
-                      <DropdownMenuItem
-                        className={cn(
-                          "flex items-center gap-2 cursor-pointer",
-                          resume.template === "professional" && "bg-blue-600/20 text-blue-200"
-                        )}
-                        onClick={() => handleTemplateChange("professional")}
-                      >
-                        <div className="w-4 h-4 bg-blue-600 rounded-sm" />
-                        Professional
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className={cn(
-                          "flex items-center gap-2 cursor-pointer",
-                          resume.template === "modern" && "bg-blue-600/20 text-blue-200"
-                        )}
-                        onClick={() => handleTemplateChange("modern")}
-                      >
-                        <div className="w-4 h-4 bg-indigo-500 rounded-sm" />
-                        Modern
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className={cn(
-                          "flex items-center gap-2 cursor-pointer",
-                          resume.template === "minimal" && "bg-blue-600/20 text-blue-200"
-                        )}
-                        onClick={() => handleTemplateChange("minimal")}
-                      >
-                        <div className="w-4 h-4 bg-gray-500 rounded-sm" />
-                        Minimal
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className={cn(
-                          "flex items-center gap-2 cursor-pointer",
-                          resume.template === "creative" && "bg-blue-600/20 text-blue-200"
-                        )}
-                        onClick={() => handleTemplateChange("creative")}
-                      >
-                        <div className="w-4 h-4 bg-purple-500 rounded-sm" />
-                        Creative
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className={cn(
-                          "flex items-center gap-2 cursor-pointer",
-                          resume.template === "executive" && "bg-blue-600/20 text-blue-200"
-                        )}
-                        onClick={() => handleTemplateChange("executive")}
-                      >
-                        <div className="w-4 h-4 bg-slate-900 rounded-sm" />
-                        Executive
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className={cn(
-                          "flex items-center gap-2 cursor-pointer",
-                          resume.template === "industry" && "bg-blue-600/20 text-blue-200"
-                        )}
-                        onClick={() => handleTemplateChange("industry")}
-                      >
-                        <div className="w-4 h-4 bg-cyan-600 rounded-sm" />
-                        Industry
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className={cn(
-                          "flex items-center gap-2 cursor-pointer",
-                          resume.template === "bold" && "bg-blue-600/20 text-blue-200"
-                        )}
-                        onClick={() => handleTemplateChange("bold")}
-                      >
-                        <div className="w-4 h-4 bg-amber-600 rounded-sm" />
-                        Bold
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-
-                  {/* Skills display toggle moved to preview component */}
-
-                  <div className="mt-6">
-                    <Button 
-                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-                      onClick={handleDownloadResume}
-                    >
-                      <Download className="mr-2 h-4 w-4" />
-                      Download PDF
-                    </Button>
-                  </div>
+                <div className="mt-6 space-y-3">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start bg-blue-900/20 border-blue-800/30 text-blue-300 hover:bg-blue-900/30 hover:text-blue-200"
+                    onClick={() => setShowAIAssistant(!showAIAssistant)}
+                  >
+                    <Brain className="mr-2 h-4 w-4" />
+                    {showAIAssistant ? "Hide AI Assistant" : "Show AI Assistant"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start bg-blue-900/20 border-blue-800/30 text-blue-300 hover:bg-blue-900/30 hover:text-blue-200"
+                    onClick={togglePreviewMode}
+                  >
+                    <Eye className="mr-2 h-4 w-4" />
+                    Preview Resume
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start bg-blue-900/20 border-blue-800/30 text-blue-300 hover:bg-blue-900/30 hover:text-blue-200"
+                    onClick={handleSmartAdjust}
+                  >
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Smart Adjust
+                  </Button>
                 </div>
+              </div>
+              
+              {/* Resume Upload Section */}
+              <div className="cosmic-card p-4 mt-6">
+                <h3 className="text-lg font-medium mb-3 text-blue-300">Import Resume</h3>
+                <p className="text-sm text-gray-400 mb-3">
+                  Upload an existing resume to import content
+                </p>
+                <ResumeUpload onUploadSuccess={handleResumeUpload} />
               </div>
             </div>
 
-            {/* Main editing area */}
-            <div className="flex-1 flex flex-col-reverse xl:flex-row gap-6">
-              {/* Resume form */}
-              <div className="flex-1">
-                {/* Only show upload option for new resumes */}
-                {resumeId === 'new' && !resume.experience.length && !resume.education.length && !resume.skills.length && (
-                  <div className="mb-6">
-                    <ResumeUpload onUploadSuccess={handleResumeUpload} />
+            {/* Main content area */}
+            <div className="flex-1">
+              {/* 2-column layout for content */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                {/* Left column: Resume Editor */}
+                <div className={cn(
+                  "lg:col-span-8",
+                  showAIAssistant ? "xl:col-span-7" : "xl:col-span-12"
+                )}>
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                  >
+                    {/* Personal Info Section */}
+                    {showPersonalInfo && (
+                      <div className="cosmic-card p-6 mb-6">
+                        {currentTab === "contact" ? (
+                          <>
+                            <h2 className="text-xl font-semibold mb-6 text-blue-300">Personal Information</h2>
+                            <div className="grid md:grid-cols-2 gap-6">
+                              <div>
+                                <Label className="mb-2 text-gray-300">First Name</Label>
+                                <Input
+                                  type="text"
+                                  className="cosmic-input"
+                                  placeholder="John"
+                                  value={resume.personalInfo.firstName}
+                                  onChange={(e) => updatePersonalInfo("firstName", e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <Label className="mb-2 text-gray-300">Last Name</Label>
+                                <Input
+                                  type="text"
+                                  className="cosmic-input"
+                                  placeholder="Doe"
+                                  value={resume.personalInfo.lastName}
+                                  onChange={(e) => updatePersonalInfo("lastName", e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <Label className="mb-2 text-gray-300">Email Address</Label>
+                                <Input
+                                  type="email"
+                                  className="cosmic-input"
+                                  placeholder="johndoe@example.com"
+                                  value={resume.personalInfo.email}
+                                  onChange={(e) => updatePersonalInfo("email", e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <Label className="mb-2 text-gray-300">Phone Number</Label>
+                                <Input
+                                  type="tel"
+                                  className="cosmic-input"
+                                  placeholder="(123) 456-7890"
+                                  value={resume.personalInfo.phone}
+                                  onChange={(e) => updatePersonalInfo("phone", e.target.value)}
+                                />
+                              </div>
+                              <div className="md:col-span-2">
+                                <Label className="mb-2 text-gray-300">Professional Headline</Label>
+                                <Input
+                                  type="text"
+                                  className="cosmic-input"
+                                  placeholder="Senior Software Engineer | React | Node.js | TypeScript"
+                                  value={resume.personalInfo.headline}
+                                  onChange={(e) => updatePersonalInfo("headline", e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="flex items-center justify-between mb-6">
+                              <h2 className="text-xl font-semibold text-blue-300">Professional Summary</h2>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-blue-300 hover:text-blue-200 hover:bg-blue-900/30"
+                                onClick={() => setCurrentTab("contact")}
+                              >
+                                Edit Contact Info
+                              </Button>
+                            </div>
+                            <div className="mb-4">
+                              <Label className="mb-2 text-gray-300">
+                                Summary (Aim for 3-5 sentences that showcase your value)
+                              </Label>
+                              <RichTextEditor
+                                value={resume.personalInfo.summary}
+                                onChange={(value) => updatePersonalInfo("summary", value)}
+                                placeholder="Experienced software engineer with 5+ years developing scalable web applications. Proficient in React, Node.js, and cloud technologies. Passionate about creating intuitive user experiences and optimizing application performance."
+                                rows={6}
+                              />
+                            </div>
+
+                            {/* AI Summary Suggestions */}
+                            <div className="mt-6 border-t border-blue-900/30 pt-4">
+                              <div className="flex items-center gap-2 mb-4">
+                                <Lightbulb className="h-4 w-4 text-yellow-400" />
+                                <h3 className="text-sm font-medium text-blue-300">
+                                  AI-Powered Summary Suggestions
+                                </h3>
+                              </div>
+                              <SummarySuggestions
+                                resumeId={resumeId || "temp"}
+                                onApply={(summary) =>
+                                  updatePersonalInfo("summary", summary)
+                                }
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Experience Section */}
+                    {currentTab === "experience" && (
+                      <div className="cosmic-card p-6 mb-6">
+                        <div className="flex items-center justify-between mb-6">
+                          <h2 className="text-xl font-semibold text-blue-300">
+                            Work Experience
+                          </h2>
+                          <CosmicButton
+                            variant="primary"
+                            size="sm"
+                            onClick={addExperience}
+                            iconLeft={<PlusCircle className="h-4 w-4" />}
+                          >
+                            Add Experience
+                          </CosmicButton>
+                        </div>
+                        
+                        <SortableContext
+                          items={resume.experience.map(exp => exp.id)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          <div className="space-y-6">
+                            {resume.experience.length === 0 ? (
+                              <div className="text-center py-6 text-gray-400">
+                                <Briefcase className="h-12 w-12 mx-auto mb-3 text-gray-600" />
+                                <p className="mb-2">No work experience added yet</p>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={addExperience}
+                                  className="bg-blue-900/20 border-blue-800/30 text-blue-300 hover:bg-blue-900/30 hover:text-blue-200"
+                                >
+                                  <PlusCircle className="h-4 w-4 mr-2" />
+                                  Add your first experience
+                                </Button>
+                              </div>
+                            ) : (
+                              <ResumeExperienceSection
+                                experiences={resume.experience}
+                                onUpdate={(updatedExperiences) =>
+                                  updateResumeLocally({ experience: updatedExperiences })
+                                }
+                              />
+                            )}
+                          </div>
+                        </SortableContext>
+                        
+                        {resume.experience.length > 0 && (
+                          <div className="mt-6 border-t border-blue-900/30 pt-4">
+                            <div className="flex items-center gap-2 mb-4">
+                              <Lightbulb className="h-4 w-4 text-yellow-400" />
+                              <h3 className="text-sm font-medium text-blue-300">
+                                AI-Powered Bullet Point Suggestions
+                              </h3>
+                            </div>
+                            <ExperienceSuggestions
+                              resumeId={resumeId || "temp"}
+                              jobTitle={resume.experience[0]?.title}
+                              onApply={(bullet) => {
+                                // Add the bullet to the most recent experience's description
+                                if (resume.experience.length > 0) {
+                                  const updatedExperiences = [...resume.experience];
+                                  const latestExp = updatedExperiences[0];
+                                  
+                                  // Append bullet point to existing description or create new one
+                                  latestExp.description = latestExp.description 
+                                    ? `${latestExp.description}\n• ${bullet}` 
+                                    : `• ${bullet}`;
+                                  
+                                  updateResumeLocally({ experience: updatedExperiences });
+                                }
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Education Section */}
+                    {currentTab === "education" && (
+                      <div className="cosmic-card p-6 mb-6">
+                        <div className="flex items-center justify-between mb-6">
+                          <h2 className="text-xl font-semibold text-blue-300">
+                            Education
+                          </h2>
+                          <CosmicButton
+                            variant="primary"
+                            size="sm"
+                            onClick={addEducation}
+                            iconLeft={<PlusCircle className="h-4 w-4" />}
+                          >
+                            Add Education
+                          </CosmicButton>
+                        </div>
+                        
+                        <SortableContext
+                          items={resume.education.map(edu => edu.id)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          <div className="space-y-6">
+                            {resume.education.length === 0 ? (
+                              <div className="text-center py-6 text-gray-400">
+                                <GraduationCap className="h-12 w-12 mx-auto mb-3 text-gray-600" />
+                                <p className="mb-2">No education entries added yet</p>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={addEducation}
+                                  className="bg-blue-900/20 border-blue-800/30 text-blue-300 hover:bg-blue-900/30 hover:text-blue-200"
+                                >
+                                  <PlusCircle className="h-4 w-4 mr-2" />
+                                  Add your first education
+                                </Button>
+                              </div>
+                            ) : (
+                              <ResumeEducationSection
+                                education={resume.education}
+                                onUpdate={(updatedEducation) =>
+                                  updateResumeLocally({ education: updatedEducation })
+                                }
+                              />
+                            )}
+                          </div>
+                        </SortableContext>
+                      </div>
+                    )}
+
+                    {/* Skills Section */}
+                    {currentTab === "skills" && (
+                      <div className="cosmic-card p-6 mb-6">
+                        <div className="flex items-center justify-between mb-6">
+                          <h2 className="text-xl font-semibold text-blue-300">
+                            Skills
+                          </h2>
+                          <div className="flex gap-3">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={toggleSkillsDisplayMode}
+                              className="bg-blue-900/20 border-blue-800/30 text-blue-300 hover:bg-blue-900/30 hover:text-blue-200"
+                            >
+                              {resume.skillsDisplayMode === "bubbles" ? (
+                                <>
+                                  <ListFilter className="h-4 w-4 mr-2" />
+                                  Switch to Bullets
+                                </>
+                              ) : (
+                                <>
+                                  <CircleDot className="h-4 w-4 mr-2" />
+                                  Switch to Bubbles
+                                </>
+                              )}
+                            </Button>
+                            <CosmicButton
+                              variant="primary"
+                              size="sm"
+                              onClick={addSkill}
+                              iconLeft={<PlusCircle className="h-4 w-4" />}
+                            >
+                              Add Skill
+                            </CosmicButton>
+                          </div>
+                        </div>
+                        
+                        <SortableContext
+                          items={resume.skills.map(skill => skill.id)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          <div className="space-y-6">
+                            {resume.skills.length === 0 ? (
+                              <div className="text-center py-6 text-gray-400">
+                                <Code className="h-12 w-12 mx-auto mb-3 text-gray-600" />
+                                <p className="mb-2">No skills added yet</p>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={addSkill}
+                                  className="bg-blue-900/20 border-blue-800/30 text-blue-300 hover:bg-blue-900/30 hover:text-blue-200"
+                                >
+                                  <PlusCircle className="h-4 w-4 mr-2" />
+                                  Add your first skill
+                                </Button>
+                              </div>
+                            ) : (
+                              <ResumeSkillsSection
+                                skills={resume.skills}
+                                onUpdate={(updatedSkills) =>
+                                  updateResumeLocally({ skills: updatedSkills })
+                                }
+                              />
+                            )}
+                          </div>
+                        </SortableContext>
+                        
+                        {resume.skills.length > 0 && (
+                          <div className="mt-6 border-t border-blue-900/30 pt-4">
+                            <div className="flex items-center gap-2 mb-4">
+                              <Lightbulb className="h-4 w-4 text-yellow-400" />
+                              <h3 className="text-sm font-medium text-blue-300">
+                                AI-Powered Skill Suggestions
+                              </h3>
+                            </div>
+                            <SkillSuggestions
+                              resumeId={resumeId || "temp"}
+                              jobTitle={resume.personalInfo.headline}
+                              onApply={(skill) => {
+                                const newSkill: SkillItem = {
+                                  id: crypto.randomUUID(),
+                                  name: skill,
+                                  proficiency: 85
+                                };
+                                
+                                updateResumeLocally({ 
+                                  skills: [...resume.skills, newSkill] 
+                                });
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Projects Section */}
+                    {currentTab === "projects" && (
+                      <div className="cosmic-card p-6 mb-6">
+                        <div className="flex items-center justify-between mb-6">
+                          <h2 className="text-xl font-semibold text-blue-300">
+                            Projects
+                          </h2>
+                          <CosmicButton
+                            variant="primary"
+                            size="sm"
+                            onClick={addProject}
+                            iconLeft={<PlusCircle className="h-4 w-4" />}
+                          >
+                            Add Project
+                          </CosmicButton>
+                        </div>
+                        
+                        <SortableContext
+                          items={resume.projects.map(proj => proj.id)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          <div className="space-y-6">
+                            {resume.projects.length === 0 ? (
+                              <div className="text-center py-6 text-gray-400">
+                                <Package className="h-12 w-12 mx-auto mb-3 text-gray-600" />
+                                <p className="mb-2">No projects added yet</p>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={addProject}
+                                  className="bg-blue-900/20 border-blue-800/30 text-blue-300 hover:bg-blue-900/30 hover:text-blue-200"
+                                >
+                                  <PlusCircle className="h-4 w-4 mr-2" />
+                                  Add your first project
+                                </Button>
+                              </div>
+                            ) : (
+                              <ResumeProjectsSection
+                                projects={resume.projects}
+                                onUpdate={(updatedProjects) =>
+                                  updateResumeLocally({ projects: updatedProjects })
+                                }
+                              />
+                            )}
+                          </div>
+                        </SortableContext>
+                      </div>
+                    )}
+
+                    {/* Optional overlay for drag and drop */}
+                    <DragOverlay>
+                      {activeDragId && draggedItemType === "experience" && (
+                        <div className="cosmic-card p-4 bg-blue-900/50 border-blue-600/50 w-full opacity-80">
+                          {resume.experience.find(exp => exp.id === activeDragId)?.title || "Experience item"}
+                        </div>
+                      )}
+                      {activeDragId && draggedItemType === "education" && (
+                        <div className="cosmic-card p-4 bg-blue-900/50 border-blue-600/50 w-full opacity-80">
+                          {resume.education.find(edu => edu.id === activeDragId)?.degree || "Education item"}
+                        </div>
+                      )}
+                      {activeDragId && draggedItemType === "skills" && (
+                        <div className="cosmic-card p-4 bg-blue-900/50 border-blue-600/50 w-full opacity-80">
+                          {resume.skills.find(skill => skill.id === activeDragId)?.name || "Skill item"}
+                        </div>
+                      )}
+                      {activeDragId && draggedItemType === "projects" && (
+                        <div className="cosmic-card p-4 bg-blue-900/50 border-blue-600/50 w-full opacity-80">
+                          {resume.projects.find(proj => proj.id === activeDragId)?.title || "Project item"}
+                        </div>
+                      )}
+                    </DragOverlay>
+                  </DndContext>
+                </div>
+
+                {/* Right column: AI Assistant */}
+                {showAIAssistant && (
+                  <div className="lg:col-span-4 xl:col-span-5">
+                    <div className="sticky top-24">
+                      <AIAssistant
+                        resumeId={resumeId || "temp"}
+                        resume={resume}
+                        activeTab={currentTab}
+                        onApplySummary={(summary) => updatePersonalInfo("summary", summary)}
+                        onApplyBulletPoint={(bulletPoint) => {
+                          // Add bullet point to most recent experience
+                          if (resume.experience.length > 0) {
+                            const updatedExperiences = [...resume.experience];
+                            const latestExp = updatedExperiences[0];
+                            latestExp.description = latestExp.description 
+                              ? `${latestExp.description}\n• ${bulletPoint}` 
+                              : `• ${bulletPoint}`;
+                            updateResumeLocally({ experience: updatedExperiences });
+                          }
+                        }}
+                        onApplySkill={(skill) => {
+                          const newSkill: SkillItem = {
+                            id: crypto.randomUUID(),
+                            name: skill,
+                            proficiency: 85
+                          };
+                          updateResumeLocally({ skills: [...resume.skills, newSkill] });
+                        }}
+                      />
+                    </div>
                   </div>
                 )}
-                <div className="cosmic-card p-5">
-                  {/* Personal Info Section */}
-                  {showPersonalInfo && (
-                    <Tabs 
-                      defaultValue={currentTab} 
-                      value={currentTab}
-                      onValueChange={value => setCurrentTab(value)}
-                      className="w-full"
-                    >
-                      <TabsList className="grid grid-cols-2 mb-4">
-                        <TabsTrigger value="contact" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
-                          Contact Information
-                        </TabsTrigger>
-                        <TabsTrigger value="summary" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
-                          Professional Summary
-                        </TabsTrigger>
-                      </TabsList>
-
-                      {/* Contact Information Tab */}
-                      <TabsContent value="contact" className="space-y-4 mt-2">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="firstName">First Name</Label>
-                            <Input
-                              id="firstName"
-                              value={resume.personalInfo.firstName || ''}
-                              onChange={(e) =>
-                                updateResumeLocally({
-                                  personalInfo: { ...resume.personalInfo, firstName: e.target.value },
-                                })
-                              }
-                              placeholder="John"
-                              className="cosmic-input"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="lastName">Last Name</Label>
-                            <Input
-                              id="lastName"
-                              value={resume.personalInfo.lastName || ''}
-                              onChange={(e) =>
-                                updateResumeLocally({
-                                  personalInfo: { ...resume.personalInfo, lastName: e.target.value },
-                                })
-                              }
-                              placeholder="Doe"
-                              className="cosmic-input"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="headline">Professional Headline</Label>
-                          <Input
-                            id="headline"
-                            value={resume.personalInfo.headline || ''}
-                            onChange={(e) =>
-                              updateResumeLocally({
-                                personalInfo: { ...resume.personalInfo, headline: e.target.value },
-                              })
-                            }
-                            placeholder="Senior Software Engineer | Full Stack Developer | JavaScript Expert"
-                            className="cosmic-input"
-                          />
-                          <p className="text-xs text-gray-400">
-                            A brief tagline that appears under your name
-                          </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                              id="email"
-                              type="email"
-                              value={resume.personalInfo.email || ''}
-                              onChange={(e) =>
-                                updateResumeLocally({
-                                  personalInfo: { ...resume.personalInfo, email: e.target.value },
-                                })
-                              }
-                              placeholder="john.doe@example.com"
-                              className="cosmic-input"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="phone">Phone</Label>
-                            <Input
-                              id="phone"
-                              value={resume.personalInfo.phone || ''}
-                              onChange={(e) =>
-                                updateResumeLocally({
-                                  personalInfo: { ...resume.personalInfo, phone: e.target.value },
-                                })
-                              }
-                              placeholder="(123) 456-7890"
-                              className="cosmic-input"
-                            />
-                          </div>
-                        </div>
-
-                        <Button 
-                          onClick={() => setCurrentTab('summary')}
-                          className="w-full mt-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                        >
-                          Continue to Summary
-                        </Button>
-                      </TabsContent>
-
-                      {/* Professional Summary Tab */}
-                      <TabsContent value="summary" className="space-y-4 mt-2">
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <Label htmlFor="summary">Professional Summary</Label>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 gap-1 text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
-                              onClick={() =>
-                                updateResumeLocally({
-                                  personalInfo: { ...resume.personalInfo, summary: "" },
-                                })
-                              }
-                            >
-                              <X className="h-3 w-3" />
-                              Clear
-                            </Button>
-                          </div>
-                          <Textarea
-                            id="summary"
-                            value={resume.personalInfo.summary || ''}
-                            onChange={(e) =>
-                              updateResumeLocally({
-                                personalInfo: { ...resume.personalInfo, summary: e.target.value },
-                              })
-                            }
-                            placeholder="Experienced software engineer with a passion for developing innovative solutions that deliver exceptional user experiences..."
-                            className="min-h-[120px] cosmic-input"
-                          />
-                          <p className="text-xs text-gray-400">
-                            A concise overview of your professional background, skills, and career objectives
-                          </p>
-                        </div>
-
-                        <div className="cosmic-card p-4 mt-4">
-                          <h3 className="text-sm font-medium text-blue-300 mb-1">AI-Powered Summary Suggestions</h3>
-                          <p className="text-xs text-gray-400 mb-3">
-                            Get professionally crafted summaries based on your resume content
-                          </p>
-                          
-                          <SummarySuggestions
-                            resumeId={resumeId || ""}
-                            onApply={(summary) =>
-                              updateResumeLocally({
-                                personalInfo: { ...resume.personalInfo, summary },
-                              })
-                            }
-                          />
-                        </div>
-
-                        <div className="flex justify-between mt-4">
-                          <Button 
-                            onClick={() => setCurrentTab('contact')}
-                            variant="outline"
-                            className="border-blue-800/30 text-blue-300 hover:bg-blue-900/30 hover:text-blue-200"
-                          >
-                            Back to Contact Info
-                          </Button>
-                          <Button 
-                            onClick={() => {
-                              setCurrentTab('experience');
-                              setShowPersonalInfo(false);
-                            }}
-                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                          >
-                            Continue to Experience
-                          </Button>
-                        </div>
-                      </TabsContent>
-                    </Tabs>
-                  )}
-
-                  {/* Experience Section */}
-                  {currentTab === "experience" && !showPersonalInfo && (
-                    <div>
-                      <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-semibold text-blue-300 flex items-center gap-2">
-                          <Briefcase className="h-5 w-5" />
-                          Work Experience
-                        </h2>
-                        <Button
-                          onClick={handleAddExperience}
-                          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                        >
-                          <Plus className="h-4 w-4 mr-1" />
-                          Add Experience
-                        </Button>
-                      </div>
-
-                      {resume.experience.length === 0 ? (
-                        <div className="text-center py-8 border border-dashed border-blue-900/40 rounded-lg bg-blue-950/20">
-                          <Briefcase className="h-10 w-10 text-blue-800/60 mx-auto mb-3" />
-                          <h3 className="text-lg font-medium text-blue-300 mb-1">No work experience added yet</h3>
-                          <p className="text-gray-400 text-sm max-w-md mx-auto mb-4">
-                            Add your work history to highlight your professional accomplishments and career progression
-                          </p>
-                          <Button
-                            onClick={handleAddExperience}
-                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                          >
-                            <Plus className="h-4 w-4 mr-1" />
-                            Add Experience
-                          </Button>
-                        </div>
-                      ) : (
-                        <DragDropContext onDragEnd={handleDragEnd}>
-                          <Droppable droppableId="experience" type="experience">
-                            {(provided) => (
-                              <div
-                                {...provided.droppableProps}
-                                ref={provided.innerRef}
-                                className="space-y-4"
-                              >
-                                <ResumeExperienceSection
-                                  experiences={resume.experience}
-                                  onUpdate={handleExperienceUpdate}
-                                />
-                                {provided.placeholder}
-                              </div>
-                            )}
-                          </Droppable>
-                        </DragDropContext>
-                      )}
-
-                      {resume.experience.length > 0 && (
-                        <div className="cosmic-card p-4 mt-6">
-                          <h3 className="text-sm font-medium text-blue-300 mb-1">AI-Powered Experience Suggestions</h3>
-                          <p className="text-xs text-gray-400 mb-3">
-                            Get ATS-optimized bullet points for your experience section
-                          </p>
-                          
-                          <ExperienceSuggestions
-                            resumeId={resumeId || ""}
-                            jobTitle={resume.experience[0]?.title}
-                            onApply={(bulletPoint) => {
-                              // Add the bullet point to the first experience entry
-                              if (resume.experience.length > 0) {
-                                const updatedExperiences = [...resume.experience];
-                                const firstExp = { ...updatedExperiences[0] };
-                                firstExp.description = firstExp.description
-                                  ? `${firstExp.description}\n• ${bulletPoint}`
-                                  : `• ${bulletPoint}`;
-                                updatedExperiences[0] = firstExp;
-                                handleExperienceUpdate(updatedExperiences);
-                              }
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Education Section */}
-                  {currentTab === "education" && !showPersonalInfo && (
-                    <div>
-                      <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-semibold text-blue-300 flex items-center gap-2">
-                          <GraduationCap className="h-5 w-5" />
-                          Education
-                        </h2>
-                        <Button
-                          onClick={handleAddEducation}
-                          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                        >
-                          <Plus className="h-4 w-4 mr-1" />
-                          Add Education
-                        </Button>
-                      </div>
-
-                      {resume.education.length === 0 ? (
-                        <div className="text-center py-8 border border-dashed border-blue-900/40 rounded-lg bg-blue-950/20">
-                          <GraduationCap className="h-10 w-10 text-blue-800/60 mx-auto mb-3" />
-                          <h3 className="text-lg font-medium text-blue-300 mb-1">No education added yet</h3>
-                          <p className="text-gray-400 text-sm max-w-md mx-auto mb-4">
-                            Add your academic background to showcase your qualifications and credentials
-                          </p>
-                          <Button
-                            onClick={handleAddEducation}
-                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                          >
-                            <Plus className="h-4 w-4 mr-1" />
-                            Add Education
-                          </Button>
-                        </div>
-                      ) : (
-                        <DragDropContext onDragEnd={handleDragEnd}>
-                          <Droppable droppableId="education" type="education">
-                            {(provided) => (
-                              <div
-                                {...provided.droppableProps}
-                                ref={provided.innerRef}
-                                className="space-y-4"
-                              >
-                                <ResumeEducationSection
-                                  education={resume.education}
-                                  onUpdate={handleEducationUpdate}
-                                />
-                                {provided.placeholder}
-                              </div>
-                            )}
-                          </Droppable>
-                        </DragDropContext>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Skills Section */}
-                  {currentTab === "skills" && !showPersonalInfo && (
-                    <div>
-                      <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-semibold text-blue-300 flex items-center gap-2">
-                          <Code className="h-5 w-5" />
-                          Skills
-                        </h2>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            className="border-blue-900/30 text-blue-300 hover:bg-blue-900/30"
-                            onClick={toggleSkillsDisplayMode}
-                          >
-                            Display: {resume.skillsDisplayMode === 'bubbles' ? 'Bubbles' : 'Bullets'}
-                          </Button>
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                                <Plus className="h-4 w-4 mr-1" />
-                                Add Skill
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="cosmic-dialog-content">
-                              <DialogHeader>
-                                <DialogTitle>Add a New Skill</DialogTitle>
-                                <DialogDescription className="text-gray-400">
-                                  Enter your skill name below. Use AI suggestions for industry-relevant skills.
-                                </DialogDescription>
-                              </DialogHeader>
-
-                              <div className="space-y-4 py-4">
-                                <div className="space-y-2">
-                                  <Label htmlFor="skillName">Skill Name</Label>
-                                  <Input
-                                    id="skillName"
-                                    placeholder="e.g., React.js, Project Management"
-                                    className="cosmic-input"
-                                  />
-                                </div>
-                              </div>
-
-                              <DialogFooter className="gap-2">
-                                <DialogClose asChild>
-                                  <Button variant="outline" className="border-blue-900/30">
-                                    Cancel
-                                  </Button>
-                                </DialogClose>
-                                <DialogClose asChild>
-                                  <Button
-                                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                                    onClick={() => {
-                                      const input = document.getElementById("skillName") as HTMLInputElement;
-                                      if (input && input.value.trim()) {
-                                        handleAddSkill(input.value.trim());
-                                      }
-                                    }}
-                                  >
-                                    Add Skill
-                                  </Button>
-                                </DialogClose>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
-                        </div>
-                      </div>
-
-                      {resume.skills.length === 0 ? (
-                        <div className="text-center py-8 border border-dashed border-blue-900/40 rounded-lg bg-blue-950/20">
-                          <Code className="h-10 w-10 text-blue-800/60 mx-auto mb-3" />
-                          <h3 className="text-lg font-medium text-blue-300 mb-1">No skills added yet</h3>
-                          <p className="text-gray-400 text-sm max-w-md mx-auto mb-4">
-                            Add your technical and soft skills to highlight your capabilities and expertise
-                          </p>
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                                <Plus className="h-4 w-4 mr-1" />
-                                Add Skill
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="cosmic-dialog-content">
-                              <DialogHeader>
-                                <DialogTitle>Add a New Skill</DialogTitle>
-                                <DialogDescription className="text-gray-400">
-                                  Enter your skill name below. Use AI suggestions for industry-relevant skills.
-                                </DialogDescription>
-                              </DialogHeader>
-
-                              <div className="space-y-4 py-4">
-                                <div className="space-y-2">
-                                  <Label htmlFor="skillName">Skill Name</Label>
-                                  <Input
-                                    id="skillName"
-                                    placeholder="e.g., React.js, Project Management"
-                                    className="cosmic-input"
-                                  />
-                                </div>
-                              </div>
-
-                              <DialogFooter className="gap-2">
-                                <DialogClose asChild>
-                                  <Button variant="outline" className="border-blue-900/30">
-                                    Cancel
-                                  </Button>
-                                </DialogClose>
-                                <DialogClose asChild>
-                                  <Button
-                                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                                    onClick={() => {
-                                      const input = document.getElementById("skillName") as HTMLInputElement;
-                                      if (input && input.value.trim()) {
-                                        handleAddSkill(input.value.trim());
-                                      }
-                                    }}
-                                  >
-                                    Add Skill
-                                  </Button>
-                                </DialogClose>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
-                        </div>
-                      ) : (
-                        <DragDropContext onDragEnd={handleDragEnd}>
-                          <Droppable droppableId="skills" type="skills">
-                            {(provided) => (
-                              <div
-                                {...provided.droppableProps}
-                                ref={provided.innerRef}
-                                className="space-y-4"
-                              >
-                                <ResumeSkillsSection
-                                  skills={resume.skills}
-                                  onUpdate={handleSkillsUpdate}
-                                />
-                                {provided.placeholder}
-                              </div>
-                            )}
-                          </Droppable>
-                        </DragDropContext>
-                      )}
-
-                      <div className="cosmic-card p-4 mt-6">
-                        <h3 className="text-sm font-medium text-blue-300 mb-1">AI-Powered Skills Suggestions</h3>
-                        <p className="text-xs text-gray-400 mb-3">
-                          Get industry-relevant skills to enhance your resume
-                        </p>
-                        
-                        <SkillSuggestions
-                          resumeId={resumeId || ""}
-                          jobTitle={resume.personalInfo.headline}
-                          onApply={handleAddSkill}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Projects Section */}
-                  {currentTab === "projects" && !showPersonalInfo && (
-                    <div>
-                      <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-semibold text-blue-300 flex items-center gap-2">
-                          <FolderKanban className="h-5 w-5" />
-                          Projects
-                        </h2>
-                        <Button
-                          onClick={handleAddProject}
-                          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                        >
-                          <Plus className="h-4 w-4 mr-1" />
-                          Add Project
-                        </Button>
-                      </div>
-
-                      {resume.projects.length === 0 ? (
-                        <div className="text-center py-8 border border-dashed border-blue-900/40 rounded-lg bg-blue-950/20">
-                          <FolderKanban className="h-10 w-10 text-blue-800/60 mx-auto mb-3" />
-                          <h3 className="text-lg font-medium text-blue-300 mb-1">No projects added yet</h3>
-                          <p className="text-gray-400 text-sm max-w-md mx-auto mb-4">
-                            Showcase your personal or professional projects to demonstrate your capabilities
-                          </p>
-                          <Button
-                            onClick={handleAddProject}
-                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                          >
-                            <Plus className="h-4 w-4 mr-1" />
-                            Add Project
-                          </Button>
-                        </div>
-                      ) : (
-                        <DragDropContext onDragEnd={handleDragEnd}>
-                          <Droppable droppableId="projects" type="projects">
-                            {(provided) => (
-                              <div
-                                {...provided.droppableProps}
-                                ref={provided.innerRef}
-                                className="space-y-4"
-                              >
-                                <ResumeProjectsSection
-                                  projects={resume.projects}
-                                  onUpdate={handleProjectsUpdate}
-                                />
-                                {provided.placeholder}
-                              </div>
-                            )}
-                          </Droppable>
-                        </DragDropContext>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* AI Assistant Sidebar */}
-              <div className="w-full xl:w-72 shrink-0">
-                <div className="sticky top-24">
-                  <AIAssistant
-                    resumeId={resumeId}
-                    onApplySummary={(summary) =>
-                      updateResumeLocally({
-                        personalInfo: { ...resume.personalInfo, summary },
-                      })
-                    }
-                    onApplyBulletPoint={(bulletPoint) => {
-                      if (resume.experience.length > 0) {
-                        const updatedExperiences = [...resume.experience];
-                        const firstExp = { ...updatedExperiences[0] };
-                        firstExp.description = firstExp.description
-                          ? `${firstExp.description}\n• ${bulletPoint}`
-                          : `• ${bulletPoint}`;
-                        updatedExperiences[0] = firstExp;
-                        handleExperienceUpdate(updatedExperiences);
-                      }
-                    }}
-                    onApplySkill={handleAddSkill}
-                    resume={resume}
-                    activeTab={currentTab}
-                  />
-                </div>
               </div>
             </div>
           </div>
@@ -1920,18 +1497,22 @@ export default function ResumeBuilder() {
   );
 }
 
-// Utility function to get URL parameters
-function useParams<T extends Record<string, string>>(): T {
-  const [location] = useLocation();
-  const params = {} as T;
-  
-  // Extract the path parameters
-  const pathParts = location.split('/').filter(Boolean);
-  if (pathParts.length > 1 && pathParts[0] === 'resume-builder') {
-    params['id' as keyof T] = pathParts[1] as T[keyof T];
-  } else {
-    params['id' as keyof T] = 'new' as T[keyof T];
-  }
-  
-  return params;
+// Define Resume type for TypeScript
+export interface Resume {
+  id?: string;
+  title: string;
+  personalInfo: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    headline: string;
+    summary: string;
+  };
+  experience: ExperienceItem[];
+  education: EducationItem[];
+  skills: SkillItem[];
+  projects: ProjectItem[];
+  template: string;
+  skillsDisplayMode?: 'bubbles' | 'bullets';
 }

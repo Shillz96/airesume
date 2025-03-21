@@ -119,6 +119,72 @@ export default function ResumePreviewComponent({
     }
   }, [onDownload, toast]);
 
+  // Render the resume pages based on view mode
+  const renderPages = useCallback(() => {
+    if (viewMode === "single") {
+      return (
+        <div
+          className="resume-preview-wrapper border border-blue-900/50 bg-white shadow-xl relative"
+          style={{
+            width: `${595 * previewScale}px`,
+            height: `${841 * previewScale}px`,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              transform: `scale(${previewScale}) translateY(-${(currentPage - 1) * 841}px)`,
+              transformOrigin: "top left",
+              width: "595px",
+              height: `${totalPages * 841}px`,
+            }}
+          >
+            <MemoizedTemplate template={resume.template} resume={resume} />
+          </div>
+          <div className="absolute bottom-2 right-2 text-xs text-gray-500">
+            Page {currentPage} of {totalPages}
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div
+          className="flex flex-row gap-4 overflow-x-auto pb-4"
+          style={{
+            width: "100%",
+            maxWidth: `${(595 * previewScale + 16) * totalPages}px`, // 16px gap
+          }}
+        >
+          {Array.from({ length: totalPages }, (_, index) => (
+            <div
+              key={index}
+              className="resume-page border border-gray-200 shadow-lg relative flex-shrink-0"
+              style={{
+                width: `${595 * previewScale}px`,
+                height: `${841 * previewScale}px`,
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  transform: `scale(${previewScale}) translateY(-${index * 841}px)`,
+                  transformOrigin: "top left",
+                  width: "595px",
+                  height: `${totalPages * 841}px`,
+                }}
+              >
+                <MemoizedTemplate template={resume.template} resume={resume} />
+              </div>
+              <div className="absolute bottom-2 right-2 text-xs text-gray-500">
+                Page {index + 1}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+  }, [viewMode, previewScale, currentPage, totalPages, resume]);
+
   return (
     <div className="flex flex-col space-y-4">
       {/* Hidden div to measure content height */}
@@ -204,7 +270,7 @@ export default function ResumePreviewComponent({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleSmartAdjust}
+                  onClick={onSmartAdjust}
                   className="h-7 px-2 text-xs gap-1 bg-[rgba(30,40,80,0.5)] hover:bg-blue-800/50 border-blue-800/30 text-blue-300"
                 >
                   <Sparkles className="w-3 h-3" />
@@ -222,7 +288,7 @@ export default function ResumePreviewComponent({
       {/* Preview Controls: Pagination, Zoom, View Mode */}
       <div className="flex justify-between items-center w-full mb-3 px-2">
         {/* Pagination Controls (single mode only) */}
-        {viewMode === "single" && totalPages > 1 ? (
+        {viewMode === "single" && totalPages > 1 && (
           <div className="flex items-center gap-2 bg-blue-900/70 p-1 rounded-md">
             <Button
               variant="ghost"
@@ -248,8 +314,6 @@ export default function ResumePreviewComponent({
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
-        ) : (
-          <div></div> // Empty div to maintain flex layout
         )}
 
         {/* Zoom and View Mode Controls */}

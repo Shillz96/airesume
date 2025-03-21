@@ -1324,11 +1324,12 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
             transform: `scale(${scale})`,
             width: "210mm", // A4 width
             minHeight: "297mm", // A4 height (minimum to ensure proper proportions)
-            maxHeight: "297mm", // A4 height (maximum to ensure proper proportions)
-            transformOrigin: "center", // Center transform origin for better viewing 
+            maxHeight: isEditing ? "297mm" : calculatePages() > 1 ? `${calculatePages() * 297}mm` : "297mm", // Allow multiple pages in preview
+            height: isEditing ? "297mm" : calculatePages() > 1 ? `${calculatePages() * 297}mm` : "297mm", // Same height as maxHeight
+            transformOrigin: "top center", // Top center for better multi-page viewing
             fontSize: `${fontScale * 100}%`, // Dynamic font scaling
             lineHeight: `${spacingScale * 1.5}`, // Dynamic line height scaling
-            overflowY: isEditing ? "auto" : "hidden", // Hide overflow when not editing
+            overflowY: isEditing ? "auto" : "visible", // Show overflow for multi-page in preview
             boxShadow: "0 4px 24px rgba(0, 0, 0, 0.15)", // Add shadow for better visibility
             marginTop: scale < 1 ? "0" : "2rem", // Add margin when zoomed in
             marginBottom: scale < 1 ? "0" : "2rem", // Add margin when zoomed in

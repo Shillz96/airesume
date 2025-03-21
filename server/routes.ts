@@ -966,10 +966,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const jobDescription = job.description;
         const jobCompany = job.company;
           
-        // Prepare resume data
-        const summary = resumeData.content?.personalInfo?.summary || "";
-        const experiences = resumeData.content?.experience || [];
-        const skills = resumeData.content?.skills || [];
+        // Prepare resume data - handle different structures for guest mode and authenticated users
+        // Check if resumeData has direct personalInfo or is nested inside content
+        const resumeContent = resumeData.content || resumeData;
+        const personalInfo = resumeContent.personalInfo || {};
+        const summary = personalInfo.summary || "";
+        const experiences = resumeContent.experience || [];
+        const skills = resumeContent.skills || [];
         
         // Tailor summary to the job
         const summaryPrompt = `

@@ -278,6 +278,8 @@ export default function SubscriptionPage() {
           </TabsList>
 
           <TabsContent value="subscription" className="space-y-4">
+            {/* Admin Controls Section */}
+            {!isGuestMode && user && <AdminControls />}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Current Subscription Card */}
               <Card className="col-span-1 md:col-span-2 lg:col-span-1 bg-card/60 backdrop-blur shadow-md">

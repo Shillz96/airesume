@@ -1,99 +1,81 @@
 import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { useAuth } from "@/hooks/use-auth";
 import Navbar from "@/components/navbar";
+import CosmicBackground from "@/components/cosmic-background";
 import DashboardStats from "@/components/dashboard-stats";
 import RecentActivity from "@/components/recent-activity";
-import JobInterviewAvatar from "@/components/job-interview-avatar";
 import JobSearchProgress from "@/components/job-search-progress";
+import JobInterviewAvatar from "@/components/job-interview-avatar";
 import SubscriptionStatus from "@/components/subscription-status";
-import CosmicBackground from "@/components/cosmic-background";
-import { useAuth } from "@/hooks/use-auth";
-import { Rocket } from "lucide-react";
-import gsap from "gsap";
+import { Rocket, User, LayoutDashboard, UserCheck, Calendar, Search, Clock, Briefcase } from "lucide-react";
 
 export default function HomePage() {
   const { user } = useAuth();
   const welcomeRef = useRef<HTMLDivElement>(null);
   const rocketRef = useRef<HTMLDivElement>(null);
   
-  // Animation effect
+  // Animated welcome elements with GSAP
   useEffect(() => {
-    if (welcomeRef.current) {
-      gsap.fromTo(
-        welcomeRef.current,
-        { y: 20, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" }
-      );
+    const welcomeEl = welcomeRef.current;
+    const rocketEl = rocketRef.current;
+    
+    if (welcomeEl && rocketEl) {
+      const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
+      
+      tl.from(welcomeEl, {
+        y: 30,
+        opacity: 0,
+        duration: 0.8,
+      })
+      .from(rocketEl, {
+        scale: 0,
+        rotation: 45,
+        opacity: 0,
+        duration: 0.5,
+      }, "-=0.4");
+      
+      // Star particles around the rocket
+      const createStar = () => {
+        const star = document.createElement("div");
+        star.className = "absolute w-1 h-1 bg-blue-400 rounded-full";
+        
+        const size = Math.random() * 3 + 1;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * 30 + 15;
+        const x = Math.cos(angle) * distance;
+        const y = Math.sin(angle) * distance;
+        
+        star.style.left = `50%`;
+        star.style.top = `50%`;
+        star.style.transform = `translate(${x}px, ${y}px)`;
+        
+        rocketEl.appendChild(star);
+        
+        gsap.to(star, {
+          opacity: 0,
+          scale: 0,
+          duration: Math.random() * 1 + 0.5,
+          onComplete: () => {
+            star.remove();
+          }
+        });
+      };
+      
+      // Create stars at random intervals
+      const interval = setInterval(() => {
+        if (rocketEl.contains(document.activeElement)) {
+          for (let i = 0; i < 3; i++) {
+            createStar();
+          }
+        }
+      }, 300);
+      
+      return () => clearInterval(interval);
     }
-    
-    if (rocketRef.current) {
-      gsap.fromTo(
-        rocketRef.current,
-        { 
-          y: 20, 
-          x: -10,
-          opacity: 0 
-        },
-        { 
-          y: 0, 
-          x: 0,
-          opacity: 1, 
-          duration: 0.6, 
-          delay: 0.3,
-          ease: "back.out" 
-        }
-      );
-      
-      // Add a floating animation
-      gsap.to(
-        rocketRef.current,
-        {
-          y: "-=8",
-          duration: 1.5,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut"
-        }
-      );
-    }
-    
-    // Create shooting stars at random intervals
-    const createShootingStar = () => {
-      const starfield = document.querySelector('.starfield');
-      if (!starfield) return;
-      
-      const star = document.createElement('div');
-      star.className = 'shooting-star';
-      
-      // Random position and angle
-      const startX = Math.random() * window.innerWidth;
-      const startY = Math.random() * window.innerHeight / 3; // Start in top third
-      star.style.left = `${startX}px`;
-      star.style.top = `${startY}px`;
-      
-      // Random direction and distance
-      const tx = Math.random() > 0.5 ? '300px' : '-300px';
-      const ty = '300px';
-      const rotation = Math.random() * 45 - 22.5;
-      star.style.setProperty('--tx', tx);
-      star.style.setProperty('--ty', ty);
-      star.style.setProperty('--r', `${rotation}deg`);
-      
-      starfield.appendChild(star);
-      
-      // Remove after animation completes
-      setTimeout(() => {
-        if (star.parentNode === starfield) {
-          starfield.removeChild(star);
-        }
-      }, 1500);
-    };
-    
-    // Create a shooting star every 3-6 seconds
-    const interval = setInterval(() => {
-      createShootingStar();
-    }, Math.random() * 3000 + 3000);
-    
-    return () => clearInterval(interval);
   }, []);
   
   return (
@@ -101,47 +83,45 @@ export default function HomePage() {
       <CosmicBackground />
       <Navbar />
       
-      <main className="pt-24 pb-16 relative z-10 cosmic-nebula flex-1">
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 h-full">
-          <div className="px-4 py-6 sm:px-0 h-full flex flex-col">
-            <div className="mb-8 flex items-center" ref={welcomeRef}>
-              <div>
-                <h1 className="cosmic-page-title text-3xl">
-                  Welcome back, <span className="cosmic-text-gradient">{user?.username}</span>!
-                </h1>
-                <p className="mt-1 text-gray-300">
-                  Navigate your career journey with AI-powered tools and insights.
-                </p>
-              </div>
-              <div className="ml-4" ref={rocketRef}>
-                <div className="bg-[hsl(260,100%,60%)] bg-opacity-20 p-3 rounded-full cosmic-glow">
-                  <Rocket size={24} className="text-white" />
-                </div>
+      <main className="relative z-10 cosmic-nebula flex-1">
+        <div className="container py-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
+          <div className="flex items-center justify-between mb-6" ref={welcomeRef}>
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight cosmic-text-gradient">
+                Welcome back, <span className="cosmic-text-gradient">{user?.username}</span>!
+              </h1>
+              <p className="text-muted-foreground">
+                Navigate your career journey with AI-powered tools and insights.
+              </p>
+            </div>
+            <div className="ml-4" ref={rocketRef}>
+              <div className="bg-[hsl(260,100%,60%)] bg-opacity-20 p-3 rounded-full cosmic-glow">
+                <Rocket size={24} className="text-white" />
               </div>
             </div>
+          </div>
             
-            <SubscriptionStatus />
+          <SubscriptionStatus />
             
-            <div className="mt-6">
-              <DashboardStats />
-            </div>
+          <div className="mt-6">
+            <DashboardStats />
+          </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[600px]">
-              <div className="md:col-span-1 flex flex-col h-full">
-                <div className="flex-1 h-full">
-                  <JobInterviewAvatar />
-                </div>
-              </div>
-              <div className="md:col-span-1 flex flex-col h-full">
-                <div className="flex-1 h-full">
-                  <RecentActivity />
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[600px]">
+            <div className="md:col-span-1 flex flex-col h-full">
+              <div className="flex-1 h-full">
+                <JobInterviewAvatar />
               </div>
             </div>
-            
-            <div className="mt-16 mb-12 pt-4">
-              <JobSearchProgress />
+            <div className="md:col-span-1 flex flex-col h-full">
+              <div className="flex-1 h-full">
+                <RecentActivity />
+              </div>
             </div>
+          </div>
+            
+          <div className="mt-16 mb-12 pt-4">
+            <JobSearchProgress />
           </div>
         </div>
       </main>

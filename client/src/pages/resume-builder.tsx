@@ -1561,33 +1561,22 @@ export default function ResumeBuilder() {
   // Function to download the resume as PDF
   const downloadResume = async () => {
     try {
-      // Create a form for PDF generation
-      const formData = new FormData();
-      formData.append('resumeData', JSON.stringify(resume));
-      formData.append('template', resume?.template || 'professional');
+      // Generate a clean printable HTML version of the resume
+      const printableHTML = generatePrintableHTML(resume);
       
       // Generate a filename with the person's name or a default name
       const name = resume?.personalInfo?.firstName && resume?.personalInfo?.lastName ? 
         `${resume.personalInfo.firstName}_${resume.personalInfo.lastName}` : 
         'Resume';
+      const fileName = `${name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}`;
       
       toast({
         title: "Preparing Resume",
-        description: "Generating printable version of your resume...",
+        description: "Opening print dialog...",
       });
       
-      // Send the resume data to the server
-      const response = await fetch('/api/generate-pdf', {
-        method: 'POST',
-        body: formData
-      });
-      
-      if (!response.ok) throw new Error('Failed to generate printable version');
-      
-      // Get the blob from the response (HTML with auto-print script)
-      const blob = await response.blob();
-      
-      // Create a URL for the blob
+      // Create a blob with the HTML content
+      const blob = new Blob([printableHTML], { type: 'text/html' });
       const url = window.URL.createObjectURL(blob);
       
       // Open the HTML in a new window for printing
@@ -1604,21 +1593,268 @@ export default function ResumeBuilder() {
       
       toast({
         title: "Print Dialog Opened",
-        description: "The print dialog should open automatically in the new window.",
+        description: "Use your browser's print function to save as PDF.",
       });
     } catch (error) {
       console.error('Error generating printable version:', error);
       
-      // Fall back to the browser print dialog
+      // Fall back to the browser print dialog for the current page
       toast({
         title: "Using Print Dialog",
-        description: "Failed to generate optimized version. Using standard print dialog instead.",
+        description: "Failed to generate optimized version. Try printing this page directly.",
         variant: "destructive"
       });
-      
-      window.print();
     }
   };
+  
+  // Function to generate a clean, printable HTML version of the resume
+  function generatePrintableHTML(resumeData: Resume): string {
+    // Basic styling for the resume
+    const styles = `
+      <style>
+        @media print {
+          @page { 
+            size: A4;
+            margin: 10mm;
+          }
+        }
+        
+        body {
+          font-family: 'Arial', sans-serif;
+          line-height: 1.5;
+          color: #333;
+          margin: 0;
+          padding: 0;
+          background: white;
+        }
+        
+        .resume-container {
+          width: 100%;
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+          box-sizing: border-box;
+          background: white;
+        }
+        
+        .header {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+        
+        .header h1 {
+          margin: 0;
+          font-size: 28px;
+          color: #2a3f5f;
+        }
+        
+        .header .contact {
+          margin-top: 10px;
+          font-size: 14px;
+        }
+        
+        .section {
+          margin-bottom: 20px;
+        }
+        
+        .section-title {
+          font-size: 18px;
+          font-weight: bold;
+          border-bottom: 2px solid #2a3f5f;
+          margin-bottom: 10px;
+          padding-bottom: 5px;
+          color: #2a3f5f;
+        }
+        
+        .experience-item, .education-item, .project-item {
+          margin-bottom: 15px;
+        }
+        
+        .item-header {
+          display: flex;
+          justify-content: space-between;
+          font-weight: bold;
+        }
+        
+        .item-title {
+          font-weight: bold;
+        }
+        
+        .item-subtitle {
+          font-style: italic;
+        }
+        
+        .item-date {
+          color: #666;
+        }
+        
+        .item-description {
+          margin-top: 5px;
+        }
+        
+        .skills-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        
+        .skill-item {
+          background-color: #f5f5f5;
+          border-radius: 3px;
+          padding: 3px 8px;
+          font-size: 14px;
+        }
+      </style>
+    `;
+    
+    // Get personal info
+    const { firstName, lastName, email, phone, headline, summary } = resumeData.personalInfo;
+    const fullName = `${firstName} ${lastName}`.trim() || 'Your Name';
+    
+    // Generate header section
+    const headerSection = `
+      <div class="header">
+        <h1>${fullName}</h1>
+        ${headline ? `<div class="headline">${headline}</div>` : ''}
+        <div class="contact">
+          ${email ? `<span>${email}</span>` : ''}
+          ${email && phone ? ' | ' : ''}
+          ${phone ? `<span>${phone}</span>` : ''}
+        </div>
+      </div>
+    `;
+    
+    // Generate summary section
+    const summarySection = summary ? `
+      <div class="section">
+        <div class="section-title">Summary</div>
+        <div class="summary-content">${summary}</div>
+      </div>
+    ` : '';
+    
+    // Generate experience section
+    let experienceSection = '';
+    if (resumeData.experience && resumeData.experience.length > 0) {
+      const experienceItems = resumeData.experience
+        .map(exp => `
+          <div class="experience-item">
+            <div class="item-header">
+              <span class="item-title">${exp.title || ''}</span>
+              <span class="item-date">${exp.startDate || ''} - ${exp.endDate || 'Present'}</span>
+            </div>
+            <div class="item-subtitle">${exp.company || ''}</div>
+            <div class="item-description">${exp.description || ''}</div>
+          </div>
+        `)
+        .join('');
+      
+      experienceSection = `
+        <div class="section">
+          <div class="section-title">Experience</div>
+          ${experienceItems}
+        </div>
+      `;
+    }
+    
+    // Generate education section
+    let educationSection = '';
+    if (resumeData.education && resumeData.education.length > 0) {
+      const educationItems = resumeData.education
+        .map(edu => `
+          <div class="education-item">
+            <div class="item-header">
+              <span class="item-title">${edu.degree || ''}</span>
+              <span class="item-date">${edu.startDate || ''} - ${edu.endDate || ''}</span>
+            </div>
+            <div class="item-subtitle">${edu.institution || ''}</div>
+            ${edu.description ? `<div class="item-description">${edu.description}</div>` : ''}
+          </div>
+        `)
+        .join('');
+      
+      educationSection = `
+        <div class="section">
+          <div class="section-title">Education</div>
+          ${educationItems}
+        </div>
+      `;
+    }
+    
+    // Generate skills section
+    let skillsSection = '';
+    if (resumeData.skills && resumeData.skills.length > 0) {
+      const skillItems = resumeData.skills
+        .map(skill => `<div class="skill-item">${skill.name || ''}</div>`)
+        .join('');
+      
+      skillsSection = `
+        <div class="section">
+          <div class="section-title">Skills</div>
+          <div class="skills-list">
+            ${skillItems}
+          </div>
+        </div>
+      `;
+    }
+    
+    // Generate projects section
+    let projectsSection = '';
+    if (resumeData.projects && resumeData.projects.length > 0) {
+      const projectItems = resumeData.projects
+        .map(project => `
+          <div class="project-item">
+            <div class="item-title">${project.title || ''}</div>
+            <div class="item-description">${project.description || ''}</div>
+            ${project.technologies && project.technologies.length ? 
+              `<div class="item-technologies">Technologies: ${project.technologies.join(', ')}</div>` : ''}
+            ${project.link ? `<div class="item-link">Link: ${project.link}</div>` : ''}
+          </div>
+        `)
+        .join('');
+      
+      projectsSection = `
+        <div class="section">
+          <div class="section-title">Projects</div>
+          ${projectItems}
+        </div>
+      `;
+    }
+    
+    // Add auto-print script
+    const printScript = `
+      <script>
+        window.onload = function() {
+          setTimeout(function() {
+            window.print();
+          }, 1000);
+        };
+      </script>
+    `;
+    
+    // Combine all sections
+    return `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${fullName} - Resume</title>
+        ${styles}
+        ${printScript}
+      </head>
+      <body>
+        <div class="resume-container">
+          ${headerSection}
+          ${summarySection}
+          ${experienceSection}
+          ${educationSection}
+          ${skillsSection}
+          ${projectsSection}
+        </div>
+      </body>
+      </html>
+    `;
+  }
 
   // Initial resume state
   const [resume, setResume] = useState<Resume>({

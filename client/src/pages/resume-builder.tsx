@@ -908,10 +908,11 @@ function ResumePreview({
     window.print(); // Simplified for demo; replace with actual PDF generation in production
   };
 
+  // Get toast from useToast hook at the component level
+  const { toast } = useToast();
+  
   // Auto-adjust feature to fit content on one page
   const autoAdjust = () => {
-    const { toast } = useToast(); // Get toast here in scope
-    
     setIsAutoAdjusting(true);
     const previewElement = previewRef.current;
     if (!previewElement) return;
@@ -922,6 +923,9 @@ function ResumePreview({
 
     // Calculate how much the content exceeds the available space
     const contentRatio = contentHeight / a4Height;
+    
+    // Store the message for notification
+    let feedbackMessage = "";
     
     // Step 1: Adjust the appearance of the text in the resume
     if (contentRatio > 1) {
@@ -962,6 +966,8 @@ function ResumePreview({
           });
         }
       }
+      
+      feedbackMessage = `Resume content has been adjusted to fit on one page (${Math.round(fontReduction * 100)}% text size)`;
     } else {
       // Content fits fine, use normal settings
       setFontScale(1);
@@ -975,6 +981,8 @@ function ResumePreview({
           templateContent.style.lineHeight = '1.5';
         }
       }
+      
+      feedbackMessage = "Resume already fits on one page perfectly";
     }
     
     // Step 2: Adjust the view scale for the container
@@ -987,12 +995,10 @@ function ResumePreview({
 
     setIsAutoAdjusting(false);
     
-    // Show feedback to user
+    // Show feedback to user using the component-level toast
     toast({
       title: "Auto-adjust applied",
-      description: contentRatio > 1 
-        ? `Resume content has been adjusted to fit on one page (${Math.round(fontScale * 100)}% text size)`
-        : "Resume already fits on one page perfectly",
+      description: feedbackMessage,
       duration: 3000,
     });
   };

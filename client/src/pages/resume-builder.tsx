@@ -2946,7 +2946,7 @@ export default function ResumeBuilder() {
                     </h2>
                     <CosmicButton
                       variant="outline"
-                      onClick={() => window.print()}
+                      onClick={downloadResume}
                       iconLeft={<Printer className="h-4 w-4" />}
                     >
                       Print/Save PDF

@@ -1106,52 +1106,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Get job by ID
-  app.get("/api/jobs/:id", async (req, res) => {
-    try {
-      const jobId = parseInt(req.params.id);
-      let job = await storage.getJob(jobId);
-      
-      if (!job) {
-        return res.status(404).json({ message: "Job not found" });
-      }
-      
-      // Add saved status if user is authenticated
-      if (req.isAuthenticated()) {
-        const userId = req.user!.id;
-        const savedJobIds = await storage.getSavedJobIds(userId);
-        job = {
-          ...job,
-          saved: savedJobIds.includes(jobId),
-          match: Math.floor(Math.random() * 30) + 60, // Temporary match score
-          isNew: new Date(job.postedAt).getTime() > (Date.now() - 3 * 24 * 60 * 60 * 1000)
-        };
-      } else {
-        job = {
-          ...job,
-          saved: false,
-          match: Math.floor(Math.random() * 30) + 60, // Temporary match score
-          isNew: new Date(job.postedAt).getTime() > (Date.now() - 3 * 24 * 60 * 60 * 1000)
-        };
-      }
-      
-      // Convert postedAt to string format
-      job = {
-        ...job,
-        postedAt: new Date(job.postedAt).toISOString()
-      };
-      
-      res.json(job);
-    } catch (error) {
-      res.status(500).json({ message: (error as Error).message });
-    }
-  });
+  // Removed duplicate route handler - using the Adzuna API-based one below
   
   // Apply to job
   app.post("/api/jobs/:id/apply", async (req, res) => {
     try {
       const jobId = parseInt(req.params.id);
-      const job = await storage.getJob(jobId);
+      // Use the job API service instead of storage
+      const job = await jobsApiService.getJobById(jobId);
       
       if (!job) {
         return res.status(404).json({ message: "Job not found" });

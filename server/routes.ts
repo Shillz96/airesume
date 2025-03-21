@@ -1332,6 +1332,192 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // The API for tailoring a resume to a specific job is defined above
 
+  // Subscription management endpoints
+  app.get("/api/subscription", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    
+    try {
+      const subscription = await storage.getUserSubscription(req.user!.id);
+      res.json(subscription || { active: false });
+    } catch (error) {
+      console.error("Error getting user subscription:", error);
+      res.status(500).json({ error: "Failed to get subscription information" });
+    }
+  });
+  
+  app.post("/api/subscription", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    
+    try {
+      const userId = req.user!.id;
+      
+      // Check if user already has an active subscription
+      const existingSubscription = await storage.getUserSubscription(userId);
+      if (existingSubscription) {
+        return res.status(400).json({ error: "User already has an active subscription" });
+      }
+      
+      // Validate subscription data
+      const subscriptionData = {
+        userId,
+        planType: req.body.planType,
+        status: "active",
+        startDate: new Date(),
+        endDate: req.body.endDate || null,
+        paymentMethod: req.body.paymentMethod || null,
+        autoRenew: req.body.autoRenew !== false
+      };
+      
+      // Create the subscription
+      const subscription = await storage.createSubscription(subscriptionData);
+      
+      // Create a payment record if payment method is provided
+      if (req.body.paymentMethod && req.body.amount) {
+        await storage.createPayment({
+          userId,
+          amount: req.body.amount,
+          currency: req.body.currency || "USD",
+          paymentMethod: req.body.paymentMethod,
+          status: "completed",
+          transactionId: req.body.transactionId || null,
+          itemType: "subscription",
+          itemId: subscription.id
+        });
+      }
+      
+      res.status(201).json(subscription);
+    } catch (error) {
+      console.error("Error creating subscription:", error);
+      res.status(500).json({ error: "Failed to create subscription" });
+    }
+  });
+  
+  app.put("/api/subscription/:id", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    
+    try {
+      const subscriptionId = parseInt(req.params.id);
+      const userId = req.user!.id;
+      
+      // Update the subscription
+      const updatedSubscription = await storage.updateSubscription(subscriptionId, userId, {
+        planType: req.body.planType,
+        status: req.body.status,
+        endDate: req.body.endDate,
+        paymentMethod: req.body.paymentMethod,
+        autoRenew: req.body.autoRenew
+      });
+      
+      if (!updatedSubscription) {
+        return res.status(404).json({ error: "Subscription not found or not owned by user" });
+      }
+      
+      res.json(updatedSubscription);
+    } catch (error) {
+      console.error("Error updating subscription:", error);
+      res.status(500).json({ error: "Failed to update subscription" });
+    }
+  });
+  
+  app.post("/api/subscription/:id/cancel", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    
+    try {
+      const subscriptionId = parseInt(req.params.id);
+      const userId = req.user!.id;
+      
+      // Cancel the subscription
+      const cancelled = await storage.cancelSubscription(subscriptionId, userId);
+      
+      if (!cancelled) {
+        return res.status(404).json({ error: "Subscription not found or not owned by user" });
+      }
+      
+      res.json({ success: true, message: "Subscription cancelled successfully" });
+    } catch (error) {
+      console.error("Error cancelling subscription:", error);
+      res.status(500).json({ error: "Failed to cancel subscription" });
+    }
+  });
+  
+  // Add-on management endpoints
+  app.get("/api/addons", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    
+    try {
+      const addons = await storage.getUserAddons(req.user!.id);
+      res.json(addons);
+    } catch (error) {
+      console.error("Error getting user add-ons:", error);
+      res.status(500).json({ error: "Failed to get add-ons information" });
+    }
+  });
+  
+  app.post("/api/addons", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    
+    try {
+      const userId = req.user!.id;
+      
+      // Validate add-on data
+      const addonData = {
+        userId,
+        addonType: req.body.addonType,
+        quantity: req.body.quantity || 1,
+        expiresAt: req.body.expiresAt || null
+      };
+      
+      // Create the add-on
+      const addon = await storage.createAddon(addonData);
+      
+      // Create a payment record if payment information is provided
+      if (req.body.paymentMethod && req.body.amount) {
+        await storage.createPayment({
+          userId,
+          amount: req.body.amount,
+          currency: req.body.currency || "USD",
+          paymentMethod: req.body.paymentMethod,
+          status: "completed",
+          transactionId: req.body.transactionId || null,
+          itemType: "addon",
+          itemId: addon.id
+        });
+      }
+      
+      res.status(201).json(addon);
+    } catch (error) {
+      console.error("Error creating add-on:", error);
+      res.status(500).json({ error: "Failed to create add-on" });
+    }
+  });
+  
+  // Payment history endpoint
+  app.get("/api/payments", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    
+    try {
+      const payments = await storage.getPaymentsByUser(req.user!.id);
+      res.json(payments);
+    } catch (error) {
+      console.error("Error getting payment history:", error);
+      res.status(500).json({ error: "Failed to get payment history" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

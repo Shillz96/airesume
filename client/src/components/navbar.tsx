@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useGuestMode } from "@/hooks/use-guest-mode";
-import { Menu, X, Moon, Sun, User, LogOut, Rocket, FileText, Briefcase, Home, LogIn } from "lucide-react";
+import { Menu, X, Moon, Sun, User, LogOut, Rocket, FileText, Briefcase, Home, LogIn, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -115,6 +115,7 @@ export default function Navbar() {
     { path: "/resumes", label: "Resumes", icon: <FileText className="h-4 w-4 mr-1" /> },
     { path: "/resume-builder", label: "Resume Builder", icon: <FileText className="h-4 w-4 mr-1" /> },
     { path: "/job-finder", label: "Job Finder", icon: <Briefcase className="h-4 w-4 mr-1" /> },
+    { path: "/subscription", label: "Subscription", icon: <CreditCard className="h-4 w-4 mr-1" /> },
   ];
 
   // For Guest Mode or authenticated users
@@ -213,6 +214,13 @@ export default function Navbar() {
                     <DropdownMenuItem className="cursor-pointer text-gray-200 hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white">
                       <User className="mr-2 h-4 w-4 text-blue-400" /> 
                       Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => window.location.href = "/subscription"}
+                      className="cursor-pointer text-gray-200 hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white"
+                    >
+                      <CreditCard className="mr-2 h-4 w-4 text-purple-400" /> 
+                      Subscription
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-white/10" />
                     <DropdownMenuItem 

@@ -11,6 +11,7 @@ import ResumeBuilder from "@/pages/resume-builder";
 import ResumesPage from "@/pages/resumes-page";
 import JobFinder from "@/pages/job-finder";
 import JobDetails from "@/pages/job-details";
+import SubscriptionPage from "@/pages/subscription-page";
 import { ProtectedRoute } from "./lib/protected-route";
 
 import Navbar from "@/components/navbar";
@@ -23,6 +24,7 @@ function Router() {
       <ProtectedRoute path="/resumes" component={ResumesPage} />
       <ProtectedRoute path="/job-finder" component={JobFinder} />
       <ProtectedRoute path="/job/:id" component={JobDetails} />
+      <ProtectedRoute path="/subscription" component={SubscriptionPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>

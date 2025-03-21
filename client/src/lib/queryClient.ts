@@ -34,7 +34,15 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey[0] as string, {
+    // If queryKey has multiple elements, construct the URL with parameters
+    let url = queryKey[0] as string;
+    if (queryKey.length > 1 && queryKey[1]) {
+      // If the URL already ends with '/', don't add another one
+      const separator = url.endsWith('/') ? '' : '/';
+      url = `${url}${separator}${queryKey[1]}`;
+    }
+    
+    const res = await fetch(url, {
       credentials: "include",
     });
 

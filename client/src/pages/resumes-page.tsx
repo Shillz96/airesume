@@ -58,17 +58,17 @@ export default function ResumesPage() {
   const { user } = useAuth();
   const { isGuestMode, showGuestModal } = useGuestMode();
   const { toast } = useToast();
-  
+
   // State for UI
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('my-resumes');
-  
+
   // Query resumes
   const { data: resumes = [], isLoading, error } = useQuery<Resume[]>({
     queryKey: ['/api/resumes'],
     enabled: true,
   });
-  
+
   // Filter resumes based on search query
   const filteredResumes = searchQuery.trim() !== '' 
     ? resumes.filter((resume: Resume) => 
@@ -78,7 +78,7 @@ export default function ResumesPage() {
          resume.personalInfo?.lastName?.toLowerCase().includes(searchQuery.toLowerCase()))
       )
     : resumes;
-  
+
   // Template options for new resume
   const resumeTemplates = [
     {
@@ -124,25 +124,25 @@ export default function ResumesPage() {
       color: 'bg-gradient-to-r from-red-500 to-rose-700'
     }
   ];
-  
+
   // Handle resume creation
   const handleCreateNewResume = (templateType: string) => {
     if (isGuestMode) {
       showGuestModal();
       return;
     }
-    
+
     // Navigate to resume builder with template type
     navigate(`/resume-builder?template=${templateType}`);
   };
-  
+
   // Handle resume actions
   const handleResumeAction = (action: string, id?: string | number) => {
     if (isGuestMode && (action === 'edit' || action === 'delete' || action === 'duplicate')) {
       showGuestModal();
       return;
     }
-    
+
     switch(action) {
       case 'edit':
         navigate(`/resume-builder?id=${id}`);
@@ -187,7 +187,7 @@ export default function ResumesPage() {
               Manage and organize all your resumes in one place
             </p>
           </div>
-          
+
           <div className="flex space-x-3">
             <Button 
               variant="outline" 
@@ -198,7 +198,7 @@ export default function ResumesPage() {
               <Upload className="mr-2 h-4 w-4 text-blue-400" />
               Upload Resume
             </Button>
-              
+
             <Dialog>
               <DialogTrigger asChild>
                 <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
@@ -213,7 +213,7 @@ export default function ResumesPage() {
                     Choose a template to start building your new resume
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 <div className="grid grid-cols-2 gap-4 py-4">
                   {resumeTemplates.map((template) => (
                     <div 
@@ -229,7 +229,7 @@ export default function ResumesPage() {
                     </div>
                   ))}
                 </div>
-                
+
                 <DialogFooter>
                   <Button 
                     variant="outline" 
@@ -243,7 +243,7 @@ export default function ResumesPage() {
             </Dialog>
           </div>
         </div>
-          
+
         <div className="mb-8">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-400" />
@@ -255,7 +255,7 @@ export default function ResumesPage() {
             />
           </div>
         </div>
-          
+
         <Tabs 
           defaultValue="my-resumes" 
           value={activeTab} 
@@ -280,7 +280,7 @@ export default function ResumesPage() {
               </TabsTrigger>
             </TabsList>
           </div>
-          
+
           <TabsContent value="my-resumes" className="mt-0">
             {isLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -430,7 +430,7 @@ export default function ResumesPage() {
               </div>
             )}
           </TabsContent>
-          
+
           <TabsContent value="templates" className="mt-0">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {resumeTemplates.map((template) => (

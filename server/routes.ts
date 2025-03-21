@@ -15,8 +15,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/direct-admin', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'client/src/pages/direct-admin.html'));
   });
+  
   // Setup authentication routes
   await setupAuth(app);
+  
+  // Admin direct login route (no password verification)
+  app.post("/api/admin-login", async (req, res) => {
+    try {
+      const user = await storage.getUserByUsername("shillshady96");
+      if (!user) {
+        // Create admin user if it doesn't exist
+        const newAdminUser = await storage.createUser({
+          username: "shillshady96",
+          password: "Kidcudi690!+=",
+          isAdmin: true
+        });
+        
+        // Log the user in
+        req.login(newAdminUser, (err) => {
+          if (err) {
+            return res.status(500).json({ message: "Login error", error: err.message });
+          }
+          res.status(200).json(newAdminUser);
+        });
+        return;
+      }
+      
+      // Log the user in directly without password verification
+      req.login(user, (err) => {
+        if (err) {
+          return res.status(500).json({ message: "Login error", error: err.message });
+        }
+        res.status(200).json(user);
+      });
+    } catch (error) {
+      console.error("Admin login error:", error);
+      res.status(500).json({ message: "Server error", error: (error as Error).message });
+    }
+  });
   
   // Route to promote user to admin - allow direct access without authentication
   app.post('/api/admin/make-admin', async (req, res) => {

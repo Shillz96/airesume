@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
+import { queryClient } from "@/lib/queryClient";
 
 export default function QuickLogin() {
   const [isOpen, setIsOpen] = useState(true); // Open by default
@@ -29,31 +30,40 @@ export default function QuickLogin() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!username || !password) {
-      toast({
-        title: "Missing fields",
-        description: "Please enter both username and password",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     try {
-      await loginMutation.mutateAsync({
-        username,
-        password,
+      // Use the direct admin login endpoint
+      const response = await fetch('/api/admin-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
       });
+      
+      if (!response.ok) {
+        throw new Error('Admin login failed');
+      }
+      
+      const user = await response.json();
+      
+      // Update query client with the user data
+      queryClient.setQueryData(["/api/user"], user);
       
       setIsOpen(false);
       toast({
         title: "Login successful",
-        description: "You are now logged in as an admin user",
+        description: "You are now logged in as the admin user",
       });
+      
+      // Refresh the page to update UI components that depend on authentication
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } catch (error) {
       console.error("Login error:", error);
       toast({
         title: "Login failed",
-        description: "Invalid credentials or server error",
+        description: "Admin user not found or server error",
         variant: "destructive",
       });
     }

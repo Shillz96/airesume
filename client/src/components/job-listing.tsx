@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Job } from "./job-card";
 import { ExperienceItem, SkillItem } from "./resume-section";
 
@@ -47,6 +47,7 @@ interface JobListingProps {
 
 export default function JobListing({ job, userResume, onTailoredResumeApplied }: JobListingProps) {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [tailoredResume, setTailoredResume] = useState<TailoredResume | null>(null);
   const [isApplying, setIsApplying] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -222,25 +223,46 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
       return await res.json();
     },
     onSuccess: () => {
+      // First store in localStorage for resume-builder to pick up
+      if (tailoredResume) {
+        localStorage.setItem("tailoredResume", JSON.stringify(tailoredResume));
+      }
+      
       toast({
         title: "Tailored Resume Applied",
-        description: "The tailored resume has been applied to your resume builder.",
+        description: "Redirecting to Resume Builder with your tailored content...",
       });
+      
+      // Close the dialog
       setDialogOpen(false);
+      
+      // Redirect to resume builder with the tailored parameter
+      setTimeout(() => {
+        setLocation("/resume-builder?tailored=true");
+      }, 500);
     },
     onError: (error: Error) => {
       console.error("Error applying tailored resume:", error);
       
       // For guest mode, fallback to callback
       if (onTailoredResumeApplied && tailoredResume) {
+        // First store in localStorage for resume-builder to pick up
+        localStorage.setItem("tailoredResume", JSON.stringify(tailoredResume));
+        
+        // Then call the callback from props
         onTailoredResumeApplied(tailoredResume);
         
         toast({
           title: "Tailored Resume Applied",
-          description: "The tailored resume has been applied to your resume builder.",
+          description: "Redirecting to Resume Builder with your tailored content...",
         });
         
         setDialogOpen(false);
+        
+        // Redirect to the resume builder
+        setTimeout(() => {
+          setLocation("/resume-builder?tailored=true");
+        }, 500);
       } else {
         toast({
           title: "Error Applying Tailored Resume",
@@ -252,7 +274,29 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
   });
 
   const handleApplyTailored = () => {
-    applyTailoredResume();
+    // This is a direct click from the "Use in Resume Builder" button
+    if (tailoredResume) {
+      // For the direct button click, we can handle it differently for better UX
+      // Store the data in localStorage first
+      localStorage.setItem("tailoredResume", JSON.stringify(tailoredResume));
+      
+      // Show a toast notification
+      toast({
+        title: "Tailored Resume Ready",
+        description: "Redirecting to Resume Builder with your tailored content...",
+      });
+      
+      // Close the dialog 
+      setDialogOpen(false);
+      
+      // Immediate redirect for better UX
+      setTimeout(() => {
+        setLocation("/resume-builder?tailored=true");
+      }, 300);
+    } else {
+      // Fallback to the regular API call if somehow tailoredResume is not available
+      applyTailoredResume();
+    }
   };
 
   // Format display date

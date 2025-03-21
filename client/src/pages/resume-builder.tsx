@@ -924,7 +924,7 @@ export default function ResumeBuilder() {
   const [isTailoredResume, setIsTailoredResume] = useState<boolean>(
     searchParams.get('tailored') === 'true'
   );
-
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   // Initial resume state
   const [resume, setResume] = useState<Resume>({
@@ -1237,16 +1237,6 @@ export default function ResumeBuilder() {
   return (
     <div className="min-h-screen bg-black cosmic-background">
       <Navbar />
-      
-      {/* AI Assistant Floating Chatbot */}
-      <AIAssistant 
-        resumeId={resumeId?.toString()}
-        onApplySummary={handleApplySummary}
-        onApplyBulletPoint={handleApplyBulletPoint}
-        onApplySkill={handleApplySkill}
-        resume={resume}
-        activeTab={activeSection}
-      />
       
       <main className="container mx-auto pt-24 pb-20 px-4">
         {/* Page Header */}
@@ -1822,6 +1812,37 @@ export default function ResumeBuilder() {
           </div>
         </div>
       </main>
+
+      {/* AI Assistant Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[600px] bg-black/90 border border-blue-500/30 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-2xl cosmic-text-gradient">AI Resume Assistant</DialogTitle>
+            <DialogDescription className="text-gray-300">
+              Get personalized help with different parts of your resume.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <AIAssistant 
+              resumeId={resumeId?.toString()}
+              onApplySummary={handleApplySummary}
+              onApplyBulletPoint={handleApplyBulletPoint}
+              onApplySkill={handleApplySkill}
+              resume={resume}
+              activeTab={activeSection}
+            />
+          </div>
+          
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline" className="border-blue-500/30 text-blue-400 hover:bg-blue-900/30 hover:text-white">
+                Close
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

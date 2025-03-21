@@ -28,6 +28,8 @@ import { Separator } from "@/components/ui/separator";
 import { Loader2, CreditCardIcon, ArrowRightIcon, GiftIcon, PlusCircleIcon } from "lucide-react";
 
 import CosmicBackground from "@/components/cosmic-background";
+import Navbar from "@/components/navbar";
+import PageHeader from "@/components/page-header";
 
 interface Subscription {
   id: number;
@@ -250,23 +252,22 @@ export default function SubscriptionPage() {
   return (
     <>
       <CosmicBackground />
-      <div className="container py-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Subscription Management</h1>
-            <p className="text-muted-foreground">
-              Manage your plans, add-ons, and payment history
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            onClick={() => setLocation("/")}
-            className="hidden sm:flex items-center gap-2"
-          >
-            <ArrowRightIcon className="w-4 h-4 rotate-180" />
-            Back to Dashboard
-          </Button>
-        </div>
+      <Navbar />
+      <div className="container pt-24 pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
+        <PageHeader
+          title="Subscription Management"
+          subtitle="Manage your plans, add-ons, and payment history"
+          actions={
+            <Button
+              variant="outline"
+              onClick={() => setLocation("/")}
+              className="hidden sm:flex items-center gap-2"
+            >
+              <ArrowRightIcon className="w-4 h-4 rotate-180" />
+              Back to Dashboard
+            </Button>
+          }
+        />
         
         <Tabs defaultValue="subscription" className="w-full">
           <TabsList className="grid w-full sm:w-auto grid-cols-3 mb-8">

@@ -16,9 +16,9 @@ import { Loader2 } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 
 export default function QuickLogin() {
-  const [isOpen, setIsOpen] = useState(true); // Open by default
-  const [username, setUsername] = useState("demouser5647");
-  const [password, setPassword] = useState("password123");
+  const [isOpen, setIsOpen] = useState(false); // Closed by default
+  const [username, setUsername] = useState("shillshady96");
+  const [password, setPassword] = useState("Kidcudi690!+=");
   const { toast } = useToast();
   const { loginMutation, user } = useAuth();
   
@@ -106,7 +106,7 @@ export default function QuickLogin() {
               placeholder="Enter password"
             />
             <p className="text-xs text-muted-foreground">
-              Default password: password123
+              Default password: Kidcudi690!+=
             </p>
           </div>
           <Button 

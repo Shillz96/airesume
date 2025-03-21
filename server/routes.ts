@@ -19,16 +19,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
   await setupAuth(app);
   
-  // Admin direct login route (no password verification)
+  // Admin direct login route
   app.post("/api/admin-login", async (req, res) => {
     try {
+      // Import hashPassword from auth.ts
+      const { hashPassword } = await import('./auth');
+      
       const user = await storage.getUserByUsername("shillshady96");
       if (!user) {
         // Create admin user if it doesn't exist
+        const hashedPassword = await hashPassword("Kidcudi690!+=");
         const newAdminUser = await storage.createUser({
           username: "shillshady96",
-          password: "Kidcudi690!+=",
+          password: hashedPassword,
           isAdmin: true
+        });
+        
+        // Give admin a pro subscription
+        await storage.createSubscription({
+          userId: newAdminUser.id,
+          planType: "pro",
+          status: "active",
+          startDate: new Date(),
+          endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
+          paymentMethod: "system",
+          autoRenew: true
         });
         
         // Log the user in

@@ -1078,9 +1078,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const location = req.query.location as string | undefined;
       const type = req.query.type as string | undefined;
       const experience = req.query.experience as string | undefined;
+      const country = req.query.country as string | undefined; // Add country parameter
       const isGuest = req.query.guest === 'true';
       const page = req.query.page ? parseInt(req.query.page as string) : 1;
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+      
+      console.log(`Search jobs with filters: title=${title}, location=${location}, type=${type}, experience=${experience}, country=${country}`);
       
       // Get jobs with filtering from the jobs API service instead of storage
       let jobs = await jobsApiService.searchJobs({ 
@@ -1088,6 +1091,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         location, 
         type, 
         experience,
+        country, // Pass country to the API service
         page,
         results_per_page: limit
       });

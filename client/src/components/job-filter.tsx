@@ -13,6 +13,7 @@ export interface JobFilterValues {
   experience: string;
   remote: string;
   salary: string;
+  country: string;
 }
 
 interface JobFilterProps {
@@ -29,6 +30,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
       experience: "all",
       remote: "all",
       salary: "all",
+      country: "us", // Default to US jobs
     }
   );
   
@@ -162,7 +164,26 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
             </div>
           </div>
           
-          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-4">
+            <div>
+              <Label htmlFor="country" className="text-gray-300">Country</Label>
+              <Select
+                value={filterValues.country}
+                onValueChange={(value) => handleInputChange("country", value)}
+              >
+                <SelectTrigger 
+                  id="country" 
+                  className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                >
+                  <SelectValue placeholder="Select Country" />
+                </SelectTrigger>
+                <SelectContent className="bg-black/90 border border-white/10 text-gray-200">
+                  <SelectItem value="us">United States</SelectItem>
+                  <SelectItem value="gb">United Kingdom</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <div>
               <Label htmlFor="remote-option" className="text-gray-300">Remote Options</Label>
               <Select

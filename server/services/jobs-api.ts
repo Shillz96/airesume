@@ -6,6 +6,7 @@ export class JobsAPIService {
   private apiKey: string | undefined;
   private appId: string | undefined;
   private baseUrl: string;
+  private defaultCountry: string = 'us'; // Default to US jobs
 
   constructor() {
     // We'll pull the API keys from environment variables
@@ -23,7 +24,8 @@ export class JobsAPIService {
     type?: string, 
     experience?: string, 
     page?: number,
-    results_per_page?: number
+    results_per_page?: number,
+    country?: string
   }): Promise<Job[]> {
     try {
       // If no API key or appId, use sample data
@@ -32,21 +34,99 @@ export class JobsAPIService {
         return this.getSampleJobs(filters);
       }
 
+      // Determine which country to search in
+      // If location contains 'US' or 'United States', use 'us', otherwise use specified country or default
+      let country = this.defaultCountry;
+      
+      if (filters.country) {
+        country = filters.country.toLowerCase();
+      } else if (filters.location) {
+        const locationLower = filters.location.toLowerCase();
+        if (locationLower.includes('uk') || 
+            locationLower.includes('united kingdom') || 
+            locationLower.includes('london') || 
+            locationLower.includes('manchester') || 
+            locationLower.includes('birmingham')) {
+          country = 'gb';
+        }
+      }
+
       // Build query parameters carefully, similar to our test endpoint
-      // We'll use a simpler approach since the more complex URL can sometimes trigger errors
-      let apiUrl = `${this.baseUrl}/v1/api/jobs/gb/search/1?app_id=${this.appId}&app_key=${this.apiKey}`;
+      let apiUrl = `${this.baseUrl}/v1/api/jobs/${country}/search/1?app_id=${this.appId}&app_key=${this.apiKey}`;
       
-      // Add minimal necessary parameters to avoid potential issues
+      // Add pagination parameters
       apiUrl += `&results_per_page=${filters.results_per_page || 10}`;
+      if (filters.page && filters.page > 1) {
+        apiUrl += `&page=${filters.page}`;
+      }
       
-      // Only add search terms if they exist
-      // We'll only use what (job title) parameter which works reliably
+      // Add title search parameter (what)
       if (filters.title && filters.title.trim().length > 0) {
         apiUrl += `&what=${encodeURIComponent(filters.title.trim())}`;
       } else {
         // Add a default search term to ensure we get results
-        // "developer" is a common job title that should return results
         apiUrl += `&what=developer`;
+      }
+      
+      // Add location search parameter if provided
+      if (filters.location && filters.location.trim().length > 0 && 
+          !filters.location.toLowerCase().includes('remote') &&
+          !filters.location.toLowerCase().includes('anywhere')) {
+        // Remove country name from location if it's there to prevent API errors
+        let locationSearch = filters.location.trim()
+          .replace(/united states|usa|us/gi, '')
+          .replace(/united kingdom|uk|gb/gi, '')
+          .trim();
+          
+        if (locationSearch.length > 0) {
+          apiUrl += `&where=${encodeURIComponent(locationSearch)}`;
+        }
+      }
+      
+      // Handle job type filtering
+      if (filters.type && filters.type !== 'all') {
+        // Convert our job type values to Adzuna format
+        let contractType = '';
+        
+        if (filters.type.toLowerCase().includes('full')) {
+          contractType = 'full_time';
+        } else if (filters.type.toLowerCase().includes('part')) {
+          contractType = 'part_time';
+        } else if (filters.type.toLowerCase().includes('contract') || 
+                  filters.type.toLowerCase().includes('temp')) {
+          contractType = 'contract';
+        }
+        
+        if (contractType) {
+          apiUrl += `&contract_type=${contractType}`;
+        }
+      }
+      
+      // Add experience level filtering if specified
+      if (filters.experience && filters.experience !== 'all') {
+        // Map our experience levels to appropriate search terms
+        let experienceSearch = '';
+        
+        if (filters.experience.toLowerCase().includes('senior') || 
+            filters.experience.toLowerCase().includes('lead')) {
+          experienceSearch = 'senior OR lead OR principal OR architect';
+        } else if (filters.experience.toLowerCase().includes('mid')) {
+          // For mid-level, exclude junior and senior terms
+          apiUrl += '&exclude_keywords=junior,senior,lead,principal,architect';
+        } else if (filters.experience.toLowerCase().includes('junior') || 
+                  filters.experience.toLowerCase().includes('entry')) {
+          experienceSearch = 'junior OR entry OR graduate OR trainee';
+        }
+        
+        if (experienceSearch) {
+          // Add to existing search terms
+          if (apiUrl.includes('&what=')) {
+            // Append to existing what parameter
+            apiUrl = apiUrl.replace(/&what=([^&]+)/, `&what=$1 ${experienceSearch}`);
+          } else {
+            apiUrl += `&what=${encodeURIComponent(experienceSearch)}`;
+          }
+        }
       }
       
       console.log(`Fetching jobs from Adzuna: ${apiUrl}`);

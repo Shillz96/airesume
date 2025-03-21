@@ -1211,7 +1211,21 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
             </div>
           ) : (
             <div className="bg-white text-black p-8">
-              <TemplateComponent resume={resume} />
+              {resume.template === "creative" ? (
+                <CreativeTemplate resume={resume} />
+              ) : resume.template === "executive" ? (
+                <ExecutiveTemplate resume={resume} />
+              ) : resume.template === "modern" ? (
+                <ModernTemplate resume={resume} />
+              ) : resume.template === "minimal" ? (
+                <MinimalTemplate resume={resume} />
+              ) : resume.template === "industry" ? (
+                <IndustryTemplate resume={resume} />
+              ) : resume.template === "bold" ? (
+                <BoldTemplate resume={resume} />
+              ) : (
+                <ProfessionalTemplate resume={resume} />
+              )}
             </div>
           )}
         </div>
@@ -1334,7 +1348,7 @@ export default function ResumeBuilder() {
     }
   }, [fetchedResume]);
 
-  // Listen for resume edit events from the ResumePreview component
+  // Listen for resume edit events from the ResumePreviewComponent
   useEffect(() => {
     const handleResumeEdited = (event: Event) => {
       // Type assertion to access custom event detail
@@ -2395,7 +2409,7 @@ export default function ResumeBuilder() {
                     </Button>
                   </div>
                   <div className="bg-white/5 backdrop-blur-sm p-8 rounded-xl border border-white/10 shadow-xl">
-                    <ResumePreview
+                    <ResumePreviewComponent
                       resume={resume || {
                         title: "My Professional Resume",
                         personalInfo: {

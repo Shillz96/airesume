@@ -5,7 +5,7 @@ import JobCard, { Job } from "@/components/job-card";
 import JobFilter, { JobFilterValues } from "@/components/job-filter";
 import CosmicBackground from "@/components/cosmic-background";
 import AIAssistant from "@/components/ai-assistant";
-import { AlertTriangle, Cpu, Star, Share2, Heart, Briefcase, Clock, Building, Sparkles } from "lucide-react";
+import { AlertTriangle, Cpu, Star, Share2, Heart, Briefcase, Clock, Building, Sparkles, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -328,7 +328,7 @@ export default function JobFinder() {
       <div className="fixed bottom-6 right-6 z-50 group">
         <div className="absolute -inset-0.5 rounded-full bg-blue-500 opacity-75 blur-sm group-hover:opacity-100 transition duration-300 animate-pulse"></div>
         <Button
-          onClick={() => setIsDialogOpen(true)}
+          onClick={() => setIsDialogOpen(!isDialogOpen)}
           className="relative h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 p-0 shadow-lg group-hover:scale-105 transition duration-300"
           aria-label="Open AI Job Assistant"
         >
@@ -338,31 +338,30 @@ export default function JobFinder() {
         <span className="absolute top-0 right-16 bg-black/80 text-white text-sm py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">AI Job Assistant</span>
       </div>
 
-      {/* AI Assistant Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[600px] bg-black/90 border border-blue-500/30 text-white">
-          <DialogHeader>
-            <DialogTitle className="text-2xl cosmic-text-gradient">AI Job Assistant</DialogTitle>
-            <DialogDescription className="text-gray-300">
-              Get help finding jobs, customizing applications, and preparing for interviews.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="py-4">
+      {/* AI Assistant Chat Box */}
+      {isDialogOpen && (
+        <div className="fixed bottom-24 right-6 z-50 w-96 max-w-full shadow-xl rounded-lg overflow-hidden transition-all duration-300 ease-in-out">
+          <div className="bg-gradient-to-r from-blue-900 to-purple-900 p-3 flex justify-between items-center border-b border-blue-500/30">
+            <div className="flex items-center">
+              <Cpu className="h-5 w-5 text-blue-300 mr-2" />
+              <h3 className="text-white font-medium">AI Job Assistant</h3>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setIsDialogOpen(false)} 
+              className="h-8 w-8 rounded-full hover:bg-white/10"
+            >
+              <X className="h-4 w-4 text-white" />
+            </Button>
+          </div>
+          <div className="bg-black/90 border-x border-blue-500/30 border-b p-4 h-96 overflow-y-auto">
             <AIAssistant 
               activeTab="jobs"
             />
           </div>
-          
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline" className="border-blue-500/30 text-blue-400 hover:bg-blue-900/30 hover:text-white">
-                Close
-              </Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
     </div>
   );
 }

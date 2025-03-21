@@ -19,23 +19,71 @@ export default function ResumeUpload({ onUploadSuccess }: ResumeUploadProps) {
 
   const uploadMutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      return apiRequest("POST", "/api/resumes/upload", formData, {
+      const response = await fetch("/api/resumes/upload", {
+        method: "POST",
+        body: formData,
         // Don't set Content-Type header as FormData will set it with boundary
       });
-    },
-    onSuccess: (data: any) => {
-      toast({
-        title: "Resume uploaded successfully",
-        description: "Your resume has been parsed and data extracted.",
-      });
       
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to upload resume");
+      }
+      
+      return response;
+    },
+    onSuccess: (response: Response) => {
       // Clear the file input
       setFile(null);
       
-      // Pass the parsed resume data to the parent component
-      if (data && typeof data === 'object') {
-        onUploadSuccess(data as Partial<Resume>);
-      }
+      // Process the response
+      response.json().then((data) => {
+        console.log("Resume upload response:", data);
+        
+        // Make sure we have valid data with the expected structure
+        if (data && typeof data === 'object') {
+          toast({
+            title: "Resume uploaded successfully",
+            description: "Your resume has been parsed and data extracted.",
+          });
+          
+          // Ensure data has the correct structure
+          const processedData: Partial<Resume> = {
+            title: data.title || 'Uploaded Resume',
+            personalInfo: data.personalInfo || {
+              firstName: '',
+              lastName: '',
+              email: '',
+              phone: '',
+              headline: '',
+              summary: ''
+            },
+            experience: Array.isArray(data.experience) ? data.experience : [],
+            education: Array.isArray(data.education) ? data.education : [],
+            skills: Array.isArray(data.skills) ? data.skills : [],
+            projects: Array.isArray(data.projects) ? data.projects : [],
+            template: data.template || 'professional',
+            skillsDisplayMode: data.skillsDisplayMode || 'bubbles'
+          };
+          
+          // Pass the processed data to the parent component
+          onUploadSuccess(processedData);
+        } else {
+          console.error("Invalid resume data structure:", data);
+          toast({
+            title: "Resume upload issue",
+            description: "Your resume was uploaded but we couldn't process all the data. You can still edit it manually.",
+            variant: "destructive",
+          });
+        }
+      }).catch(error => {
+        console.error("Error parsing resume upload response:", error);
+        toast({
+          title: "Resume parsing error",
+          description: "There was an error processing the response data.",
+          variant: "destructive",
+        });
+      });
     },
     onError: (error: Error) => {
       toast({

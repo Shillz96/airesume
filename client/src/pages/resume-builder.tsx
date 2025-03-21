@@ -711,18 +711,58 @@ export default function ResumeBuilder() {
   
   // Handle resume upload and parsed data
   const handleResumeUpload = (uploadedResumeData: Partial<Resume>) => {
+    console.log("Resume builder received data:", uploadedResumeData);
+    
+    // Process skills array to ensure it has the correct structure
+    let processedSkills = uploadedResumeData.skills || [];
+    if (Array.isArray(processedSkills)) {
+      // Convert string arrays to SkillItem objects if needed
+      processedSkills = processedSkills.map((skill, index) => {
+        if (typeof skill === 'string') {
+          return {
+            id: crypto.randomUUID(),
+            name: skill,
+            proficiency: 85
+          };
+        } else if (typeof skill === 'object' && skill !== null) {
+          // Ensure skill object has the correct structure
+          return {
+            id: skill.id || crypto.randomUUID(),
+            name: skill.name || `Skill ${index + 1}`,
+            proficiency: skill.proficiency || 85
+          };
+        }
+        // Default fallback
+        return {
+          id: crypto.randomUUID(),
+          name: `Skill ${index + 1}`,
+          proficiency: 85
+        };
+      });
+    }
+    
     // Merge the uploaded resume data with the existing resume
     setResume(current => ({
       ...current,
       title: uploadedResumeData.title || current.title,
       personalInfo: {
         ...current.personalInfo,
-        ...uploadedResumeData.personalInfo || {},
+        ...(uploadedResumeData.personalInfo || {}),
       },
-      experience: uploadedResumeData.experience || current.experience,
-      education: uploadedResumeData.education || current.education,
-      skills: uploadedResumeData.skills || current.skills,
-      projects: uploadedResumeData.projects || current.projects,
+      experience: (uploadedResumeData.experience || []).map(exp => ({
+        ...exp,
+        id: exp.id || crypto.randomUUID()
+      })),
+      education: (uploadedResumeData.education || []).map(edu => ({
+        ...edu,
+        id: edu.id || crypto.randomUUID()
+      })),
+      skills: processedSkills,
+      projects: (uploadedResumeData.projects || []).map(proj => ({
+        ...proj,
+        id: proj.id || crypto.randomUUID(),
+        technologies: Array.isArray(proj.technologies) ? proj.technologies : []
+      })),
     }));
     
     // Show feedback toast

@@ -257,6 +257,43 @@ export default function AIAssistant({
     }
   });
 
+  // Generate targeted summary with target position and highlighted skills
+  const { mutate: generateTargetedSummary, isPending: isGeneratingTargetedSummary } = useMutation({
+    mutationFn: async () => {
+      if (!resumeId) return null;
+      let url = `/api/resumes/${resumeId}/suggestions?summaryOnly=true`;
+      if (targetPosition) {
+        url += `&jobTitle=${encodeURIComponent(targetPosition)}`;
+      }
+      if (highlightSkills) {
+        url += `&highlightSkills=${encodeURIComponent(highlightSkills)}`;
+      }
+      const res = await apiRequest("GET", url);
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      if (data?.success && data.suggestions && Array.isArray(data.suggestions)) {
+        const summary = data.suggestions[0]; // Take the first suggestion
+        setGeneratedSummary(summary);
+        setIsGenerating(false);
+      } else {
+        // Fallback summary if the API call doesn't return expected data
+        setGeneratedSummary("Dynamic professional with extensive experience in your field, skilled in adapting to various roles and responsibilities. Ready to leverage expertise to contribute to innovative projects and drive success.");
+        setIsGenerating(false);
+      }
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error generating summary",
+        description: error.message,
+        variant: "destructive",
+      });
+      // Fallback summary in case of error
+      setGeneratedSummary("Dynamic professional with extensive experience in your field, skilled in adapting to various roles and responsibilities. Ready to leverage expertise to contribute to innovative projects and drive success.");
+      setIsGenerating(false);
+    }
+  });
+
   // Generate experience bullet points
   const { mutate: generateBulletPoints, isPending: isGeneratingBullets } = useMutation({
     mutationFn: async () => {
@@ -378,6 +415,33 @@ export default function AIAssistant({
     },
   });
 
+  const handleGenerateSummary = () => {
+    if (!targetPosition && !highlightSkills) {
+      toast({
+        title: "Input needed",
+        description: "Please select a target position or enter skills to highlight.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+    generateTargetedSummary();
+  };
+
+  const handleSaveSummary = () => {
+    if (onApplySummary && generatedSummary) {
+      onApplySummary(generatedSummary);
+      toast({
+        title: "Summary Saved",
+        description: "Your professional summary has been updated.",
+      });
+      setGeneratedSummary("");
+      setTargetPosition("");
+      setHighlightSkills("");
+    }
+  };
+
   const handleApplySuggestions = () => {
     if (onApplySuggestions && suggestions.length > 0) {
       onApplySuggestions(suggestions);
@@ -468,68 +532,6 @@ export default function AIAssistant({
     }, 500);
   };
 
-  // Generate summary with target position and highlighted skills
-  const { mutate: generateTargetedSummary, isPending: isGeneratingTargetedSummary } = useMutation({
-    mutationFn: async () => {
-      if (!resumeId) return null;
-      let url = `/api/resumes/${resumeId}/suggestions?summaryOnly=true`;
-      if (targetPosition) {
-        url += `&jobTitle=${encodeURIComponent(targetPosition)}`;
-      }
-      if (highlightSkills) {
-        url += `&highlightSkills=${encodeURIComponent(highlightSkills)}`;
-      }
-      const res = await apiRequest("GET", url);
-      return await res.json();
-    },
-    onSuccess: (data) => {
-      if (data?.success && data.suggestions && Array.isArray(data.suggestions)) {
-        const summary = data.suggestions[0]; // Take the first suggestion
-        setGeneratedSummary(summary);
-        setIsGenerating(false);
-      } else {
-        setGeneratedSummary("Dynamic professional with extensive experience in your field, skilled in adapting to various roles and responsibilities. Ready to leverage expertise to contribute to innovative projects and drive success.");
-        setIsGenerating(false);
-      }
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error generating summary",
-        description: error.message,
-        variant: "destructive",
-      });
-      setGeneratedSummary("Dynamic professional with extensive experience in your field, skilled in adapting to various roles and responsibilities. Ready to leverage expertise to contribute to innovative projects and drive success.");
-      setIsGenerating(false);
-    }
-  });
-
-  const handleGenerateSummary = () => {
-    if (!targetPosition && !highlightSkills) {
-      toast({
-        title: "Input needed",
-        description: "Please select a target position or enter skills to highlight.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsGenerating(true);
-    generateTargetedSummary();
-  };
-
-  const handleSaveSummary = () => {
-    if (onApplySummary && generatedSummary) {
-      onApplySummary(generatedSummary);
-      toast({
-        title: "Summary Saved",
-        description: "Your professional summary has been updated.",
-      });
-      setGeneratedSummary("");
-      setTargetPosition("");
-      setHighlightSkills("");
-    }
-  };
-  
   const handleApplyMessage = (message: string, type?: string) => {
     if (!type) return;
     
@@ -550,7 +552,7 @@ export default function AIAssistant({
       if (message.includes(',')) {
         const skills = message.split(',').map(s => s.trim());
         skills.forEach(skill => {
-          onApplySkill(skill);
+          if (skill) onApplySkill(skill);
         });
         toast({
           title: "Skills applied",
@@ -591,597 +593,544 @@ export default function AIAssistant({
     }
   };
 
-  // The floating button
-  const FloatingAIButton = () => (
-    <div className="fixed bottom-6 right-6 z-50">
-      {!isDialogOpen ? (
-        <Button
-          ref={aiButtonRef}
-          onClick={() => setIsDialogOpen(true)}
-          className="w-14 h-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transition-all"
-        >
-          <Cpu className="h-6 w-6" />
-        </Button>
-      ) : minimized ? (
-        <div className="flex flex-col items-end space-y-2">
-          <Button
-            onClick={() => setMinimized(false)}
-            className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg flex items-center"
-          >
-            <Cpu className="h-4 w-4 mr-2" />
-            <span>AI Assistant</span>
-            <ChevronUp className="h-4 w-4 ml-2" />
-          </Button>
-        </div>
-      ) : (
-        <div className="w-80 bg-[rgba(10,12,24,0.95)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-lg shadow-2xl shadow-blue-700/10 overflow-hidden">
-          {/* Chat header */}
-          <div className="p-3 border-b border-[rgba(255,255,255,0.1)] flex justify-between items-center bg-gradient-to-r from-blue-900/50 to-purple-900/50">
-            <div className="flex items-center">
-              <Cpu className="h-5 w-5 text-blue-400 mr-2" />
-              <h3 className="text-white font-medium">Cosmic AI Assistant</h3>
-            </div>
-            <div className="flex items-center space-x-1">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-7 w-7 text-gray-400 hover:text-white hover:bg-white/10" 
-                onClick={() => setMinimized(true)}
-              >
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-7 w-7 text-gray-400 hover:text-white hover:bg-white/10" 
-                onClick={() => setIsDialogOpen(false)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-          
-          {/* Chat messages */}
-          <div className="h-80 overflow-y-auto p-3 space-y-3" style={{ scrollBehavior: 'smooth' }}>
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none"></div>
-            
-            {chatMessages.map((msg, index) => (
-              <div key={index} className={`flex ${msg.sender === 'User' ? 'justify-end' : 'justify-start'} relative z-10`}>
-                <div className={`max-w-[80%] p-2 rounded-lg ${
-                  msg.sender === 'User'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-[rgba(255,255,255,0.05)] text-gray-200'
-                } text-sm`}>
-                  <p>{msg.message}</p>
-                  {msg.sender === 'AI' && msg.type && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="mt-1 h-6 text-xs text-blue-300 hover:text-blue-100 hover:bg-blue-900/30 px-2"
-                      onClick={() => handleApplyMessage(msg.message, msg.type)}
-                    >
-                      <PlusCircle className="h-3 w-3 mr-1" />
-                      Apply to Resume
-                    </Button>
-                  )}
-                </div>
-              </div>
-            ))}
-            <div ref={chatEndRef} />
-          </div>
-          
-          {/* Quick actions */}
-          {chatMode === 'general' ? (
-            <div className="p-2 border-t border-[rgba(255,255,255,0.1)] flex flex-wrap gap-1 bg-[rgba(20,25,40,0.5)]">
-              <Button 
-                size="sm" 
-                variant="ghost" 
-                className="h-7 text-xs text-blue-300 hover:text-blue-100 hover:bg-[rgba(59,130,246,0.1)]"
-                onClick={() => handleQuickAction('summary')}
-              >
-                <Sparkles className="h-3 w-3 mr-1" />
-                Summary
-              </Button>
-              <Button 
-                size="sm" 
-                variant="ghost" 
-                className="h-7 text-xs text-blue-300 hover:text-blue-100 hover:bg-[rgba(59,130,246,0.1)]"
-                onClick={() => handleQuickAction('bullet')}
-              >
-                <Briefcase className="h-3 w-3 mr-1" />
-                Bullet Points
-              </Button>
-              <Button 
-                size="sm" 
-                variant="ghost" 
-                className="h-7 text-xs text-blue-300 hover:text-blue-100 hover:bg-[rgba(59,130,246,0.1)]"
-                onClick={() => handleQuickAction('skills')}
-              >
-                <Code className="h-3 w-3 mr-1" />
-                Skills
-              </Button>
-              <Button 
-                size="sm" 
-                variant="ghost" 
-                className="h-7 text-xs text-blue-300 hover:text-blue-100 hover:bg-[rgba(59,130,246,0.1)]"
-                onClick={() => handleQuickAction('tailor')}
-              >
-                <ArrowRight className="h-3 w-3 mr-1" />
-                Tailor Resume
-              </Button>
-            </div>
-          ) : (
-            <form onSubmit={(e) => { e.preventDefault(); handleTailorSubmit(e); }} className="p-2 border-t border-[rgba(255,255,255,0.1)] space-y-2 bg-[rgba(20,25,40,0.5)]">
-              <Input 
-                placeholder="Company name (optional)" 
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white text-xs h-7"
-              />
-              <Textarea 
-                placeholder="Job description (optional)" 
-                value={jobDescription}
-                onChange={(e) => setJobDescription(e.target.value)}
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white text-xs min-h-[60px] resize-none"
-              />
-              <div className="flex space-x-2">
-                <Button 
-                  type="button" 
-                  variant="ghost" 
-                  size="sm" 
-                  className="text-gray-400 text-xs hover:text-gray-200"
-                  onClick={() => setChatMode('general')}
-                >
-                  Back
-                </Button>
-                <Button 
-                  type="submit" 
-                  size="sm" 
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs ml-auto"
-                  disabled={(!company && !jobDescription) || isTailoring}
-                >
-                  {isTailoring ? (
-                    <>
-                      <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
-                      Tailoring...
-                    </>
-                  ) : (
-                    <>
-                      <ArrowRight className="h-3 w-3 mr-1" />
-                      Tailor Resume
-                    </>
-                  )}
-                </Button>
-              </div>
-            </form>
-          )}
-          
-          {/* Chat input */}
-          {chatMode === 'general' && (
-            <div className="p-2 border-t border-[rgba(255,255,255,0.1)] flex items-center gap-2 bg-[rgba(10,15,30,0.8)]">
-              <Input
-                value={userInput}
-                onChange={(e) => setUserInput(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleUserMessage()}
-                placeholder="Ask me anything..."
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white text-sm h-8"
-              />
-              <Button 
-                onClick={handleUserMessage} 
-                size="icon" 
-                className="h-8 w-8 bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-
-  // The full-screen dialog for larger screens
-  const AIAssistantDialog = () => (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <DialogContent className="sm:max-w-[500px] bg-[rgba(10,12,24,0.95)] backdrop-blur-md border-[rgba(255,255,255,0.1)] text-white">
-        <DialogHeader>
-          <DialogTitle className="flex items-center text-white">
-            <Cpu className="h-5 w-5 text-blue-400 mr-2" />
-            Cosmic AI Assistant
-          </DialogTitle>
-        </DialogHeader>
-        
-        <Tabs value={chatMode} onValueChange={(value) => setChatMode(value as 'general' | 'job-specific')} className="w-full">
-          <TabsList className="grid grid-cols-2 mb-4 bg-[rgba(255,255,255,0.05)]">
-            <TabsTrigger value="general" className="text-sm text-gray-200 data-[state=active]:bg-blue-900/40 data-[state=active]:text-white">
-              <Sparkles className="h-4 w-4 mr-1" /> General Assistance
-            </TabsTrigger>
-            <TabsTrigger value="job-specific" className="text-sm text-gray-200 data-[state=active]:bg-blue-900/40 data-[state=active]:text-white">
-              <Briefcase className="h-4 w-4 mr-1" /> Job Targeting
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="general" className="mt-0 space-y-4">
-            {/* Chat messages */}
-            <div className="h-[300px] overflow-y-auto p-3 space-y-3 bg-[rgba(0,0,0,0.2)] rounded-md">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none"></div>
-              
-              {chatMessages.map((msg, index) => (
-                <div key={index} className={`flex ${msg.sender === 'User' ? 'justify-end' : 'justify-start'} relative z-10`}>
-                  <div className={`max-w-[80%] p-3 rounded-lg ${
-                    msg.sender === 'User'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-[rgba(255,255,255,0.05)] text-gray-200'
-                  }`}>
-                    <p>{msg.message}</p>
-                    {msg.sender === 'AI' && msg.type && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="mt-2 text-xs text-blue-300 hover:text-blue-100 hover:bg-blue-900/30"
-                        onClick={() => handleApplyMessage(msg.message, msg.type)}
-                      >
-                        <PlusCircle className="h-3 w-3 mr-1" />
-                        Apply to Resume
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              ))}
-              <div ref={chatEndRef} />
-            </div>
-            
-            {/* Quick actions */}
-            <div className="flex flex-wrap gap-2">
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="text-xs text-blue-400 border-blue-800 hover:bg-blue-900/20 hover:text-blue-300"
-                onClick={() => handleQuickAction('summary')}
-              >
-                <Sparkles className="h-3 w-3 mr-1" />
-                Generate Summary
-              </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="text-xs text-blue-400 border-blue-800 hover:bg-blue-900/20 hover:text-blue-300"
-                onClick={() => handleQuickAction('bullet')}
-              >
-                <Briefcase className="h-3 w-3 mr-1" />
-                Achievement Bullets
-              </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="text-xs text-blue-400 border-blue-800 hover:bg-blue-900/20 hover:text-blue-300"
-                onClick={() => handleQuickAction('skills')}
-              >
-                <Cpu className="h-3 w-3 mr-1" />
-                Suggest Skills
-              </Button>
-            </div>
-            
-            {/* Chat input */}
-            <div className="flex items-center gap-2">
-              <Input
-                value={userInput}
-                onChange={(e) => setUserInput(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleUserMessage()}
-                placeholder="Ask me anything about your resume..."
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white"
-              />
-              <Button 
-                onClick={handleUserMessage} 
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                <Send className="h-4 w-4 mr-2" />
-                Send
-              </Button>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="job-specific" className="mt-0">
-            {tailoredContent ? (
-              <div className="space-y-4">
-                <div>
-                  <h4 className="text-sm font-medium mb-1 text-blue-300">Improved Professional Summary:</h4>
-                  <p className="text-sm p-3 bg-[rgba(255,255,255,0.05)] rounded-md text-gray-200">{tailoredContent.summary}</p>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="mt-2 text-xs text-blue-300 hover:bg-blue-900/20"
-                    onClick={() => {
-                      if (onApplySummary && tailoredContent.summary) {
-                        onApplySummary(tailoredContent.summary);
-                        toast({
-                          title: "Summary applied",
-                          description: "Your professional summary has been updated.",
-                        });
-                      }
-                    }}
-                  >
-                    <PlusCircle className="h-3 w-3 mr-1" />
-                    Apply Summary
-                  </Button>
-                </div>
-                
-                {tailoredContent.skills && tailoredContent.skills.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-medium mb-1 text-blue-300">Key Skills to Highlight:</h4>
-                    <div className="flex flex-wrap gap-1 mb-2">
-                      {tailoredContent.skills.map((skill, index) => (
-                        <span key={index} className="text-xs bg-blue-900/30 text-blue-200 px-2 py-1 rounded-full">
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-xs text-blue-300 hover:bg-blue-900/20"
-                      onClick={() => {
-                        if (onApplySkill && tailoredContent.skills) {
-                          tailoredContent.skills.forEach(skill => onApplySkill(skill));
-                          toast({
-                            title: "Skills applied",
-                            description: `${tailoredContent.skills.length} skills have been added to your resume.`,
-                          });
-                        }
-                      }}
-                    >
-                      <PlusCircle className="h-3 w-3 mr-1" />
-                      Apply All Skills
-                    </Button>
-                  </div>
-                )}
-                
-                <div className="flex justify-between mt-3">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="text-xs text-gray-300 border-gray-700"
-                    onClick={() => {
-                      setTailoredContent(null);
-                      setCompany("");
-                      setJobDescription("");
-                    }}
-                  >
-                    Try Another Job
-                  </Button>
-                  <Button 
-                    onClick={handleApplyTailoredContent}
-                    size="sm"
-                    className="text-xs bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                    disabled={!onApplyTailoredContent && !onApplySummary}
-                  >
-                    Apply All Changes
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={handleTailorSubmit} className="space-y-4">
-                <div>
-                  <label htmlFor="company" className="text-sm font-medium block mb-1 text-gray-200">
-                    Target Company (optional)
-                  </label>
-                  <Input 
-                    id="company"
-                    placeholder="e.g., Google, Amazon, Microsoft" 
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                    className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="jobDescription" className="text-sm font-medium block mb-1 text-gray-200">
-                    Job Description (optional)
-                  </label>
-                  <Textarea 
-                    id="jobDescription"
-                    placeholder="Paste the job description here..." 
-                    value={jobDescription}
-                    onChange={(e) => setJobDescription(e.target.value)}
-                    className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white min-h-[120px]"
-                  />
-                  <p className="text-xs text-gray-400 mt-1">
-                    Provide either a company name or job description to tailor your resume.
-                  </p>
-                </div>
-                
-                <Button 
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                  disabled={(!company && !jobDescription) || isTailoring || !resumeId}
-                >
-                  {isTailoring ? (
-                    <>
-                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                      Tailoring Resume...
-                    </>
-                  ) : (
-                    <>
-                      <ArrowRight className="h-4 w-4 mr-2" />
-                      Tailor Resume
-                    </>
-                  )}
-                </Button>
-              </form>
-            )}
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
-  );
-
-  // Submit user message
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    handleUserMessage();
-  };
-  
-  // Suggestion action handler
-  const handleSuggestionAction = (type: string) => {
-    const actionMap: Record<string, () => void> = {
-      'summary': () => {
-        setChatMessages(prev => [...prev, { sender: 'User', message: "Help me improve my professional summary" }]);
-        generateSummary();
-      },
-      'bullet': () => {
-        setChatMessages(prev => [...prev, { sender: 'User', message: "Suggest a bullet point for my experience" }]);
-        generateBulletPoints();
-      },
-      'skill': () => {
-        setChatMessages(prev => [...prev, { sender: 'User', message: "What skills should I add to my resume?" }]);
-        generateSkills();
-      }
-    };
-    
-    if (actionMap[type]) {
-      actionMap[type]();
+  // Helper function to determine which content to show based on active tab
+  const getActiveSection = () => {
+    switch (activeTab) {
+      case 'profile':
+        return 'profile';
+      case 'experience':
+        return 'experience';
+      case 'education':
+        return 'education';
+      case 'skills':
+        return 'skills';
+      case 'projects':
+        return 'projects';
+      default:
+        return 'profile';
     }
   };
 
-  // Loading state for the AI response
-  const isLoading = isGeneratingSuggestions || isGeneratingSummary || isGeneratingBullets || isGeneratingSkills || isTailoring;
+  const activeSection = getActiveSection();
 
   return (
     <>
-      <div className="fixed bottom-4 right-4 z-50">
-        <button 
-          ref={aiButtonRef}
-          onClick={() => setIsDialogOpen(true)} 
-          className={`group flex items-center justify-center ${
-            minimized ? 'w-12 h-12 rounded-full' : 'w-auto h-12 pl-3 pr-4 rounded-full'
-          } bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300`}
-        >
-          <div className="absolute inset-0 rounded-full bg-black bg-opacity-10 cosmic-pulse-slow"></div>
-          <Cpu className="h-5 w-5 text-white mr-2" />
-          {!minimized && (
-            <span className="text-sm font-medium">AI Assistant</span>
-          )}
-        </button>
-      </div>
-      
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent 
-          className="max-w-md p-0 overflow-hidden border-0 bg-gradient-to-b from-[#0f1729] to-[#111827] rounded-xl shadow-2xl"
-          style={{
-            backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.1), transparent 70%)'
-          }}
-        >
-          <div className="w-full flex items-center justify-between bg-gradient-to-r from-blue-900/80 to-purple-900/80 px-4 py-2 border-b border-white/10">
-            <DialogTitle className="text-white flex items-center gap-2 text-lg font-medium">
-              <Cpu className="h-5 w-5 text-blue-400" />
-              Cosmic AI Assistant
-            </DialogTitle>
-            
-            <div className="flex items-center gap-1">
-              <button 
-                className="p-1 text-gray-400 hover:text-white rounded-full"
-                onClick={() => {
-                  setIsDialogOpen(false);
-                  setMinimized(true);
-                }}
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
+      {/* Floating Button */}
+      <div className="fixed bottom-6 right-6 z-50">
+        {!isDialogOpen ? (
+          <Button
+            ref={aiButtonRef}
+            onClick={() => setIsDialogOpen(true)}
+            className="w-14 h-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transition-all"
+          >
+            <Cpu className="h-6 w-6" />
+          </Button>
+        ) : minimized ? (
+          <div className="flex flex-col items-end space-y-2">
+            <Button
+              onClick={() => setMinimized(false)}
+              className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg flex items-center"
+            >
+              <Cpu className="h-4 w-4 mr-2" />
+              <span>AI Assistant</span>
+              <ChevronUp className="h-4 w-4 ml-2" />
+            </Button>
           </div>
-          
-          <div className="px-1 pt-3 pb-4">
-            <div className="chat-message-container max-h-80 overflow-y-auto p-2 space-y-3">
-              {chatMessages.map((msg, idx) => (
-                <div 
-                  key={idx} 
-                  className={`flex ${msg.sender === 'User' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div className={`max-w-[80%] p-2 rounded-lg ${
-                    msg.sender === 'User'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-[rgba(255,255,255,0.05)] text-gray-200'
-                  } text-sm`}>
-                    <p>{msg.message}</p>
-                    {msg.sender === 'AI' && msg.type && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="mt-1 h-6 text-xs text-blue-300 hover:text-blue-100 hover:bg-blue-900/30 px-2"
-                        onClick={() => handleApplyMessage(msg.message, msg.type)}
-                      >
-                        <PlusCircle className="h-3 w-3 mr-1" />
-                        Apply to Resume
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              ))}
-              <div ref={chatEndRef} />
-            </div>
-            
-            <div className="px-3 mt-2">
-              <form onSubmit={handleSubmit} className="flex gap-2">
-                <Input
-                  value={userInput}
-                  onChange={(e) => setUserInput(e.target.value)}
-                  placeholder="Ask AI Assistant a question..."
-                  className="flex-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white text-sm"
+        ) : (
+          <div 
+            ref={dialogRef}
+            className="w-80 bg-[rgba(10,12,24,0.95)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-lg shadow-2xl shadow-blue-700/10 overflow-hidden"
+          >
+            {/* Starfield Background */}
+            <div className="starfield absolute inset-0 pointer-events-none">
+              {[...Array(20)].map((_, i) => (
+                <div
+                  key={i}
+                  className="star absolute bg-white rounded-full"
+                  style={{
+                    width: Math.random() * 2 + 1 + "px",
+                    height: Math.random() * 2 + 1 + "px",
+                    top: Math.random() * 100 + "%",
+                    left: Math.random() * 100 + "%",
+                    animation: `twinkle ${Math.random() * 3 + 2}s infinite`,
+                  }}
                 />
-                <Button 
-                  type="submit" 
-                  size="sm" 
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                  disabled={isLoading || !userInput.trim()}
-                >
-                  {isLoading ? (
-                    <RefreshCw className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Send className="h-4 w-4" />
-                  )}
-                </Button>
-              </form>
+              ))}
             </div>
             
-            <div className="text-xs text-center text-gray-400 mt-3 px-3">
-              <p>Specific to <span className="text-blue-400">{activeTab.toUpperCase()}</span> tab</p>
-            </div>
-            
-            <div className="px-3 mt-2">
-              <div className="text-xs text-gray-400 mb-2">Quick Actions:</div>
-              <div className="flex flex-wrap gap-1">
+            {/* Chat header */}
+            <div className="p-3 border-b border-[rgba(255,255,255,0.1)] flex justify-between items-center bg-gradient-to-r from-blue-900/50 to-purple-900/50">
+              <div className="flex items-center">
+                <Cpu className="h-5 w-5 text-blue-400 mr-2" />
+                <h3 className="text-white font-medium">
+                  {activeSection === "profile" ? "AI Summary Writer" : "Cosmic AI Assistant"}
+                </h3>
+              </div>
+              <div className="flex items-center space-x-1">
                 <Button 
-                  size="sm" 
                   variant="ghost" 
-                  className="h-7 text-xs text-blue-300 hover:text-blue-100 hover:bg-[rgba(59,130,246,0.1)]"
-                  onClick={() => handleSuggestionAction('summary')}
+                  size="icon" 
+                  className="h-7 w-7 text-gray-400 hover:text-white hover:bg-white/10" 
+                  onClick={() => setMinimized(true)}
                 >
-                  <Sparkles className="h-3 w-3 mr-1" />
-                  Summary
+                  <ChevronDown className="h-4 w-4" />
                 </Button>
                 <Button 
-                  size="sm" 
                   variant="ghost" 
-                  className="h-7 text-xs text-blue-300 hover:text-blue-100 hover:bg-[rgba(59,130,246,0.1)]"
-                  onClick={() => handleSuggestionAction('bullet')}
+                  size="icon" 
+                  className="h-7 w-7 text-gray-400 hover:text-white hover:bg-white/10" 
+                  onClick={() => setIsDialogOpen(false)}
                 >
-                  <Briefcase className="h-3 w-3 mr-1" />
-                  Bullet Point
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
-                  className="h-7 text-xs text-blue-300 hover:text-blue-100 hover:bg-[rgba(59,130,246,0.1)]"
-                  onClick={() => handleSuggestionAction('skill')}
-                >
-                  <Lightbulb className="h-3 w-3 mr-1" />
-                  Skill
+                  <X className="h-4 w-4" />
                 </Button>
               </div>
             </div>
+            
+            {/* Interactive UI based on the active tab */}
+            {activeSection === "profile" ? (
+              // Summary Writer UI (as shown in screenshot)
+              <div className="p-3 bg-[rgba(0,0,15,0.3)]">
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-sm text-gray-300">Target Job Position</Label>
+                    <Select value={targetPosition} onValueChange={setTargetPosition}>
+                      <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white">
+                        <SelectValue placeholder="Select position" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-[rgba(10,15,30,0.9)] border-[rgba(255,255,255,0.1)] text-white">
+                        {jobPositions.map((position) => (
+                          <SelectItem key={position} value={position} className="text-gray-200 hover:bg-blue-900/30">
+                            {position}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-sm text-gray-300">Skills to Highlight</Label>
+                    <Textarea 
+                      placeholder="Enter skills to highlight, separated by commas (e.g. JavaScript, React, Node.js)" 
+                      value={highlightSkills}
+                      onChange={(e) => setHighlightSkills(e.target.value)}
+                      className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white resize-none h-24"
+                    />
+                  </div>
+                  
+                  <Button 
+                    onClick={handleGenerateSummary}
+                    disabled={(!targetPosition && !highlightSkills) || isGenerating}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Generate Summary
+                      </>
+                    )}
+                  </Button>
+                </div>
+                
+                {generatedSummary && (
+                  <div className="mt-4 p-3 bg-[rgba(59,130,246,0.1)] border border-blue-800 rounded-md">
+                    <h4 className="text-sm font-medium text-blue-400 mb-2">Generated Summary</h4>
+                    <p className="text-sm text-gray-200 mb-3">{generatedSummary}</p>
+                    <Button
+                      onClick={handleSaveSummary}
+                      className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                    >
+                      <Check className="h-4 w-4 mr-2" />
+                      Save Summary to Resume
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              // Standard AI Assistant Chat UI for all other tabs
+              <>
+                {/* Chat messages */}
+                <div className="h-80 overflow-y-auto p-3 space-y-3 relative" style={{ scrollBehavior: 'smooth' }}>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                  
+                  {chatMessages.map((msg, index) => (
+                    <div key={index} className={`flex ${msg.sender === 'User' ? 'justify-end' : 'justify-start'} relative z-10`}>
+                      <div className={`max-w-[80%] p-2 rounded-lg ${
+                        msg.sender === 'User'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-[rgba(255,255,255,0.05)] text-gray-200'
+                      } text-sm`}>
+                        <p>{msg.message}</p>
+                        {msg.sender === 'AI' && msg.type && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="mt-1 h-6 text-xs text-blue-300 hover:text-blue-100 hover:bg-blue-900/30 px-2"
+                            onClick={() => handleApplyMessage(msg.message, msg.type)}
+                          >
+                            <PlusCircle className="h-3 w-3 mr-1" />
+                            Apply to Resume
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  <div ref={chatEndRef} />
+                </div>
+                
+                {/* Quick actions */}
+                {chatMode === 'general' ? (
+                  <div className="p-2 border-t border-[rgba(255,255,255,0.1)] flex flex-wrap gap-1 bg-[rgba(20,25,40,0.5)]">
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="h-7 text-xs text-blue-300 hover:text-blue-100 hover:bg-[rgba(59,130,246,0.1)]"
+                      onClick={() => handleQuickAction('summary')}
+                    >
+                      <Sparkles className="h-3 w-3 mr-1" />
+                      Summary
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="h-7 text-xs text-blue-300 hover:text-blue-100 hover:bg-[rgba(59,130,246,0.1)]"
+                      onClick={() => handleQuickAction('bullet')}
+                    >
+                      <Briefcase className="h-3 w-3 mr-1" />
+                      Bullet Points
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="h-7 text-xs text-blue-300 hover:text-blue-100 hover:bg-[rgba(59,130,246,0.1)]"
+                      onClick={() => handleQuickAction('skills')}
+                    >
+                      <Code className="h-3 w-3 mr-1" />
+                      Skills
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="h-7 text-xs text-blue-300 hover:text-blue-100 hover:bg-[rgba(59,130,246,0.1)]"
+                      onClick={() => handleQuickAction('tailor')}
+                    >
+                      <ArrowRight className="h-3 w-3 mr-1" />
+                      Tailor Resume
+                    </Button>
+                  </div>
+                ) : (
+                  <form onSubmit={(e) => { e.preventDefault(); handleTailorSubmit(e); }} className="p-2 border-t border-[rgba(255,255,255,0.1)] space-y-2 bg-[rgba(20,25,40,0.5)]">
+                    <Input 
+                      placeholder="Company name (optional)" 
+                      value={company}
+                      onChange={(e) => setCompany(e.target.value)}
+                      className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white text-xs h-7"
+                    />
+                    <Textarea 
+                      placeholder="Job description (optional)" 
+                      value={jobDescription}
+                      onChange={(e) => setJobDescription(e.target.value)}
+                      className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white text-xs min-h-[60px] resize-none"
+                    />
+                    <div className="flex space-x-2">
+                      <Button 
+                        type="button" 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-gray-400 text-xs hover:text-gray-200"
+                        onClick={() => setChatMode('general')}
+                      >
+                        Back
+                      </Button>
+                      <Button 
+                        type="submit" 
+                        size="sm" 
+                        className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs ml-auto"
+                        disabled={(!company && !jobDescription) || isTailoring}
+                      >
+                        {isTailoring ? (
+                          <>
+                            <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+                            Tailoring...
+                          </>
+                        ) : (
+                          <>
+                            <ArrowRight className="h-3 w-3 mr-1" />
+                            Tailor Resume
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </form>
+                )}
+                
+                {/* Chat input */}
+                {chatMode === 'general' && (
+                  <div className="p-2 border-t border-[rgba(255,255,255,0.1)] flex items-center gap-2 bg-[rgba(10,15,30,0.8)]">
+                    <Input
+                      value={userInput}
+                      onChange={(e) => setUserInput(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && handleUserMessage()}
+                      placeholder="Ask me anything..."
+                      className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white text-sm h-8"
+                    />
+                    <Button 
+                      onClick={handleUserMessage} 
+                      size="icon" 
+                      className="h-8 w-8 bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
           </div>
+        )}
+      </div>
+
+      {/* Full screen dialog for larger screens */}
+      <Dialog open={isDialogOpen} onOpenChange={(open) => {
+        setIsDialogOpen(open);
+        if (!open) setMinimized(false);
+      }}>
+        <DialogContent
+          ref={dialogRef}
+          className="sm:max-w-[500px] bg-[rgba(10,12,24,0.95)] backdrop-blur-md border-[rgba(255,255,255,0.1)] text-white"
+        >
+          <DialogHeader>
+            <DialogTitle className="flex items-center text-white">
+              <Cpu className="h-5 w-5 text-blue-400 mr-2" />
+              {activeSection === "profile" ? "AI Summary Writer" : "Cosmic AI Assistant"}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {activeSection === "profile" ? (
+            // Summary Writer UI for the Dialog
+            <div className="space-y-4">
+              <div>
+                <Label className="text-sm text-gray-300">Target Job Position</Label>
+                <Select value={targetPosition} onValueChange={setTargetPosition}>
+                  <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white">
+                    <SelectValue placeholder="Select position" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[rgba(10,15,30,0.9)] border-[rgba(255,255,255,0.1)] text-white">
+                    {jobPositions.map((position) => (
+                      <SelectItem key={position} value={position} className="text-gray-200 hover:bg-blue-900/30">
+                        {position}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label className="text-sm text-gray-300">Skills to Highlight</Label>
+                <Textarea 
+                  placeholder="Enter skills to highlight, separated by commas (e.g. JavaScript, React, Node.js)" 
+                  value={highlightSkills}
+                  onChange={(e) => setHighlightSkills(e.target.value)}
+                  className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white resize-none h-24"
+                />
+              </div>
+              
+              <Button 
+                onClick={handleGenerateSummary}
+                disabled={(!targetPosition && !highlightSkills) || isGenerating}
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              >
+                {isGenerating ? (
+                  <>
+                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Generate Summary
+                  </>
+                )}
+              </Button>
+              
+              {generatedSummary && (
+                <div className="p-4 bg-[rgba(59,130,246,0.1)] border border-blue-800 rounded-md">
+                  <h4 className="text-sm font-medium text-blue-400 mb-2">Generated Summary</h4>
+                  <p className="text-sm text-gray-200 mb-4">{generatedSummary}</p>
+                  <Button
+                    onClick={handleSaveSummary}
+                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                  >
+                    <Check className="h-4 w-4 mr-2" />
+                    Save Summary to Resume
+                  </Button>
+                </div>
+              )}
+            </div>
+          ) : (
+            // Standard Chat UI for the Dialog
+            <Tabs value={chatMode} onValueChange={(value) => setChatMode(value as 'general' | 'job-specific')} className="w-full">
+              <TabsList className="grid grid-cols-2 mb-4 bg-[rgba(255,255,255,0.05)]">
+                <TabsTrigger value="general" className="text-sm text-gray-200 data-[state=active]:bg-blue-900/40 data-[state=active]:text-white">
+                  <Sparkles className="h-4 w-4 mr-1" /> General Assistance
+                </TabsTrigger>
+                <TabsTrigger value="job-specific" className="text-sm text-gray-200 data-[state=active]:bg-blue-900/40 data-[state=active]:text-white">
+                  <Briefcase className="h-4 w-4 mr-1" /> Job Targeting
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="general" className="mt-0 space-y-4">
+                {/* Chat messages */}
+                <div className="h-[300px] overflow-y-auto p-3 space-y-3 bg-[rgba(0,0,0,0.2)] rounded-md relative">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                  
+                  {chatMessages.map((msg, index) => (
+                    <div key={index} className={`flex ${msg.sender === 'User' ? 'justify-end' : 'justify-start'} relative z-10`}>
+                      <div className={`max-w-[80%] p-3 rounded-lg ${
+                        msg.sender === 'User'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-[rgba(255,255,255,0.05)] text-gray-200'
+                      }`}>
+                        <p>{msg.message}</p>
+                        {msg.sender === 'AI' && msg.type && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="mt-2 text-xs text-blue-300 hover:text-blue-100 hover:bg-blue-900/30"
+                            onClick={() => handleApplyMessage(msg.message, msg.type)}
+                          >
+                            <PlusCircle className="h-3 w-3 mr-1" />
+                            Apply to Resume
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  <div ref={chatEndRef} />
+                </div>
+                
+                {/* Quick actions */}
+                <div className="flex flex-wrap gap-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="text-xs text-blue-400 border-blue-800 hover:bg-blue-900/20 hover:text-blue-300"
+                    onClick={() => handleQuickAction('summary')}
+                  >
+                    <Sparkles className="h-3 w-3 mr-1" />
+                    Generate Summary
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="text-xs text-blue-400 border-blue-800 hover:bg-blue-900/20 hover:text-blue-300"
+                    onClick={() => handleQuickAction('bullet')}
+                  >
+                    <Briefcase className="h-3 w-3 mr-1" />
+                    Bullet Points
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="text-xs text-blue-400 border-blue-800 hover:bg-blue-900/20 hover:text-blue-300"
+                    onClick={() => handleQuickAction('skills')}
+                  >
+                    <Code className="h-3 w-3 mr-1" />
+                    Skill
+                  </Button>
+                </div>
+                
+                {/* Chat input */}
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={userInput}
+                    onChange={(e) => setUserInput(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && handleUserMessage()}
+                    placeholder="Ask me anything..."
+                    className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white"
+                  />
+                  <Button 
+                    onClick={handleUserMessage} 
+                    size="icon" 
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="job-specific" className="mt-0">
+                <form onSubmit={(e) => { e.preventDefault(); handleTailorSubmit(e); }} className="space-y-4">
+                  <div className="space-y-3">
+                    <div>
+                      <Label htmlFor="company-dialog" className="text-sm text-gray-300">Company (optional)</Label>
+                      <Input 
+                        id="company-dialog"
+                        placeholder="Enter company name" 
+                        value={company}
+                        onChange={(e) => setCompany(e.target.value)}
+                        className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white mt-1"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="job-description-dialog" className="text-sm text-gray-300">Job Description (optional)</Label>
+                      <Textarea 
+                        id="job-description-dialog"
+                        placeholder="Paste job description here" 
+                        value={jobDescription}
+                        onChange={(e) => setJobDescription(e.target.value)}
+                        className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white h-32 resize-none mt-1"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="pt-2">
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                      disabled={(!company && !jobDescription) || isTailoring}
+                    >
+                      {isTailoring ? (
+                        <>
+                          <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                          Tailoring Resume...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="h-4 w-4 mr-2" />
+                          Tailor Resume for This Job
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  
+                  {tailoredContent && (
+                    <div className="mt-4 space-y-3">
+                      <div className="bg-[rgba(59,130,246,0.1)] border border-blue-800 rounded-md p-3">
+                        <h4 className="text-sm font-medium text-blue-400 mb-2">Tailored Summary</h4>
+                        <p className="text-sm text-gray-200">{tailoredContent.summary}</p>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="mt-2 text-xs text-blue-300 hover:text-blue-100 hover:bg-blue-900/30"
+                          onClick={handleApplyTailoredContent}
+                        >
+                          <PlusCircle className="h-3 w-3 mr-1" />
+                          Apply to Resume
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </form>
+              </TabsContent>
+            </Tabs>
+          )}
         </DialogContent>
       </Dialog>
     </>

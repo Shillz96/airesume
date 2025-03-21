@@ -11,7 +11,7 @@ export class JobsAPIService {
     // We'll pull the API keys from environment variables
     this.apiKey = process.env.ADZUNA_API_KEY;
     this.appId = process.env.ADZUNA_APP_ID;
-    this.baseUrl = 'https://api.adzuna.com/v1/api/jobs';
+    this.baseUrl = 'https://api.adzuna.com';
   }
 
   /**
@@ -69,12 +69,14 @@ export class JobsAPIService {
       
       // Make the API request to Adzuna
       // The correct format for Adzuna API is: https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=X&app_key=Y&params
-      const apiUrl = `${this.baseUrl}/us/search/1?${params.toString()}`;
+      const apiUrl = `${this.baseUrl}/v1/api/jobs/gb/search/1?${params.toString()}`;
       console.log(`Fetching jobs from Adzuna: ${apiUrl}`);
       const response = await fetch(apiUrl);
       
       if (!response.ok) {
-        throw new Error(`Adzuna API request failed with status ${response.status}: ${await response.text()}`);
+        const responseText = await response.text();
+        console.error(`Adzuna API error (${response.status}):`, responseText);
+        throw new Error(`Adzuna API request failed with status ${response.status}: ${responseText}`);
       }
       
       const data = await response.json();

@@ -2260,7 +2260,7 @@ export default function ResumeBuilder() {
                     </div>
 
                     <ResumeExperienceSection
-                      experiences={resume.experience}
+                      experiences={resume?.experience || []}
                       onUpdate={(experiences) => {
                         setResume({
                           ...resume,
@@ -2362,7 +2362,7 @@ export default function ResumeBuilder() {
                   </div>
 
                   <ResumeEducationSection
-                    education={resume.education}
+                    education={resume?.education || []}
                     onUpdate={(education) => {
                       setResume({
                         ...resume,
@@ -2405,7 +2405,7 @@ export default function ResumeBuilder() {
                     </div>
 
                     <ResumeSkillsSection
-                      skills={resume.skills}
+                      skills={resume?.skills || []}
                       onUpdate={(skills) => {
                         setResume({
                           ...resume,
@@ -2504,7 +2504,7 @@ export default function ResumeBuilder() {
 
                         setResume({
                           ...resume,
-                          projects: [...resume.projects, newProject],
+                          projects: [...(resume?.projects || []), newProject],
                         });
                       }}
                       className="flex items-center space-x-1 border-white/10 text-blue-400 hover:bg-white/10 hover:text-white"
@@ -2515,7 +2515,7 @@ export default function ResumeBuilder() {
                   </div>
 
                   <ResumeProjectsSection
-                    projects={resume.projects}
+                    projects={resume?.projects || []}
                     onUpdate={(projects) => {
                       setResume({
                         ...resume,
@@ -2546,7 +2546,7 @@ export default function ResumeBuilder() {
                   </div>
                   <div className="bg-white/5 backdrop-blur-sm p-8 rounded-xl border border-white/10 shadow-xl">
                     <ResumePreview
-                      resume={resume}
+                      resume={resume || defaultResume}
                       onTemplateChange={handleTemplateChange}
                     />
                   </div>
@@ -2596,8 +2596,8 @@ export default function ResumeBuilder() {
               onApplySummary={handleApplySummary}
               onApplyBulletPoint={handleApplyBulletPoint}
               onApplySkill={handleApplySkill}
-              resume={resume}
-              activeTab={activeSection}
+              resume={resume || defaultResume}
+              activeTab={activeSection || 'contact'}
             />
           </div>
         </div>

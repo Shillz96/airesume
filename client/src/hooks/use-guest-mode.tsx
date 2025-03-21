@@ -68,13 +68,13 @@ export function GuestModeProvider({ children }: { children: ReactNode }) {
         </p>
         <div className="flex gap-3 mt-4">
           <Button 
-            onClick={() => window.location.href = "/auth?tab=register"} 
+            onClick={() => window.location.href = "/?register=true"} 
             className="bg-[hsl(221.2,83.2%,53.3%)] hover:bg-[hsl(221.2,83.2%,63.3%)] text-white w-full"
           >
             Register
           </Button>
           <Button 
-            onClick={() => window.location.href = "/auth?tab=login"} 
+            onClick={() => window.location.href = "/?login=true"} 
             variant="outline" 
             className="border-[hsl(221.2,83.2%,53.3%)] text-[hsl(221.2,83.2%,53.3%)] w-full"
           >

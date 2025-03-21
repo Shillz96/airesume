@@ -111,7 +111,7 @@ export default function Navbar() {
 
   // Show dashboard items only for logged-in or guest users
   const navItems = [
-    { path: "/", label: "Dashboard", icon: <Home className="h-4 w-4 mr-1" /> },
+    { path: "/dashboard", label: "Dashboard", icon: <Home className="h-4 w-4 mr-1" /> },
     { path: "/resumes", label: "Resumes", icon: <FileText className="h-4 w-4 mr-1" /> },
     { path: "/resume-builder", label: "Resume Builder", icon: <Briefcase className="h-4 w-4 mr-1" /> },
     { path: "/job-finder", label: "Job Finder", icon: <Search className="h-4 w-4 mr-1" /> },

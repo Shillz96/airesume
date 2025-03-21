@@ -918,26 +918,80 @@ function ResumePreview({
     const contentHeight = previewElement.scrollHeight;
     const a4Height = 297 * 3.78; // A4 height in pixels (297mm at 96dpi)
 
-    // Step 1: Adjust scale to fit the container
+    // Calculate how much the content exceeds the available space
+    const contentRatio = contentHeight / a4Height;
+    
+    // Step 1: Adjust the appearance of the text in the resume
+    if (contentRatio > 1) {
+      // Content doesn't fit - reduce font size and spacing based on how much it overflows
+      const fontReduction = Math.max(0.65, 1 / (contentRatio * 1.1)); // More aggressive reduction
+      const spacingReduction = Math.max(0.5, 1 / (contentRatio * 1.2)); // Even more aggressive for spacing
+      
+      setFontScale(fontReduction);
+      setSpacingScale(spacingReduction);
+      
+      // Apply the changes directly to the content
+      if (previewElement) {
+        // Update the style to reflect the changes immediately
+        const templateContent = previewElement.querySelector('.bg-white');
+        if (templateContent) {
+          templateContent.style.fontSize = `${fontReduction * 100}%`;
+          templateContent.style.lineHeight = `${Math.max(1.1, spacingReduction * 1.5)}`;
+          
+          // Also reduce margins and padding within the resume
+          const sections = templateContent.querySelectorAll('div, section, p, h1, h2, h3');
+          sections.forEach((section: Element) => {
+            const el = section as HTMLElement;
+            if (el) {
+              // Get current margin bottom if any
+              const currentMargin = parseInt(window.getComputedStyle(el).marginBottom) || 0;
+              // Reduce margin if it exists
+              if (currentMargin > 0) {
+                el.style.marginBottom = `${currentMargin * spacingReduction}px`;
+              }
+              
+              // Reduce padding if it exists
+              const currentPadding = parseInt(window.getComputedStyle(el).padding) || 0;
+              if (currentPadding > 0) {
+                el.style.padding = `${currentPadding * spacingReduction}px`;
+              }
+            }
+          });
+        }
+      }
+    } else {
+      // Content fits fine, use normal settings
+      setFontScale(1);
+      setSpacingScale(1);
+      
+      // Reset styles if necessary
+      if (previewElement) {
+        const templateContent = previewElement.querySelector('.bg-white');
+        if (templateContent) {
+          templateContent.style.fontSize = '100%';
+          templateContent.style.lineHeight = '1.5';
+        }
+      }
+    }
+    
+    // Step 2: Adjust the view scale for the container
     if (contentHeight > containerHeight) {
-      const newScale = (containerHeight / contentHeight) * scale;
+      const newScale = (containerHeight / contentHeight) * 0.9; // Slight reduction to ensure visibility
       setScale(Math.max(0.5, newScale));
     } else {
       setScale(0.85); // Default scale to see more content
     }
 
-    // Step 2: Adjust content to fit on one A4 page
-    if (contentHeight > a4Height) {
-      // Reduce font size and spacing to fit content
-      const reductionFactor = a4Height / contentHeight;
-      setFontScale(Math.max(0.7, reductionFactor)); // Minimum font scale of 0.7 to maintain readability
-      setSpacingScale(Math.max(0.5, reductionFactor)); // Minimum spacing scale of 0.5
-    } else {
-      setFontScale(1);
-      setSpacingScale(1);
-    }
-
     setIsAutoAdjusting(false);
+    
+    // Show feedback to user
+    toast({
+      title: "Auto-adjust applied",
+      description: contentRatio > 1 
+        ? `Resume content has been adjusted to fit on one page (${Math.round(fontScale * 100)}% text size)`
+        : "Resume already fits on one page perfectly",
+      duration: 3000,
+    });
   };
 
   // Toggle full screen view

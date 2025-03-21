@@ -125,6 +125,10 @@ export class MemStorage implements IStorage {
       (user) => user.username === username,
     );
   }
+  
+  async getAllUsers(): Promise<User[]> {
+    return Array.from(this.users.values());
+  }
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
@@ -235,6 +239,10 @@ export class MemStorage implements IStorage {
     
     this.resumes.delete(id);
     return true;
+  }
+  
+  async getAllResumes(): Promise<Resume[]> {
+    return Array.from(this.resumes.values());
   }
 
   // Job operations
@@ -511,6 +519,10 @@ export class MemStorage implements IStorage {
     return true;
   }
   
+  async getAllSubscriptions(): Promise<Subscription[]> {
+    return Array.from(this.subscriptions.values());
+  }
+  
   // Add-on operations
   async getUserAddons(userId: number): Promise<Addon[]> {
     return Array.from(this.addons.values()).filter(
@@ -744,6 +756,10 @@ export class DatabaseStorage implements IStorage {
     const [user] = await db.select().from(users).where(eq(users.username, username));
     return user;
   }
+  
+  async getAllUsers(): Promise<User[]> {
+    return db.select().from(users);
+  }
 
   async createUser(insertUser: InsertUser): Promise<User> {
     // Ensure isAdmin is always a boolean
@@ -849,6 +865,10 @@ export class DatabaseStorage implements IStorage {
       .returning();
     
     return result.length > 0;
+  }
+  
+  async getAllResumes(): Promise<Resume[]> {
+    return db.select().from(resumes);
   }
   
   // Job operations
@@ -1164,6 +1184,10 @@ export class DatabaseStorage implements IStorage {
     }
     
     return false;
+  }
+  
+  async getAllSubscriptions(): Promise<Subscription[]> {
+    return db.select().from(subscriptions);
   }
   
   // Add-on operations

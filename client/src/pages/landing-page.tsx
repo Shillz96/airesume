@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import CosmicBackground from "@/components/cosmic-background";
+import Navbar from "@/components/navbar";
 import { 
-  Rocket, 
   FileText, 
   Briefcase, 
   Star, 
@@ -18,7 +18,8 @@ import {
   Lock,
   User,
   X,
-  Loader2
+  Loader2,
+  Rocket
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -245,66 +246,244 @@ export default function LandingPage() {
     };
   }, []);
 
+  const handleLoginClick = () => {
+    setIsLoginOpen(true);
+  };
+
+  const handleRegisterClick = () => {
+    setIsRegisterOpen(true);
+  };
+
+  useEffect(() => {
+    // Override the navbar login/register button actions
+    const loginBtn = document.querySelector("[data-navbar-login]");
+    const registerBtn = document.querySelector("[data-navbar-register]");
+    
+    if (loginBtn) {
+      loginBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        handleLoginClick();
+      });
+    }
+    
+    if (registerBtn) {
+      registerBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        handleRegisterClick();
+      });
+    }
+    
+    return () => {
+      if (loginBtn) {
+        loginBtn.removeEventListener("click", handleLoginClick);
+      }
+      
+      if (registerBtn) {
+        registerBtn.removeEventListener("click", handleRegisterClick);
+      }
+    };
+  }, []);
+
   return (
     <div className="cosmic-page min-h-screen">
       <CosmicBackground />
       
-      {/* Navigation */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-md border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex-shrink-0 flex items-center">
-              <span className="flex items-center cosmic-text-gradient font-bold text-xl">
-                <Rocket className="mr-2 h-5 w-5" />
-                AIreHire
-              </span>
-            </div>
-            <div className="hidden md:flex md:items-center md:justify-center flex-1 mx-8">
-              <div className="flex justify-center w-full space-x-10">
-                <Link href="/dashboard" className="text-gray-300 hover:text-white text-sm font-medium transition-colors duration-200">
-                  Dashboard
-                </Link>
-                <Link href="/resumes" className="text-gray-300 hover:text-white text-sm font-medium transition-colors duration-200">
-                  Resumes
-                </Link>
-                <Link href="/resume-builder" className="text-gray-300 hover:text-white text-sm font-medium transition-colors duration-200">
-                  Resume Builder
-                </Link>
-                <Link href="/job-finder" className="text-gray-300 hover:text-white text-sm font-medium transition-colors duration-200">
-                  Job Finder
-                </Link>
-                <Link href="/subscription" className="text-gray-300 hover:text-white text-sm font-medium transition-colors duration-200">
-                  Subscription
-                </Link>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsLoginOpen(true)}
-                >
-                  Log in
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => setIsRegisterOpen(true)}
-                >
-                  Sign up
-                </Button>
-              </div>
-            </div>
-            <div className="md:hidden">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsRegisterOpen(true)}
-              >
-                Get Started
+      {/* Use the common Navbar component */}
+      <Navbar />
+      
+      {/* Login Dialog */}
+      <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
+        <DialogContent className="bg-card/90 backdrop-blur-xl border-white/10 sm:max-w-md">
+          <DialogHeader className="mb-3">
+            <DialogTitle className="text-2xl cosmic-text-gradient">Log In</DialogTitle>
+            <DialogDescription>Enter your credentials to access your account</DialogDescription>
+          </DialogHeader>
+          <Form {...loginForm}>
+            <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+              <FormField
+                control={loginForm.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+                          <User className="h-5 w-5" />
+                        </span>
+                        <Input 
+                          placeholder="Enter your username" 
+                          className="pl-10" 
+                          {...field} 
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={loginForm.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+                          <Lock className="h-5 w-5" />
+                        </span>
+                        <Input 
+                          type="password" 
+                          placeholder="Enter your password" 
+                          className="pl-10" 
+                          {...field} 
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="w-full cosmic-btn-glow mt-2" disabled={loginMutation.isPending}>
+                {loginMutation.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                Log In
               </Button>
-            </div>
+            </form>
+          </Form>
+          <div className="mt-4 text-center text-sm">
+            <p className="text-muted-foreground">
+              Don't have an account?{" "}
+              <Button 
+                variant="link" 
+                className="p-0 text-primary"
+                onClick={() => {
+                  setIsLoginOpen(false);
+                  setIsRegisterOpen(true);
+                }}
+              >
+                Sign up
+              </Button>
+            </p>
           </div>
-        </div>
-      </header>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Register Dialog */}
+      <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
+        <DialogContent className="bg-card/90 backdrop-blur-xl border-white/10 sm:max-w-md">
+          <DialogHeader className="mb-3">
+            <DialogTitle className="text-2xl cosmic-text-gradient">Sign Up</DialogTitle>
+            <DialogDescription>
+              {selectedPlan 
+                ? `Create an account to get started with the ${selectedPlan} plan` 
+                : "Create an account to get started"}
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...registerForm}>
+            <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+              <FormField
+                control={registerForm.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+                          <User className="h-5 w-5" />
+                        </span>
+                        <Input 
+                          placeholder="Choose a username" 
+                          className="pl-10" 
+                          {...field} 
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={registerForm.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+                          <Lock className="h-5 w-5" />
+                        </span>
+                        <Input 
+                          type="password" 
+                          placeholder="Create a password" 
+                          className="pl-10" 
+                          {...field} 
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={registerForm.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm Password</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+                          <Lock className="h-5 w-5" />
+                        </span>
+                        <Input 
+                          type="password" 
+                          placeholder="Confirm your password" 
+                          className="pl-10" 
+                          {...field} 
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {selectedPlan && (
+                <Alert>
+                  <AlertDescription className="text-sm">
+                    You've selected the <span className="font-medium">{selectedPlan}</span> plan. You can change this later in your subscription settings.
+                  </AlertDescription>
+                </Alert>
+              )}
+              <Button type="submit" className="w-full cosmic-btn-glow mt-2" disabled={registerMutation.isPending}>
+                {registerMutation.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                Create Account
+              </Button>
+            </form>
+          </Form>
+          <div className="mt-4 text-center text-sm">
+            <p className="text-muted-foreground">
+              Already have an account?{" "}
+              <Button 
+                variant="link" 
+                className="p-0 text-primary"
+                onClick={() => {
+                  setIsRegisterOpen(false);
+                  setIsLoginOpen(true);
+                }}
+              >
+                Log in
+              </Button>
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
       
       {/* Hero Section */}
       <section 

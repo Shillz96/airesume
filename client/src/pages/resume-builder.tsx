@@ -918,9 +918,19 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
   const [editedResume, setEditedResume] = useState<Resume>(resume);
   const [fontScale, setFontScale] = useState(1); // For auto-adjusting font size
   const [spacingScale, setSpacingScale] = useState(1); // For auto-adjusting spacing
+  const [numPages, setNumPages] = useState(1); // Track number of pages
+  const [showMultiPage, setShowMultiPage] = useState(false); // Toggle between single page and multi-page view
   const previewRef = useRef<HTMLDivElement>(null);
   const resumeContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  
+  // Function to calculate the number of pages
+  const calculatePages = () => {
+    if (!previewRef.current) return 1;
+    const pageHeight = 297 * 3.78; // A4 height in pixels
+    const contentHeight = previewRef.current.scrollHeight;
+    return Math.ceil(contentHeight / pageHeight);
+  };
 
   // Generate actual PDF file for download
   const downloadResume = async () => {

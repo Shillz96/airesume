@@ -4,6 +4,7 @@ import DashboardStats from "@/components/dashboard-stats";
 import RecentActivity from "@/components/recent-activity";
 import JobInterviewAvatar from "@/components/job-interview-avatar";
 import JobSearchProgress from "@/components/job-search-progress";
+import SubscriptionStatus from "@/components/subscription-status";
 import CosmicBackground from "@/components/cosmic-background";
 import { useAuth } from "@/hooks/use-auth";
 import { Rocket } from "lucide-react";
@@ -119,7 +120,11 @@ export default function HomePage() {
               </div>
             </div>
             
-            <DashboardStats />
+            <SubscriptionStatus />
+            
+            <div className="mt-6">
+              <DashboardStats />
+            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[600px]">
               <div className="md:col-span-1 flex flex-col h-full">

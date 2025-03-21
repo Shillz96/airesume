@@ -1069,10 +1069,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const skillsSet = new Set([...existingSkillNames, ...jobSkills]);
         const tailoredSkills = [...skillsSet].slice(0, 10); // Limit to top 10 skills
         
-        // Create the tailored resume
+        // Create the tailored resume - ensure we're using the right personalInfo structure
         const tailoredResume = {
           personalInfo: {
-            ...resumeData.content?.personalInfo,
+            ...(resumeContent.personalInfo || {}),
             summary: tailoredSummary
           },
           experience: tailoredExperience,

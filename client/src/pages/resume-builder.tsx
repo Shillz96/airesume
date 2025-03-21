@@ -801,96 +801,110 @@ export default function ResumeBuilder() {
     const resumeCopy = { ...resume };
     let contentAdjusted = false;
     
-    // 1. Adjust experience descriptions in a single update
+    // Always apply adjustments regardless of content length to ensure single-page fit
+    contentAdjusted = true;
+    
+    // 1. Adjust experience descriptions - more aggressive truncation
     const adjustedExperience = resumeCopy.experience.map(exp => {
-      // If description is too long, truncate it
-      if (exp.description && exp.description.length > 500) {
-        contentAdjusted = true;
-        // Make each bullet point shorter if possible
-        let newDescription = exp.description;
+      // Always trim experience descriptions
+      let newDescription = exp.description || '';
+      
+      // If it has bullet points, keep only the most important ones and make them shorter
+      if (newDescription.includes('•')) {
+        const bullets = newDescription.split('•').filter(Boolean);
         
-        // If it has bullet points, shorten each one
-        if (exp.description.includes('•')) {
-          const bullets = exp.description.split('•').filter(Boolean);
-          newDescription = bullets
-            .map(bullet => {
-              // Trim and shorten long bullet points
-              const trimmed = bullet.trim();
-              return trimmed.length > 100 ? 
-                `• ${trimmed.substring(0, 95)}...` : 
-                `• ${trimmed}`;
-            })
-            .join('\n');
-        } else {
-          // Just trim the whole description
-          newDescription = exp.description.substring(0, 490) + '...';
-        }
+        // Keep only the first 2-3 bullet points per experience
+        const keptBullets = bullets.slice(0, Math.min(3, bullets.length));
         
-        return {
-          ...exp,
-          description: newDescription
-        };
+        newDescription = keptBullets
+          .map(bullet => {
+            // Make bullet points very concise
+            const trimmed = bullet.trim();
+            return trimmed.length > 80 ? 
+              `• ${trimmed.substring(0, 75)}...` : 
+              `• ${trimmed}`;
+          })
+          .join('\n');
+      } else {
+        // Non-bullet descriptions get severely truncated
+        const maxLength = 150; // Much shorter than before
+        newDescription = newDescription.length > maxLength ? 
+          newDescription.substring(0, maxLength) + '...' : 
+          newDescription;
       }
-      return exp;
+      
+      return {
+        ...exp,
+        description: newDescription
+      };
     });
     
-    // 2. Adjust education descriptions
+    // 2. Limit number of experiences shown if there are many
+    const maxExperiences = 3; // Show only the most recent experiences
+    const limitedExperience = adjustedExperience.length > maxExperiences ?
+      adjustedExperience.slice(0, maxExperiences) : adjustedExperience;
+    
+    // 3. Adjust education descriptions - keep them very brief
     const adjustedEducation = resumeCopy.education.map(edu => {
-      if (edu.description && edu.description.length > 300) {
-        contentAdjusted = true;
-        return {
-          ...edu,
-          description: edu.description.substring(0, 290) + '...'
-        };
-      }
-      return edu;
+      const maxLength = 80; // Very short descriptions
+      const description = edu.description || '';
+      return {
+        ...edu,
+        description: description.length > maxLength ? 
+          description.substring(0, maxLength) + '...' : 
+          description
+      };
     });
     
-    // 3. Prioritize skills by proficiency
-    let adjustedSkills = [...resumeCopy.skills];
-    if (adjustedSkills.length > 10) {
-      contentAdjusted = true;
-      // Sort skills by proficiency and take the top skills
-      adjustedSkills = adjustedSkills
-        .sort((a, b) => b.proficiency - a.proficiency)
-        .slice(0, 10);
-    }
+    // 4. Limit number of education entries
+    const maxEducation = 2; // Show only the most recent education
+    const limitedEducation = adjustedEducation.length > maxEducation ?
+      adjustedEducation.slice(0, maxEducation) : adjustedEducation;
     
-    // 4. Truncate lengthy summaries
+    // 5. Prioritize and limit skills 
+    let adjustedSkills = [...resumeCopy.skills];
+    
+    // Sort skills by proficiency and take only the top skills
+    const maxSkills = 8; // Fewer skills for better fit
+    adjustedSkills = adjustedSkills
+      .sort((a, b) => b.proficiency - a.proficiency)
+      .slice(0, maxSkills);
+    
+    // 6. Make summary very concise
     let adjustedPersonalInfo = { ...resumeCopy.personalInfo };
-    if (adjustedPersonalInfo.summary && adjustedPersonalInfo.summary.length > 600) {
-      contentAdjusted = true;
+    if (adjustedPersonalInfo.summary) {
+      const maxSummaryLength = 250; // Much shorter summary
       adjustedPersonalInfo = {
         ...adjustedPersonalInfo,
-        summary: adjustedPersonalInfo.summary.substring(0, 590) + '...'
+        summary: adjustedPersonalInfo.summary.length > maxSummaryLength ? 
+          adjustedPersonalInfo.summary.substring(0, maxSummaryLength) + '...' : 
+          adjustedPersonalInfo.summary
       };
     }
+    
+    // 7. Limit projects if present
+    const maxProjects = 2;
+    const limitedProjects = resumeCopy.projects && resumeCopy.projects.length > maxProjects ?
+      resumeCopy.projects.slice(0, maxProjects) : resumeCopy.projects;
     
     // Apply all changes at once to minimize re-renders
     const adjustedResume = {
       ...resumeCopy,
-      experience: adjustedExperience,
-      education: adjustedEducation,
+      experience: limitedExperience,
+      education: limitedEducation,
       skills: adjustedSkills,
+      projects: limitedProjects,
       personalInfo: adjustedPersonalInfo
     };
     
     // Update the state with all changes
-    if (contentAdjusted) {
-      setResume(adjustedResume);
-      // Show success feedback
-      toast({
-        title: "Smart Adjust Complete",
-        description: "Your resume has been optimized for better page fit.",
-      });
-    } else {
-      // No changes needed
-      toast({
-        title: "Resume Already Optimized",
-        description: "Your resume content is already well-balanced.",
-        variant: "default"
-      });
-    }
+    setResume(adjustedResume);
+    
+    // Show success feedback
+    toast({
+      title: "Smart Adjust Complete",
+      description: "Your resume has been optimized to fit on a single page.",
+    });
   };
   
   // Handle resume upload and parsed data

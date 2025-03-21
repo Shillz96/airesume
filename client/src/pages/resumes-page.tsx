@@ -24,6 +24,15 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Resume as ResumeType } from '@shared/schema';
+import { 
+  TemplatePreviewProfessional,
+  TemplatePreviewCreative,
+  TemplatePreviewExecutive,
+  TemplatePreviewModern,
+  TemplatePreviewMinimal,
+  TemplatePreviewIndustry,
+  TemplatePreviewBold
+} from '@/components/resume-template';
 
 // Extended Resume type to include properties we need
 interface Resume extends ResumeType {
@@ -88,6 +97,20 @@ export default function ResumesPage() {
       description: 'Simple, clean design with ample white space for clarity and readability.',
       preview: '/minimalist-resume-preview.png',
       color: 'bg-amber-500',
+    },
+    {
+      id: 'industry',
+      name: 'Industry',
+      description: 'Specialized template with emphasis on relevant skills and experience for particular industries.',
+      preview: '/industry-resume-preview.png',
+      color: 'bg-slate-700',
+    },
+    {
+      id: 'bold',
+      name: 'Bold',
+      description: 'Eye-catching design with strong colors and typography to make your resume stand out.',
+      preview: '/bold-resume-preview.png',
+      color: 'bg-pink-600',
     },
   ];
 
@@ -402,10 +425,14 @@ export default function ResumesPage() {
                     <CardDescription className="text-gray-300">{template.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="aspect-[11/14] bg-black/50 rounded border border-white/10 flex items-center justify-center cosmic-glow-subtle">
-                      <div className="text-center p-4">
-                        <div className="text-xs text-gray-400">Template Preview</div>
-                      </div>
+                    <div className="aspect-[11/14] bg-black/50 rounded border border-white/10 flex items-center justify-center cosmic-glow-subtle overflow-hidden p-2">
+                      {template.id === 'professional' ? <TemplatePreviewProfessional /> :
+                       template.id === 'creative' ? <TemplatePreviewCreative /> :
+                       template.id === 'executive' ? <TemplatePreviewExecutive /> :
+                       template.id === 'modern' ? <TemplatePreviewModern /> :
+                       template.id === 'minimalist' ? <TemplatePreviewMinimal /> :
+                       template.id === 'industry' ? <TemplatePreviewIndustry /> :
+                       template.id === 'bold' ? <TemplatePreviewBold /> : <TemplatePreviewProfessional />}
                     </div>
                   </CardContent>
                   <CardFooter>

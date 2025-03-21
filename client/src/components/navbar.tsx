@@ -217,12 +217,14 @@ export default function Navbar() {
                       <User className="mr-2 h-4 w-4 text-blue-400" /> 
                       Profile
                     </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => window.location.href = "/subscription"}
-                      className="cursor-pointer text-gray-200 hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white"
-                    >
-                      <CreditCard className="mr-2 h-4 w-4 text-purple-400" /> 
-                      Subscription
+                    <DropdownMenuItem asChild>
+                      <Link 
+                        href="/subscription"
+                        className="cursor-pointer text-gray-200 hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white"
+                      >
+                        <CreditCard className="mr-2 h-4 w-4 text-purple-400" /> 
+                        Subscription
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-white/10" />
                     <DropdownMenuItem 
@@ -238,19 +240,23 @@ export default function Navbar() {
                     <div className="px-4 py-2 text-sm text-gray-300 font-medium border-b border-white/10 mb-1">
                       Guest Mode
                     </div>
-                    <DropdownMenuItem 
-                      onClick={() => window.location.href = "/auth?tab=login"}
-                      className="cursor-pointer text-blue-400 hover:bg-blue-900/20 hover:text-blue-300 focus:bg-blue-900/20 focus:text-blue-300"
-                    >
-                      <LogIn className="mr-2 h-4 w-4" /> 
-                      Log In
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href="/?login=true"
+                        className="cursor-pointer text-blue-400 hover:bg-blue-900/20 hover:text-blue-300 focus:bg-blue-900/20 focus:text-blue-300"
+                      >
+                        <LogIn className="mr-2 h-4 w-4" /> 
+                        Log In
+                      </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => window.location.href = "/auth?tab=register"}
-                      className="cursor-pointer text-green-400 hover:bg-green-900/20 hover:text-green-300 focus:bg-green-900/20 focus:text-green-300"
-                    >
-                      <User className="mr-2 h-4 w-4" /> 
-                      Sign Up
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href="/?register=true"
+                        className="cursor-pointer text-green-400 hover:bg-green-900/20 hover:text-green-300 focus:bg-green-900/20 focus:text-green-300"
+                      >
+                        <User className="mr-2 h-4 w-4" /> 
+                        Sign Up
+                      </Link>
                     </DropdownMenuItem>
                   </>
                 )}
@@ -341,22 +347,22 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
-                  <Button
-                    variant="ghost"
-                    onClick={() => window.location.href = "/auth?tab=login"}
+                  <Link
+                    href="/?login=true"
                     className="flex w-full items-center text-left px-4 py-2 text-base font-medium text-blue-400 hover:text-blue-300 hover:bg-blue-900/20"
+                    onClick={() => setMobileMenuOpen(false)}
                   >
                     <LogIn className="mr-3 h-5 w-5" />
                     Log In
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => window.location.href = "/auth?tab=register"}
+                  </Link>
+                  <Link
+                    href="/?register=true"
                     className="flex w-full items-center text-left px-4 py-2 text-base font-medium text-green-400 hover:text-green-300 hover:bg-green-900/20"
+                    onClick={() => setMobileMenuOpen(false)}
                   >
                     <User className="mr-3 h-5 w-5" />
                     Sign Up
-                  </Button>
+                  </Link>
                 </>
               )}
             </div>

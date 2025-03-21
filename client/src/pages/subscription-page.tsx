@@ -392,7 +392,7 @@ export default function SubscriptionPage() {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="pb-2">
+                <CardContent className="pb-2 min-h-[216px]">
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-center">
                       <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -417,6 +417,12 @@ export default function SubscriptionPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                       </svg>
                       Application tracking
+                    </li>
+                    <li className="flex items-center opacity-0">
+                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                      Hidden spacer
                     </li>
                   </ul>
                 </CardContent>
@@ -447,7 +453,7 @@ export default function SubscriptionPage() {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="pb-2">
+                <CardContent className="pb-2 min-h-[216px]">
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-center">
                       <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -508,7 +514,7 @@ export default function SubscriptionPage() {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="pb-2">
+                <CardContent className="pb-2 min-h-[216px]">
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-center">
                       <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -608,8 +614,8 @@ export default function SubscriptionPage() {
                   <CardTitle>Cover Letter Pack</CardTitle>
                   <CardDescription>$4.99</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm mb-4">Get 5 professionally designed cover letter templates with AI customization.</p>
+                <CardContent className="min-h-[75px]">
+                  <p className="text-sm">Get 5 professionally designed cover letter templates with AI customization.</p>
                 </CardContent>
                 <CardFooter>
                   <Button 
@@ -630,8 +636,8 @@ export default function SubscriptionPage() {
                   <CardTitle>Interview Prep</CardTitle>
                   <CardDescription>$7.99</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm mb-4">Access to AI interview coach with industry-specific question practice.</p>
+                <CardContent className="min-h-[75px]">
+                  <p className="text-sm">Access to AI interview coach with industry-specific question practice.</p>
                 </CardContent>
                 <CardFooter>
                   <Button 

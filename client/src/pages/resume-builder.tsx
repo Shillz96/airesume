@@ -1344,9 +1344,36 @@ export default function ResumeBuilder() {
   // Use useEffect to handle the data instead of onSuccess
   useEffect(() => {
     if (fetchedResume) {
-      setResume(fetchedResume as Resume);
+      console.log("Resume data fetched:", fetchedResume);
+      
+      // Ensure we have complete data structure for all fields
+      const completeResume = {
+        id: fetchedResume.id,
+        title: fetchedResume.title || "Untitled Resume",
+        personalInfo: {
+          firstName: fetchedResume.personalInfo?.firstName || "",
+          lastName: fetchedResume.personalInfo?.lastName || "",
+          email: fetchedResume.personalInfo?.email || "",
+          phone: fetchedResume.personalInfo?.phone || "",
+          headline: fetchedResume.personalInfo?.headline || "",
+          summary: fetchedResume.personalInfo?.summary || ""
+        },
+        experience: Array.isArray(fetchedResume.experience) ? fetchedResume.experience : [],
+        education: Array.isArray(fetchedResume.education) ? fetchedResume.education : [],
+        skills: Array.isArray(fetchedResume.skills) ? fetchedResume.skills : [],
+        projects: Array.isArray(fetchedResume.projects) ? fetchedResume.projects : [],
+        template: fetchedResume.template || "professional"
+      };
+      
+      setResume(completeResume as Resume);
+      
+      // Show success toast when resume is fully loaded
+      toast({
+        title: "Resume Loaded",
+        description: `${completeResume.title} has been loaded successfully.`,
+      });
     }
-  }, [fetchedResume]);
+  }, [fetchedResume, toast]);
 
   // Listen for resume edit events from the ResumePreviewComponent
   useEffect(() => {
@@ -1720,19 +1747,18 @@ export default function ResumeBuilder() {
                       key={savedResume.id}
                       className="text-gray-300 hover:text-white cursor-pointer focus:text-white focus:bg-blue-700"
                       onClick={() => {
-                        // First set the resumeId to trigger the query
+                        // We'll do a proper fetch of the full resume data instead
+                        // of assuming the resume list contains all required fields
                         setResumeId(savedResume.id);
-                        
-                        // Also directly update the resume state with the full data
-                        // This ensures all fields are populated immediately
-                        setResume(savedResume);
-                        
-                        // Switch to profile tab to make it clear the resume was loaded
                         setActiveSection("profile");
                         
+                        // Instead of immediately setting the resume, we'll rely on 
+                        // the fetchedResume useEffect to fully populate all fields
+                        // when the API responds
+                        
                         toast({
-                          title: "Resume Loaded",
-                          description: `${savedResume.title} has been loaded.`,
+                          title: "Loading Resume",
+                          description: `Loading ${savedResume.title}...`,
                         });
                       }}
                     >

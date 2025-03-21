@@ -1229,7 +1229,7 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
                     <Input
                       value={editedResume.personalInfo.email}
                       onChange={(e) => handleFieldChange("personalInfo", "email", e.target.value)}
-                      className="border border-gray-200 p-1 text-sm w-full"
+                      className="border border-gray-200 p-1 text-sm w-full bg-white"
                       placeholder="Email"
                     />
                   </div>
@@ -1238,7 +1238,7 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
                     <Input
                       value={editedResume.personalInfo.phone}
                       onChange={(e) => handleFieldChange("personalInfo", "phone", e.target.value)}
-                      className="border border-gray-200 p-1 text-sm w-full"
+                      className="border border-gray-200 p-1 text-sm w-full bg-white"
                       placeholder="Phone"
                     />
                   </div>
@@ -1265,7 +1265,7 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
                         <Input
                           value={exp.title}
                           onChange={(e) => handleFieldChange("experience", "title", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full"
+                          className="border border-gray-200 p-1 text-sm w-full bg-white"
                         />
                       </div>
                       <div className="flex-1 min-w-[200px]">
@@ -1273,7 +1273,7 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
                         <Input
                           value={exp.company}
                           onChange={(e) => handleFieldChange("experience", "company", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full"
+                          className="border border-gray-200 p-1 text-sm w-full bg-white"
                         />
                       </div>
                     </div>
@@ -1283,7 +1283,7 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
                         <Input
                           value={exp.startDate}
                           onChange={(e) => handleFieldChange("experience", "startDate", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full"
+                          className="border border-gray-200 p-1 text-sm w-full bg-white"
                         />
                       </div>
                       <div className="flex-1 min-w-[200px]">
@@ -1291,7 +1291,7 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
                         <Input
                           value={exp.endDate}
                           onChange={(e) => handleFieldChange("experience", "endDate", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full"
+                          className="border border-gray-200 p-1 text-sm w-full bg-white"
                         />
                       </div>
                     </div>
@@ -1335,7 +1335,7 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
                         <Input
                           value={edu.degree}
                           onChange={(e) => handleFieldChange("education", "degree", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full"
+                          className="border border-gray-200 p-1 text-sm w-full bg-white"
                         />
                       </div>
                       <div className="flex-1 min-w-[200px]">
@@ -1343,7 +1343,7 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
                         <Input
                           value={edu.institution}
                           onChange={(e) => handleFieldChange("education", "institution", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full"
+                          className="border border-gray-200 p-1 text-sm w-full bg-white"
                         />
                       </div>
                     </div>

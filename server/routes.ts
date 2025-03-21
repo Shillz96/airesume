@@ -633,6 +633,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId = req.user!.id;
         const resumes = await storage.getResumes(userId);
         primaryResume = resumes.length > 0 ? resumes[0] : null;
+      } 
+      
+      // For guest mode or when no resume is found
+      if (!primaryResume || isGuest) {
+        // For guest users, add default match scores between 60-90%
+        jobs = jobs.map(job => ({
+          ...job,
+          match: Math.floor(Math.random() * 30) + 60, // Random score between 60-90
+          isNew: new Date(job.postedAt).getTime() > (Date.now() - 3 * 24 * 60 * 60 * 1000) // New if less than 3 days old
+        }));
       }
       
       // If user has a resume, match jobs with it

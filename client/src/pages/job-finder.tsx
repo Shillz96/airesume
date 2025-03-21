@@ -38,11 +38,25 @@ export default function JobFinder() {
   // Modified to support guest mode access to jobs
   const { data: jobs, isLoading, error } = useQuery({
     queryKey: ["/api/jobs", filterValues, statusFilter, isGuestMode],
-    queryFn: isGuestMode && !user 
-      ? () => getQueryFn({ on401: "returnNull" })({
-          queryKey: ["/api/jobs", { ...filterValues, guest: true }],
-        })
-      : undefined,
+    queryFn: async () => {
+      // Add guest parameter when in guest mode
+      const params = new URLSearchParams();
+      if (filterValues.title) params.append('title', filterValues.title);
+      if (filterValues.location) params.append('location', filterValues.location);
+      if (filterValues.type !== 'all') params.append('type', filterValues.type);
+      if (filterValues.experience !== 'all') params.append('experience', filterValues.experience);
+      
+      // Add guest=true for guest mode users
+      if (isGuestMode && !user) {
+        params.append('guest', 'true');
+      }
+      
+      // Use the getQueryFn with the appropriate error handling
+      const queryFn = getQueryFn({ on401: "returnNull" });
+      return queryFn({ 
+        queryKey: [`/api/jobs?${params.toString()}`] 
+      });
+    },
     refetchInterval: false,
   });
   

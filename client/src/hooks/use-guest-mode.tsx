@@ -25,9 +25,20 @@ export function GuestModeProvider({ children }: { children: ReactNode }) {
       return;
     }
     
+    // Get the guest parameter from the URL
     const urlParams = new URLSearchParams(window.location.search);
     const guestParam = urlParams.get('guest');
-    setIsGuestMode(guestParam === 'true');
+    
+    // Set guest mode based on URL parameter
+    if (guestParam === 'true') {
+      setIsGuestMode(true);
+    } else {
+      // If not explicitly set to true, check if we should keep existing state
+      // Only change to false if explicitly set to something other than 'true'
+      if (guestParam !== null) {
+        setIsGuestMode(false);
+      }
+    }
   }, [location, user]);
 
   const showGuestModal = () => {

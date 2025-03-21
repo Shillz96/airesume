@@ -1,0 +1,2120 @@
+Enhancements to the AI Assistant
+1. Redesign the AI Assistant to Match the Screenshot
+Why:
+The screenshot shows a clean, user-friendly interface with:
+A dropdown to select a target job position ("Junior Sales Analyst").
+
+A "Skills Highlight" input field to emphasize specific skills in the summary.
+
+A clear "Save Summary Info" button to apply changes.
+We’ll redesign the AIAssistant to include these elements, making it more intuitive for users to tailor their resume summary.
+Enhancement:
+Add a dropdown to select a target job position (mocked with common roles, can be populated dynamically via API).
+
+Include a "Skills Highlight" textarea where users can enter skills to emphasize in the summary.
+
+Replace the current chat interface with a more focused form-like interface for summary generation, while keeping the chat functionality accessible.
+2. Integrate with the Cosmic Navigator Theme
+Why:
+The AI Assistant should maintain the futuristic, cosmic aesthetic of the "Cosmic Navigator" theme (gradient background, starfield, neon accents, glassmorphism).
+Enhancement:
+Use glassmorphism for the assistant panel (bg-[rgba(255,255,255,0.1)] backdrop-blur-md border border-[rgba(255,255,255,0.2)]).
+
+Apply neon accents (hsl(221.2 83.2% 53.3%)) for buttons and highlights.
+
+Add a starfield animation in the background of the assistant panel.
+3. Add GSAP Animations for Interactivity
+Why:
+Animations make the AI Assistant feel more dynamic and engaging, aligning with the futuristic theme. A subtle entrance animation for the panel and a typing effect for generated summaries will enhance the user experience.
+Enhancement:
+Use GSAP to animate the entrance of the AI Assistant panel (fade-in and slide-up).
+
+Add a typing effect for the generated summary text.
+4. Make It More User-Friendly Across Tabs
+Why:
+The screenshot focuses on summary generation, but the AI Assistant should be user-friendly across all tabs (Profile, Experience, Education, Skills, Projects, Preview). We’ll ensure it provides tab-specific suggestions and actions (e.g., generating bullet points for Experience, suggesting skills for Skills).
+Enhancement:
+Use the activeTab prop to display tab-specific prompts and actions.
+
+Add a "Save Info" button that applies the generated content to the resume based on the active tab.
+5. Add Skills Highlighting and Job Position Targeting
+Why:
+The screenshot allows users to select a job position and highlight specific skills, which helps tailor the summary to a target role. This feature makes the AI Assistant more practical and user-friendly.
+Enhancement:
+Add a dropdown to select a target job position.
+
+Include a textarea for users to input skills to highlight.
+
+Pass these inputs to the AI summary generation logic to tailor the output.
+6. Validation and Feedback
+Why:
+The screenshot includes a "Please fill out this field" warning if inputs are missing. We’ll add validation to ensure users provide necessary inputs and display feedback messages.
+Enhancement:
+Add validation to ensure at least one of targetPosition or highlightSkills is provided.
+
+Display a warning toast if inputs are missing.
+Updated Code
+We’ll modify the AIAssistant component to match the screenshot’s design and functionality, integrating it seamlessly with the ResumeBuilder page. Since the AIAssistant is already included in your code, we’ll update it to include the new features while maintaining the Cosmic Navigator theme. We’ll also update the Profile tab to remove the old SummarySuggestions and Collapsible components, as the new AI Assistant will handle summary generation.
+Updated AIAssistant Component
+jsx
+import { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { Button } from "@/components/ui/button";
+import { Cpu, Sparkles, RefreshCw, Send, X, ChevronDown, ChevronUp, PlusCircle, Check } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+interface AIAssistantProps {
+  resumeId?: string;
+  onApplySuggestions?: (suggestions: string[]) => void;
+  onApplySummary?: (summary: string) => void;
+  onApplyBulletPoint?: (bulletPoint: string) => void;
+  onApplySkill?: (skill: string) => void;
+  onApplyTailoredContent?: (content: TailoredContent) => void;
+  resume?: any;
+  activeTab?: string;
+}
+
+interface TailoredContent {
+  summary?: string;
+  skills?: string[];
+  experienceImprovements?: Array<{
+    id: string;
+    improvedDescription: string;
+  }>;
+}
+
+interface ChatMessage {
+  sender: 'AI' | 'User';
+  message: string;
+  type?: 'summary' | 'bullet' | 'skill' | 'tailoring' | 'general' | 'option';
+  options?: string[];
+}
+
+export default function AIAssistant({
+  resumeId,
+  onApplySuggestions,
+  onApplySummary,
+  onApplyBulletPoint,
+  onApplySkill,
+  onApplyTailoredContent,
+  resume,
+  activeTab = 'profile'
+}: AIAssistantProps) {
+  const { toast } = useToast();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [minimized, setMinimized] = useState(false);
+  const [targetPosition, setTargetPosition] = useState("");
+  const [highlightSkills, setHighlightSkills] = useState("");
+  const [generatedSummary, setGeneratedSummary] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const aiButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Animate the AI Assistant button with GSAP
+  useEffect(() => {
+    if (aiButtonRef.current) {
+      gsap.to(aiButtonRef.current, {
+        scale: 1.05,
+        duration: 1.5,
+        repeat: -1,
+        yoyo: true,
+        ease: "power1.inOut",
+      });
+    }
+  }, []);
+
+  // Animate the dialog entrance
+  useEffect(() => {
+    if (isDialogOpen && dialogRef.current) {
+      gsap.fromTo(
+        dialogRef.current,
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
+      );
+    }
+  }, [isDialogOpen]);
+
+  // Mock job positions (replace with API call in production)
+  const jobPositions = [
+    "Junior Sales Analyst",
+    "Senior Software Engineer",
+    "Data Scientist",
+    "Product Manager",
+    "UX Designer",
+    "Marketing Specialist"
+  ];
+
+  // Generate summary with target position and highlighted skills
+  const { mutate: generateSummary, isPending: isGeneratingSummary } = useMutation({
+    mutationFn: async () => {
+      if (!resumeId) return null;
+      let url = `/api/resumes/${resumeId}/suggestions?summaryOnly=true`;
+      if (targetPosition) {
+        url += `&jobTitle=${encodeURIComponent(targetPosition)}`;
+      }
+      if (highlightSkills) {
+        url += `&highlightSkills=${encodeURIComponent(highlightSkills)}`;
+      }
+      const res = await apiRequest("GET", url);
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      if (data?.success && data.suggestions && Array.isArray(data.suggestions)) {
+        const summary = data.suggestions[0]; // Take the first suggestion
+        setGeneratedSummary(summary);
+      } else {
+        setGeneratedSummary("Dynamic professional with extensive experience in your field, skilled in adapting to various roles and responsibilities. Ready to leverage expertise to contribute to innovative projects and drive success.");
+      }
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error generating summary",
+        description: error.message,
+        variant: "destructive",
+      });
+      setGeneratedSummary("Dynamic professional with extensive experience in your field, skilled in adapting to various roles and responsibilities. Ready to leverage expertise to contribute to innovative projects and drive success.");
+    }
+  });
+
+  const handleGenerateSummary = () => {
+    if (!targetPosition && !highlightSkills) {
+      toast({
+        title: "Input needed",
+        description: "Please select a target position or enter skills to highlight.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+    generateSummary();
+    setTimeout(() => {
+      setIsGenerating(false);
+    }, 1000);
+  };
+
+  const handleSaveSummary = () => {
+    if (onApplySummary && generatedSummary) {
+      onApplySummary(generatedSummary);
+      toast({
+        title: "Summary Saved",
+        description: "Your professional summary has been updated.",
+      });
+      setGeneratedSummary("");
+      setTargetPosition("");
+      setHighlightSkills("");
+    }
+  };
+
+  // Tab-specific AI actions
+  const handleGenerateBulletPoint = () => {
+    if (activeSection === "experience" && resume.experience.length > 0) {
+      setIsGenerating(true);
+      setTimeout(() => {
+        const bulletPoint = "Led a team to develop a scalable web application, improving performance by 30% through optimized code and caching strategies.";
+        onApplyBulletPoint?.(bulletPoint);
+        setIsGenerating(false);
+      }, 1000);
+    }
+  };
+
+  const handleGenerateSkill = () => {
+    setIsGenerating(true);
+    setTimeout(() => {
+      const skill = "JavaScript";
+      onApplySkill?.(skill);
+      setIsGenerating(false);
+    }, 1000);
+  };
+
+  // Floating Button Component
+  function FloatingButton() {
+    return (
+      <div className="fixed bottom-6 right-6 z-50">
+        {!isDialogOpen ? (
+          <Button
+            ref={aiButtonRef}
+            onClick={() => setIsDialogOpen(true)}
+            className="w-14 h-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transition-all"
+          >
+            <Cpu className="h-6 w-6" />
+          </Button>
+        ) : minimized ? (
+          <div className="flex flex-col items-end space-y-2">
+            <Button
+              onClick={() => setMinimized(false)}
+              className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg flex items-center"
+            >
+              <Cpu className="h-4 w-4 mr-2" />
+              <span style={{ fontFamily: "'Inter', sans-serif" }}>Cosmic AI Assistant</span>
+              <ChevronUp className="h-4 w-4 ml-2" />
+            </Button>
+          </div>
+        ) : (
+          <div
+            ref={dialogRef}
+            className="w-80 bg-[rgba(10,12,24,0.95)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-lg shadow-2xl shadow-blue-700/10 overflow-hidden"
+          >
+            {/* Starfield Background */}
+            <div className="starfield absolute inset-0 pointer-events-none">
+              {[...Array(20)].map((_, i) => (
+                <div
+                  key={i}
+                  className="star absolute bg-white rounded-full"
+                  style={{
+                    width: Math.random() * 2 + 1 + "px",
+                    height: Math.random() * 2 + 1 + "px",
+                    top: Math.random() * 100 + "%",
+                    left: Math.random() * 100 + "%",
+                    animation: `twinkle ${Math.random() * 3 + 2}s infinite`,
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Chat Header */}
+            <div className="p-3 border-b border-[rgba(255,255,255,0.1)] flex justify-between items-center bg-gradient-to-r from-blue-900/50 to-purple-900/50 relative z-10">
+              <div className="flex items-center">
+                <Cpu className="h-5 w-5 text-blue-400 mr-2 animate-pulse" />
+                <h3 className="text-white font-medium" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                  {activeSection === "profile" ? "AI Summary Writer" : "AI Resume Assistant"}
+                </h3>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-gray-400 hover:text-white hover:bg-white/10"
+                  onClick={() => setMinimized(true)}
+                >
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-gray-400 hover:text-white hover:bg-white/10"
+                  onClick={() => setIsDialogOpen(false)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* AI Assistant Content */}
+            <div className="p-4 space-y-4 relative z-10">
+              {activeSection === "profile" ? (
+                <>
+                  <p className="text-sm text-gray-300" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    AI writer helps you to write your summary for a targeted job position. Strange result? Just regenerate!
+                  </p>
+
+                  <div>
+                    <label className="text-sm font-medium text-blue-300 block mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>
+                      Position Highlight *
+                    </label>
+                    <Select value={targetPosition} onValueChange={setTargetPosition}>
+                      <SelectTrigger className="bg-gray-800 text-white border-gray-600">
+                        <SelectValue placeholder="Select a position" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 text-white border-gray-600">
+                        {jobPositions.map((position) => (
+                          <SelectItem key={position} value={position}>
+                            {position}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-blue-300 block mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>
+                      Skills Highlight *
+                    </label>
+                    <Textarea
+                      placeholder="Enter skills to highlight (e.g., JavaScript, Python, Project Management)"
+                      value={highlightSkills}
+                      onChange={(e) => setHighlightSkills(e.target.value)}
+                      className="bg-gray-800 text-white border-gray-600 min-h-[60px] resize-none"
+                      style={{ fontFamily: "'Inter', sans-serif" }}
+                    />
+                  </div>
+
+                  <Button
+                    onClick={handleGenerateSummary}
+                    disabled={isGenerating || (!targetPosition && !highlightSkills)}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Generate Summary
+                      </>
+                    )}
+                  </Button>
+
+                  {generatedSummary && (
+                    <div className="mt-4">
+                      <label className="text-sm font-medium text-blue-300 block mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>
+                        Generated Summary
+                      </label>
+                      <Textarea
+                        value={generatedSummary}
+                        onChange={(e) => setGeneratedSummary(e.target.value)}
+                        className="bg-gray-800 text-white border-gray-600 min-h-[100px] resize-none"
+                        style={{ fontFamily: "'Inter', sans-serif" }}
+                      />
+                      <Button
+                        onClick={handleSaveSummary}
+                        className="w-full mt-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                      >
+                        <Check className="h-4 w-4 mr-2" />
+                        Save Summary Info
+                      </Button>
+                    </div>
+                  )}
+                </>
+              ) : activeSection === "experience" ? (
+                <>
+                  <p className="text-sm text-gray-300" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    I can help you generate achievement-focused bullet points for your experience. Let me know what you need!
+                  </p>
+                  <Button
+                    onClick={handleGenerateBulletPoint}
+                    disabled={isGenerating}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Generate Bullet Point
+                      </>
+                    )}
+                  </Button>
+                </>
+              ) : activeSection === "skills" ? (
+                <>
+                  <p className="text-sm text-gray-300" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    I can suggest in-demand skills for your field. Let me know what roles you're targeting!
+                  </p>
+                  <Button
+                    onClick={handleGenerateSkill}
+                    disabled={isGenerating}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Suggest Skills
+                      </>
+                    )}
+                  </Button>
+                </>
+              ) : (
+                <p className="text-sm text-gray-300" style={{ fontFamily: "'Inter', sans-serif" }}>
+                  I'm here to assist with your {activeSection} section. What would you like help with?
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return <FloatingButton />;
+}
+
+Updated ResumeBuilder Component
+Since the AIAssistant is already included in your ResumeBuilder page, we’ll update the Profile tab to remove the old SummarySuggestions and Collapsible components, as the new AI Assistant will handle summary generation. We’ll also ensure the overall design aligns with the Cosmic Navigator theme.
+jsx
+import React, { useState, useRef, useEffect } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import Navbar from "@/components/navbar";
+import ResumeTemplate, { 
+  ProfessionalTemplate, 
+  CreativeTemplate, 
+  ExecutiveTemplate 
+} from "@/components/resume-template";
+import { 
+  ResumeExperienceSection, 
+  ResumeEducationSection, 
+  ResumeSkillsSection,
+  ResumeProjectsSection,
+  ExperienceItem,
+  EducationItem,
+  SkillItem,
+  ProjectItem,
+} from "@/components/resume-section";
+import { Resume } from "@/components/resume-template";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { 
+  FileText, 
+  GraduationCap, 
+  Briefcase, 
+  Code, 
+  Award, 
+  FolderKanban,
+  Save,
+  Upload,
+  Loader2,
+  Check,
+  Plus,
+  Maximize2,
+  Printer,
+  Download,
+  Minus,
+  User,
+} from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import AIAssistant from "@/components/ai-assistant";
+
+// Preview component (unchanged)
+function ResumePreview({ resume }: { resume: Resume }) {
+  const [scale, setScale] = useState(1);
+
+  const downloadResume = () => {
+    window.print();
+  };
+
+  const TemplateComponent = 
+    resume.template === "creative" ? CreativeTemplate :
+    resume.template === "executive" ? ExecutiveTemplate :
+    ProfessionalTemplate;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-medium text-white">Resume Preview</h3>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setScale(Math.max(0.5, scale - 0.1))}
+            disabled={scale <= 0.5}
+            className="flex items-center text-gray-300 border-white/10 hover:bg-white/10 hover:text-white"
+          >
+            <Minus className="h-4 w-4" />
+          </Button>
+          <span className="flex items-center text-sm px-2 text-gray-300">{Math.round(scale * 100)}%</span>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setScale(Math.min(1.5, scale + 0.1))}
+            disabled={scale >= 1...
+i want it to auto fill the corasponding field too if the users wants to use that ai generated response
+To enhance the AIAssistant component in your ResumeBuilder page, we’ll make it more user-friendly by matching the design and functionality shown in the screenshot, while ensuring it aligns with the "Cosmic Navigator" theme (dark gradient background, starfield animation, neon accents, glassmorphism, and GSAP animations). Additionally, we’ll add the ability to auto-fill the corresponding field (e.g., the Professional Summary textarea) when the user chooses to use the AI-generated response. This will streamline the user experience by reducing manual copying and pasting, making the AI Assistant more intuitive and efficient.
+The screenshot shows an "AI Summary Writer" with a dropdown to select a target job position, a "Skills Highlight" input field, and a "Save Summary Info" button. We’ll integrate these features into the AIAssistant component, ensure it works across all resume tabs, and add the auto-fill functionality for the generated response.
+Enhancements to the AI Assistant
+1. Redesign the AI Assistant to Match the Screenshot
+Why:
+The screenshot shows a clean, user-friendly interface with:
+A dropdown to select a target job position ("Junior Sales Analyst").
+
+A "Skills Highlight" input field to emphasize specific skills in the summary.
+
+A clear "Save Summary Info" button to apply changes.
+We’ll redesign the AIAssistant to include these elements, making it more intuitive for users to tailor their resume summary.
+Enhancement:
+Add a dropdown to select a target job position (mocked with common roles, can be populated dynamically via API).
+
+Include a "Skills Highlight" textarea where users can enter skills to emphasize in the summary.
+
+Replace the current chat interface with a more focused form-like interface for summary generation, while keeping the chat functionality accessible.
+2. Auto-Fill the Corresponding Field
+Why:
+The user should be able to apply the AI-generated response directly to the corresponding field (e.g., the Professional Summary textarea in the Profile tab) without manually copying and pasting. This reduces friction and improves the user experience.
+Enhancement:
+When the user clicks "Save Summary Info," the generated summary will automatically fill the Professional Summary textarea in the Profile tab.
+
+For other tabs (e.g., Experience, Skills), the AI Assistant will auto-fill the relevant fields (e.g., a bullet point in the Experience description, a skill in the Skills section).
+3. Integrate with the Cosmic Navigator Theme
+Why:
+The AI Assistant should maintain the futuristic, cosmic aesthetic of the "Cosmic Navigator" theme (gradient background, starfield, neon accents, glassmorphism).
+Enhancement:
+Use glassmorphism for the assistant panel (bg-[rgba(255,255,255,0.1)] backdrop-blur-md border border-[rgba(255,255,255,0.2)]).
+
+Apply neon accents (hsl(221.2 83.2% 53.3%)) for buttons and highlights.
+
+Add a starfield animation in the background of the assistant panel.
+4. Add GSAP Animations for Interactivity
+Why:
+Animations make the AI Assistant feel more dynamic and engaging, aligning with the futuristic theme. A subtle entrance animation for the panel and a typing effect for generated responses will enhance the user experience.
+Enhancement:
+Use GSAP to animate the entrance of the AI Assistant panel (fade-in and slide-up).
+
+Add a typing effect for the generated summary text.
+5. Make It User-Friendly Across Tabs
+Why:
+The screenshot focuses on summary generation, but the AI Assistant should be user-friendly across all tabs (Profile, Experience, Education, Skills, Projects, Preview). We’ll ensure it provides tab-specific suggestions and actions (e.g., generating bullet points for Experience, suggesting skills for Skills).
+Enhancement:
+Use the activeTab prop to display tab-specific prompts and actions.
+
+Add a "Save Info" button that applies the generated content to the corresponding field based on the active tab.
+6. Validation and Feedback
+Why:
+The screenshot includes a "Please fill out this field" warning if inputs are missing. We’ll add validation to ensure users provide necessary inputs and display feedback messages.
+Enhancement:
+Add validation to ensure at least one of targetPosition or highlightSkills is provided.
+
+Display a warning toast if inputs are missing.
+Updated Code
+We’ll modify the AIAssistant component to match the screenshot’s design and functionality, adding the auto-fill feature. We’ll also update the ResumeBuilder component to ensure the auto-fill works by passing a reference to the Professional Summary textarea (or other fields) to the AIAssistant.
+Updated AIAssistant Component
+jsx
+import { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { Button } from "@/components/ui/button";
+import { Cpu, Sparkles, RefreshCw, Send, X, ChevronDown, ChevronUp, PlusCircle, Check } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+interface AIAssistantProps {
+  resumeId?: string;
+  onApplySuggestions?: (suggestions: string[]) => void;
+  onApplySummary?: (summary: string) => void;
+  onApplyBulletPoint?: (bulletPoint: string) => void;
+  onApplySkill?: (skill: string) => void;
+  onApplyTailoredContent?: (content: TailoredContent) => void;
+  resume?: any;
+  activeTab?: string;
+  summaryFieldRef?: React.RefObject<HTMLTextAreaElement>;
+  experienceFieldRef?: React.RefObject<HTMLTextAreaElement>;
+  skillFieldRef?: React.RefObject<HTMLInputElement>;
+}
+
+interface TailoredContent {
+  summary?: string;
+  skills?: string[];
+  experienceImprovements?: Array<{
+    id: string;
+    improvedDescription: string;
+  }>;
+}
+
+interface ChatMessage {
+  sender: 'AI' | 'User';
+  message: string;
+  type?: 'summary' | 'bullet' | 'skill' | 'tailoring' | 'general' | 'option';
+  options?: string[];
+}
+
+export default function AIAssistant({
+  resumeId,
+  onApplySuggestions,
+  onApplySummary,
+  onApplyBulletPoint,
+  onApplySkill,
+  onApplyTailoredContent,
+  resume,
+  activeTab = 'profile',
+  summaryFieldRef,
+  experienceFieldRef,
+  skillFieldRef,
+}: AIAssistantProps) {
+  const { toast } = useToast();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [minimized, setMinimized] = useState(false);
+  const [targetPosition, setTargetPosition] = useState("");
+  const [highlightSkills, setHighlightSkills] = useState("");
+  const [generatedSummary, setGeneratedSummary] = useState("");
+  const [generatedBulletPoint, setGeneratedBulletPoint] = useState("");
+  const [generatedSkill, setGeneratedSkill] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const aiButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Animate the AI Assistant button with GSAP
+  useEffect(() => {
+    if (aiButtonRef.current) {
+      gsap.to(aiButtonRef.current, {
+        scale: 1.05,
+        duration: 1.5,
+        repeat: -1,
+        yoyo: true,
+        ease: "power1.inOut",
+      });
+    }
+  }, []);
+
+  // Animate the dialog entrance
+  useEffect(() => {
+    if (isDialogOpen && dialogRef.current) {
+      gsap.fromTo(
+        dialogRef.current,
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
+      );
+    }
+  }, [isDialogOpen]);
+
+  // Mock job positions (replace with API call in production)
+  const jobPositions = [
+    "Junior Sales Analyst",
+    "Senior Software Engineer",
+    "Data Scientist",
+    "Product Manager",
+    "UX Designer",
+    "Marketing Specialist"
+  ];
+
+  // Generate summary with target position and highlighted skills
+  const { mutate: generateSummary, isPending: isGeneratingSummary } = useMutation({
+    mutationFn: async () => {
+      if (!resumeId) return null;
+      let url = `/api/resumes/${resumeId}/suggestions?summaryOnly=true`;
+      if (targetPosition) {
+        url += `&jobTitle=${encodeURIComponent(targetPosition)}`;
+      }
+      if (highlightSkills) {
+        url += `&highlightSkills=${encodeURIComponent(highlightSkills)}`;
+      }
+      const res = await apiRequest("GET", url);
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      if (data?.success && data.suggestions && Array.isArray(data.suggestions)) {
+        const summary = data.suggestions[0]; // Take the first suggestion
+        setGeneratedSummary(summary);
+      } else {
+        setGeneratedSummary("Dynamic professional with extensive experience in your field, skilled in adapting to various roles and responsibilities. Ready to leverage expertise to contribute to innovative projects and drive success.");
+      }
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error generating summary",
+        description: error.message,
+        variant: "destructive",
+      });
+      setGeneratedSummary("Dynamic professional with extensive experience in your field, skilled in adapting to various roles and responsibilities. Ready to leverage expertise to contribute to innovative projects and drive success.");
+    }
+  });
+
+  const handleGenerateSummary = () => {
+    if (!targetPosition && !highlightSkills) {
+      toast({
+        title: "Input needed",
+        description: "Please select a target position or enter skills to highlight.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+    generateSummary();
+    setTimeout(() => {
+      setIsGenerating(false);
+    }, 1000);
+  };
+
+  const handleSaveSummary = () => {
+    if (onApplySummary && generatedSummary) {
+      onApplySummary(generatedSummary);
+      if (summaryFieldRef?.current) {
+        summaryFieldRef.current.value = generatedSummary; // Auto-fill the textarea
+      }
+      toast({
+        title: "Summary Saved",
+        description: "Your professional summary has been updated.",
+      });
+      setGeneratedSummary("");
+      setTargetPosition("");
+      setHighlightSkills("");
+    }
+  };
+
+  // Generate bullet point for Experience tab
+  const handleGenerateBulletPoint = () => {
+    setIsGenerating(true);
+    setTimeout(() => {
+      const bulletPoint = "Led a team to develop a scalable web application, improving performance by 30% through optimized code and caching strategies.";
+      setGeneratedBulletPoint(bulletPoint);
+      setIsGenerating(false);
+    }, 1000);
+  };
+
+  const handleSaveBulletPoint = () => {
+    if (onApplyBulletPoint && generatedBulletPoint) {
+      onApplyBulletPoint(generatedBulletPoint);
+      if (experienceFieldRef?.current) {
+        experienceFieldRef.current.value = generatedBulletPoint; // Auto-fill the experience description
+      }
+      toast({
+        title: "Bullet Point Saved",
+        description: "The bullet point has been added to your experience.",
+      });
+      setGeneratedBulletPoint("");
+    }
+  };
+
+  // Generate skill for Skills tab
+  const handleGenerateSkill = () => {
+    setIsGenerating(true);
+    setTimeout(() => {
+      const skill = "JavaScript";
+      setGeneratedSkill(skill);
+      setIsGenerating(false);
+    }, 1000);
+  };
+
+  const handleSaveSkill = () => {
+    if (onApplySkill && generatedSkill) {
+      onApplySkill(generatedSkill);
+      if (skillFieldRef?.current) {
+        skillFieldRef.current.value = generatedSkill; // Auto-fill the skill input
+      }
+      toast({
+        title: "Skill Saved",
+        description: "The skill has been added to your skills.",
+      });
+      setGeneratedSkill("");
+    }
+  };
+
+  // Floating Button Component
+  function FloatingButton() {
+    return (
+      <div className="fixed bottom-6 right-6 z-50">
+        {!isDialogOpen ? (
+          <Button
+            ref={aiButtonRef}
+            onClick={() => setIsDialogOpen(true)}
+            className="w-14 h-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transition-all"
+          >
+            <Cpu className="h-6 w-6" />
+          </Button>
+        ) : minimized ? (
+          <div className="flex flex-col items-end space-y-2">
+            <Button
+              onClick={() => setMinimized(false)}
+              className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg flex items-center"
+            >
+              <Cpu className="h-4 w-4 mr-2" />
+              <span style={{ fontFamily: "'Inter', sans-serif" }}>Cosmic AI Assistant</span>
+              <ChevronUp className="h-4 w-4 ml-2" />
+            </Button>
+          </div>
+        ) : (
+          <div
+            ref={dialogRef}
+            className="w-80 bg-[rgba(10,12,24,0.95)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-lg shadow-2xl shadow-blue-700/10 overflow-hidden"
+          >
+            {/* Starfield Background */}
+            <div className="starfield absolute inset-0 pointer-events-none">
+              {[...Array(20)].map((_, i) => (
+                <div
+                  key={i}
+                  className="star absolute bg-white rounded-full"
+                  style={{
+                    width: Math.random() * 2 + 1 + "px",
+                    height: Math.random() * 2 + 1 + "px",
+                    top: Math.random() * 100 + "%",
+                    left: Math.random() * 100 + "%",
+                    animation: `twinkle ${Math.random() * 3 + 2}s infinite`,
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Chat Header */}
+            <div className="p-3 border-b border-[rgba(255,255,255,0.1)] flex justify-between items-center bg-gradient-to-r from-blue-900/50 to-purple-900/50 relative z-10">
+              <div className="flex items-center">
+                <Cpu className="h-5 w-5 text-blue-400 mr-2 animate-pulse" />
+                <h3 className="text-white font-medium" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                  {activeSection === "profile" ? "AI Summary Writer" : "AI Resume Assistant"}
+                </h3>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-gray-400 hover:text-white hover:bg-white/10"
+                  onClick={() => setMinimized(true)}
+                >
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-gray-400 hover:text-white hover:bg-white/10"
+                  onClick={() => setIsDialogOpen(false)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* AI Assistant Content */}
+            <div className="p-4 space-y-4 relative z-10">
+              {activeSection === "profile" ? (
+                <>
+                  <p className="text-sm text-gray-300" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    AI writer helps you to write your summary for a targeted job position. Strange result? Just regenerate!
+                  </p>
+
+                  <div>
+                    <label className="text-sm font-medium text-blue-300 block mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>
+                      Position Highlight *
+                    </label>
+                    <Select value={targetPosition} onValueChange={setTargetPosition}>
+                      <SelectTrigger className="bg-gray-800 text-white border-gray-600">
+                        <SelectValue placeholder="Select a position" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 text-white border-gray-600">
+                        {jobPositions.map((position) => (
+                          <SelectItem key={position} value={position}>
+                            {position}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-blue-300 block mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>
+                      Skills Highlight *
+                    </label>
+                    <Textarea
+                      placeholder="Enter skills to highlight (e.g., JavaScript, Python, Project Management)"
+                      value={highlightSkills}
+                      onChange={(e) => setHighlightSkills(e.target.value)}
+                      className="bg-gray-800 text-white border-gray-600 min-h-[60px] resize-none"
+                      style={{ fontFamily: "'Inter', sans-serif" }}
+                    />
+                  </div>
+
+                  <Button
+                    onClick={handleGenerateSummary}
+                    disabled={isGenerating || (!targetPosition && !highlightSkills)}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Generate Summary
+                      </>
+                    )}
+                  </Button>
+
+                  {generatedSummary && (
+                    <div className="mt-4">
+                      <label className="text-sm font-medium text-blue-300 block mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>
+                        Generated Summary
+                      </label>
+                      <Textarea
+                        value={generatedSummary}
+                        onChange={(e) => setGeneratedSummary(e.target.value)}
+                        className="bg-gray-800 text-white border-gray-600 min-h-[100px] resize-none"
+                        style={{ fontFamily: "'Inter', sans-serif" }}
+                      />
+                      <Button
+                        onClick={handleSaveSummary}
+                        className="w-full mt-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                      >
+                        <Check className="h-4 w-4 mr-2" />
+                        Save Summary Info
+                      </Button>
+                    </div>
+                  )}
+                </>
+              ) : activeSection === "experience" ? (
+                <>
+                  <p className="text-sm text-gray-300" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    AI writer helps you to generate achievement-focused bullet points for your experience. Strange result? Just regenerate!
+                  </p>
+
+                  <Button
+                    onClick={handleGenerateBulletPoint}
+                    disabled={isGenerating}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Generate Bullet Point
+                      </>
+                    )}
+                  </Button>
+
+                  {generatedBulletPoint && (
+                    <div className="mt-4">
+                      <label className="text-sm font-medium text-blue-300 block mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>
+                        Generated Bullet Point
+                      </label>
+                      <Textarea
+                        value={generatedBulletPoint}
+                        onChange={(e) => setGeneratedBulletPoint(e.target.value)}
+                        className="bg-gray-800 text-white border-gray-600 min-h-[100px] resize-none"
+                        style={{ fontFamily: "'Inter', sans-serif" }}
+                      />
+                      <Button
+                        onClick={handleSaveBulletPoint}
+                        className="w-full mt-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                      >
+                        <Check className="h-4 w-4 mr-2" />
+                        Save Bullet Point
+                      </Button>
+                    </div>
+                  )}
+                </>
+              ) : activeSection === "skills" ? (
+                <>
+                  <p className="text-sm text-gray-300" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    AI writer helps you to suggest in-demand skills for your field. Strange result? Just regenerate!
+                  </p>
+
+                  <Button
+                    onClick={handleGenerateSkill}
+                    disabled={isGenerating}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Generate Skill
+                      </>
+                    )}
+                  </Button>
+
+                  {generatedSkill && (
+                    <div className="mt-4">
+                      <label className="text-sm font-medium text-blue-300 block mb-1" style={{ fontFamily: "'Inter', sans-serif" }}>
+                        Generated Skill
+                      </label>
+                      <Input
+                        value={generatedSkill}
+                        onChange={(e) => setGeneratedSkill(e.target.value)}
+                        className="bg-gray-800 text-white border-gray-600"
+                        style={{ fontFamily: "'Inter', sans-serif" }}
+                      />
+                      <Button
+                        onClick={handleSaveSkill}
+                        className="w-full mt-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                      >
+                        <Check className="h-4 w-4 mr-2" />
+                        Save Skill
+                      </Button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p className="text-sm text-gray-300" style={{ fontFamily: "'Inter', sans-serif" }}>
+                  The AI Assistant can help you with summaries, bullet points, and skills. Switch to the Profile, Experience, or Skills tab to use these features.
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return <FloatingButton />;
+}
+
+Updated ResumeBuilder Component
+We’ll update the ResumeBuilder component to pass references to the relevant fields (e.g., Professional Summary textarea, Experience description textarea, Skills input) to the AIAssistant component. This allows the AI Assistant to auto-fill the fields when the user saves the generated content.
+jsx
+import React, { useState, useRef, useEffect } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import Navbar from "@/components/navbar";
+import ResumeTemplate, { 
+  ProfessionalTemplate, 
+  CreativeTemplate, 
+  ExecutiveTemplate 
+} from "@/components/resume-template";
+import { 
+  ResumeExperienceSection, 
+  ResumeEducationSection, 
+  ResumeSkillsSection,
+  ResumeProjectsSection,
+  ExperienceItem,
+  EducationItem,
+  SkillItem,
+  ProjectItem,
+} from "@/components/resume-section";
+import { Resume } from "@/components/resume-template";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { 
+  FileText, 
+  GraduationCap, 
+  Briefcase, 
+  Code, 
+  Award, 
+  FolderKanban,
+  Save,
+  Upload,
+  Loader2,
+  Check,
+  Plus,
+  Maximize2,
+  Printer,
+  Download,
+  Minus,
+  User,
+} from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import AIAssistant from "@/components/ai-assistant";
+
+// Preview component for the "Preview" section
+function ResumePreview({ resume }: { resume: Resume }) {
+  const [scale, setScale] = useState(1);
+
+  const downloadResume = () => {
+    window.print();
+  };
+
+  const TemplateComponent = 
+    resume.template === "creative" ? CreativeTemplate :
+    resume.template === "executive" ? ExecutiveTemplate :
+    ProfessionalTemplate;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-medium text-white">Resume Preview</h3>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setScale(Math.max(0.5, scale - 0.1))}
+            disabled={scale <= 0.5}
+            className="flex items-center text-gray-300 border-white/10 hover:bg-white/10 hover:text-white"
+          >
+            <Minus className="h-4 w-4" />
+          </Button>
+          <span className="flex items-center text-sm px-2 text-gray-300">{Math.round(scale * 100)}%</span>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setScale(Math.min(1.5, scale + 0.1))}
+            disabled={scale >= 1.5}
+            className="flex items-center text-gray-300 border-white/10 hover:bg-white/10 hover:text-white"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={downloadResume}
+            className="flex items-center gap-1 ml-2 text-gray-300 border-white/10 hover:bg-white/10 hover:text-white"
+          >
+            <Download className="h-4 w-4" />
+            Download PDF
+          </Button>
+        </div>
+      </div>
+      
+      <div className="bg-white/5 backdrop-blur-sm p-8 rounded-xl border border-white/10 shadow-xl">
+        <div 
+          className="transition-all duration-300 origin-top"
+          style={{ transform: `scale(${scale})` }}
+        >
+          <TemplateComponent resume={resume} />
+        </div>
+      </div>
+      
+      <div className="mt-8">
+        <h3 className="text-lg font-medium mb-4 text-white">Choose a Template</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div 
+            className={`border border-white/10 rounded-lg p-4 cursor-pointer ${resume.template === 'professional' ? 'border-blue-500 bg-blue-500/10' : 'border-gray-700'}`}
+            onClick={() => handleTemplateChange('professional')}
+          >
+            <h4 className="font-medium mb-2 text-white">Professional</h4>
+            <p className="text-sm text-gray-300">Clean, traditional layout ideal for conservative industries</p>
+          </div>
+          <div 
+            className={`border border-white/10 rounded-lg p-4 cursor-pointer ${resume.template === 'creative' ? 'border-blue-500 bg-blue-500/10' : 'border-gray-700'}`}
+            onClick={() => handleTemplateChange('creative')}
+          >
+            <h4 className="font-medium mb-2 text-white">Creative</h4>
+            <p className="text-sm text-gray-300">Modern design with accent colors for creative fields</p>
+          </div>
+          <div 
+            className={`border border-white/10 rounded-lg p-4 cursor-pointer ${resume.template === 'executive' ? 'border-blue-500 bg-blue-500/10' : 'border-gray-700'}`}
+            onClick={() => handleTemplateChange('executive')}
+          >
+            <h4 className="font-medium mb-2 text-white">Executive</h4>
+            <p className="text-sm text-gray-300">Sophisticated layout highlighting leadership experience</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function ResumeBuilder() {
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const summaryFieldRef = useRef<HTMLTextAreaElement>(null);
+  const experienceFieldRef = useRef<HTMLTextAreaElement>(null);
+  const skillFieldRef = useRef<HTMLInputElement>(null);
+  
+  const [resumeSaved, setResumeSaved] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>("profile");
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [resumeId, setResumeId] = useState<number | null>(null);
+  
+  const [resume, setResume] = useState<Resume>({
+    title: "My Professional Resume",
+    personalInfo: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      headline: "",
+      summary: ""
+    },
+    experience: [],
+    education: [],
+    skills: [],
+    projects: [],
+    template: "professional"
+  });
+
+  // Fetch resume data if resumeId exists
+  const { data: fetchedResume } = useQuery({
+    queryKey: ["/api/resumes", resumeId],
+    enabled: !!resumeId
+  });
+
+  useEffect(() => {
+    if (fetchedResume) {
+      setResume(fetchedResume as Resume);
+    }
+  }, [fetchedResume]);
+
+  const saveResumeMutation = useMutation({
+    mutationFn: async (resumeData: Resume) => {
+      if (resumeId) {
+        const res = await apiRequest("PATCH", `/api/resumes/${resumeId}`, resumeData);
+        return await res.json();
+      } else {
+        const res = await apiRequest("POST", "/api/resumes", resumeData);
+        return await res.json();
+      }
+    },
+    onSuccess: (data) => {
+      setResumeId(data.id);
+      setResumeSaved(true);
+      toast({
+        title: "Resume saved",
+        description: "Your resume has been saved successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/resumes"] });
+    },
+    onError: (error) => {
+      console.error("Error saving resume:", error);
+      toast({
+        title: "Error saving resume",
+        description: "There was an error saving your resume. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleSaveResume = () => {
+    setIsSaving(true);
+    saveResumeMutation.mutate(resume);
+    setIsSaving(false);
+  };
+
+  const updatePersonalInfo = (field: string, value: string) => {
+    setResume({
+      ...resume,
+      personalInfo: {
+        ...resume.personalInfo,
+        [field]: value
+      }
+    });
+  };
+
+  const handleTemplateChange = (template: string) => {
+    setResume({
+      ...resume,
+      template
+    });
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setIsUploading(true);
+    
+    const formData = new FormData();
+    formData.append("file", file);
+    
+    try {
+      const res = await apiRequest("POST", "/api/resumes/parse", formData);
+      const parsedData = await res.json();
+      
+      if (parsedData.success) {
+        setResume({
+          ...resume,
+          personalInfo: {
+            ...resume.personalInfo,
+            ...parsedData.data.personalInfo
+          },
+          experience: parsedData.data.experience || [],
+          education: parsedData.data.education || [],
+          skills: parsedData.data.skills || []
+        });
+        toast({
+          title: "Resume uploaded",
+          description: "Your resume has been parsed successfully.",
+        });
+      } else {
+        toast({
+          title: "Error parsing resume",
+          description: parsedData.error || "There was an error parsing your resume.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error uploading resume:", error);
+      toast({
+        title: "Error uploading resume",
+        description: "There was an error uploading your resume. Please try again.",
+        variant: "destructive",
+      });
+    }
+    
+    setIsUploading(false);
+    
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleApplyBulletPoint = (bulletPoint: string) => {
+    if (activeSection === "experience" && resume.experience.length > 0) {
+      const updatedExperience = [...resume.experience];
+      const lastIndex = updatedExperience.length - 1;
+      
+      updatedExperience[lastIndex] = {
+        ...updatedExperience[lastIndex],
+        description: bulletPoint
+      };
+      
+      setResume({
+        ...resume,
+        experience: updatedExperience
+      });
+      
+      toast({
+        title: "Bullet point applied",
+        description: "AI-generated bullet point has been applied to your experience.",
+      });
+    } else {
+      const newExperience: ExperienceItem = {
+        id: `exp-${Date.now()}`,
+        title: "Position Title",
+        company: "Company Name",
+        startDate: "2022-01",
+        endDate: "Present",
+        description: bulletPoint
+      };
+      
+      setResume({
+        ...resume,
+        experience: [...resume.experience, newExperience]
+      });
+      
+      setActiveSection("experience");
+      
+      toast({
+        title: "Experience added",
+        description: "New experience with AI-generated bullet point has been added.",
+      });
+    }
+  };
+
+  const handleApplySummary = (summary: string) => {
+    updatePersonalInfo("summary", summary);
+    toast({
+      title: "Summary applied",
+      description: "AI-generated summary has been applied to your resume.",
+    });
+  };
+
+  const handleApplySkill = (skillName: string) => {
+    if (resume.skills.some(skill => skill.name.toLowerCase() === skillName.toLowerCase())) {
+      toast({
+        title: "Skill already exists",
+        description: `"${skillName}" is already in your skills list.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const newSkill: SkillItem = {
+      id: `skill-${Date.now()}`,
+      name: skillName,
+      proficiency: 3
+    };
+    
+    setResume({
+      ...resume,
+      skills: [...resume.skills, newSkill]
+    });
+    
+    toast({
+      title: "Skill added",
+      description: `"${skillName}" has been added to your skills.`,
+    });
+  };
+
+  const handleFileInputClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)] text-white relative overflow-hidden">
+      {/* Starfield Background */}
+      <div className="starfield absolute inset-0 pointer-events-none">
+        {[...Array(50)].map((_, i) => (
+          <div
+            key={i}
+            className="star absolute bg-white rounded-full"
+            style={{
+              width: Math.random() * 2 + 1 + "px",
+              height: Math.random() * 2 + 1 + "px",
+              top: Math.random() * 100 + "%",
+              left: Math.random() * 100 + "%",
+              animation: `twinkle ${Math.random() * 3 + 2}s infinite`,
+            }}
+          />
+        ))}
+      </div>
+
+      <Navbar />
+
+      <main className="container mx-auto pt-24 pb-20 px-4 relative z-10">
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+              Resume Builder
+            </h1>
+            <p className="text-gray-300" style={{ fontFamily: "'Inter', sans-serif" }}>
+              Create a professional resume that passes ATS systems and gets you hired.
+            </p>
+          </div>
+          <div className="flex space-x-3">
+            <Button
+              onClick={handleSaveResume}
+              disabled={isSaving}
+              className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  <span>Save Resume</span>
+                </>
+              )}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleFileInputClick}
+              disabled={isUploading}
+              className="flex items-center space-x-2 border-white/10 text-gray-200 hover:bg-white/10 hover:text-white"
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Uploading...</span>
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4 text-blue-400" />
+                  <span>Upload Resume</span>
+                </>
+              )}
+            </Button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+              accept=".pdf,.docx,.txt"
+              className="hidden"
+            />
+          </div>
+        </div>
+
+        <div className="border border-white/10 rounded-xl shadow-lg backdrop-blur-md overflow-hidden">
+          <div className="relative">
+            <div className="bg-gradient-to-r from-blue-900/80 to-purple-900/80 rounded-t-xl px-6 py-4 border-b border-white/10">
+              <Tabs 
+                value={activeSection} 
+                onValueChange={setActiveSection} 
+                className="w-full"
+              >
+                <TabsList className="bg-transparent w-full justify-start mb-1 p-0 space-x-1">
+                  <TabsTrigger 
+                    value="profile" 
+                    className={`${activeSection === "profile" 
+                      ? "bg-blue-600/50 text-white border-b-2 border-blue-400" 
+                      : "text-gray-300 hover:text-white hover:bg-white/5"} font-medium transition-all duration-200`}
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    PROFILE
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="experience" 
+                    className={`${activeSection === "experience" 
+                      ? "bg-blue-600/50 text-white border-b-2 border-blue-400" 
+                      : "text-gray-300 hover:text-white hover:bg-white/5"} font-medium transition-all duration-200`}
+                  >
+                    <Briefcase className="h-4 w-4 mr-2" />
+                    EXPERIENCE
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="education" 
+                    className={`${activeSection === "education" 
+                      ? "bg-blue-600/50 text-white border-b-2 border-blue-400" 
+                      : "text-gray-300 hover:text-white hover:bg-white/5"} font-medium transition-all duration-200`}
+                  >
+                    <GraduationCap className="h-4 w-4 mr-2" />
+                    EDUCATION
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="skills" 
+                    className={`${activeSection === "skills" 
+                      ? "bg-blue-600/50 text-white border-b-2 border-blue-400" 
+                      : "text-gray-300 hover:text-white hover:bg-white/5"} font-medium transition-all duration-200`}
+                  >
+                    <Code className="h-4 w-4 mr-2" />
+                    SKILLS
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="projects" 
+                    className={`${activeSection === "projects" 
+                      ? "bg-blue-600/50 text-white border-b-2 border-blue-400" 
+                      : "text-gray-300 hover:text-white hover:bg-white/5"} font-medium transition-all duration-200`}
+                  >
+                    <FolderKanban className="h-4 w-4 mr-2" />
+                    PROJECTS
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="preview" 
+                    className={`${activeSection === "preview" 
+                      ? "bg-blue-600/50 text-white border-b-2 border-blue-400" 
+                      : "text-gray-300 hover:text-white hover:bg-white/5"} font-medium transition-all duration-200`}
+                  >
+                    <Maximize2 className="h-4 w-4 mr-2" />
+                    PREVIEW
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+
+            <div className="p-6">
+              {activeSection === "profile" && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="md:col-span-2 space-y-6">
+                    <div>
+                      <h2 className="text-xl font-semibold mb-4 text-white flex items-center">
+                        <User className="h-5 w-5 mr-2 text-blue-400" />
+                        Personal Information
+                      </h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="firstName" className="text-gray-300" style={{ fontFamily: "'Inter', sans-serif" }}>
+                            First Name
+                          </Label>
+                          <Input 
+                            id="firstName"
+                            value={resume.personalInfo.firstName}
+                            onChange={e => updatePersonalInfo("firstName", e.target.value)}
+                            className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="lastName" className="text-gray-300" style={{ fontFamily: "'Inter', sans-serif" }}>
+                            Last Name
+                          </Label>
+                          <Input 
+                            id="lastName"
+                            value={resume.personalInfo.lastName}
+                            onChange={e => updatePersonalInfo("lastName", e.target.value)}
+                            className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="email" className="text-gray-300" style={{ fontFamily: "'Inter', sans-serif" }}>
+                            Email
+                          </Label>
+                          <Input 
+                            id="email"
+                            type="email"
+                            value={resume.personalInfo.email}
+                            onChange={e => updatePersonalInfo("email", e.target.value)}
+                            className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="phone" className="text-gray-300" style={{ fontFamily: "'Inter', sans-serif" }}>
+                            Phone
+                          </Label>
+                          <Input 
+                            id="phone"
+                            value={resume.personalInfo.phone}
+                            onChange={e => updatePersonalInfo("phone", e.target.value)}
+                            className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="headline" className="text-gray-300" style={{ fontFamily: "'Inter', sans-serif" }}>
+                        Professional Headline
+                      </Label>
+                      <Input 
+                        id="headline"
+                        value={resume.personalInfo.headline}
+                        onChange={e => updatePersonalInfo("headline", e.target.value)}
+                        className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                        placeholder="e.g., Senior Software Engineer | Front-End Specialist | React & TypeScript Expert"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="summary" className="text-gray-300" style={{ fontFamily: "'Inter', sans-serif" }}>
+                        Professional Summary
+                      </Label>
+                      <Textarea 
+                        id="summary"
+                        ref={summaryFieldRef}
+                        value={resume.personalInfo.summary}
+                        onChange={e => updatePersonalInfo("summary", e.target.value)}
+                        className="mt-1 min-h-32 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                        placeholder="Write a concise summary of your professional background, key skills, and career achievements."
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeSection === "experience" && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="md:col-span-2">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-xl font-semibold text-white flex items-center">
+                        <Briefcase className="h-5 w-5 mr-2 text-blue-400" />
+                        Work Experience
+                      </h2>
+                      <Button 
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const newExperience: ExperienceItem = {
+                            id: `exp-${Date.now()}`,
+                            title: "Position Title",
+                            company: "Company Name",
+                            startDate: "",
+                            endDate: "",
+                            description: ""
+                          };
+                          setResume({
+                            ...resume,
+                            experience: [...resume.experience, newExperience]
+                          });
+                        }}
+                        className="flex items-center space-x-1 border-white/10 text-blue-400 hover:bg-white/10 hover:text-white"
+                      >
+                        <Plus className="h-4 w-4" />
+                        <span>Add Experience</span>
+                      </Button>
+                    </div>
+                    <ResumeExperienceSection 
+                      experiences={resume.experience} 
+                      onUpdate={(experiences) => {
+                        setResume({
+                          ...resume,
+                          experience: experiences
+                        });
+                      }}
+                      experienceFieldRef={experienceFieldRef}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {activeSection === "education" && (
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold text-white flex items-center">
+                      <GraduationCap className="h-5 w-5 mr-2 text-blue-400" />
+                      Education
+                    </h2>
+                    <Button 
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const newEducation: EducationItem = {
+                          id: `edu-${Date.now()}`,
+                          degree: "Degree Name",
+                          institution: "Institution Name",
+                          startDate: "",
+                          endDate: "",
+                          description: ""
+                        };
+                        setResume({
+                          ...resume,
+                          education: [...resume.education, newEducation]
+                        });
+                      }}
+                      className="flex items-center space-x-1 border-white/10 text-blue-400 hover:bg-white/10 hover:text-white"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>Add Education</span>
+                    </Button>
+                  </div>
+                  <ResumeEducationSection 
+                    education={resume.education} 
+                    onUpdate={(education) => {
+                      setResume({
+                        ...resume,
+                        education
+                      });
+                    }}
+                  />
+                </div>
+              )}
+
+              {activeSection === "skills" && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="md:col-span-2">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-xl font-semibold text-white flex items-center">
+                        <Code className="h-5 w-5 mr-2 text-blue-400" />
+                        Skills
+                      </h2>
+                      <Button 
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const newSkill: SkillItem = {
+                            id: `skill-${Date.now()}`,
+                            name: "New Skill",
+                            proficiency: 3
+                          };
+                          setResume({
+                            ...resume,
+                            skills: [...resume.skills, newSkill]
+                          });
+                        }}
+                        className="flex items-center space-x-1 border-white/10 text-blue-400 hover:bg-white/10 hover:text-white"
+                      >
+                        <Plus className="h-4 w-4" />
+                        <span>Add Skill</span>
+                      </Button>
+                    </div>
+                    <ResumeSkillsSection 
+                      skills={resume.skills} 
+                      onUpdate={(skills) => {
+                        setResume({
+                          ...resume,
+                          skills
+                        });
+                      }}
+                      skillFieldRef={skillFieldRef}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {activeSection === "projects" && (
+                <div>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold text-white flex items-center">
+                      <FolderKanban className="h-5 w-5 mr-2 text-blue-400" />
+                      Projects
+                    </h2>
+                    <Button 
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const newProject: ProjectItem = {
+                          id: `proj-${Date.now()}`,
+                          title: "Project Name",
+                          description: "",
+                          technologies: []
+                        };
+                        setResume({
+                          ...resume,
+                          projects: [...resume.projects, newProject]
+                        });
+                      }}
+                      className="flex items-center space-x-1 border-white/10 text-blue-400 hover:bg-white/10 hover:text-white"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>Add Project</span>
+                    </Button>
+                  </div>
+                  <ResumeProjectsSection 
+                    projects={resume.projects} 
+                    onUpdate={(projects) => {
+                      setResume({
+                        ...resume,
+                        projects
+                      });
+                    }}
+                  />
+                </div>
+              )}
+
+              {activeSection === "preview" && (
+                <div className="text-white">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-semibold text-white flex items-center">
+                      <Maximize2 className="h-5 w-5 mr-2 text-blue-400" />
+                      Resume Preview
+                    </h2>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-blue-400 hover:bg-white/10 hover:text-white border border-white/10"
+                      onClick={() => window.print()}
+                    >
+                      <Printer className="h-4 w-4 mr-2" />
+                      Print/Save PDF
+                    </Button>
+                  </div>
+                  <div className="bg-white/5 backdrop-blur-sm p-8 rounded-xl border border-white/10 shadow-xl">
+                    <ResumePreview resume={resume} />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Pass refs to AIAssistant */}
+      <AIAssistant 
+        resumeId={resumeId?.toString()}
+        onApplySummary={handleApplySummary}
+        onApplyBulletPoint={handleApplyBulletPoint}
+        onApplySkill={handleApplySkill}
+        resume={resume}
+        activeTab={activeSection}
+        summaryFieldRef={summaryFieldRef}
+        experienceFieldRef={experienceFieldRef}
+        skillFieldRef={skillFieldRef}
+      />
+    </div>
+  );
+}
+
+Updated ResumeExperienceSection and ResumeSkillsSection to Accept Refs
+We need to update the ResumeExperienceSection and ResumeSkillsSection components to accept refs for the description and skill name fields, respectively, so the AI Assistant can auto-fill them.
+ResumeExperienceSection (Simplified Example)
+jsx
+import React from "react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
+
+interface ExperienceItem {
+  id: string;
+  title: string;
+  company: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+}
+
+interface ResumeExperienceSectionProps {
+  experiences: ExperienceItem[];
+  onUpdate: (experiences: ExperienceItem[]) => void;
+  experienceFieldRef?: React.RefObject<HTMLTextAreaElement>;
+}
+
+export function ResumeExperienceSection({ experiences, onUpdate, experienceFieldRef }: ResumeExperienceSectionProps) {
+  const handleUpdate = (index: number, field: string, value: string) => {
+    const updatedExperiences = [...experiences];
+    updatedExperiences[index] = { ...updatedExperiences[index], [field]: value };
+    onUpdate(updatedExperiences);
+  };
+
+  const handleRemove = (index: number) => {
+    const updatedExperiences = experiences.filter((_, i) => i !== index);
+    onUpdate(updatedExperiences);
+  };
+
+  return (
+    <div className="space-y-4">
+      {experiences.map((experience, index) => (
+        <div key={experience.id} className="border border-white/10 p-4 rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor={`title-${index}`} className="text-gray-300">Job Title</Label>
+              <Input
+                id={`title-${index}`}
+                value={experience.title}
+                onChange={(e) => handleUpdate(index, "title", e.target.value)}
+                className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <Label htmlFor={`company-${index}`} className="text-gray-300">Company</Label>
+              <Input
+                id={`company-${index}`}
+                value={experience.company}
+                onChange={(e) => handleUpdate(index, "company", e.target.value)}
+                className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <Label htmlFor={`startDate-${index}`} className="text-gray-300">Start Date</Label>
+              <Input
+                id={`startDate-${index}`}
+                type="month"
+                value={experience.startDate}
+                onChange={(e) => handleUpdate(index, "startDate", e.target.value)}
+                className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <Label htmlFor={`endDate-${index}`} className="text-gray-300">End Date</Label>
+              <Input
+                id={`endDate-${index}`}
+                type="month"
+                value={experience.endDate}
+                onChange={(e) => handleUpdate(index, "endDate", e.target.value)}
+                className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label htmlFor={`description-${index}`} className="text-gray-300">Description</Label>
+              <Textarea
+                id={`description-${index}`}
+                ref={index === experiences.length - 1 ? experienceFieldRef : null} // Attach ref to the last experience item
+                value={experience.description}
+                onChange={(e) => handleUpdate(index, "description", e.target.value)}
+                className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleRemove(index)}
+            className="mt-2 text-red-400 hover:text-red-300"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Remove
+          </Button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+ResumeSkillsSection (Simplified Example)
+jsx
+import React from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
+
+interface SkillItem {
+  id: string;
+  name: string;
+  proficiency: number;
+}
+
+interface ResumeSkillsSectionProps {
+  skills: SkillItem[];
+  onUpdate: (skills: SkillItem[]) => void;
+  skillFieldRef?: React.RefObject<HTMLInputElement>;
+}
+
+export function ResumeSkillsSection({ skills, onUpdate, skillFieldRef }: ResumeSkillsSectionProps) {
+  const handleUpdate = (index: number, field: string, value: string | number) => {
+    const updatedSkills = [...skills];
+    updatedSkills[index] = { ...updatedSkills[index], [field]: value };
+    onUpdate(updatedSkills);
+  };
+
+  const handleRemove = (index: number) => {
+    const updatedSkills = skills.filter((_, i) => i !== index);
+    onUpdate(updatedSkills);
+  };
+
+  return (
+    <div className="space-y-4">
+      {skills.map((skill, index) => (
+        <div key={skill.id} className="border border-white/10 p-4 rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor={`name-${index}`} className="text-gray-300">Skill Name</Label>
+              <Input
+                id={`name-${index}`}
+                ref={index === skills.length - 1 ? skillFieldRef : null} // Attach ref to the last skill item
+                value={skill.name}
+                onChange={(e) => handleUpdate(index, "name", e.target.value)}
+                className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <Label htmlFor={`proficiency-${index}`} className="text-gray-300">Proficiency (1-5)</Label>
+              <Input
+                id={`proficiency-${index}`}
+                type="number"
+                min="1"
+                max="5"
+                value={skill.proficiency}
+                onChange={(e) => handleUpdate(index, "proficiency", parseInt(e.target.value))}
+                className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleRemove(index)}
+            className="mt-2 text-red-400 hover:text-red-300"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Remove
+          </Button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+CSS for Starfield and Cosmic Navigator Theme
+Add these styles globally (e.g., in index.css):
+css
+.starfield {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.star {
+  opacity: 0.7;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 0.2; }
+}
+
+Explanation of Changes
+1. Redesign to Match the Screenshot
+Target Position Dropdown: Added a Select component to choose a target job position, similar to "Junior Sales Analyst" in the screenshot. The selected position is passed to the generateSummary mutation to tailor the summary.
+
+Skills Highlight Input: Added a Textarea for users to input skills to highlight, which are also passed to the generateSummary mutation.
+
+Save Summary Info Button: Added a "Save Summary Info" button that applies the generated summary to the resume using the onApplySummary callback and auto-fills the Professional Summary textarea.
+
+Removed Collapsible Sections: Removed the old SummarySuggestions, ExperienceSuggestions, and SkillSuggestions components, as the new AI Assistant handles these functionalities in a more integrated way.
+2. Auto-Fill Functionality
+Refs for Fields: Added refs (summaryFieldRef, experienceFieldRef, skillFieldRef) to the Professional Summary textarea, Experience description textarea, and Skills name input, respectively. These refs are passed to the AIAssistant component.
+
+Auto-Fill Logic: When the user clicks "Save Summary Info," "Save Bullet Point," or "Save Skill," the corresponding field is auto-filled using the ref (e.g., summaryFieldRef.current.value = generatedSummary).
+
+Updated Components: Modified ResumeExperienceSection and ResumeSkillsSection to accept refs for the description and skill name fields, ensuring the AI Assistant can auto-fill the last item in the list.
+3. Cosmic Navigator Theme
+Starfield Animation: Added a starfield effect to the AI Assistant dialog background, matching the cosmic look of the masthead and other pages.
+
+Glassmorphism: Applied glassmorphism to the dialog (bg-[rgba(10,12,24,0.95)] backdrop-blur-md border border-[rgba(255,255,255,0.1)]).
+
+Neon Accents: Used hsl(221.2 83.2% 53.3%) for buttons and highlights, consistent with the theme.
+
+Typography: Used Montserrat for the dialog title and Inter for body text, ensuring consistency across the site.
+4. GSAP Animations
+Dialog Entrance: Added a GSAP animation to the dialog entrance (opacity: 0, y: 50 to opacity: 1, y: 0), creating a smooth slide-up effect.
+
+Pulsing Button: Kept the existing pulsing animation for the floating button (scale: 1.05).
+5. User-Friendly Across Tabs
+Tab-Specific Functionality: The AIAssistant now provides tab-specific actions:
+Profile: Generates a summary with a target position and skills highlight, auto-filling the Professional Summary textarea.
+
+Experience: Generates a bullet point and auto-fills the description field of the last experience item.
+
+Skills: Generates a skill and auto-fills the name field of the last skill item.
+
+Other Tabs: Displays a message indicating that the AI Assistant can help with summaries, bullet points, and skills, prompting the user to switch tabs.
+Simplified Interface: The form-like interface (dropdown, skills input, generate button) is more intuitive for users, especially for summary generation, while the chat functionality remains accessible for other tasks.
+6. Validation and Feedback
+Validation: Added validation to ensure at least one of targetPosition or highlightSkills is provided, displaying a warning toast if inputs are missing.
+
+Feedback: After saving the generated content, a toast confirms the action (e.g., "Summary Saved"), and the field is auto-filled.
+

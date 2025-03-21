@@ -8,7 +8,12 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased bg-[#050A18] text-foreground min-h-screen;
+    background-image: 
+      radial-gradient(circle at 20% 35%, rgba(76, 29, 149, 0.2) 0%, rgba(76, 29, 149, 0) 50%),
+      radial-gradient(circle at 75% 44%, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0) 50%),
+      radial-gradient(circle at 50% 80%, rgba(6, 182, 212, 0.15) 0%, rgba(6, 182, 212, 0) 50%);
+    position: relative;
   }
 }
 
@@ -165,9 +170,13 @@
 
 /* Cosmic Navigator Page Layout */
 .cosmic-page {
-  @apply min-h-screen bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)] text-white pt-24 cosmic-nebula;
+  @apply min-h-screen bg-[#050A18] text-white pt-24;
+  background-image: 
+    radial-gradient(circle at 20% 35%, rgba(76, 29, 149, 0.2) 0%, rgba(76, 29, 149, 0) 50%),
+    radial-gradient(circle at 75% 44%, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0) 50%),
+    radial-gradient(circle at 50% 80%, rgba(6, 182, 212, 0.15) 0%, rgba(6, 182, 212, 0) 50%);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   min-height: 100vh;

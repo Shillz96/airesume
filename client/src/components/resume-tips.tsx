@@ -177,61 +177,61 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
   const getLengthOptions = () => {
     if (suggestionType === "skill") {
       return (
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="technical" onClick={() => generateSuggestions("technical")}>Technical</TabsTrigger>
-          <TabsTrigger value="soft" onClick={() => generateSuggestions("soft")}>Soft</TabsTrigger>
-          <TabsTrigger value="industry" onClick={() => generateSuggestions("industry")}>Industry</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 h-7">
+          <TabsTrigger className="px-2 py-0 text-xs" value="technical" onClick={() => generateSuggestions("technical")}>Technical</TabsTrigger>
+          <TabsTrigger className="px-2 py-0 text-xs" value="soft" onClick={() => generateSuggestions("soft")}>Soft</TabsTrigger>
+          <TabsTrigger className="px-2 py-0 text-xs" value="industry" onClick={() => generateSuggestions("industry")}>Industry</TabsTrigger>
         </TabsList>
       );
     }
     
     return (
-      <TabsList className="grid w-full grid-cols-3">
-        <TabsTrigger value="short" onClick={() => generateSuggestions("short")}>Short</TabsTrigger>
-        <TabsTrigger value="medium" onClick={() => generateSuggestions("medium")}>Medium</TabsTrigger>
-        <TabsTrigger value="long" onClick={() => generateSuggestions("long")}>Long</TabsTrigger>
+      <TabsList className="grid w-full grid-cols-3 h-7">
+        <TabsTrigger className="px-2 py-0 text-xs" value="short" onClick={() => generateSuggestions("short")}>Short</TabsTrigger>
+        <TabsTrigger className="px-2 py-0 text-xs" value="medium" onClick={() => generateSuggestions("medium")}>Medium</TabsTrigger>
+        <TabsTrigger className="px-2 py-0 text-xs" value="long" onClick={() => generateSuggestions("long")}>Long</TabsTrigger>
       </TabsList>
     );
   };
 
   return (
-    <Card className="border border-blue-500/30 shadow-lg bg-gradient-to-r from-blue-950/50 to-purple-950/50 backdrop-blur">
-      <CardHeader className="pb-2">
+    <Card className="border border-blue-500/30 shadow-lg bg-gradient-to-r from-blue-950/50 to-purple-950/50 backdrop-blur max-w-full w-full">
+      <CardHeader className="p-3 pb-2">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-blue-400" />
-          <CardTitle className="text-lg text-blue-100">{getTipTitle()}</CardTitle>
+          <Sparkles className="h-4 w-4 text-blue-400" />
+          <CardTitle className="text-sm text-blue-100">{getTipTitle()}</CardTitle>
         </div>
-        <CardDescription className="text-blue-200/70">{getTipDescription()}</CardDescription>
+        <CardDescription className="text-xs text-blue-200/70">{getTipDescription()}</CardDescription>
       </CardHeader>
       
-      <CardContent>
+      <CardContent className="p-3 pt-1">
         <Tabs defaultValue={activeTab} value={activeTab}>
           {getLengthOptions()}
           
-          <div className="mt-4 space-y-3">
+          <div className="mt-2 space-y-2">
             {isGenerating ? (
-              <div className="flex justify-center py-10">
-                <div className="animate-spin h-8 w-8 border-4 border-blue-500 rounded-full border-t-transparent"></div>
+              <div className="flex justify-center py-4">
+                <div className="animate-spin h-6 w-6 border-2 border-blue-500 rounded-full border-t-transparent"></div>
               </div>
             ) : (
               suggestions.map((suggestion, index) => (
                 <div 
                   key={index} 
-                  className="p-3 rounded-md bg-white/10 border border-blue-500/20 hover:border-blue-500/40 transition-all cursor-pointer"
+                  className="p-2 rounded-md bg-white/10 border border-blue-500/20 hover:border-blue-500/40 transition-all cursor-pointer"
                   onClick={() => onApplySuggestion(suggestion)}
                 >
-                  <p className="text-sm text-white leading-relaxed">{suggestion}</p>
-                  <div className="flex justify-end mt-2">
+                  <p className="text-xs text-white leading-relaxed">{suggestion}</p>
+                  <div className="flex justify-end mt-1">
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="text-xs text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
+                      className="h-6 px-2 text-xs text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
                       onClick={(e) => {
                         e.stopPropagation();
                         onApplySuggestion(suggestion);
                       }}
                     >
-                      Apply This
+                      Apply
                     </Button>
                   </div>
                 </div>
@@ -241,10 +241,10 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
         </Tabs>
       </CardContent>
       
-      <CardFooter className="pt-0">
+      <CardFooter className="p-3 pt-0">
         <Button 
           variant="outline" 
-          className="w-full text-blue-300 border-blue-500/30 hover:bg-blue-800/50 hover:text-blue-100"
+          className="w-full h-7 text-xs text-blue-300 border-blue-500/30 hover:bg-blue-800/50 hover:text-blue-100"
           onClick={() => generateSuggestions(activeTab)}
           disabled={isGenerating}
         >

@@ -206,7 +206,7 @@
 /* Cosmic Navigator Page Layout */
 .cosmic-page {
   @apply min-h-screen bg-[#050A18] text-white;
-  padding-top: var(--space-12);
+  padding-top: 0;
   background-image: 
     radial-gradient(circle at 20% 35%, rgba(76, 29, 149, 0.2) 0%, rgba(76, 29, 149, 0) 50%),
     radial-gradient(circle at 75% 44%, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0) 50%),

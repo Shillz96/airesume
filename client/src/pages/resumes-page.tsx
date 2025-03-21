@@ -155,7 +155,7 @@ export default function ResumesPage() {
       <Navbar />
       
       <main className="relative z-10 cosmic-nebula flex-1">
-        <div className="container py-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
+        <div className="container pt-24 pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold tracking-tight cosmic-text-gradient">My Resumes</h1>

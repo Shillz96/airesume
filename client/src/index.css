@@ -7,6 +7,10 @@
     @apply border-border;
   }
 
+  html, body, #root {
+    @apply h-full m-0 p-0;
+  }
+  
   body {
     @apply font-sans antialiased bg-[#050A18] text-foreground min-h-screen;
     background-image: 
@@ -15,6 +19,21 @@
       radial-gradient(circle at 50% 80%, rgba(6, 182, 212, 0.15) 0%, rgba(6, 182, 212, 0) 50%);
     position: relative;
   }
+}
+
+/* Design System - Standardized Spacing */
+:root {
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
 }
 
 /* Cosmic Navigator Theme Effects */
@@ -168,9 +187,26 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
+/* Design System - Consistent Layouts */
+.page-wrapper {
+  @apply flex flex-col min-h-screen;
+}
+
+.page-wrapper main {
+  @apply flex-1 py-6;
+  padding-top: var(--space-12);
+  padding-bottom: var(--space-10); 
+}
+
+.section {
+  @apply bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-lg mb-6;
+  padding: var(--space-6);
+}
+
 /* Cosmic Navigator Page Layout */
 .cosmic-page {
-  @apply min-h-screen bg-[#050A18] text-white pt-24;
+  @apply min-h-screen bg-[#050A18] text-white;
+  padding-top: var(--space-12);
   background-image: 
     radial-gradient(circle at 20% 35%, rgba(76, 29, 149, 0.2) 0%, rgba(76, 29, 149, 0) 50%),
     radial-gradient(circle at 75% 44%, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0) 50%),
@@ -186,6 +222,8 @@
   @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300;
   position: relative;
   overflow: hidden;
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
 }
 
 .cosmic-card::before {
@@ -201,11 +239,44 @@
 }
 
 .cosmic-page-title {
-  @apply text-3xl font-bold mb-4 cosmic-text-gradient;
+  @apply text-3xl font-bold cosmic-text-gradient;
+  margin-bottom: var(--space-6);
 }
 
 .cosmic-section {
-  @apply p-6 rounded-lg bg-white/5 backdrop-blur-md border border-white/10 mb-6;
+  @apply rounded-lg bg-white/5 backdrop-blur-md border border-white/10;
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+/* Content container with consistent padding */
+.content-container {
+  @apply max-w-7xl mx-auto;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
+/* Grid spacing */
+.grid-container {
+  @apply grid;
+  gap: var(--space-4);
+}
+
+/* Form fields and controls */
+.form-group {
+  margin-bottom: var(--space-4);
+}
+
+.input-field, .select-field, .textarea-field {
+  @apply w-full rounded-md bg-white/10 border border-gray-700;
+  padding: var(--space-3) var(--space-4);
+}
+
+/* Buttons with consistent spacing */
+.btn {
+  @apply inline-flex items-center justify-center rounded-md;
+  padding: var(--space-2) var(--space-4);
+  height: var(--space-10);
 }
 
 .cosmic-button {

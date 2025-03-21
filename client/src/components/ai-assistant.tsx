@@ -953,6 +953,10 @@ export default function AIAssistant({
         <DialogContent
           ref={dialogRef}
           className="sm:max-w-[500px] bg-[rgba(10,12,24,0.95)] backdrop-blur-md border-[rgba(255,255,255,0.1)] text-white"
+          style={{ 
+            padding: "var(--space-6)",
+            gap: "var(--space-4)" 
+          }}
         >
           <DialogHeader>
             <DialogTitle className="flex items-center text-white">

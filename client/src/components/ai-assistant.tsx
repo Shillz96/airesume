@@ -57,6 +57,9 @@ interface ChatMessage {
   section?: string; // Indicates which resume section this content is for
 }
 
+// Global state to ensure only one AI Assistant is visible across the application
+let globalAssistantVisible = false;
+
 export default function AIAssistant({ 
   resumeId, 
   onApplySuggestions, 
@@ -72,7 +75,8 @@ export default function AIAssistant({
   const [company, setCompany] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [tailoredContent, setTailoredContent] = useState<TailoredContent | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  // This component should handle its own visibility state rather than relying on parent containers
+  const [isVisible, setIsVisible] = useState(false);
   const [chatMode, setChatMode] = useState<'general' | 'job-specific'>('general');
   const [userInput, setUserInput] = useState("");
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -114,18 +118,18 @@ export default function AIAssistant({
 
   // Animate the dialog entrance with GSAP
   useEffect(() => {
-    if (isDialogOpen && dialogRef.current) {
+    if (isVisible && dialogRef.current) {
       gsap.fromTo(
         dialogRef.current,
         { opacity: 0, y: 50 },
         { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
       );
     }
-  }, [isDialogOpen]);
+  }, [isVisible]);
 
   // Welcome message based on active tab
   useEffect(() => {
-    if (isDialogOpen && chatMessages.length === 0) {
+    if (isVisible && chatMessages.length === 0) {
       const welcomeMessages = {
         profile: "Welcome! I can help you craft a professional summary or headline. What would you like to improve?",
         experience: "Let's make your experience shine! I can suggest achievement-focused bullet points. What role are you describing?",
@@ -142,7 +146,7 @@ export default function AIAssistant({
         message: welcomeMessages[activeTab as keyof typeof welcomeMessages] || welcomeMessages.profile 
       }]);
     }
-  }, [isDialogOpen, activeTab]);
+  }, [isVisible, activeTab]);
 
   // Scroll to the bottom of chat when new messages are added
   useEffect(() => {

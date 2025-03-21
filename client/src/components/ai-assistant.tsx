@@ -1,12 +1,13 @@
+import { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
 import { Button } from "@/components/ui/button";
-import { Cpu, Lightbulb, Briefcase, ArrowRight, Sparkles, RefreshCw, Send, X, MessageSquare, ChevronDown, ChevronUp, PlusCircle, Code } from "lucide-react";
+import { Cpu, Lightbulb, Briefcase, ArrowRight, Sparkles, RefreshCw, Send, X, MessageSquare, ChevronDown, ChevronUp, PlusCircle, Code, Check } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { gsap } from "gsap";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +21,13 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface AIAssistantProps {
   resumeId?: string;
@@ -44,7 +52,8 @@ interface TailoredContent {
 interface ChatMessage {
   sender: 'AI' | 'User';
   message: string;
-  type?: 'summary' | 'bullet' | 'skill' | 'tailoring' | 'general';
+  type?: 'summary' | 'bullet' | 'skill' | 'tailoring' | 'general' | 'option';
+  options?: string[];
 }
 
 export default function AIAssistant({ 
@@ -66,10 +75,29 @@ export default function AIAssistant({
   const [chatMode, setChatMode] = useState<'general' | 'job-specific'>('general');
   const [userInput, setUserInput] = useState("");
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [targetPosition, setTargetPosition] = useState("");
+  const [highlightSkills, setHighlightSkills] = useState("");
+  const [generatedSummary, setGeneratedSummary] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const aiButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const [minimized, setMinimized] = useState(false);
   
+  // Mock job positions (could be populated dynamically via API)
+  const jobPositions = [
+    "Junior Sales Analyst",
+    "Senior Software Engineer",
+    "Data Scientist",
+    "Product Manager",
+    "UX Designer",
+    "Marketing Specialist",
+    "Frontend Developer",
+    "Backend Developer",
+    "Full Stack Developer",
+    "Project Manager"
+  ];
+
   // Animate the AI Assistant button with GSAP
   useEffect(() => {
     if (aiButtonRef.current) {
@@ -82,6 +110,17 @@ export default function AIAssistant({
       });
     }
   }, []);
+
+  // Animate the dialog entrance with GSAP
+  useEffect(() => {
+    if (isDialogOpen && dialogRef.current) {
+      gsap.fromTo(
+        dialogRef.current,
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
+      );
+    }
+  }, [isDialogOpen]);
 
   // Welcome message based on active tab
   useEffect(() => {
@@ -429,6 +468,68 @@ export default function AIAssistant({
     }, 500);
   };
 
+  // Generate summary with target position and highlighted skills
+  const { mutate: generateTargetedSummary, isPending: isGeneratingTargetedSummary } = useMutation({
+    mutationFn: async () => {
+      if (!resumeId) return null;
+      let url = `/api/resumes/${resumeId}/suggestions?summaryOnly=true`;
+      if (targetPosition) {
+        url += `&jobTitle=${encodeURIComponent(targetPosition)}`;
+      }
+      if (highlightSkills) {
+        url += `&highlightSkills=${encodeURIComponent(highlightSkills)}`;
+      }
+      const res = await apiRequest("GET", url);
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      if (data?.success && data.suggestions && Array.isArray(data.suggestions)) {
+        const summary = data.suggestions[0]; // Take the first suggestion
+        setGeneratedSummary(summary);
+        setIsGenerating(false);
+      } else {
+        setGeneratedSummary("Dynamic professional with extensive experience in your field, skilled in adapting to various roles and responsibilities. Ready to leverage expertise to contribute to innovative projects and drive success.");
+        setIsGenerating(false);
+      }
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error generating summary",
+        description: error.message,
+        variant: "destructive",
+      });
+      setGeneratedSummary("Dynamic professional with extensive experience in your field, skilled in adapting to various roles and responsibilities. Ready to leverage expertise to contribute to innovative projects and drive success.");
+      setIsGenerating(false);
+    }
+  });
+
+  const handleGenerateSummary = () => {
+    if (!targetPosition && !highlightSkills) {
+      toast({
+        title: "Input needed",
+        description: "Please select a target position or enter skills to highlight.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+    generateTargetedSummary();
+  };
+
+  const handleSaveSummary = () => {
+    if (onApplySummary && generatedSummary) {
+      onApplySummary(generatedSummary);
+      toast({
+        title: "Summary Saved",
+        description: "Your professional summary has been updated.",
+      });
+      setGeneratedSummary("");
+      setTargetPosition("");
+      setHighlightSkills("");
+    }
+  };
+  
   const handleApplyMessage = (message: string, type?: string) => {
     if (!type) return;
     

@@ -17,6 +17,7 @@ import AdminAccess from "@/pages/admin-access";
 import { ProtectedRoute } from "./lib/protected-route";
 
 import Navbar from "@/components/navbar";
+import GoAdminLink from "@/components/go-admin-link";
 
 function Router() {
   return (
@@ -73,6 +74,8 @@ function AppContent() {
       <div className={showNavbar ? "pt-16" : ""}>
         <Router />
       </div>
+      {/* Admin access button - always visible */}
+      <GoAdminLink />
     </div>
   );
 }

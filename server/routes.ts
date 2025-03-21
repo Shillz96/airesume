@@ -14,14 +14,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
   await setupAuth(app);
   
-  // Route to promote user to admin
+  // Route to promote user to admin - allow direct access without authentication
   app.post('/api/admin/make-admin', async (req, res) => {
-    // Check if the user is authenticated
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ error: 'User must be logged in' });
-    }
-    
-    // Get the requested username to make admin (if not provided, use the current user)
     const { username } = req.body;
     
     try {
@@ -33,9 +27,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (!userToPromote) {
           return res.status(404).json({ error: 'User not found' });
         }
-      } else {
-        // Otherwise use the currently logged in user
+      } else if (req.isAuthenticated()) {
+        // If no username but authenticated, use the current user
         userToPromote = req.user;
+      } else {
+        // Create a sample user with admin privileges if not logged in
+        // This is for demo purposes only
+        const demoUser = await storage.createUser({
+          username: "demouser" + Math.floor(Math.random() * 10000),
+          password: "password123",
+          email: "demo@example.com",
+          isAdmin: true
+        });
+        return res.status(200).json(demoUser);
       }
       
       // Update the user to make them an admin
@@ -45,8 +49,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ error: 'Failed to update user' });
       }
       
-      // If the updated user is the current user, update the session as well
-      if (userToPromote.id === req.user.id) {
+      // If the updated user is the current user (and user is authenticated), update the session as well
+      if (req.isAuthenticated() && userToPromote.id === req.user.id) {
         req.login(updatedUser, (err) => {
           if (err) {
             return res.status(500).json({ error: 'Error updating session' });

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Cpu, Lightbulb, Briefcase, ArrowRight, Sparkles, RefreshCw, Send, X, MessageSquare, ChevronDown, ChevronUp, PlusCircle } from "lucide-react";
+import { Cpu, Lightbulb, Briefcase, ArrowRight, Sparkles, RefreshCw, Send, X, MessageSquare, ChevronDown, ChevronUp, PlusCircle, Code } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -916,10 +916,173 @@ export default function AIAssistant({
     </Dialog>
   );
 
+  // Submit user message
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleUserMessage();
+  };
+  
+  // Suggestion action handler
+  const handleSuggestionAction = (type: string) => {
+    const actionMap: Record<string, () => void> = {
+      'summary': () => {
+        setChatMessages(prev => [...prev, { sender: 'User', message: "Help me improve my professional summary" }]);
+        generateSummary();
+      },
+      'bullet': () => {
+        setChatMessages(prev => [...prev, { sender: 'User', message: "Suggest a bullet point for my experience" }]);
+        generateBulletPoints();
+      },
+      'skill': () => {
+        setChatMessages(prev => [...prev, { sender: 'User', message: "What skills should I add to my resume?" }]);
+        generateSkills();
+      }
+    };
+    
+    if (actionMap[type]) {
+      actionMap[type]();
+    }
+  };
+
+  // Loading state for the AI response
+  const isLoading = isGeneratingSuggestions || isGeneratingSummary || isGeneratingBullets || isGeneratingSkills || isTailoring;
+
   return (
     <>
-      <FloatingButton />
-      <ChatDialog />
+      <div className="fixed bottom-4 right-4 z-50">
+        <button 
+          ref={aiButtonRef}
+          onClick={() => setIsDialogOpen(true)} 
+          className={`group flex items-center justify-center ${
+            minimized ? 'w-12 h-12 rounded-full' : 'w-auto h-12 pl-3 pr-4 rounded-full'
+          } bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300`}
+        >
+          <div className="absolute inset-0 rounded-full bg-black bg-opacity-10 cosmic-pulse-slow"></div>
+          <Cpu className="h-5 w-5 text-white mr-2" />
+          {!minimized && (
+            <span className="text-sm font-medium">AI Assistant</span>
+          )}
+        </button>
+      </div>
+      
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent 
+          className="max-w-md p-0 overflow-hidden border-0 bg-gradient-to-b from-[#0f1729] to-[#111827] rounded-xl shadow-2xl"
+          style={{
+            backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.1), transparent 70%)'
+          }}
+        >
+          <div className="w-full flex items-center justify-between bg-gradient-to-r from-blue-900/80 to-purple-900/80 px-4 py-2 border-b border-white/10">
+            <DialogTitle className="text-white flex items-center gap-2 text-lg font-medium">
+              <Cpu className="h-5 w-5 text-blue-400" />
+              Cosmic AI Assistant
+            </DialogTitle>
+            
+            <div className="flex items-center gap-1">
+              <button 
+                className="p-1 text-gray-400 hover:text-white rounded-full"
+                onClick={() => {
+                  setIsDialogOpen(false);
+                  setMinimized(true);
+                }}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+          
+          <div className="px-1 pt-3 pb-4">
+            <div className="chat-message-container max-h-80 overflow-y-auto p-2 space-y-3">
+              {chatMessages.map((msg, idx) => (
+                <div 
+                  key={idx} 
+                  className={`flex ${msg.sender === 'User' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className={`max-w-[80%] p-2 rounded-lg ${
+                    msg.sender === 'User'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-[rgba(255,255,255,0.05)] text-gray-200'
+                  } text-sm`}>
+                    <p>{msg.message}</p>
+                    {msg.sender === 'AI' && msg.type && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="mt-1 h-6 text-xs text-blue-300 hover:text-blue-100 hover:bg-blue-900/30 px-2"
+                        onClick={() => handleApplyMessage(msg.message, msg.type)}
+                      >
+                        <PlusCircle className="h-3 w-3 mr-1" />
+                        Apply to Resume
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+              <div ref={chatEndRef} />
+            </div>
+            
+            <div className="px-3 mt-2">
+              <form onSubmit={handleSubmit} className="flex gap-2">
+                <Input
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  placeholder="Ask AI Assistant a question..."
+                  className="flex-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white text-sm"
+                />
+                <Button 
+                  type="submit" 
+                  size="sm" 
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                  disabled={isLoading || !userInput.trim()}
+                >
+                  {isLoading ? (
+                    <RefreshCw className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
+                </Button>
+              </form>
+            </div>
+            
+            <div className="text-xs text-center text-gray-400 mt-3 px-3">
+              <p>Specific to <span className="text-blue-400">{activeTab.toUpperCase()}</span> tab</p>
+            </div>
+            
+            <div className="px-3 mt-2">
+              <div className="text-xs text-gray-400 mb-2">Quick Actions:</div>
+              <div className="flex flex-wrap gap-1">
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  className="h-7 text-xs text-blue-300 hover:text-blue-100 hover:bg-[rgba(59,130,246,0.1)]"
+                  onClick={() => handleSuggestionAction('summary')}
+                >
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  Summary
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  className="h-7 text-xs text-blue-300 hover:text-blue-100 hover:bg-[rgba(59,130,246,0.1)]"
+                  onClick={() => handleSuggestionAction('bullet')}
+                >
+                  <Briefcase className="h-3 w-3 mr-1" />
+                  Bullet Point
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  className="h-7 text-xs text-blue-300 hover:text-blue-100 hover:bg-[rgba(59,130,246,0.1)]"
+                  onClick={() => handleSuggestionAction('skill')}
+                >
+                  <Lightbulb className="h-3 w-3 mr-1" />
+                  Skill
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

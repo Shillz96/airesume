@@ -17,7 +17,6 @@ import LandingPage from "@/pages/landing-page";
 import AdminAccess from "@/pages/admin-access";
 import { ProtectedRoute } from "./lib/protected-route";
 import { useEffect, useRef } from "react";
-import { Loader2 } from "lucide-react";
 
 import Navbar from "@/components/navbar";
 import GoAdminLink from "@/components/go-admin-link";
@@ -25,6 +24,7 @@ import QuickLogin from "@/components/quick-login";
 import AuthDialog from "@/components/auth-dialog";
 import PageTransition from "@/components/page-transition";
 import CosmicLoader from "@/components/cosmic-loader";
+import GlobalLoading from "@/components/global-loading";
 
 function Router() {
   // Manual check for admin-access path to handle direct navigation
@@ -230,6 +230,7 @@ function App() {
         <GuestModeProvider>
           <AuthDialogProvider>
             <AppContent />
+            <GlobalLoading />
             <Toaster />
           </AuthDialogProvider>
         </GuestModeProvider>

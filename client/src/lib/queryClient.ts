@@ -54,6 +54,12 @@ export const getQueryFn: <T>(options: {
     return await res.json();
   };
 
+// Custom event to trigger loading indicator
+export const triggerLoading = (isLoading: boolean) => {
+  const eventName = isLoading ? 'cosmic-loading-start' : 'cosmic-loading-complete';
+  document.dispatchEvent(new Event(eventName));
+};
+
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -67,4 +73,38 @@ export const queryClient = new QueryClient({
       retry: false,
     },
   },
+});
+
+// Add global loading indicators for queries and mutations
+queryClient.getQueryCache().subscribe(event => {
+  const queries = queryClient.getQueryCache().getAll();
+  const isFetching = queries.some(query => query.state.isFetching);
+  
+  if (isFetching) {
+    triggerLoading(true);
+  } else {
+    // Small delay to prevent flashing
+    setTimeout(() => {
+      const isStillFetching = queryClient.getQueryCache().getAll().some(q => q.state.isFetching);
+      if (!isStillFetching) {
+        triggerLoading(false);
+      }
+    }, 300);
+  }
+});
+
+queryClient.getMutationCache().subscribe(event => {
+  const mutations = queryClient.getMutationCache().getAll();
+  const isPending = mutations.some(mutation => mutation.state.status === 'pending');
+  
+  if (isPending) {
+    triggerLoading(true);
+  } else {
+    setTimeout(() => {
+      const isStillPending = queryClient.getMutationCache().getAll().some(m => m.state.status === 'pending');
+      if (!isStillPending) {
+        triggerLoading(false);
+      }
+    }, 300);
+  }
 });

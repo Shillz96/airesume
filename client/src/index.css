@@ -387,10 +387,10 @@
 /* Loader orbital animation */
 @keyframes orbit {
   0% {
-    transform: rotate(0deg) translateX(8px) rotate(0deg);
+    transform: translateX(-50%) rotate(0deg) translateX(12px) rotate(0deg);
   }
   100% {
-    transform: rotate(360deg) translateX(8px) rotate(-360deg);
+    transform: translateX(-50%) rotate(360deg) translateX(12px) rotate(-360deg);
   }
 }
 

@@ -18,26 +18,37 @@ export function GuestModeProvider({ children }: { children: ReactNode }) {
   const [isGuestMode, setIsGuestMode] = useState(false);
   const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
 
-  // Check for guest mode in URL parameters
+  // Check for guest mode in URL parameters and auto-enable when needed
   useEffect(() => {
     if (user) {
+      // If user is logged in, never use guest mode
       setIsGuestMode(false);
       return;
     }
+    
+    // Check location path - if not on landing page, enable guest mode automatically
+    const isOnProtectedPage = location !== "/" && !location.startsWith("/?");
     
     // Get the guest parameter from the URL
     const urlParams = new URLSearchParams(window.location.search);
     const guestParam = urlParams.get('guest');
     
-    // Set guest mode based on URL parameter
-    if (guestParam === 'true') {
+    // Auto-enable guest mode for any of these conditions:
+    // 1. When guest=true parameter is in URL
+    // 2. When user is on any page other than the landing page and not logged in
+    if (guestParam === 'true' || isOnProtectedPage) {
       setIsGuestMode(true);
-    } else {
-      // If not explicitly set to true, check if we should keep existing state
-      // Only change to false if explicitly set to something other than 'true'
-      if (guestParam !== null) {
-        setIsGuestMode(false);
+      
+      // If we're enabling guest mode automatically on a path without the parameter,
+      // add it to the URL without page reload for consistency
+      if (isOnProtectedPage && guestParam !== 'true') {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('guest', 'true');
+        window.history.replaceState({}, '', currentUrl.toString());
       }
+    } else if (guestParam === 'false') {
+      // Only explicitly disable if guest=false
+      setIsGuestMode(false);
     }
   }, [location, user]);
 
@@ -87,7 +98,8 @@ export function GuestModeProvider({ children }: { children: ReactNode }) {
 
   return (
     <GuestContext.Provider value={{ isGuestMode, showGuestModal, hideGuestModal }}>
-      {isGuestMode && !user && <GuestModeDialog />}
+      {/* Only render the dialog when explicitly shown, not automatically */}
+      {isGuestModalOpen && isGuestMode && !user && <GuestModeDialog />}
       {children}
     </GuestContext.Provider>
   );

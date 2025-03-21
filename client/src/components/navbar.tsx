@@ -150,37 +150,38 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex">
-            <div 
-              className="flex-shrink-0 flex items-center"
-              ref={logoRef}
+          {/* Left side - logo */}
+          <div 
+            className="flex-shrink-0 flex items-center"
+            ref={logoRef}
+          >
+            <Link 
+              href={user ? "/dashboard" : "/"} 
+              className="flex items-center cosmic-text-gradient font-bold text-xl cursor-pointer"
             >
-              <Link 
-                href={user ? "/dashboard" : "/"} 
-                className="flex items-center cosmic-text-gradient font-bold text-xl cursor-pointer"
-              >
-                <Rocket className="mr-2 h-5 w-5" />
-                AIreHire
-              </Link>
-            </div>
-            <div className="hidden sm:flex sm:justify-center sm:flex-1">
-              <div className="flex justify-center space-x-8">
-                {navItems.map((item, index) => (
-                  <a 
-                    key={item.path} 
-                    href={item.path}
-                    ref={el => navItemsRef.current[index] = el}
-                    className={`${
-                      location === item.path
-                        ? "border-blue-500 text-blue-400"
-                        : "border-transparent text-gray-300 hover:border-gray-500 hover:text-gray-100"
-                    } inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium cursor-pointer transition-colors duration-200`}
-                  >
-                    <span className={getIconColor(location === item.path)}>{item.icon}</span>
-                    {item.label}
-                  </a>
-                ))}
-              </div>
+              <Rocket className="mr-2 h-5 w-5" />
+              AIreHire
+            </Link>
+          </div>
+          
+          {/* Center - main navigation */}
+          <div className="hidden sm:flex flex-1 justify-center">
+            <div className="flex items-center space-x-8">
+              {navItems.map((item, index) => (
+                <a 
+                  key={item.path} 
+                  href={item.path}
+                  ref={el => navItemsRef.current[index] = el}
+                  className={`${
+                    location === item.path
+                      ? "border-blue-500 text-blue-400"
+                      : "border-transparent text-gray-300 hover:border-gray-500 hover:text-gray-100"
+                  } inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium cursor-pointer transition-colors duration-200`}
+                >
+                  <span className={getIconColor(location === item.path)}>{item.icon}</span>
+                  {item.label}
+                </a>
+              ))}
             </div>
           </div>
           <div 

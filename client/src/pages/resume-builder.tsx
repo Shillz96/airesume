@@ -910,6 +910,8 @@ function ResumePreview({
 
   // Auto-adjust feature to fit content on one page
   const autoAdjust = () => {
+    const { toast } = useToast(); // Get toast here in scope
+    
     setIsAutoAdjusting(true);
     const previewElement = previewRef.current;
     if (!previewElement) return;
@@ -933,8 +935,9 @@ function ResumePreview({
       // Apply the changes directly to the content
       if (previewElement) {
         // Update the style to reflect the changes immediately
-        const templateContent = previewElement.querySelector('.bg-white');
+        const templateContent = previewElement.querySelector('.bg-white') as HTMLElement;
         if (templateContent) {
+          // Apply font size and line height to the template
           templateContent.style.fontSize = `${fontReduction * 100}%`;
           templateContent.style.lineHeight = `${Math.max(1.1, spacingReduction * 1.5)}`;
           
@@ -966,7 +969,7 @@ function ResumePreview({
       
       // Reset styles if necessary
       if (previewElement) {
-        const templateContent = previewElement.querySelector('.bg-white');
+        const templateContent = previewElement.querySelector('.bg-white') as HTMLElement;
         if (templateContent) {
           templateContent.style.fontSize = '100%';
           templateContent.style.lineHeight = '1.5';

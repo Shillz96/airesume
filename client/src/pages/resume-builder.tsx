@@ -476,6 +476,7 @@ export default function ResumeBuilder() {
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [resumeId, setResumeId] = useState<number | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   // Initial resume state
   const [resume, setResume] = useState<Resume>({
@@ -1272,6 +1273,32 @@ export default function ResumeBuilder() {
           </div>
         </div>
       </main>
+      
+      {/* AI Assistant Dialog for Summary Generation */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent 
+          className="sm:max-w-[550px] bg-[rgba(10,12,24,0.95)] backdrop-blur-md border-[rgba(255,255,255,0.1)] text-white"
+        >
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Cpu className="h-5 w-5 text-blue-400" />
+              Generate Professional Summary
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-2">
+            <AIAssistant 
+              resumeId={resumeId?.toString()}
+              onApplySummary={(summary) => {
+                handleApplySummary(summary);
+                setIsDialogOpen(false);
+              }}
+              resume={resume}
+              activeTab="profile"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

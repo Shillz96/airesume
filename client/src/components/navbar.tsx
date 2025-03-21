@@ -246,19 +246,25 @@ export default function Navbar() {
                     <div className="px-4 py-2 text-sm text-gray-300 font-medium border-b border-white/10 mb-1">
                       Guest Mode
                     </div>
-                    <DropdownMenuItem
-                      className="cursor-pointer text-blue-400 hover:bg-blue-900/20 hover:text-blue-300 focus:bg-blue-900/20 focus:text-blue-300"
-                      onClick={openLogin}
-                    >
-                      <LogIn className="mr-2 h-4 w-4" /> 
-                      Log In
+                    <DropdownMenuItem asChild>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start cursor-pointer text-blue-400 hover:bg-blue-900/20 hover:text-blue-300 focus:bg-blue-900/20 focus:text-blue-300"
+                        onClick={openLogin}
+                      >
+                        <LogIn className="mr-2 h-4 w-4" /> 
+                        Log In
+                      </Button>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="cursor-pointer text-green-400 hover:bg-green-900/20 hover:text-green-300 focus:bg-green-900/20 focus:text-green-300"
-                      onClick={openRegister}
-                    >
-                      <User className="mr-2 h-4 w-4" /> 
-                      Sign Up
+                    <DropdownMenuItem asChild>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start cursor-pointer text-green-400 hover:bg-green-900/20 hover:text-green-300 focus:bg-green-900/20 focus:text-green-300"
+                        onClick={openRegister}
+                      >
+                        <User className="mr-2 h-4 w-4" /> 
+                        Sign Up
+                      </Button>
                     </DropdownMenuItem>
                   </>
                 )}

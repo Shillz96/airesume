@@ -1,0 +1,501 @@
+Enhancements to the AI Assistant Across Resume Tabs
+1 . Make the AI Assistant a Floating Chatbot
+Why:
+The current AI Assistant is a static panel on the right, which takes up space and feels disconnected from the user’s workflow. A floating chatbot (accessible via a button) is more interactive and user-friendly because:
+It’s always available without cluttering the UI.
+
+It can provide contextual suggestions based on the active tab.
+
+It feels more conversational, enhancing the user experience.
+Enhancement:
+Move the AI Assistant into a floating button that opens a dialog with a chat interface.
+
+Use GSAP to animate the button with a subtle pulse effect, drawing attention without being intrusive.
+2. Add Contextual Suggestions for Each Tab
+Why:
+The AI Assistant currently offers summary suggestions and tips only in the Profile tab. To make it more useful, it should provide relevant suggestions for each tab:
+Profile: Suggest professional summaries and headlines.
+
+Experience: Suggest bullet points and quantify achievements.
+
+Education: Suggest formatting or additional details (e.g., GPA, honors).
+
+Skills: Suggest skills based on job trends.
+
+Projects: Suggest project descriptions and technologies.
+
+Preview: Provide optimization tips (e.g., ATS keywords, length).
+Enhancement:
+Create a tabContext state to track the active tab and display relevant suggestions.
+
+Add a chat-like interface where the AI proactively offers suggestions and responds to user queries.
+3. Enhance Interactivity with a Conversational Interface
+Why:
+A conversational interface makes the AI Assistant feel more like a personal guide, improving user engagement. Users can ask questions (e.g., "How do I improve my resume score?") and get tailored responses.
+Enhancement:
+Implement a simple chat interface with predefined responses based on the tab and user input.
+
+Add quick action buttons (e.g., "Generate Summary," "Add Skill") for common tasks.
+4. Align with the Cosmic Navigator Theme
+Why:
+The AI Assistant should match the Cosmic Navigator theme (dark gradient background, starfield animation, neon accents, glassmorphism) for visual consistency across the site.
+Enhancement:
+Use glassmorphism for the chat dialog (bg-[rgba(255,255,255,0.1)] backdrop-blur-md border border-[rgba(255,255,255,0.2)]).
+
+Apply neon accents (hsl(221.2 83.2% 53.3%)) for buttons and highlights.
+
+Add a subtle starfield animation in the background of the chat dialog.
+5. Add GSAP Animations for Interactivity
+Why:
+Animations make the AI Assistant feel more dynamic and engaging. A subtle entrance animation for the chat dialog and a pulsing effect on the floating button will draw user attention.
+Enhancement:
+Use GSAP to animate the chat dialog entrance (fade-in and slide-up).
+
+Add a pulsing glow effect to the floating button to make it noticeable.
+Updated Code
+Here’s the enhanced ResumeBuilder component with an interactive AI Assistant across all tabs, styled with the Cosmic Navigator theme:
+jsx
+import { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { FileText, Briefcase, GraduationCap, Code, FolderKanban, Eye, Cpu, Send, Sparkles } from "lucide-react";
+
+// AI Assistant Component
+function AIAssistant({ tabContext, onApplySummary, onApplyBulletPoint, onApplySkill }) {
+ const [chatMessages, setChatMessages] = useState([]);
+ const [userInput, setUserInput] = useState("");
+ const chatRef = useRef(null);
+
+ // Initialize with a welcome message based on the active tab
+ useEffect(() => {
+ const welcomeMessages = {
+ profile: "Hi! I can help you craft a professional summary or headline for your resume. What would you like to do?",
+ experience: "Let’s make your experience shine! I can suggest bullet points or help quantify your achievements. What do you need?",
+ education: "I can help format your education details or suggest additions like GPA or honors. How can I assist?",
+ skills: "I can suggest skills to add based on job trends. Want to see some recommendations?",
+ projects: "Let’s enhance your project descriptions! I can suggest details or technologies to include. What project are you working on?",
+ preview: "Your resume is almost ready! I can provide optimization tips for ATS or length. What would you like to improve?"
+ };
+
+ setChatMessages([{ sender: "AI", message: welcomeMessages[tabContext] }]);
+ }, [tabContext]);
+
+ // Simulate AI responses (replace with actual AI logic in production)
+ const handleUserInput = () => {
+ if (!userInput.trim()) return;
+
+ setChatMessages([...chatMessages, { sender: "User", message: userInput }]);
+
+ // Mock AI responses based on tab and input
+ setTimeout(() => {
+ let response = "";
+ switch (tabContext) {
+ case "profile":
+ if (userInput.toLowerCase().includes("summary")) {
+ response = "Here’s a suggested summary: 'Experienced Software Engineer with expertise in JavaScript and React, delivering high-impact solutions.'";
+ } else if (userInput.toLowerCase().includes("headline")) {
+ response = "How about this headline: 'Senior Software Engineer | React & TypeScript Expert'";
+ } else {
+ response = "I can help with your professional summary or headline. What would you like to focus on?";
+ }
+ break;
+ case "experience":
+ response = "Here’s a bullet point: 'Led a team of 5 developers to deliver a cloud-based application, reducing deployment time by 30%.'";
+ break;
+ case "education":
+ response = "Consider adding your GPA if it’s above 3.5, or mention any honors like 'Dean’s List.' Would you like more formatting tips?";
+ break;
+ case "skills":
+ response = "Based on job trends, I suggest adding: JavaScript, React, and Docker. Want to add these?";
+ break;
+ case "projects":
+ response = "For your project description, try: 'Developed a scalable web app using React and Node.js, improving user engagement by 20%.' Want to use this?";
+ break;
+ case "preview":
+ response = "Ensure your resume is 1-2 pages and includes ATS keywords like 'JavaScript' and 'React.' Want more optimization tips?";
+ break;
+ default:
+ response = "I’m here to help with your resume! What would you like assistance with?";
+ }
+
+ setChatMessages((prev) => [...prev, { sender: "AI", message: response }]);
+ setUserInput("");
+ }, 500);
+ };
+
+ // Apply AI suggestions
+ const handleApplySuggestion = (message) => {
+ if (tabContext === "profile" && message.includes("summary")) {
+ onApplySummary(message.split(": ")[1]);
+ } else if (tabContext === "experience") {
+ onApplyBulletPoint(message.split(": ")[1]);
+ } else if (tabContext === "skills") {
+ const skills = message.split(": ")[1].split(", ").map(skill => skill.trim());
+ skills.forEach(skill => onApplySkill(skill));
+ }
+ };
+
+ return (
+ <div className="relative h-[400px] flex flex-col">
+ {/* Chat Messages */}
+ <div className="flex-1 overflow-y-auto p-4 space-y-4">
+ {chatMessages.map((msg, index) => (
+ <div key={index} className={`flex ${msg.sender === "User" ? "justify-end" : "justify-start"}`}>
+ <div
+ className={`max-w-[70%] p-3 rounded-lg ${
+ msg.sender === "User"
+ ? "bg-[hsl(221.2,83.2%,53.3%)] text-black"
+ : "bg-[rgba(255,255,255,0.05)] text-gray-300"
+ }`}
+ style={{ fontFamily: "'Inter', sans-serif" }}
+ >
+ <p className="text-sm">{msg.message}</p>
+ {msg.sender === "AI" && msg.message.includes(": ") && (
+ <Button
+ onClick={() => handleApplySuggestion(msg.message)}
+ className="mt-2 bg-[hsl(221.2,83.2%,53.3%)] hover:bg-[hsl(221.2,83.2%,63.3%)] text-black text-xs"
+ >
+ Apply Suggestion
+ </Button>
+ )}
+ </div>
+ </div>
+ ))}
+ <div ref={chatRef} />
+ </div>
+
+ {/* Chat Input */}
+ <div className="p-4 border-t border-gray-700">
+ <div className="flex items-center gap-2">
+ <Input
+ value={userInput}
+ onChange={(e) => setUserInput(e.target.value)}
+ onKeyPress={(e) => e.key === "Enter" && handleUserInput()}
+ placeholder="Ask me anything..."
+ className="bg-gray-800 text-white border-gray-600 flex-1"
+ style={{ fontFamily: "'Inter', sans-serif" }}
+ />
+ <Button onClick={handleUserInput} className="bg-[hsl(221.2,83.2%,53.3%)] hover:bg-[hsl(221.2,83.2%,63.3%)] text-black">
+ <Send className="h-4 w-4" />
+ </Button>
+ </div>
+ </div>
+
+ {/* Quick Actions */}
+ <div className="p-4 border-t border-gray-700 flex gap-2">
+ <Button
+ onClick={() => {
+ setChatMessages([...chatMessages, { sender: "User", message: "Generate a summary" }]);
+ handleUserInput();
+ }}
+ variant="outline"
+ className="border-[hsl(221.2,83.2%,53.3%)] text-[hsl(221.2,83.2%,53.3%)] text-xs"
+ >
+ <Sparkles className="h-4 w-4 mr-2" />
+ Generate Summary
+ </Button>
+ {tabContext === "skills" && (
+ <Button
+ onClick={() => {
+ setChatMessages([...chatMessages, { sender: "User", message: "Suggest skills" }]);
+ handleUserInput();
+ }}
+ variant="outline"
+ className="border-[hsl(221.2,83.2%,53.3%)] text-[hsl(221.2,83.2%,53.3%)] text-xs"
+ >
+ <Sparkles className="h-4 w-4 mr-2" />
+ Suggest Skills
+ </Button>
+ )}
+ </div>
+ </div>
+ );
+}
+
+// Resume Builder Component
+export default function ResumeBuilder() {
+ const [activeTab, setActiveTab] = useState("profile");
+ const [resume, setResume] = useState({
+ personalInfo: {
+ firstName: "",
+ lastName: "",
+ email: "",
+ phone: "",
+ headline: "",
+ summary: "",
+ },
+ experience: [],
+ education: [],
+ skills: [],
+ projects: [],
+ });
+ const [isAIAssistantOpen, setIsAIAssistantOpen] = useState(false);
+ const aiButtonRef = useRef(null);
+
+ // GSAP Animation for AI Assistant Button
+ useEffect(() => {
+ gsap.to(aiButtonRef.current, {
+ scale: 1.1,
+ duration: 1,
+ repeat: -1,
+ yoyo: true,
+ ease: "power1.inOut",
+ });
+ }, []);
+
+ const handlePersonalInfoChange = (field, value) => {
+ setResume({
+ ...resume,
+ personalInfo: {
+ ...resume.personalInfo,
+ [field]: value,
+ },
+ });
+ };
+
+ const handleApplySummary = (summary) => {
+ setResume({
+ ...resume,
+ personalInfo: {
+ ...resume.personalInfo,
+ summary,
+ },
+ });
+ };
+
+ const handleApplyBulletPoint = (bulletPoint) => {
+ const newExperience = {
+ id: `exp-${Date.now()}`,
+ title: "New Position",
+ company: "Company Name",
+ startDate: "2022-01",
+ endDate: "Present",
+ description: bulletPoint,
+ };
+ setResume({
+ ...resume,
+ experience: [...resume.experience, newExperience],
+ });
+ };
+
+ const handleApplySkill = (skill) => {
+ const newSkill = {
+ id: `skill-${Date.now()}`,
+ name: skill,
+ proficiency: 3,
+ };
+ setResume({
+ ...resume,
+ skills: [...resume.skills, newSkill],
+ });
+ };
+
+ return (
+ <div className="min-h-screen bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)] text-white relative overflow-hidden">
+ {/* Starfield Background */}
+ <div className="starfield absolute inset-0 pointer-events-none">
+ {[...Array(50)].map((_, i) => (
+ <div
+ key={i}
+ className="star absolute bg-white rounded-full"
+ style={{
+ width: Math.random() * 2 + 1 + "px",
+ height: Math.random() * 2 + 1 + "px",
+ top: Math.random() * 100 + "%",
+ left: Math.random() * 100 + "%",
+ animation: `twinkle ${Math.random() * 3 + 2}s infinite`,
+ }}
+ />
+ ))}
+ </div>
+
+ {/* Navigation Tabs */}
+ <nav className="bg-[rgba(255,255,255,0.05)] p-4 flex justify-center relative z-10">
+ <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-3xl">
+ <TabsList className="grid grid-cols-6 bg-[rgba(255,255,255,0.1)] backdrop-blur-md">
+ <TabsTrigger value="profile" className="text-white">Profile</TabsTrigger>
+ <TabsTrigger value="experience" className="text-white">Experience</TabsTrigger>
+ <TabsTrigger value="education" className="text-white">Education</TabsTrigger>
+ <TabsTrigger value="skills" className="text-white">Skills</TabsTrigger>
+ <TabsTrigger value="projects" className="text-white">Projects</TabsTrigger>
+ <TabsTrigger value="preview" className="text-white">Preview</TabsTrigger>
+ </TabsList>
+ </Tabs>
+ </nav>
+
+ {/* Main Content */}
+ <main className="pt-8 pb-16 px-4 relative z-10">
+ <div className="max-w-5xl mx-auto space-y-6">
+ <TabsContent value={activeTab}>
+ {activeTab === "profile" && (
+ <div className="bg-[rgba(255,255,255,0.1)] backdrop-blur-md border border-[rgba(255,255,255,0.2)] rounded-lg p-6">
+ <h2 className="text-lg font-medium text-white mb-4" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+ Personal Information
+ </h2>
+ <div className="grid grid-cols-1 gap-6 sm:grid-cols-6">
+ <div className="sm:col-span-3">
+ <Label htmlFor="first-name" style={{ fontFamily: "'Inter', sans-serif" }}>First name</Label>
+ <Input
+ id="first-name"
+ value={resume.personalInfo.firstName}
+ onChange={(e) => handlePersonalInfoChange("firstName", e.target.value)}
+ className="mt-1 bg-gray-800 text-white border-gray-600"
+ placeholder="John"
+ />
+ </div>
+ <div className="sm:col-span-3">
+ <Label htmlFor="last-name" style={{ fontFamily: "'Inter', sans-serif" }}>Last name</Label>
+ <Input
+ id="last-name"
+ value={resume.personalInfo.lastName}
+ onChange={(e) => handlePersonalInfoChange("lastName", e.target.value)}
+ className="mt-1 bg-gray-800 text-white border-gray-600"
+ placeholder="Doe"
+ />
+ </div>
+ <div className="sm:col-span-4">
+ <Label htmlFor="email" style={{ fontFamily: "'Inter', sans-serif" }}>Email address</Label>
+ <Input
+ id="email"
+ type="email"
+ value={resume.personalInfo.email}
+ onChange={(e) => handlePersonalInfoChange("email", e.target.value)}
+ className="mt-1 bg-gray-800 text-white border-gray-600"
+ placeholder="john.doe@example.com"
+ />
+ </div>
+ <div className="sm:col-span-2">
+ <Label htmlFor="phone" style={{ fontFamily: "'Inter', sans-serif" }}>Phone</Label>
+ <Input
+ id="phone"
+ value={resume.personalInfo.phone}
+ onChange={(e) => handlePersonalInfoChange("phone", e.target.value)}
+ className="mt-1 bg-gray-800 text-white border-gray-600"
+ placeholder="(555) 123-4567"
+ />
+ </div>
+ <div className="sm:col-span-6">
+ <Label htmlFor="headline" style={{ fontFamily: "'Inter', sans-serif" }}>Professional Headline</Label>
+ <Input
+ id="headline"
+ value={resume.personalInfo.headline}
+ onChange={(e) => handlePersonalInfoChange("headline", e.target.value)}
+ className="mt-1 bg-gray-800 text-white border-gray-600"
+ placeholder="Software Engineer with 5+ years of experience"
+ />
+ </div>
+ <div className="sm:col-span-6">
+ <Label htmlFor="summary" style={{ fontFamily: "'Inter', sans-serif" }}>Professional Summary</Label>
+ <Textarea
+ id="summary"
+ value={resume.personalInfo.summary}
+ onChange={(e) => handlePersonalInfoChange("summary", e.target.value)}
+ rows={5}
+ className="mt-1 bg-gray-800 text-white border-gray-600 resize-none"
+ placeholder="Write a concise summary of your professional background, key skills, and career achievements."
+ />
+ </div>
+ </div>
+ </div>
+ )}
+ {/* Add other tabs (Experience, Education, Skills, Projects, Preview) here */}
+ </TabsContent>
+ </div>
+ </main>
+
+ {/* Floating AI Assistant Button */}
+ <div className="fixed bottom-4 right-4 z-20">
+ <Dialog open={isAIAssistantOpen} onOpenChange={setIsAIAssistantOpen}>
+ <DialogTrigger asChild>
+ <Button ref={aiButtonRef} className="rounded-full p-0 w-12 h-12 bg-[hsl(221.2,83.2%,53.3%)] hover:bg-[hsl(221.2,83.2%,63.3%)] text-black">
+ <Cpu className="h-6 w-6" />
+ </Button>
+ </DialogTrigger>
+ <DialogContent className="sm:max-w-[425px] bg-[rgba(255,255,255,0.1)] backdrop-blur-md border border-[rgba(255,255,255,0.2)] text-white">
+ <DialogHeader>
+ <DialogTitle style={{ fontFamily: "'Montserrat', sans-serif" }}>
+ AI Resume Assistant
+ </DialogTitle>
+ </DialogHeader>
+ <AIAssistant
+ tabContext={activeTab}
+ onApplySummary={handleApplySummary}
+ onApplyBulletPoint={handleApplyBulletPoint}
+ onApplySkill={handleApplySkill}
+ />
+ </DialogContent>
+ </Dialog>
+ </div>
+ </div>
+ );
+}
+
+CSS for Starfield (Same as Masthead)
+Add these styles globally (e.g., in index.css):
+css
+.starfield {
+ position: absolute;
+ width: 100%;
+ height: 100%;
+ overflow: hidden;
+}
+
+.star {
+ opacity: 0.7;
+}
+
+@keyframes twinkle {
+ 0%, 100% { opacity: 0.7; }
+ 50% { opacity: 0.2; }
+}
+
+Explanation of Changes
+1. Floating Chatbot
+Implementation: Moved the AI Assistant into a floating button (bottom-4 right-4) that opens a dialog with a chat interface.
+
+Animation: Used GSAP to add a pulsing effect to the button (scale: 1.1), making it noticeable without being intrusive.
+
+Chat Interface: Created a conversational interface with a message history, input field, and quick action buttons.
+2. Contextual Suggestions
+Tab Context: Used the activeTab state to determine the current tab and display relevant suggestions (e.g., summary suggestions for Profile, bullet points for Experience).
+
+Proactive Messages: The AI Assistant greets the user with a tab-specific message when the dialog opens (e.g., "Hi! I can help you craft a professional summary..." for Profile).
+
+Quick Actions: Added buttons like "Generate Summary" and "Suggest Skills" for common tasks, making the assistant more actionable.
+3. Conversational Interface
+Chat Messages: Implemented a simple chat interface with user and AI messages, styled to match the Cosmic Navigator theme (glassmorphism, neon accents).
+
+Mock Responses: Simulated AI responses based on the tab and user input (e.g., "Here’s a suggested summary..." for Profile). In production, replace with actual AI logic (e.g., NLP model).
+
+Apply Suggestions: Added an "Apply Suggestion" button to AI messages, allowing users to directly apply suggestions (e.g., a summary or bullet point) to their resume.
+4. Cosmic Navigator Theme
+Background: Applied the jobFinderBackground gradient (linear-gradient(to bottom right, hsl(219, 90%, 10%), hsl(260, 90%, 10%))) to the page.
+
+Starfield Animation: Added the same starfield effect as the masthead for a cohesive cosmic look.
+
+Primary Color: Used hsl(221.2 83.2% 53.3%) for buttons and highlights.
+
+Glassmorphism: Applied to the form, tabs, and AI Assistant dialog (bg-[rgba(255,255,255,0.1)] backdrop-blur-md border border-[rgba(255,255,255,0.2)]).
+
+Typography: Used Montserrat for headings and Inter for body text, matching the masthead.
+5. GSAP Animations
+Pulsing Button: Animated the AI Assistant button with a scaling effect using GSAP (scale: 1.1).
+
+Dialog Entrance: While the dialog itself isn’t directly animated (due to limitations with DialogContent), the chat messages can be animated on entry if needed (e.g., fade-in for each message).
+Summary of Benefits
+Interactive AI Assistant: The floating chatbot is always accessible, making it easy to get help without cluttering the UI.
+
+Contextual Suggestions: The AI provides tab-specific suggestions, enhancing its utility across all resume-building steps.
+
+Conversational Interface: The chat-like interface feels more engaging and user-friendly, encouraging interaction.
+
+Cosmic Navigator Theme: The design aligns with the masthead’s aesthetic (gradient background, starfield, neon accents, glassmorphism).
+
+Animations: GSAP adds a dynamic, futuristic feel with the pulsing button, making the AI Assistant inviting.
+

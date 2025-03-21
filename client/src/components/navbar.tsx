@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useGuestMode } from "@/hooks/use-guest-mode";
-import { Menu, X, Moon, Sun, User, LogOut, Rocket, FileText, Briefcase, Home, LogIn, CreditCard } from "lucide-react";
+import { Menu, X, Moon, Sun, User, LogOut, Rocket, FileText, Briefcase, Home, LogIn, CreditCard, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -111,10 +111,10 @@ export default function Navbar() {
 
   // Show dashboard items only for logged-in or guest users
   const navItems = [
-    { path: "/dashboard", label: "Dashboard", icon: <Home className="h-4 w-4 mr-1" /> },
+    { path: "/", label: "Dashboard", icon: <Home className="h-4 w-4 mr-1" /> },
     { path: "/resumes", label: "Resumes", icon: <FileText className="h-4 w-4 mr-1" /> },
-    { path: "/resume-builder", label: "Resume Builder", icon: <FileText className="h-4 w-4 mr-1" /> },
-    { path: "/job-finder", label: "Job Finder", icon: <Briefcase className="h-4 w-4 mr-1" /> },
+    { path: "/resume-builder", label: "Resume Builder", icon: <Briefcase className="h-4 w-4 mr-1" /> },
+    { path: "/job-finder", label: "Job Finder", icon: <Search className="h-4 w-4 mr-1" /> },
     { path: "/subscription", label: "Subscription", icon: <CreditCard className="h-4 w-4 mr-1" /> },
   ];
 
@@ -163,22 +163,24 @@ export default function Navbar() {
                 AIreHire
               </Link>
             </div>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-6">
-              {navItems.map((item, index) => (
-                <Link 
-                  key={item.path} 
-                  href={item.path}
-                  ref={el => navItemsRef.current[index] = el}
-                  className={`${
-                    location === item.path
-                      ? "border-blue-500 text-blue-400"
-                      : "border-transparent text-gray-300 hover:border-gray-500 hover:text-gray-100"
-                  } inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium cursor-pointer transition-colors duration-200`}
-                >
-                  <span className={getIconColor(location === item.path)}>{item.icon}</span>
-                  {item.label}
-                </Link>
-              ))}
+            <div className="hidden sm:flex sm:justify-center sm:flex-1">
+              <div className="flex justify-center space-x-8">
+                {navItems.map((item, index) => (
+                  <Link 
+                    key={item.path} 
+                    href={item.path}
+                    ref={el => navItemsRef.current[index] = el}
+                    className={`${
+                      location === item.path
+                        ? "border-blue-500 text-blue-400"
+                        : "border-transparent text-gray-300 hover:border-gray-500 hover:text-gray-100"
+                    } inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium cursor-pointer transition-colors duration-200`}
+                  >
+                    <span className={getIconColor(location === item.path)}>{item.icon}</span>
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
           <div 

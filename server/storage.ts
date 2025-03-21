@@ -1,4 +1,7 @@
-import { User, InsertUser, Job, Application, Resume } from "@shared/schema";
+import { 
+  User, InsertUser, Job, Application, Resume, 
+  Subscription, InsertSubscription, Addon, InsertAddon, Payment, InsertPayment 
+} from "@shared/schema";
 import { type Activity, type DashboardStats } from "./types";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -33,8 +36,23 @@ export interface IStorage {
   getDashboardStats(userId: number): Promise<DashboardStats>;
   getRecentActivities(userId: number): Promise<Activity[]>;
   
+  // Subscription operations
+  getUserSubscription(userId: number): Promise<Subscription | undefined>;
+  createSubscription(subscription: InsertSubscription): Promise<Subscription>;
+  updateSubscription(id: number, userId: number, updates: Partial<InsertSubscription>): Promise<Subscription | undefined>;
+  cancelSubscription(id: number, userId: number): Promise<boolean>;
+  
+  // Add-on operations
+  getUserAddons(userId: number): Promise<Addon[]>;
+  createAddon(addon: InsertAddon): Promise<Addon>;
+  updateAddon(id: number, userId: number, updates: Partial<InsertAddon>): Promise<Addon | undefined>;
+  
+  // Payment operations
+  createPayment(payment: InsertPayment): Promise<Payment>;
+  getPaymentsByUser(userId: number): Promise<Payment[]>;
+  
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: any;
 }
 
 export class MemStorage implements IStorage {
@@ -44,13 +62,19 @@ export class MemStorage implements IStorage {
   private savedJobs: Map<string, boolean>; // Format: userId-jobId
   private applications: Map<number, Application>;
   private activities: Map<number, Activity[]>;
+  private subscriptions: Map<number, Subscription>;
+  private addons: Map<number, Addon>;
+  private payments: Map<number, Payment>;
   
-  sessionStore: session.SessionStore;
+  sessionStore: any;
   currentUserId: number;
   currentResumeId: number;
   currentJobId: number;
   currentApplicationId: number;
   currentActivityId: number;
+  currentSubscriptionId: number;
+  currentAddonId: number;
+  currentPaymentId: number;
 
   constructor() {
     this.users = new Map();
@@ -59,6 +83,9 @@ export class MemStorage implements IStorage {
     this.savedJobs = new Map();
     this.applications = new Map();
     this.activities = new Map();
+    this.subscriptions = new Map();
+    this.addons = new Map();
+    this.payments = new Map();
     
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000 // prune expired entries every 24h
@@ -69,6 +96,9 @@ export class MemStorage implements IStorage {
     this.currentJobId = 1;
     this.currentApplicationId = 1;
     this.currentActivityId = 1;
+    this.currentSubscriptionId = 1;
+    this.currentAddonId = 1;
+    this.currentPaymentId = 1;
     
     // Initialize with sample job data
     this.initializeSampleJobs();
@@ -350,6 +380,202 @@ export class MemStorage implements IStorage {
     // Sort by timestamp in descending order (most recent first)
     return [...userActivities].sort((a, b) => 
       new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
+  }
+  
+  // Subscription operations
+  async getUserSubscription(userId: number): Promise<Subscription | undefined> {
+    // Find the subscription for the given user
+    const subscriptions = Array.from(this.subscriptions.values()).filter(
+      (subscription) => subscription.userId === userId
+    );
+    
+    // Return the active subscription if exists
+    return subscriptions.find(sub => sub.status === 'active');
+  }
+  
+  async createSubscription(subscription: InsertSubscription): Promise<Subscription> {
+    const id = this.currentSubscriptionId++;
+    const now = new Date();
+    
+    // Create the subscription with defaults, ensuring required fields have values
+    const newSubscription: Subscription = {
+      id,
+      userId: subscription.userId,
+      planType: subscription.planType,
+      status: subscription.status || "active",
+      startDate: subscription.startDate || now,
+      endDate: subscription.endDate || null,
+      paymentMethod: subscription.paymentMethod || null,
+      autoRenew: subscription.autoRenew !== undefined ? subscription.autoRenew : true,
+      createdAt: now,
+      updatedAt: now
+    };
+    
+    this.subscriptions.set(id, newSubscription);
+    
+    // Add activity
+    this.addActivity(subscription.userId, {
+      id: this.currentActivityId++,
+      type: 'resume_update', // Using existing type for now
+      title: `Subscription started: ${subscription.planType}`,
+      status: 'complete',
+      timestamp: now.toISOString()
+    });
+    
+    return newSubscription;
+  }
+  
+  async updateSubscription(id: number, userId: number, updates: Partial<InsertSubscription>): Promise<Subscription | undefined> {
+    const existingSubscription = this.subscriptions.get(id);
+    
+    if (!existingSubscription || existingSubscription.userId !== userId) {
+      return undefined;
+    }
+    
+    const updatedSubscription: Subscription = {
+      ...existingSubscription,
+      ...updates,
+      updatedAt: new Date()
+    };
+    
+    this.subscriptions.set(id, updatedSubscription);
+    
+    // Add activity
+    this.addActivity(userId, {
+      id: this.currentActivityId++,
+      type: 'resume_update', // Using existing type for now
+      title: `Subscription updated: ${updatedSubscription.planType}`,
+      status: 'complete',
+      timestamp: new Date().toISOString()
+    });
+    
+    return updatedSubscription;
+  }
+  
+  async cancelSubscription(id: number, userId: number): Promise<boolean> {
+    const existingSubscription = this.subscriptions.get(id);
+    
+    if (!existingSubscription || existingSubscription.userId !== userId) {
+      return false;
+    }
+    
+    // Update the subscription status to cancelled
+    const updatedSubscription: Subscription = {
+      ...existingSubscription,
+      status: 'cancelled',
+      updatedAt: new Date()
+    };
+    
+    this.subscriptions.set(id, updatedSubscription);
+    
+    // Add activity
+    this.addActivity(userId, {
+      id: this.currentActivityId++,
+      type: 'resume_update', // Using existing type for now
+      title: `Subscription cancelled: ${updatedSubscription.planType}`,
+      status: 'complete',
+      timestamp: new Date().toISOString()
+    });
+    
+    return true;
+  }
+  
+  // Add-on operations
+  async getUserAddons(userId: number): Promise<Addon[]> {
+    return Array.from(this.addons.values()).filter(
+      (addon) => addon.userId === userId
+    );
+  }
+  
+  async createAddon(addon: InsertAddon): Promise<Addon> {
+    const id = this.currentAddonId++;
+    const now = new Date();
+    
+    // Create the add-on with defaults, ensuring required fields have values
+    const newAddon: Addon = {
+      id,
+      userId: addon.userId,
+      addonType: addon.addonType,
+      quantity: addon.quantity || 1,
+      expiresAt: addon.expiresAt || null,
+      createdAt: now
+    };
+    
+    this.addons.set(id, newAddon);
+    
+    // Add activity
+    this.addActivity(addon.userId, {
+      id: this.currentActivityId++,
+      type: 'resume_update', // Using existing type for now
+      title: `Add-on purchased: ${addon.addonType}`,
+      status: 'complete',
+      timestamp: now.toISOString()
+    });
+    
+    return newAddon;
+  }
+  
+  async updateAddon(id: number, userId: number, updates: Partial<InsertAddon>): Promise<Addon | undefined> {
+    const existingAddon = this.addons.get(id);
+    
+    if (!existingAddon || existingAddon.userId !== userId) {
+      return undefined;
+    }
+    
+    const updatedAddon: Addon = {
+      ...existingAddon,
+      ...updates
+    };
+    
+    this.addons.set(id, updatedAddon);
+    
+    return updatedAddon;
+  }
+  
+  // Payment operations
+  async createPayment(payment: InsertPayment): Promise<Payment> {
+    const id = this.currentPaymentId++;
+    const now = new Date();
+    
+    // Create the payment with defaults, ensuring required fields have values
+    const newPayment: Payment = {
+      id,
+      userId: payment.userId,
+      amount: payment.amount,
+      currency: payment.currency || "USD",
+      paymentMethod: payment.paymentMethod,
+      status: payment.status,
+      transactionId: payment.transactionId || null,
+      itemType: payment.itemType,
+      itemId: payment.itemId || null,
+      createdAt: now
+    };
+    
+    this.payments.set(id, newPayment);
+    
+    // Add activity based on payment type
+    let activityTitle = "Payment processed";
+    if (payment.itemType === 'subscription') {
+      activityTitle = `Subscription payment: $${payment.amount} ${payment.currency || "USD"}`;
+    } else if (payment.itemType === 'addon') {
+      activityTitle = `Add-on payment: $${payment.amount} ${payment.currency || "USD"}`;
+    }
+    
+    this.addActivity(payment.userId, {
+      id: this.currentActivityId++,
+      type: 'resume_update', // Using existing type for now
+      title: activityTitle,
+      status: 'complete',
+      timestamp: now.toISOString()
+    });
+    
+    return newPayment;
+  }
+  
+  async getPaymentsByUser(userId: number): Promise<Payment[]> {
+    return Array.from(this.payments.values()).filter(
+      (payment) => payment.userId === userId
     );
   }
 

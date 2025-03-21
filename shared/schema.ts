@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, jsonb, timestamp, decimal } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -106,3 +106,78 @@ export const applicationSchema = createInsertSchema(applications).pick({
 
 export type InsertApplication = z.infer<typeof applicationSchema>;
 export type Application = typeof applications.$inferSelect;
+
+// Subscription related schemas
+export const subscriptions = pgTable("subscriptions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  planType: text("plan_type").notNull(), // "free", "starter", "pro", "career_builder" 
+  status: text("status").notNull(), // "active", "cancelled", "expired"
+  startDate: timestamp("start_date").notNull().defaultNow(),
+  endDate: timestamp("end_date"),
+  paymentMethod: text("payment_method"), // "stripe", "crypto", etc.
+  autoRenew: boolean("auto_renew").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const subscriptionSchema = createInsertSchema(subscriptions).pick({
+  userId: true,
+  planType: true,
+  status: true,
+  startDate: true,
+  endDate: true,
+  paymentMethod: true,
+  autoRenew: true,
+});
+
+export type InsertSubscription = z.infer<typeof subscriptionSchema>;
+export type Subscription = typeof subscriptions.$inferSelect;
+
+// Add-ons related schemas
+export const addons = pgTable("addons", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  addonType: text("addon_type").notNull(), // "cover_letter_pack", "interview_prep", "linkedin_import", "premium_filters"
+  quantity: integer("quantity").notNull().default(1),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const addonSchema = createInsertSchema(addons).pick({
+  userId: true,
+  addonType: true,
+  quantity: true,
+  expiresAt: true,
+});
+
+export type InsertAddon = z.infer<typeof addonSchema>;
+export type Addon = typeof addons.$inferSelect;
+
+// Payment related schemas
+export const payments = pgTable("payments", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  amount: decimal("amount").notNull(),
+  currency: text("currency").notNull().default("USD"),
+  paymentMethod: text("payment_method").notNull(), // "stripe", "crypto", etc.
+  status: text("status").notNull(), // "pending", "completed", "failed", "refunded"
+  transactionId: text("transaction_id"), // External payment provider's transaction ID
+  itemType: text("item_type").notNull(), // "subscription", "addon"
+  itemId: integer("item_id"), // ID of the subscription or addon
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const paymentSchema = createInsertSchema(payments).pick({
+  userId: true,
+  amount: true,
+  currency: true,
+  paymentMethod: true,
+  status: true,
+  transactionId: true,
+  itemType: true,
+  itemId: true,
+});
+
+export type InsertPayment = z.infer<typeof paymentSchema>;
+export type Payment = typeof payments.$inferSelect;

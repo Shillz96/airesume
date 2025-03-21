@@ -1112,7 +1112,7 @@ export default function ResumeBuilder() {
               variant="outline"
               onClick={handleFileInputClick}
               disabled={isUploading}
-              className="flex items-center space-x-2 border-white/10 text-gray-200 hover:bg-white/10 hover:text-white"
+              className="flex items-center space-x-2 border-white/10 bg-blue-600/40 text-white hover:bg-blue-600/60"
             >
               {isUploading ? (
                 <>
@@ -1121,8 +1121,8 @@ export default function ResumeBuilder() {
                 </>
               ) : (
                 <>
-                  <Upload className="h-4 w-4 text-blue-400" />
-                  <span>Upload Resume</span>
+                  <Upload className="h-4 w-4 text-white" />
+                  <span>Upload Existing Resume</span>
                 </>
               )}
             </Button>
@@ -1211,6 +1211,35 @@ export default function ResumeBuilder() {
               {/* Profile Section */}
               {activeSection === "profile" && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {/* Welcome Banner - only show when resume is empty */}
+                  {!resume.personalInfo.firstName && !resume.personalInfo.lastName && (
+                    <div className="md:col-span-3 mb-4">
+                      <div className="cosmic-card border border-blue-500/30 bg-blue-900/20 p-6 rounded-lg relative overflow-hidden backdrop-blur-sm">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
+                        <div className="relative z-10">
+                          <div className="flex items-center mb-3">
+                            <Upload className="h-5 w-5 mr-2 text-blue-400" />
+                            <h3 className="font-medium text-xl text-white">Upload Your Existing Resume</h3>
+                          </div>
+                          <p className="text-gray-300 mb-4">
+                            Skip manual entry by uploading your existing resume. Our AI will automatically extract your information and fill out this form for you.
+                          </p>
+                          <div className="flex flex-wrap gap-3">
+                            <Button
+                              onClick={handleFileInputClick}
+                              className="bg-blue-600 text-white hover:bg-blue-700 flex items-center space-x-2"
+                            >
+                              <Upload className="h-4 w-4" />
+                              <span>Upload PDF, DOCX, or TXT</span>
+                            </Button>
+                            <p className="text-sm text-gray-400 flex items-center">
+                              <span className="mr-1">or</span> fill out the form manually below
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   <div className="md:col-span-2 space-y-6">
                     <div>
                       <h2 className="text-xl font-semibold mb-4 text-white flex items-center">

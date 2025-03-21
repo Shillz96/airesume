@@ -822,12 +822,16 @@ function ResumePreview({ resume }: { resume: Resume }) {
 export default function ResumeBuilder() {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [searchParams] = useState(() => new URLSearchParams(window.location.search));
   
   const [resumeSaved, setResumeSaved] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("profile");
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [resumeId, setResumeId] = useState<number | null>(null);
+  const [isTailoredResume, setIsTailoredResume] = useState<boolean>(
+    searchParams.get('tailored') === 'true'
+  );
 
   
   // Initial resume state
@@ -860,6 +864,68 @@ export default function ResumeBuilder() {
       setResume(fetchedResume as Resume);
     }
   }, [fetchedResume]);
+  
+  // Handle tailored resume data from localStorage
+  useEffect(() => {
+    if (isTailoredResume) {
+      try {
+        const tailoredResumeData = localStorage.getItem("tailoredResume");
+        if (tailoredResumeData) {
+          const parsedData = JSON.parse(tailoredResumeData);
+          
+          // Check if we have an existing resume to update or need to create a new one
+          if (resume.personalInfo.firstName || resume.personalInfo.lastName || 
+              resume.experience.length > 0 || resume.skills.length > 0) {
+            // Update existing resume with tailored content
+            setResume((currentResume) => ({
+              ...currentResume,
+              personalInfo: {
+                ...currentResume.personalInfo,
+                summary: parsedData.personalInfo?.summary || currentResume.personalInfo.summary
+              },
+              experience: parsedData.experience || currentResume.experience,
+              skills: parsedData.skills || currentResume.skills
+            }));
+            
+            toast({
+              title: "Resume Updated",
+              description: "Your resume has been updated with the tailored content.",
+            });
+          } else {
+            // Create a new resume with the tailored content
+            setResume((currentResume) => ({
+              ...currentResume,
+              personalInfo: {
+                ...currentResume.personalInfo,
+                ...parsedData.personalInfo
+              },
+              experience: parsedData.experience || [],
+              skills: parsedData.skills || []
+            }));
+            
+            toast({
+              title: "Tailored Resume Created",
+              description: "A new resume has been created with the tailored content.",
+            });
+          }
+          
+          // Clear the localStorage data to prevent reapplying
+          localStorage.removeItem("tailoredResume");
+          
+          // Remove the tailored parameter from URL
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+      } catch (error) {
+        console.error("Error applying tailored resume:", error);
+        toast({
+          title: "Error",
+          description: "Failed to apply tailored resume data.",
+          variant: "destructive",
+        });
+      }
+    }
+  }, [isTailoredResume, resume.personalInfo.firstName, resume.personalInfo.lastName, 
+      resume.experience.length, resume.skills.length, toast]);
   
   // Save resume mutation
   const saveResumeMutation = useMutation({
@@ -1211,6 +1277,24 @@ export default function ResumeBuilder() {
               {/* Profile Section */}
               {activeSection === "profile" && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {/* Tailored Resume Banner - show briefly when coming from job details */}
+                  {isTailoredResume && (
+                    <div className="md:col-span-3 mb-4">
+                      <div className="cosmic-card border border-green-500/30 bg-green-900/20 p-4 rounded-lg relative overflow-hidden backdrop-blur-sm">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-3xl"></div>
+                        <div className="relative z-10">
+                          <div className="flex items-center mb-2">
+                            <Sparkles className="h-5 w-5 mr-2 text-green-400" />
+                            <h3 className="font-medium text-xl text-white">Job-Tailored Resume</h3>
+                          </div>
+                          <p className="text-gray-300 mb-2">
+                            Your resume is being updated with tailored content optimized for the job description. Review each section and make any additional adjustments before saving.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                
                   {/* Welcome Banner - only show when resume is empty */}
                   {!resume.personalInfo.firstName && !resume.personalInfo.lastName && (
                     <div className="md:col-span-3 mb-4">

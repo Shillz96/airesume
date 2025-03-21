@@ -66,6 +66,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import AIAssistant from "@/components/ai-assistant";
 
 // Component for professional summary AI suggestions
 interface SummarySuggestionsProps {

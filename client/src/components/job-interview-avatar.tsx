@@ -106,7 +106,7 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
           <div 
             ref={avatarRef}
             className={`w-16 h-16 rounded-full bg-gradient-to-r from-blue-600/30 to-purple-600/30 border border-white/10 flex items-center justify-center ${
-              isSpeaking ? "animate-pulse shadow-lg shadow-blue-500/20" : ""
+              isSpeaking ? "cosmic-avatar-pulse shadow-lg shadow-blue-500/20" : ""
             }`}
           >
             <Bot className="h-8 w-8 text-blue-400" />

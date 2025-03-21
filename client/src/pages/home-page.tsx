@@ -3,6 +3,7 @@ import Navbar from "@/components/navbar";
 import DashboardStats from "@/components/dashboard-stats";
 import RecentActivity from "@/components/recent-activity";
 import JobInterviewAvatar from "@/components/job-interview-avatar";
+import JobSearchProgress from "@/components/job-search-progress";
 import { useAuth } from "@/hooks/use-auth";
 import { Rocket } from "lucide-react";
 import gsap from "gsap";
@@ -135,7 +136,19 @@ export default function HomePage() {
             </div>
             
             <DashboardStats />
-            <RecentActivity />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="md:col-span-1">
+                <JobInterviewAvatar />
+              </div>
+              <div className="md:col-span-1">
+                <RecentActivity />
+              </div>
+            </div>
+            
+            <div className="mt-6">
+              <JobSearchProgress />
+            </div>
           </div>
         </div>
       </main>

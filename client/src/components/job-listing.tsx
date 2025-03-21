@@ -92,7 +92,13 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
         // Guest mode - use the existing tailoring approach for the job
         const payload = {
           resumeId: "guest-resume", 
-          resumeData: resume // Include full resume data for guest mode
+          resumeData: {
+            content: {
+              personalInfo: resume.personalInfo,
+              experience: resume.experience,
+              skills: resume.skills
+            }
+          } // Format resume data properly for guest mode
         };
         
         const res = await apiRequest(

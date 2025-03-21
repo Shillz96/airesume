@@ -346,6 +346,358 @@ export function TemplatePreviewExecutive() {
   );
 }
 
+export function TemplatePreviewModern() {
+  return (
+    <div className="h-full w-full bg-secondary-100 rounded flex flex-col p-3">
+      <div className="bg-blue-500 h-2 w-full rounded-t"></div>
+      <div className="flex-1 flex flex-col p-2">
+        <div className="flex justify-between">
+          <div className="h-3 bg-secondary-200 rounded w-1/3"></div>
+          <div className="h-3 bg-secondary-200 rounded w-1/3"></div>
+        </div>
+        <div className="mt-3 space-y-1">
+          <div className="h-2 bg-secondary-300 rounded w-full"></div>
+          <div className="h-2 bg-secondary-300 rounded w-5/6"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function TemplatePreviewMinimal() {
+  return (
+    <div className="h-full w-full bg-white rounded flex flex-col p-3">
+      <div className="border-b pb-2">
+        <div className="h-3 bg-gray-200 rounded w-1/2 mb-1"></div>
+      </div>
+      <div className="flex-1 flex flex-col justify-around py-2">
+        <div className="space-y-1">
+          <div className="h-2 bg-gray-200 rounded w-full"></div>
+          <div className="h-2 bg-gray-200 rounded w-5/6"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function TemplatePreviewIndustry() {
+  return (
+    <div className="h-full w-full bg-slate-100 rounded flex flex-col p-3">
+      <div className="bg-slate-700 text-center py-2 rounded-t">
+        <div className="h-2 bg-white bg-opacity-70 rounded w-1/2 mx-auto mb-1"></div>
+      </div>
+      <div className="flex-1 flex flex-col justify-around py-2">
+        <div className="space-y-1">
+          <div className="h-2 bg-slate-300 rounded w-full"></div>
+          <div className="h-2 bg-slate-300 rounded w-5/6"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function TemplatePreviewBold() {
+  return (
+    <div className="h-full w-full bg-secondary-100 rounded flex flex-col p-3">
+      <div className="bg-pink-600 text-center py-2 rounded-t">
+        <div className="h-3 bg-white bg-opacity-70 rounded w-1/2 mx-auto mb-1"></div>
+      </div>
+      <div className="flex-1 flex flex-col justify-around py-2">
+        <div className="space-y-1">
+          <div className="h-2 bg-secondary-300 rounded w-full"></div>
+          <div className="h-2 bg-secondary-300 rounded w-5/6"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function ModernTemplate({ resume }: { resume: Resume }) {
+  const { personalInfo, experience, education, skills } = resume;
+  const fullName = `${personalInfo?.firstName || ''} ${personalInfo?.lastName || ''}`.trim();
+  
+  return (
+    <div className="p-6 bg-white">
+      {/* Header with blue accent */}
+      <div className="border-t-4 border-blue-500 pt-4 mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">{fullName || "Your Name"}</h1>
+        <p className="text-blue-600 font-medium">{personalInfo?.headline || "Professional Headline"}</p>
+        <div className="flex flex-wrap gap-4 mt-2 text-sm text-gray-600">
+          {personalInfo?.email && <span className="flex items-center"><span className="mr-1">✉</span> {personalInfo.email}</span>}
+          {personalInfo?.phone && <span className="flex items-center"><span className="mr-1">☎</span> {personalInfo.phone}</span>}
+        </div>
+      </div>
+      
+      {personalInfo?.summary && (
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-1 mb-2">Profile</h2>
+          <p className="text-gray-700">{personalInfo.summary}</p>
+        </div>
+      )}
+      
+      {experience && experience.length > 0 && (
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-1 mb-2">Experience</h2>
+          {experience.map((job, index) => (
+            <div key={index} className="mb-4">
+              <div className="flex flex-wrap justify-between items-baseline">
+                <h3 className="font-bold text-gray-800">{job.title || "Position Title"}</h3>
+                <span className="text-gray-500 text-sm">{job.startDate} - {job.endDate}</span>
+              </div>
+              <p className="text-blue-600 font-medium">{job.company || "Company Name"}</p>
+              <p className="text-gray-700 mt-1 whitespace-pre-line">{job.description}</p>
+            </div>
+          ))}
+        </div>
+      )}
+      
+      {education && education.length > 0 && (
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-1 mb-2">Education</h2>
+          {education.map((edu, index) => (
+            <div key={index} className="mb-4">
+              <div className="flex flex-wrap justify-between items-baseline">
+                <h3 className="font-bold text-gray-800">{edu.degree || "Degree"}</h3>
+                <span className="text-gray-500 text-sm">{edu.startDate} - {edu.endDate}</span>
+              </div>
+              <p className="text-blue-600 font-medium">{edu.institution || "Institution"}</p>
+              {edu.description && <p className="text-gray-700 mt-1">{edu.description}</p>}
+            </div>
+          ))}
+        </div>
+      )}
+      
+      {skills && skills.length > 0 && (
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-1 mb-2">Skills</h2>
+          <div className="flex flex-wrap gap-2">
+            {skills.map((skill, index) => (
+              <span key={index} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
+                {skill.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function MinimalTemplate({ resume }: { resume: Resume }) {
+  const { personalInfo, experience, education, skills } = resume;
+  const fullName = `${personalInfo?.firstName || ''} ${personalInfo?.lastName || ''}`.trim();
+  
+  return (
+    <div className="p-6 bg-white">
+      {/* Simple minimal header */}
+      <div className="text-center mb-6">
+        <h1 className="text-2xl font-normal text-gray-900">{fullName || "Your Name"}</h1>
+        <p className="text-gray-600 mt-1">{personalInfo?.headline || "Professional Headline"}</p>
+        <div className="flex justify-center gap-4 mt-2 text-sm text-gray-500">
+          {personalInfo?.email && <span>{personalInfo.email}</span>}
+          {personalInfo?.phone && <span>{personalInfo.phone}</span>}
+        </div>
+      </div>
+      
+      <div className="max-w-2xl mx-auto">
+        {personalInfo?.summary && (
+          <div className="mb-6">
+            <p className="text-gray-700 italic">{personalInfo.summary}</p>
+            <hr className="my-4 border-gray-200" />
+          </div>
+        )}
+        
+        {experience && experience.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-md uppercase tracking-wider text-gray-500 mb-3">Experience</h2>
+            {experience.map((job, index) => (
+              <div key={index} className="mb-4">
+                <h3 className="font-medium text-gray-900">{job.title || "Position Title"} • {job.company || "Company Name"}</h3>
+                <p className="text-gray-500 text-sm mb-1">{job.startDate} - {job.endDate}</p>
+                <p className="text-gray-700">{job.description}</p>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {education && education.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-md uppercase tracking-wider text-gray-500 mb-3">Education</h2>
+            {education.map((edu, index) => (
+              <div key={index} className="mb-4">
+                <h3 className="font-medium text-gray-900">{edu.degree || "Degree"} • {edu.institution || "Institution"}</h3>
+                <p className="text-gray-500 text-sm mb-1">{edu.startDate} - {edu.endDate}</p>
+                {edu.description && <p className="text-gray-700">{edu.description}</p>}
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {skills && skills.length > 0 && (
+          <div>
+            <h2 className="text-md uppercase tracking-wider text-gray-500 mb-3">Skills</h2>
+            <p className="text-gray-700">
+              {skills.map((skill, i) => (
+                <span key={i}>
+                  {skill.name}{i < skills.length - 1 ? " • " : ""}
+                </span>
+              ))}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export function IndustryTemplate({ resume }: { resume: Resume }) {
+  const { personalInfo, experience, education, skills } = resume;
+  const fullName = `${personalInfo?.firstName || ''} ${personalInfo?.lastName || ''}`.trim();
+  
+  return (
+    <div className="p-0 bg-white">
+      {/* Industry-specific header with color bar */}
+      <div className="bg-slate-800 text-white p-6">
+        <h1 className="text-2xl font-bold">{fullName || "Your Name"}</h1>
+        <p className="text-slate-300 mt-1">{personalInfo?.headline || "Industry Professional"}</p>
+        <div className="flex gap-4 mt-3 text-sm text-slate-300">
+          {personalInfo?.email && <span>{personalInfo.email}</span>}
+          {personalInfo?.phone && <span>{personalInfo.phone}</span>}
+        </div>
+      </div>
+      
+      <div className="p-6">
+        {personalInfo?.summary && (
+          <div className="mb-6">
+            <h2 className="text-lg font-bold text-slate-800 mb-2">Professional Summary</h2>
+            <div className="bg-slate-50 p-4 border-l-4 border-slate-400">
+              <p className="text-slate-700">{personalInfo.summary}</p>
+            </div>
+          </div>
+        )}
+        
+        {experience && experience.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-lg font-bold text-slate-800 mb-3">Industry Experience</h2>
+            {experience.map((job, index) => (
+              <div key={index} className="mb-4 pb-4 border-b border-slate-200">
+                <div className="flex justify-between items-baseline">
+                  <h3 className="font-semibold text-slate-800">{job.title || "Position Title"}</h3>
+                  <span className="text-slate-500 text-sm">{job.startDate} - {job.endDate}</span>
+                </div>
+                <p className="text-slate-600 font-medium mb-2">{job.company || "Company Name"}</p>
+                <p className="text-slate-700">{job.description}</p>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {education && education.length > 0 && (
+            <div>
+              <h2 className="text-lg font-bold text-slate-800 mb-3">Education</h2>
+              {education.map((edu, index) => (
+                <div key={index} className="mb-4">
+                  <h3 className="font-semibold text-slate-800">{edu.degree || "Degree"}</h3>
+                  <p className="text-slate-600">{edu.institution || "Institution"}</p>
+                  <p className="text-slate-500 text-sm">{edu.startDate} - {edu.endDate}</p>
+                  {edu.description && <p className="text-slate-700 mt-1">{edu.description}</p>}
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {skills && skills.length > 0 && (
+            <div>
+              <h2 className="text-lg font-bold text-slate-800 mb-3">Industry Skills</h2>
+              <div className="grid grid-cols-2 gap-2">
+                {skills.map((skill, index) => (
+                  <div key={index} className="flex items-center">
+                    <span className="w-2 h-2 bg-slate-400 rounded-full mr-2"></span>
+                    <span className="text-slate-700">{skill.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function BoldTemplate({ resume }: { resume: Resume }) {
+  const { personalInfo, experience, education, skills } = resume;
+  const fullName = `${personalInfo?.firstName || ''} ${personalInfo?.lastName || ''}`.trim();
+  
+  return (
+    <div className="p-0 bg-white">
+      {/* Bold accent header */}
+      <div className="bg-gradient-to-r from-pink-600 to-purple-600 text-white p-6">
+        <h1 className="text-3xl font-bold">{fullName || "Your Name"}</h1>
+        <p className="text-white mt-1 text-xl">{personalInfo?.headline || "Professional Headline"}</p>
+        <div className="flex gap-4 mt-3 text-sm">
+          {personalInfo?.email && <span>{personalInfo.email}</span>}
+          {personalInfo?.phone && <span>{personalInfo.phone}</span>}
+        </div>
+      </div>
+      
+      <div className="p-6">
+        {personalInfo?.summary && (
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">About Me</h2>
+            <p className="text-gray-700 border-l-4 border-pink-500 pl-4 py-1">{personalInfo.summary}</p>
+          </div>
+        )}
+        
+        {experience && experience.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-3">Work Experience</h2>
+            {experience.map((job, index) => (
+              <div key={index} className="mb-5">
+                <div className="flex flex-wrap justify-between items-baseline">
+                  <h3 className="font-bold text-pink-600 text-lg">{job.title || "Position Title"}</h3>
+                  <span className="text-gray-600 font-medium">{job.startDate} - {job.endDate}</span>
+                </div>
+                <p className="text-gray-800 font-bold">{job.company || "Company Name"}</p>
+                <p className="text-gray-700 mt-2">{job.description}</p>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {education && education.length > 0 && (
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 mb-3">Education</h2>
+              {education.map((edu, index) => (
+                <div key={index} className="mb-4">
+                  <h3 className="font-bold text-gray-800">{edu.degree || "Degree"}</h3>
+                  <p className="text-pink-600 font-semibold">{edu.institution || "Institution"}</p>
+                  <p className="text-gray-600">{edu.startDate} - {edu.endDate}</p>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {skills && skills.length > 0 && (
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 mb-3">Skills & Expertise</h2>
+              <div className="flex flex-wrap gap-2">
+                {skills.map((skill, index) => (
+                  <span key={index} className="px-3 py-1 bg-pink-100 text-pink-700 font-medium rounded-full">
+                    {skill.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface ResumeTemplateProps {
   resume: Resume;
   onTemplateChange: (template: string) => void;
@@ -447,6 +799,38 @@ export default function ResumeTemplate({ resume, onTemplateChange }: ResumeTempl
                   preview={<TemplatePreviewExecutive />}
                   selected={resume.template === 'executive'}
                   onClick={() => onTemplateChange('executive')}
+                />
+                
+                <TemplateOption
+                  name="Modern"
+                  description="Contemporary layout"
+                  preview={<TemplatePreviewModern />}
+                  selected={resume.template === 'modern'}
+                  onClick={() => onTemplateChange('modern')}
+                />
+                
+                <TemplateOption
+                  name="Minimal"
+                  description="Simple and clean"
+                  preview={<TemplatePreviewMinimal />}
+                  selected={resume.template === 'minimal'}
+                  onClick={() => onTemplateChange('minimal')}
+                />
+                
+                <TemplateOption
+                  name="Industry"
+                  description="Industry-specific professional"
+                  preview={<TemplatePreviewIndustry />}
+                  selected={resume.template === 'industry'}
+                  onClick={() => onTemplateChange('industry')}
+                />
+                
+                <TemplateOption
+                  name="Bold"
+                  description="Stand out with impact"
+                  preview={<TemplatePreviewBold />}
+                  selected={resume.template === 'bold'}
+                  onClick={() => onTemplateChange('bold')}
                 />
               </div>
             </DialogContent>

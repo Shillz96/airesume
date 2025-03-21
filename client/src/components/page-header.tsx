@@ -13,7 +13,7 @@ export default function PageHeader({ title, subtitle, actions }: PageHeaderProps
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
+        <h1 className="text-3xl font-bold tracking-tight cosmic-text-gradient">{title}</h1>
         {subtitle && (
           <p className="text-muted-foreground">{subtitle}</p>
         )}

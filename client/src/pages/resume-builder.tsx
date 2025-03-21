@@ -1503,34 +1503,15 @@ export default function ResumeBuilder() {
                     </div>
                   </div>
                   
-                  {/* AI Assistant Section */}
+                  {/* AI Tips Section */}
                   <div className="md:col-span-1">
                     <div className="cosmic-card border border-white/10 bg-black/40 p-5 rounded-lg relative overflow-hidden">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
                       <div className="relative z-10">
                         <div className="flex items-center mb-4">
                           <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
-                          <h3 className="font-medium text-white">AI Resume Assistant</h3>
+                          <h3 className="font-medium text-white">Resume Writing Tips</h3>
                         </div>
-                        
-                        <Collapsible className="mb-4">
-                          <div className="flex justify-between items-center">
-                            <h4 className="text-sm font-medium text-blue-300 mb-2">
-                              Generate Professional Summary
-                            </h4>
-                            <CollapsibleTrigger className="text-xs text-gray-400 hover:text-gray-200">
-                              <ChevronDown className="h-4 w-4" />
-                            </CollapsibleTrigger>
-                          </div>
-                          <CollapsibleContent>
-                            <div className="mt-2">
-                              <SummarySuggestions 
-                                resumeId={resumeId?.toString() || "new"}
-                                onApply={handleApplySummary}
-                              />
-                            </div>
-                          </CollapsibleContent>
-                        </Collapsible>
                         
                         <div className="text-xs text-gray-300 mt-3 bg-white/5 p-3 rounded-lg">
                           <p className="mb-2 text-blue-300 font-medium">Tips for a great summary:</p>
@@ -1540,6 +1521,17 @@ export default function ResumeBuilder() {
                             <li>Focus on achievements rather than responsibilities</li>
                             <li>Include keywords relevant to your target position</li>
                           </ul>
+                        </div>
+                        
+                        <div className="mt-4 flex">
+                          <Button
+                            onClick={() => setIsDialogOpen(true)}
+                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                            size="sm"
+                          >
+                            <Cpu className="h-4 w-4 mr-2" />
+                            Get AI Assistance
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -1592,35 +1584,15 @@ export default function ResumeBuilder() {
                     />
                   </div>
                   
-                  {/* AI Assistant for Experience */}
+                  {/* Tips for Experience */}
                   <div className="md:col-span-1">
                     <div className="cosmic-card border border-white/10 bg-black/40 p-5 rounded-lg relative overflow-hidden">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
                       <div className="relative z-10">
                         <div className="flex items-center mb-4">
-                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
-                          <h3 className="font-medium text-white">AI Resume Assistant</h3>
+                          <Briefcase className="h-5 w-5 mr-2 text-blue-400" />
+                          <h3 className="font-medium text-white">Experience Tips</h3>
                         </div>
-                        
-                        <Collapsible className="mb-4">
-                          <div className="flex justify-between items-center">
-                            <h4 className="text-sm font-medium text-blue-300 mb-2">
-                              Generate Achievement Bullets
-                            </h4>
-                            <CollapsibleTrigger className="text-xs text-gray-400 hover:text-gray-200">
-                              <ChevronDown className="h-4 w-4" />
-                            </CollapsibleTrigger>
-                          </div>
-                          <CollapsibleContent>
-                            <div className="mt-2">
-                              <ExperienceSuggestions 
-                                resumeId={resumeId?.toString() || "new"}
-                                jobTitle={resume.experience.length > 0 ? resume.experience[resume.experience.length - 1].title : undefined}
-                                onApply={handleApplyBulletPoint}
-                              />
-                            </div>
-                          </CollapsibleContent>
-                        </Collapsible>
                         
                         <div className="text-xs text-gray-300 mt-3 bg-white/5 p-3 rounded-lg">
                           <p className="mb-2 text-blue-300 font-medium">Tips for effective bullet points:</p>
@@ -1630,6 +1602,17 @@ export default function ResumeBuilder() {
                             <li>Use industry-specific keywords</li>
                             <li>Highlight results, not just responsibilities</li>
                           </ul>
+                        </div>
+                        
+                        <div className="mt-4 flex">
+                          <Button
+                            onClick={() => setIsDialogOpen(true)}
+                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                            size="sm"
+                          >
+                            <Cpu className="h-4 w-4 mr-2" />
+                            Get AI Assistance
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -1724,35 +1707,15 @@ export default function ResumeBuilder() {
                     />
                   </div>
                   
-                  {/* AI Assistant for Skills */}
+                  {/* Tips for Skills */}
                   <div className="md:col-span-1">
                     <div className="cosmic-card border border-white/10 bg-black/40 p-5 rounded-lg relative overflow-hidden">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
                       <div className="relative z-10">
                         <div className="flex items-center mb-4">
-                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
-                          <h3 className="font-medium text-white">AI Resume Assistant</h3>
+                          <Code className="h-5 w-5 mr-2 text-blue-400" />
+                          <h3 className="font-medium text-white">Skills Tips</h3>
                         </div>
-                        
-                        <Collapsible className="mb-4">
-                          <div className="flex justify-between items-center">
-                            <h4 className="text-sm font-medium text-blue-300 mb-2">
-                              Suggested Skills
-                            </h4>
-                            <CollapsibleTrigger className="text-xs text-gray-400 hover:text-gray-200">
-                              <ChevronDown className="h-4 w-4" />
-                            </CollapsibleTrigger>
-                          </div>
-                          <CollapsibleContent>
-                            <div className="mt-2">
-                              <SkillSuggestions 
-                                resumeId={resumeId?.toString() || "new"}
-                                jobTitle={resume.experience.length > 0 ? resume.experience[0].title : undefined}
-                                onApply={handleApplySkill}
-                              />
-                            </div>
-                          </CollapsibleContent>
-                        </Collapsible>
                         
                         <div className="text-xs text-gray-300 mt-3 bg-white/5 p-3 rounded-lg">
                           <p className="mb-2 text-blue-300 font-medium">Tips for showcasing skills:</p>
@@ -1762,6 +1725,17 @@ export default function ResumeBuilder() {
                             <li>Be honest about your proficiency levels</li>
                             <li>Group similar skills together</li>
                           </ul>
+                        </div>
+                        
+                        <div className="mt-4 flex">
+                          <Button
+                            onClick={() => setIsDialogOpen(true)}
+                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                            size="sm"
+                          >
+                            <Cpu className="h-4 w-4 mr-2" />
+                            Get AI Assistance
+                          </Button>
                         </div>
                       </div>
                     </div>

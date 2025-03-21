@@ -30,6 +30,7 @@ import {
   Sparkles,
   LayoutList,
   CircleDot,
+  Edit,
 } from "lucide-react";
 
 interface ResumePreviewComponentProps {
@@ -402,6 +403,16 @@ export default function ResumePreviewComponent({
             <Eye className="h-4 w-4 mr-2" />
             Full Preview
           </Button>
+          {onEdit && (
+            <Button
+              variant="outline"
+              className="bg-[rgba(30,40,70,0.6)] text-blue-300 hover:text-blue-200 hover:bg-blue-800/50 border-blue-700/30"
+              onClick={onEdit}
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Resume
+            </Button>
+          )}
         </div>
       </div>
     </div>

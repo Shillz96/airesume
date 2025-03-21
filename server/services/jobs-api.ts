@@ -32,21 +32,22 @@ export class JobsAPIService {
         return this.getSampleJobs(filters);
       }
 
-      // Build query parameters
-      const params = new URLSearchParams();
-      params.append('app_id', this.appId); // Adzuna app ID
-      params.append('app_key', this.apiKey); // Adzuna API key
-      params.append('results_per_page', String(filters.results_per_page || 10));
-      params.append('page', String(filters.page || 1));
+      // Build the API URL directly like our test endpoint does
+      // This ensures we use the exact same URL format that we've verified works
+      let apiUrl = `${this.baseUrl}/v1/api/jobs/gb/search/1?app_id=${this.appId}&app_key=${this.apiKey}`;
+      
+      // Add additional parameters
+      apiUrl += `&results_per_page=${filters.results_per_page || 10}`;
+      apiUrl += `&page=${filters.page || 1}`;
       
       // Add what to search for
       if (filters.title) {
-        params.append('what', filters.title);
+        apiUrl += `&what=${encodeURIComponent(filters.title)}`;
       }
       
       // Add where to search
       if (filters.location) {
-        params.append('where', filters.location);
+        apiUrl += `&where=${encodeURIComponent(filters.location)}`;
       }
       
       // Handle job type - full-time, part-time, contract, etc.
@@ -63,13 +64,10 @@ export class JobsAPIService {
         }
         
         if (contractType) {
-          params.append('contract_type', contractType);
+          apiUrl += `&contract_type=${contractType}`;
         }
       }
       
-      // Make the API request to Adzuna
-      // The correct format for Adzuna API is: https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=X&app_key=Y&params
-      const apiUrl = `${this.baseUrl}/v1/api/jobs/gb/search/1?${params.toString()}`;
       console.log(`Fetching jobs from Adzuna: ${apiUrl}`);
       const response = await fetch(apiUrl);
       

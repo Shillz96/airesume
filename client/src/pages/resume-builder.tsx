@@ -925,6 +925,14 @@ export default function ResumeBuilder() {
                         className="mt-1 min-h-32 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
                         placeholder="Write a concise summary of your professional background, key skills, and career achievements."
                       />
+                      <Button 
+                        type="button" 
+                        onClick={() => setIsDialogOpen(true)}
+                        className="mt-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 flex items-center"
+                      >
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Help me generate a summary
+                      </Button>
                     </div>
                   </div>
                   

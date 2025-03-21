@@ -894,11 +894,13 @@ function ResumePreview({
   resume: Resume;
   onTemplateChange: (template: string) => void;
 }) {
-  const [scale, setScale] = useState(1);
+  const [scale, setScale] = useState(0.85); // Initial scale set to see more of the resume
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isAutoAdjusting, setIsAutoAdjusting] = useState(false);
   const [editedResume, setEditedResume] = useState<Resume>(resume);
+  const [fontScale, setFontScale] = useState(1); // For auto-adjusting font size
+  const [spacingScale, setSpacingScale] = useState(1); // For auto-adjusting spacing
   const previewRef = useRef<HTMLDivElement>(null);
 
   // Function to download the resume
@@ -906,7 +908,7 @@ function ResumePreview({
     window.print(); // Simplified for demo; replace with actual PDF generation in production
   };
 
-  // Auto-adjust feature to fit content
+  // Auto-adjust feature to fit content on one page
   const autoAdjust = () => {
     setIsAutoAdjusting(true);
     const previewElement = previewRef.current;
@@ -914,13 +916,27 @@ function ResumePreview({
 
     const containerHeight = previewElement.parentElement?.clientHeight || 0;
     const contentHeight = previewElement.scrollHeight;
+    const a4Height = 297 * 3.78; // A4 height in pixels (297mm at 96dpi)
 
+    // Step 1: Adjust scale to fit the container
     if (contentHeight > containerHeight) {
       const newScale = (containerHeight / contentHeight) * scale;
       setScale(Math.max(0.5, newScale));
     } else {
-      setScale(1);
+      setScale(0.85); // Default scale to see more content
     }
+
+    // Step 2: Adjust content to fit on one A4 page
+    if (contentHeight > a4Height) {
+      // Reduce font size and spacing to fit content
+      const reductionFactor = a4Height / contentHeight;
+      setFontScale(Math.max(0.7, reductionFactor)); // Minimum font scale of 0.7 to maintain readability
+      setSpacingScale(Math.max(0.5, reductionFactor)); // Minimum spacing scale of 0.5
+    } else {
+      setFontScale(1);
+      setSpacingScale(1);
+    }
+
     setIsAutoAdjusting(false);
   };
 
@@ -933,13 +949,27 @@ function ResumePreview({
   const toggleEdit = () => {
     setIsEditing(!isEditing);
     if (isEditing) {
-      // Save changes when exiting edit mode
-      setResume(editedResume);
+      // Update the template if it was changed
+      onTemplateChange(editedResume.template);
+      
+      // Pass the edited resume changes to parent using a custom event
+      const event = new CustomEvent('resumeEdited', { 
+        detail: { 
+          resume: editedResume,
+          originalResume: resume 
+        } 
+      });
+      document.dispatchEvent(event);
     }
   };
 
   // Update edited resume fields
-  const handleFieldChange = (section: string, field: string, value: string) => {
+  const handleFieldChange = (
+    section: string,
+    field: string,
+    value: string,
+    index?: number
+  ) => {
     setEditedResume((prev) => {
       if (section === "personalInfo") {
         return {
@@ -948,6 +978,46 @@ function ResumePreview({
             ...prev.personalInfo,
             [field]: value,
           },
+        };
+      } else if (section === "experience" && typeof index === "number") {
+        const updatedExperience = [...prev.experience];
+        updatedExperience[index] = {
+          ...updatedExperience[index],
+          [field]: value,
+        };
+        return {
+          ...prev,
+          experience: updatedExperience,
+        };
+      } else if (section === "education" && typeof index === "number") {
+        const updatedEducation = [...prev.education];
+        updatedEducation[index] = {
+          ...updatedEducation[index],
+          [field]: value,
+        };
+        return {
+          ...prev,
+          education: updatedEducation,
+        };
+      } else if (section === "skills" && typeof index === "number") {
+        const updatedSkills = [...prev.skills];
+        updatedSkills[index] = {
+          ...updatedSkills[index],
+          [field]: value,
+        };
+        return {
+          ...prev,
+          skills: updatedSkills,
+        };
+      } else if (section === "projects" && typeof index === "number") {
+        const updatedProjects = [...prev.projects];
+        updatedProjects[index] = {
+          ...updatedProjects[index],
+          [field]: value,
+        };
+        return {
+          ...prev,
+          projects: updatedProjects,
         };
       }
       return prev;
@@ -1063,7 +1133,7 @@ function ResumePreview({
           "bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-xl overflow-auto",
           isFullScreen
             ? "fixed inset-0 z-50 m-0 p-8 bg-black/90"
-            : "p-8 max-h-[70vh]"
+            : "p-4 h-[70vh]" // Fixed height container with reduced padding
         )}
       >
         <div
@@ -1072,49 +1142,155 @@ function ResumePreview({
           style={{
             transform: `scale(${scale})`,
             width: "210mm", // A4 width
-            minHeight: "297mm", // A4 height
+            height: "297mm", // A4 height (fixed to ensure one page)
             transformOrigin: isFullScreen ? "center" : "top",
+            fontSize: `${fontScale * 100}%`, // Dynamic font scaling
+            lineHeight: `${spacingScale * 1.5}`, // Dynamic line height scaling
           }}
         >
           {isEditing ? (
-            <div className="p-4 bg-white text-black">
-              <h2 className="text-2xl font-bold mb-2">
-                <Input
-                  value={editedResume.personalInfo.firstName + " " + editedResume.personalInfo.lastName}
-                  onChange={(e) => {
-                    const [firstName, ...lastNameParts] = e.target.value.split(" ");
-                    handleFieldChange("personalInfo", "firstName", firstName || "");
-                    handleFieldChange("personalInfo", "lastName", lastNameParts.join(" ") || "");
-                  }}
-                  className="border-none p-0 text-2xl font-bold"
-                />
-              </h2>
-              <div className="flex gap-2 text-sm mb-4">
-                <Input
-                  value={editedResume.personalInfo.email}
-                  onChange={(e) => handleFieldChange("personalInfo", "email", e.target.value)}
-                  className="border-none p-0 text-sm"
-                  placeholder="Email"
-                />
-                <span>|</span>
-                <Input
-                  value={editedResume.personalInfo.phone}
-                  onChange={(e) => handleFieldChange("personalInfo", "phone", e.target.value)}
-                  className="border-none p-0 text-sm"
-                  placeholder="Phone"
-                />
+            <div className="p-6 bg-white text-black h-full">
+              {/* Personal Info Section */}
+              <div className="mb-6 pb-4 border-b border-gray-200">
+                <h2 className="text-2xl font-bold mb-2">
+                  <Input
+                    value={editedResume.personalInfo.firstName + " " + editedResume.personalInfo.lastName}
+                    onChange={(e) => {
+                      const [firstName, ...lastNameParts] = e.target.value.split(" ");
+                      handleFieldChange("personalInfo", "firstName", firstName || "");
+                      handleFieldChange("personalInfo", "lastName", lastNameParts.join(" ") || "");
+                    }}
+                    className="border border-gray-200 p-1 text-2xl font-bold w-full"
+                  />
+                </h2>
+                <div className="flex flex-wrap gap-3 text-sm mb-4">
+                  <div className="flex-1 min-w-[200px]">
+                    <label className="text-xs text-gray-500 block mb-1">Email</label>
+                    <Input
+                      value={editedResume.personalInfo.email}
+                      onChange={(e) => handleFieldChange("personalInfo", "email", e.target.value)}
+                      className="border border-gray-200 p-1 text-sm w-full"
+                      placeholder="Email"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-[200px]">
+                    <label className="text-xs text-gray-500 block mb-1">Phone</label>
+                    <Input
+                      value={editedResume.personalInfo.phone}
+                      onChange={(e) => handleFieldChange("personalInfo", "phone", e.target.value)}
+                      className="border border-gray-200 p-1 text-sm w-full"
+                      placeholder="Phone"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 block mb-1">Professional Summary</label>
+                  <Textarea
+                    value={editedResume.personalInfo.summary}
+                    onChange={(e) => handleFieldChange("personalInfo", "summary", e.target.value)}
+                    className="border border-gray-200 p-1 text-sm w-full resize-none"
+                    placeholder="Professional Summary"
+                    rows={4}
+                  />
+                </div>
               </div>
-              <div className="mb-4">
-                <h3 className="text-lg font-semibold mb-1">Summary</h3>
-                <Textarea
-                  value={editedResume.personalInfo.summary}
-                  onChange={(e) => handleFieldChange("personalInfo", "summary", e.target.value)}
-                  className="border-none p-0 text-sm"
-                  placeholder="Professional Summary"
-                />
+              
+              {/* Experience Section */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-3">Experience</h3>
+                {editedResume.experience.map((exp, index) => (
+                  <div key={exp.id} className="mb-4 pb-4 border-b border-gray-100">
+                    <div className="flex flex-wrap gap-3 mb-2">
+                      <div className="flex-1 min-w-[200px]">
+                        <label className="text-xs text-gray-500 block mb-1">Job Title</label>
+                        <Input
+                          value={exp.title}
+                          onChange={(e) => handleFieldChange("experience", "title", e.target.value, index)}
+                          className="border border-gray-200 p-1 text-sm w-full"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-[200px]">
+                        <label className="text-xs text-gray-500 block mb-1">Company</label>
+                        <Input
+                          value={exp.company}
+                          onChange={(e) => handleFieldChange("experience", "company", e.target.value, index)}
+                          className="border border-gray-200 p-1 text-sm w-full"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-3 mb-2">
+                      <div className="flex-1 min-w-[200px]">
+                        <label className="text-xs text-gray-500 block mb-1">Start Date</label>
+                        <Input
+                          value={exp.startDate}
+                          onChange={(e) => handleFieldChange("experience", "startDate", e.target.value, index)}
+                          className="border border-gray-200 p-1 text-sm w-full"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-[200px]">
+                        <label className="text-xs text-gray-500 block mb-1">End Date</label>
+                        <Input
+                          value={exp.endDate}
+                          onChange={(e) => handleFieldChange("experience", "endDate", e.target.value, index)}
+                          className="border border-gray-200 p-1 text-sm w-full"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500 block mb-1">Description</label>
+                      <Textarea
+                        value={exp.description}
+                        onChange={(e) => handleFieldChange("experience", "description", e.target.value, index)}
+                        className="border border-gray-200 p-1 text-sm w-full resize-none"
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
-              {/* Add more editable fields as needed */}
-              <TemplateComponent resume={editedResume} />
+              
+              {/* Skills Section */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-3">Skills</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                  {editedResume.skills.map((skill, index) => (
+                    <div key={skill.id} className="border border-gray-200 rounded p-2">
+                      <Input
+                        value={skill.name}
+                        onChange={(e) => handleFieldChange("skills", "name", e.target.value, index)}
+                        className="border-none p-0 text-sm w-full"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Education Section - Simplified */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-3">Education</h3>
+                {editedResume.education.map((edu, index) => (
+                  <div key={edu.id} className="mb-4 pb-4 border-b border-gray-100">
+                    <div className="flex flex-wrap gap-3 mb-2">
+                      <div className="flex-1 min-w-[200px]">
+                        <label className="text-xs text-gray-500 block mb-1">Degree</label>
+                        <Input
+                          value={edu.degree}
+                          onChange={(e) => handleFieldChange("education", "degree", e.target.value, index)}
+                          className="border border-gray-200 p-1 text-sm w-full"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-[200px]">
+                        <label className="text-xs text-gray-500 block mb-1">Institution</label>
+                        <Input
+                          value={edu.institution}
+                          onChange={(e) => handleFieldChange("education", "institution", e.target.value, index)}
+                          className="border border-gray-200 p-1 text-sm w-full"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           ) : (
             <div className="bg-white text-black p-8">
@@ -1209,6 +1385,29 @@ export default function ResumeBuilder() {
       setResume(fetchedResume as Resume);
     }
   }, [fetchedResume]);
+
+  // Listen for resume edit events from the ResumePreview component
+  useEffect(() => {
+    const handleResumeEdited = (event: Event) => {
+      // Type assertion to access custom event detail
+      const customEvent = event as CustomEvent;
+      if (customEvent.detail && customEvent.detail.resume) {
+        setResume(customEvent.detail.resume);
+        toast({
+          title: "Resume Updated",
+          description: "Your changes in the preview have been applied.",
+        });
+      }
+    };
+
+    // Add event listener
+    document.addEventListener('resumeEdited', handleResumeEdited);
+
+    // Clean up
+    return () => {
+      document.removeEventListener('resumeEdited', handleResumeEdited);
+    };
+  }, []);
 
   // Handle tailored resume data from localStorage
   useEffect(() => {

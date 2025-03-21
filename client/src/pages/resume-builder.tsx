@@ -1190,19 +1190,22 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
           "bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-xl overflow-auto",
           isFullScreen
             ? "fixed inset-0 z-50 m-0 p-8 bg-black/90"
-            : "p-4 h-[80vh]" // Increased height for better visibility
+            : "p-4 h-[80vh] flex items-start justify-center" // Center the preview and use flexbox
         )}
       >
         <div
           ref={previewRef}
-          className="transition-all duration-300 mx-auto bg-white"
+          className="transition-all duration-300 mx-auto bg-white shadow-lg"
           style={{
             transform: `scale(${scale})`,
             width: "210mm", // A4 width
             minHeight: "297mm", // A4 height (minimum to ensure proper proportions)
+            maxHeight: "297mm", // A4 height (maximum to ensure proper proportions)
             transformOrigin: "top center",
             fontSize: `${fontScale * 100}%`, // Dynamic font scaling
             lineHeight: `${spacingScale * 1.5}`, // Dynamic line height scaling
+            overflowY: isEditing ? "auto" : "hidden", // Hide overflow when not editing
+            boxShadow: "0 4px 24px rgba(0, 0, 0, 0.15)", // Add shadow for better visibility
           }}
         >
           {isEditing ? (
@@ -1217,7 +1220,7 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
                       handleFieldChange("personalInfo", "firstName", firstName || "");
                       handleFieldChange("personalInfo", "lastName", lastNameParts.join(" ") || "");
                     }}
-                    className="border border-gray-200 p-1 text-2xl font-bold w-full"
+                    className="border border-gray-200 p-1 text-2xl font-bold w-full bg-white"
                   />
                 </h2>
                 <div className="flex flex-wrap gap-3 text-sm mb-4">
@@ -1241,11 +1244,10 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 block mb-1">Professional Summary</label>
-                  <Textarea
+                  <RichTextEditor
+                    label="Professional Summary"
                     value={editedResume.personalInfo.summary}
-                    onChange={(e) => handleFieldChange("personalInfo", "summary", e.target.value)}
-                    className="border border-gray-200 p-1 text-sm w-full resize-none"
+                    onChange={(value) => handleFieldChange("personalInfo", "summary", value)}
                     placeholder="Professional Summary"
                     rows={4}
                   />
@@ -1294,11 +1296,11 @@ function ResumePreviewComponent({ resume, onTemplateChange }: { resume: Resume; 
                       </div>
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 block mb-1">Description</label>
-                      <Textarea
+                      <RichTextEditor
+                        label="Description"
                         value={exp.description}
-                        onChange={(e) => handleFieldChange("experience", "description", e.target.value, index)}
-                        className="border border-gray-200 p-1 text-sm w-full resize-none"
+                        onChange={(value) => handleFieldChange("experience", "description", value, index)}
+                        placeholder="Job description and achievements"
                         rows={3}
                       />
                     </div>

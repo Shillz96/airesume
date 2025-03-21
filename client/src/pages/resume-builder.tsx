@@ -920,7 +920,8 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
   const [skillsDisplayMode, setSkillsDisplayMode] = useState<'bubbles' | 'bullets'>('bubbles');
   const [spacingScale, setSpacingScale] = useState(1); // For auto-adjusting spacing
   const [numPages, setNumPages] = useState(1); // Track number of pages
-  const [showMultiPage, setShowMultiPage] = useState(false); // Toggle between single page and multi-page view
+  const [showMultiPage, setShowMultiPage] = useState(true); // Toggle between single page and multi-page view
+  const [sideBySideLayout, setSideBySideLayout] = useState(false); // Toggle between vertical and side-by-side layout
   const previewRef = useRef<HTMLDivElement>(null);
   const resumeContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();

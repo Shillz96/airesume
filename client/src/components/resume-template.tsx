@@ -550,13 +550,21 @@ export function MinimalTemplate({ resume }: { resume: Resume }) {
         {skills && skills.length > 0 && (
           <div>
             <h2 className="text-md uppercase tracking-wider text-gray-500 mb-3">Skills</h2>
-            <p className="text-gray-700">
-              {skills.map((skill, i) => (
-                <span key={i}>
-                  {skill.name}{i < skills.length - 1 ? " • " : ""}
-                </span>
-              ))}
-            </p>
+            {displayMode === 'bubbles' ? (
+              <p className="text-gray-700">
+                {skills.map((skill, i) => (
+                  <span key={i}>
+                    {skill.name}{i < skills.length - 1 ? " • " : ""}
+                  </span>
+                ))}
+              </p>
+            ) : (
+              <ul className="list-disc ml-5 space-y-1 text-gray-700">
+                {skills.map((skill, index) => (
+                  <li key={index}>{skill.name}</li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
       </div>

@@ -1431,6 +1431,37 @@ export default function ResumeBuilder() {
     template: "professional",
   });
 
+  // Get all resumes for the load resume dropdown
+  const { data: userResumes = [] } = useQuery({
+    queryKey: ['/api/resumes'],
+    enabled: true,
+  });
+
+  // Parse URL parameters on component mount
+  useEffect(() => {
+    // Check for resume ID in URL parameters
+    const resumeIdParam = searchParams.get("id");
+    if (resumeIdParam) {
+      try {
+        const id = parseInt(resumeIdParam, 10);
+        if (!isNaN(id)) {
+          setResumeId(id);
+        }
+      } catch (e) {
+        console.error("Error parsing resume ID from URL", e);
+      }
+    }
+
+    // Check for template in URL parameters
+    const templateParam = searchParams.get("template");
+    if (templateParam) {
+      setResume(prev => ({
+        ...prev,
+        template: templateParam
+      }));
+    }
+  }, [searchParams]);
+
   // Fetch resume data if resumeId exists
   const { data: fetchedResume } = useQuery({
     queryKey: ["/api/resumes", resumeId],
@@ -1796,6 +1827,45 @@ export default function ResumeBuilder() {
           </div>
 
           <div className="flex space-x-3">
+            {/* Load Saved Resume Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  className="border-white/10 bg-blue-600/40 text-white hover:bg-blue-600/60"
+                >
+                  <FolderOpen className="h-4 w-4 mr-2" />
+                  <span>Load Resume</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 bg-gray-900/95 border border-gray-800">
+                <DropdownMenuLabel className="text-gray-300">Your Saved Resumes</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-gray-700" />
+                {userResumes && userResumes.length > 0 ? (
+                  userResumes.map((savedResume: any) => (
+                    <DropdownMenuItem
+                      key={savedResume.id}
+                      className="text-gray-300 hover:text-white cursor-pointer focus:text-white focus:bg-blue-700"
+                      onClick={() => {
+                        setResumeId(savedResume.id);
+                        toast({
+                          title: "Resume Loaded",
+                          description: `${savedResume.title} has been loaded.`,
+                        });
+                      }}
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      {savedResume.title}
+                    </DropdownMenuItem>
+                  ))
+                ) : (
+                  <DropdownMenuItem disabled className="text-gray-500">
+                    No saved resumes found
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <Button
               onClick={handleSaveResume}
               disabled={isSaving}

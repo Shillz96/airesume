@@ -399,6 +399,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/resumes/latest", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const userId = req.user!.id;
+      const latestResume = await storage.getLatestResume(userId);
+      
+      if (!latestResume) {
+        return res.status(404).json({ message: "No resume found" });
+      }
+      
+      res.json(latestResume);
+    } catch (error) {
+      res.status(500).json({ message: (error as Error).message });
+    }
+  });
+
   app.get("/api/resumes/:id", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     

@@ -366,148 +366,31 @@ export default function ResumeBuilder() {
               </TabsContent>
             </div>
             
-            {/* AI Assistant - Right Side (Only show when not in preview) */}
+            {/* AI Resume Assistant - Right Side (Only show when not in preview) */}
             {activeSection !== "preview" && (
               <div className="lg:col-span-1 h-[calc(100vh-220px)] sticky top-20">
-                <div className="cosmic-card cosmic-panel border border-cosmic-border rounded-lg h-full flex flex-col overflow-hidden">
-                  {/* Assistant Header */}
-                  <div className="p-4 border-b border-cosmic-border flex items-center justify-between" style={{ padding: 'var(--space-4)' }}>
-                    <div className="flex items-center">
-                      <Bot className="h-5 w-5 text-cosmic-accent mr-2" />
-                      <h2 className="text-lg font-medium text-cosmic-text">AI Resume Assistant</h2>
-                    </div>
-                  </div>
-                  
-                  {/* Chat Messages */}
-                  <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ padding: 'var(--space-4)', '--space-y': 'var(--space-4)' } as React.CSSProperties}>
-                    {chatMessages.map((message: any) => (
-                      <div
-                        key={message.id}
-                        className={`flex ${message.sender === "User" ? "justify-end" : "justify-start"}`}
-                      >
-                        <div
-                          className={`max-w-[85%] rounded-lg p-3 ${
-                            message.sender === "User"
-                              ? "bg-cosmic-accent text-white"
-                              : "bg-cosmic-card-hover border border-cosmic-border text-cosmic-text"
-                          }`}
-                          style={{ padding: 'var(--space-3)' }}
-                        >
-                          {message.isLoading ? (
-                            <div className="flex items-center space-x-2">
-                              <div className="w-2 h-2 bg-cosmic-accent-light rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                              <div className="w-2 h-2 bg-cosmic-accent-light rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                              <div className="w-2 h-2 bg-cosmic-accent-light rounded-full animate-bounce"></div>
-                            </div>
-                          ) : (
-                            <>
-                              <p className="whitespace-pre-wrap">{message.message}</p>
-                              
-                              {/* Suggestions */}
-                              {message.suggestions && message.suggestions.length > 0 && (
-                                <div className="mt-3 space-y-2" style={{ marginTop: 'var(--space-3)', '--space-y': 'var(--space-2)' } as React.CSSProperties}>
-                                  {message.suggestions.map((suggestion: string, idx: number) => (
-                                    <div key={idx} className="flex">
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="cosmic-button-outline text-xs text-left justify-start h-auto py-2 bg-cosmic-card-hover hover:bg-cosmic-accent-muted w-full"
-                                        style={{ padding: 'var(--space-2) var(--space-3)' }}
-                                        onClick={() => handleSuggestionClick(suggestion)}
-                                      >
-                                        <Lightbulb className="h-3 w-3 mr-2 text-cosmic-accent flex-shrink-0" />
-                                        <span className="whitespace-normal">{suggestion}</span>
-                                      </Button>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                              
-                              {/* Add buttons for applying content */}
-                              {message.type === "summary" && message.suggestions && (
-                                <div className="mt-2" style={{ marginTop: 'var(--space-2)' }}>
-                                  {message.suggestions.map((text: string, idx: number) => (
-                                    <div key={idx} className="mt-2 flex justify-end" style={{ marginTop: 'var(--space-2)' }}>
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        className="cosmic-button-outline text-xs bg-cosmic-card-hover border-cosmic-accent-muted text-cosmic-accent hover:bg-cosmic-accent-muted"
-                                        onClick={() => handleApplySummary(text)}
-                                      >
-                                        <Plus className="h-3 w-3 mr-2" />
-                                        Apply to Summary
-                                      </Button>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                              
-                              {message.type === "bullet" && message.suggestions && (
-                                <div className="mt-2" style={{ marginTop: 'var(--space-2)' }}>
-                                  {message.suggestions.map((text: string, idx: number) => (
-                                    <div key={idx} className="mt-2 flex justify-end" style={{ marginTop: 'var(--space-2)' }}>
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        className="cosmic-button-outline text-xs bg-cosmic-card-hover border-cosmic-accent-muted text-cosmic-accent hover:bg-cosmic-accent-muted"
-                                        onClick={() => handleApplyBulletPoint(text)}
-                                      >
-                                        <Plus className="h-3 w-3 mr-2" />
-                                        Add to Experience
-                                      </Button>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                              
-                              {message.type === "skill" && message.suggestions && (
-                                <div className="mt-2 flex flex-wrap gap-2" style={{ marginTop: 'var(--space-2)', gap: 'var(--space-2)' }}>
-                                  {message.suggestions.map((skill: string, idx: number) => (
-                                    <Button
-                                      key={idx}
-                                      size="sm"
-                                      variant="outline"
-                                      className="cosmic-button-outline text-xs bg-cosmic-card-hover border-cosmic-accent-muted text-cosmic-accent hover:bg-cosmic-accent-muted"
-                                      onClick={() => handleApplySkill(skill)}
-                                    >
-                                      <Plus className="h-3 w-3 mr-1" />
-                                      {skill}
-                                    </Button>
-                                  ))}
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* Chat Input */}
-                  <div className="p-4 border-t border-cosmic-border" style={{ padding: 'var(--space-4)' }}>
-                    <div className="flex space-x-2" style={{ gap: 'var(--space-2)' }}>
-                      <Input
-                        value={chatInput}
-                        onChange={(e) => setChatInput(e.target.value)}
-                        placeholder="Ask for resume help..."
-                        className="cosmic-input flex-1 bg-cosmic-input-bg border-cosmic-border text-cosmic-text"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            handleSendMessage();
-                          }
-                        }}
-                      />
-                      <Button
-                        onClick={handleSendMessage}
-                        size="icon"
-                        className="cosmic-button bg-cosmic-accent hover:bg-cosmic-accent-hover text-white"
-                        disabled={!chatInput.trim()}
-                      >
-                        <Send className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+                <AIResumeAssistant
+                  resumeId={resumeId || undefined}
+                  onApplySuggestion={
+                    activeSection === "summary" 
+                      ? handleApplySummary 
+                      : activeSection === "experience" 
+                        ? handleApplyBulletPoint 
+                        : activeSection === "skills" 
+                          ? handleApplySkill 
+                          : handleApplySummary
+                  }
+                  suggestionType={
+                    activeSection === "summary" 
+                      ? "summary" 
+                      : activeSection === "experience" 
+                        ? "bullet" 
+                        : activeSection === "skills" 
+                          ? "skill" 
+                          : "summary"
+                  }
+                  activeTab={activeSection}
+                />
               </div>
             )}
           </div>

@@ -25,6 +25,7 @@ import Navbar from "@/components/navbar";
 import GoAdminLink from "@/components/go-admin-link";
 import QuickLogin from "@/components/quick-login";
 import AuthDialog from "@/components/auth-dialog";
+import CosmicBackground from "@/components/cosmic-background";
 
 function Router() {
   // Manual check for admin-access path to handle direct navigation

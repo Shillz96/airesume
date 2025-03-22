@@ -78,16 +78,17 @@ export function ExperienceSection({
     <div className="space-y-4">
       <SectionHeader
         title="Work Experience"
-        icon={<Briefcase className="h-5 w-5" />}
+        icon={<Briefcase className="h-5 w-5 cosmic-section-icon" />}
         onAdd={handleAddExperience}
         addButtonText="Add Experience"
+        className="cosmic-text-gradient"
       />
 
       {experiences.length === 0 ? (
-        <SectionCard withHoverEffect={false}>
+        <SectionCard withHoverEffect={false} className="border border-dashed border-white/10">
           <div className="flex flex-col items-center justify-center p-6">
-            <Briefcase className="h-12 w-12 mb-2 opacity-30" />
-            <p className="text-center text-sm mb-4">
+            <Briefcase className="h-12 w-12 mb-2 opacity-40 cosmic-section-icon" />
+            <p className="text-center text-sm mb-4 opacity-80">
               Add your work history including internships and relevant experience
             </p>
             <CosmicButton 
@@ -95,6 +96,7 @@ export function ExperienceSection({
               size="sm" 
               onClick={handleAddExperience}
               iconLeft={<Plus className="h-4 w-4" />}
+              withGlow
             >
               Add Experience
             </CosmicButton>
@@ -113,21 +115,21 @@ export function ExperienceSection({
               key={experience.id}
               value={experience.id}
               className={cn(
-                "cosmic-card overflow-hidden",
+                "cosmic-card overflow-hidden border border-white/10 backdrop-blur-sm",
                 expandedItem === experience.id ? "ring-1 ring-primary/20 cosmic-card-gradient" : ""
               )}
             >
-              <AccordionTrigger className="px-4 py-3 hover:bg-accent/50 data-[state=open]:bg-accent/60">
+              <AccordionTrigger className="px-4 py-3 hover:bg-primary/5 data-[state=open]:bg-primary/10 border-white/10">
                 <div className="flex flex-1 justify-between items-center">
                   <div className="text-left">
-                    <p className="font-medium">
+                    <p className={cn("font-medium", expandedItem === experience.id ? "cosmic-text-gradient" : "")}>
                       {experience.title || "New Position"}
                     </p>
                     {experience.company && (
-                      <p className="text-sm opacity-70">{experience.company}</p>
+                      <p className="text-sm opacity-80">{experience.company}</p>
                     )}
                   </div>
-                  <div className="text-sm opacity-70 mr-4">
+                  <div className="text-sm opacity-80 mr-4">
                     {experience.startDate && experience.endDate
                       ? `${formatDate(experience.startDate)} - ${formatDate(experience.endDate)}`
                       : ""}
@@ -135,53 +137,53 @@ export function ExperienceSection({
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pb-0">
-                <div className="p-4 space-y-4 bg-card rounded-b-md">
+                <div className="p-4 space-y-4 bg-card/10 backdrop-blur-sm rounded-b-md border-t border-white/10">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor={`exp-title-${experience.id}`}>Job Title</Label>
+                      <Label htmlFor={`exp-title-${experience.id}`} className="cosmic-label">Job Title</Label>
                       <Input
                         id={`exp-title-${experience.id}`}
                         value={experience.title}
                         onChange={(e) => handleExperienceChange(experience.id, 'title', e.target.value)}
                         placeholder="e.g., Senior Developer"
-                        className="cosmic-input"
+                        className="cosmic-input border-white/10"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor={`exp-company-${experience.id}`}>Company</Label>
+                      <Label htmlFor={`exp-company-${experience.id}`} className="cosmic-label">Company</Label>
                       <Input
                         id={`exp-company-${experience.id}`}
                         value={experience.company}
                         onChange={(e) => handleExperienceChange(experience.id, 'company', e.target.value)}
                         placeholder="e.g., Acme Inc."
-                        className="cosmic-input"
+                        className="cosmic-input border-white/10"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor={`exp-start-${experience.id}`}>Start Date</Label>
+                      <Label htmlFor={`exp-start-${experience.id}`} className="cosmic-label">Start Date</Label>
                       <div className="relative">
-                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 cosmic-section-icon" />
                         <Input
                           id={`exp-start-${experience.id}`}
                           value={experience.startDate}
                           onChange={(e) => handleExperienceChange(experience.id, 'startDate', e.target.value)}
-                          className="pl-10 cosmic-input"
+                          className="pl-10 cosmic-input border-white/10"
                           placeholder="e.g., Jan 2020"
                         />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor={`exp-end-${experience.id}`}>End Date (or "Present")</Label>
+                      <Label htmlFor={`exp-end-${experience.id}`} className="cosmic-label">End Date (or "Present")</Label>
                       <div className="relative">
-                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 cosmic-section-icon" />
                         <Input
                           id={`exp-end-${experience.id}`}
                           value={experience.endDate}
                           onChange={(e) => handleExperienceChange(experience.id, 'endDate', e.target.value)}
-                          className="pl-10 cosmic-input"
+                          className="pl-10 cosmic-input border-white/10"
                           placeholder="e.g., Dec 2022 or Present"
                         />
                       </div>
@@ -189,23 +191,23 @@ export function ExperienceSection({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor={`exp-description-${experience.id}`}>Description</Label>
+                    <Label htmlFor={`exp-description-${experience.id}`} className="cosmic-label">Description</Label>
                     <Textarea
                       id={`exp-description-${experience.id}`}
                       value={experience.description}
                       onChange={(e) => handleExperienceChange(experience.id, 'description', e.target.value)}
                       placeholder="Describe your responsibilities, achievements, and skills used..."
                       rows={5}
-                      className="cosmic-input cosmic-textarea"
+                      className="cosmic-input cosmic-textarea border-white/10"
                     />
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground opacity-80">
                       Use bullet points for better readability. Start with strong action verbs.
                     </p>
                   </div>
 
-                  <div className="space-y-2 mt-4 border-t pt-4">
-                    <h4 className="text-sm font-medium">Formatting Tips:</h4>
-                    <ul className="text-xs space-y-1 text-muted-foreground">
+                  <div className="space-y-2 mt-4 border-t border-white/10 pt-4">
+                    <h4 className="text-sm font-medium cosmic-text-gradient">Formatting Tips:</h4>
+                    <ul className="text-xs space-y-1 text-muted-foreground opacity-80">
                       <li>• Start with strong action verbs (e.g., "Developed", "Led", "Managed")</li>
                       <li>• Include quantifiable achievements (e.g., "Increased sales by 20%")</li>
                       <li>• Use bullet points for better readability</li>

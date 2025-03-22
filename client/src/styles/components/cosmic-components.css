@@ -49,12 +49,13 @@
 
 /* AI Assistant Card */
 .cosmic-ai-card {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background-color: rgba(0, 0, 0, 0.4);
+  border: var(--card-border);
+  background-color: var(--card-background-dark);
   padding: var(--space-5);
   border-radius: var(--card-radius);
   position: relative;
   overflow: hidden;
+  transition: box-shadow var(--transition-normal), transform var(--transition-normal);
 }
 
 .cosmic-card-hoverable:hover {

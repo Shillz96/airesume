@@ -75,6 +75,7 @@
   /* ======== Component Specific ======== */
   /* Card */
   --card-background: rgb(var(--color-card));
+  --card-background-dark: rgba(0, 0, 0, 0.4);
   --card-foreground: rgb(var(--color-text));
   --card-border: 1px solid rgb(var(--color-border) / 0.2);
   --card-hover: rgb(var(--color-card) / 0.8);

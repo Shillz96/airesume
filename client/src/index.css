@@ -85,28 +85,7 @@
   }
 }
 
-/* Critical fix for Radix UI popper elements z-index issues */
-div[data-radix-popper-content-wrapper] {
-  z-index: 999 !important;
-  position: relative !important; 
-}
-
-/* Ensure menu elements are above the navbar */
-[role="menu"] {
-  z-index: 999 !important;
-}
-
-/* Fix for avatar and profile elements */
-.cosmic-navbar .cosmic-glow, 
-.cosmic-navbar button,
-.cosmic-navbar [role="button"] {
-  position: relative !important;
-  z-index: 95 !important;
-}
-
-/* Additional fixes for dropdown trigger */
-button[aria-haspopup="menu"],
-div[role="button"] {
-  position: relative;
-  z-index: 95 !important;
-}
+/* 
+   All z-index fixes moved to dedicated file: ./styles/fixes/z-index-fix.css 
+   which is imported at the end of this file for highest specificity
+*/

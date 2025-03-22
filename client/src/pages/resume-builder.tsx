@@ -2527,8 +2527,8 @@ export default function ResumeBuilder() {
   const { isDarkMode } = useTheme();
   
   return (
-    <div className="min-h-screen cosmic-page">
-      {/* Using global cosmic-theme.css background instead of CosmicStarfield */}
+    <div className="min-h-screen bg-[#0a0c19] text-white relative before:absolute before:inset-0 before:bg-gradient-to-b before:from-[#0a0c19] before:to-[#0f1229] before:min-h-full before:w-full before:fixed before:-z-10">
+      {/* Using fixed background with gradient */}
       <Navbar />
 
       <main className="container mx-auto pt-12 pb-20 px-4 cosmic-container">

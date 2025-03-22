@@ -236,7 +236,7 @@ export default function SubscriptionPage() {
   };
   
   return (
-    <div className="min-h-screen bg-[#0a0c19] bg-gradient-to-b from-[#0a0c19] to-[#0f1229] text-white">
+    <div className="min-h-screen bg-[#0a0c19] text-white relative before:absolute before:inset-0 before:bg-gradient-to-b before:from-[#0a0c19] before:to-[#0f1229] before:min-h-full before:w-full before:fixed before:-z-10">
       <Navbar />
       <div className="container pt-12 pb-10 px-4 md:px-6 max-w-7xl mx-auto relative z-10">
         <div className="flex justify-between items-center mb-2">

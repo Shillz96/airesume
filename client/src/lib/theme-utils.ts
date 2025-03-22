@@ -1,11 +1,38 @@
 /**
  * Theme utility functions for consistent theme handling throughout the application
+ * 
+ * This file provides utilities to access and apply theme values from theme.json
+ * consistently across the application. It handles theme variants, appearance modes,
+ * and provides easy access to colors and other design tokens.
  */
 
-// Define theme variant types to ensure type safety
+// Theme configuration types for type safety
 export type ThemeVariant = 'professional' | 'vibrant' | 'tint' | string;
 export const THEME_VARIANTS = ['professional', 'vibrant', 'tint'] as const;
 export type ThemeAppearance = 'light' | 'dark' | 'system';
+
+// Import theme.json at build time
+// Note: In production, we would use a more dynamic approach to access theme.json
+// This is a simplified version that will be improved in the future
+import themeConfig from '../../../theme.json';
+
+/**
+ * Type definition for our theme configuration
+ */
+interface ThemeConfig {
+  variant: ThemeVariant;
+  primary: string;
+  appearance: ThemeAppearance;
+  radius: number;
+  colors: Record<string, string>;
+}
+
+/**
+ * Helper to access our theme configuration
+ */
+export function getThemeConfig(): ThemeConfig {
+  return themeConfig as ThemeConfig;
+}
 
 /**
  * Get a CSS variable from the theme
@@ -17,27 +44,29 @@ export function getThemeVar(variableName: string): string {
 }
 
 /**
+ * Get the current theme variant
+ * @returns The current theme variant
+ */
+export function getCurrentVariant(): ThemeVariant {
+  return getThemeConfig().variant;
+}
+
+/**
+ * Get the current theme appearance
+ * @returns The current theme appearance
+ */
+export function getCurrentAppearance(): ThemeAppearance {
+  return getThemeConfig().appearance;
+}
+
+/**
  * Get a cosmic theme color from theme.json colors object
  * @param colorName The name of the color from theme.json colors object
  * @returns The color value or a fallback
  */
 export function getCosmicColor(colorName: string): string {
-  // Access cosmic colors defined in theme.json
-  const cosmicColors: Record<string, string> = {
-    cosmicBackground: "linear-gradient(to bottom right, hsl(219, 90%, 10%), hsl(260, 90%, 10%))",
-    cosmicPrimary: "hsl(221.2, 83.2%, 53.3%)",
-    cosmicHighlight1: "hsl(210, 100%, 60%)",
-    cosmicHighlight2: "hsl(260, 100%, 60%)",
-    cosmicHighlight3: "hsl(170, 100%, 60%)",
-    cosmicText: "hsl(0, 0%, 100%)",
-    cosmicTextSecondary: "hsl(220, 30%, 80%)",
-    cosmicBorderGlow: "0 0 10px rgba(59, 130, 246, 0.5)",
-    cosmicCardBg: "rgba(255, 255, 255, 0.05)",
-    cosmicCardBorder: "rgba(255, 255, 255, 0.1)",
-    cosmicOverlayBg: "rgba(0, 0, 0, 0.7)"
-  };
-  
-  return cosmicColors[colorName] || "";
+  const { colors } = getThemeConfig();
+  return colors[colorName] || "";
 }
 
 /**
@@ -52,13 +81,11 @@ export function getVariantClasses(
   vibrantClasses: string,
   tintClasses: string,
 ): string {
-  // In a real implementation, this would detect the current theme variant
-  // from theme.json or CSS variables. For now, we'll default to professional.
-  const currentVariant: ThemeVariant = "professional";
+  const currentVariant = getCurrentVariant();
   
-  if (currentVariant === "vibrant" as ThemeVariant) {
+  if (currentVariant === "vibrant") {
     return vibrantClasses;
-  } else if (currentVariant === "tint" as ThemeVariant) {
+  } else if (currentVariant === "tint") {
     return tintClasses;
   } else {
     // Default to professional
@@ -71,9 +98,15 @@ export function getVariantClasses(
  * @returns true if the theme is in dark mode
  */
 export function isDarkMode(): boolean {
-  // In a real implementation, we would check the actual theme setting from theme.json
-  // We're now defaulting to true for dark mode since our theme is "Cosmic Navigator"
-  return true;
+  const appearance = getCurrentAppearance();
+  
+  if (appearance === 'system') {
+    // In a browser environment, we would check the system preference
+    // For now, we'll default to dark mode for "system" setting
+    return true;
+  }
+  
+  return appearance === 'dark';
 }
 
 /**
@@ -89,9 +122,11 @@ export function getTextColorClass(): string {
  * @returns CSS class for background
  */
 export function getBackgroundClass(): string {
-  return isDarkMode() 
-    ? "bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)]" 
-    : "bg-white";
+  if (isDarkMode()) {
+    return "bg-[#050A18] cosmic-background";
+  } else {
+    return "bg-white";
+  }
 }
 
 /**
@@ -100,6 +135,37 @@ export function getBackgroundClass(): string {
  */
 export function getCardBackgroundClass(): string {
   return isDarkMode() 
-    ? "bg-opacity-10 bg-white backdrop-blur-md border border-white/10" 
-    : "bg-white border border-gray-200";
+    ? "cosmic-card"
+    : "bg-white border border-gray-200 shadow rounded-lg";
+}
+
+/**
+ * Get consistent design token for spacing
+ * @param size The spacing size (1-16)
+ * @returns CSS variable for consistent spacing
+ */
+export function getSpacing(size: number): string {
+  return `var(--space-${size})`;
+}
+
+/**
+ * Get button style based on variant and theme
+ * @param variant Button variant
+ * @returns CSS class for button styling
+ */
+export function getButtonClass(variant: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive'): string {
+  switch (variant) {
+    case 'primary':
+      return 'cosmic-button-primary';
+    case 'secondary':
+      return 'cosmic-button-secondary';
+    case 'outline':
+      return 'cosmic-button-outline';
+    case 'ghost':
+      return 'cosmic-button-ghost';
+    case 'destructive':
+      return 'cosmic-button-destructive';
+    default:
+      return 'cosmic-button-primary';
+  }
 }

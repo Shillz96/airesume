@@ -2950,7 +2950,7 @@ export default function ResumeBuilder() {
                             rows={5}
                             placeholder="Dynamic Software Engineer with 4 years of experience in web development and optimization. Engineered client websites, resulting in 30% efficiency gains, and developed a custom CMS improving content management by 20%. Seeking to leverage skills in coding and project management to contribute to innovative projects."
                           />
-                          <div className="mt-3 text-xs text-blue-100/60 bg-blue-500/5 p-3 rounded-lg border border-blue-500/10">
+                          <div className="mt-3 text-xs text-blue-100/60 bg-blue-500/5 p-space-3 rounded-lg border border-blue-500/10">
                             <p className="mb-2 text-blue-300 font-medium">
                               Tips for a great summary:
                             </p>
@@ -2972,7 +2972,7 @@ export default function ResumeBuilder() {
 
                   {/* AI Tips Section */}
                   <div className="md:col-span-1">
-                    <div className="cosmic-card border border-white/10 bg-black/40 p-5 rounded-lg relative overflow-hidden">
+                    <div className="cosmic-ai-card">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
                       <div className="relative z-10">
                         <div className="flex items-center mb-4">
@@ -3044,7 +3044,7 @@ export default function ResumeBuilder() {
 
                   {/* Tips for Experience */}
                   <div className="md:col-span-1">
-                    <div className="cosmic-card border border-white/10 bg-black/40 p-5 rounded-lg relative overflow-hidden">
+                    <div className="cosmic-ai-card">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
                       <div className="relative z-10">
                         <div className="flex items-center mb-4">
@@ -3143,7 +3143,7 @@ export default function ResumeBuilder() {
                       }}
                     />
 
-                    <div className="mt-4 text-xs text-gray-300 bg-white/5 p-4 rounded-lg border border-white/10">
+                    <div className="mt-4 text-xs text-gray-300 bg-white/5 p-space-4 rounded-lg border border-white/10">
                       <p className="mb-2 text-blue-300 font-medium">
                         Tips for showcasing skills:
                       </p>
@@ -3158,7 +3158,7 @@ export default function ResumeBuilder() {
 
                   {/* Tips for Skills */}
                   <div className="md:col-span-1">
-                    <div className="cosmic-card border border-white/10 bg-black/40 p-5 rounded-lg relative overflow-hidden">
+                    <div className="cosmic-ai-card">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
                       <div className="relative z-10">
                         <div className="flex items-center mb-4">
@@ -3250,7 +3250,7 @@ export default function ResumeBuilder() {
                       Download PDF
                     </CosmicButton>
                   </div>
-                  <div className="cosmic-card border border-white/10 backdrop-blur-sm p-8 rounded-xl shadow-lg">
+                  <div className="cosmic-card border border-white/10 backdrop-blur-sm p-space-8 rounded-xl shadow-lg">
                     <ResumePreviewComponent
                       resume={resume || {
                         title: "My Professional Resume",
@@ -3298,7 +3298,7 @@ export default function ResumeBuilder() {
       {/* AI Assistant Chat Box */}
       {isDialogOpen && (
         <div className="fixed bottom-24 right-6 z-50 w-96 max-w-full shadow-xl rounded-lg overflow-hidden transition-all duration-300 ease-in-out">
-          <div className="bg-gradient-to-r from-blue-900 to-purple-900 p-3 flex justify-between items-center border-b border-blue-500/30">
+          <div className="bg-gradient-to-r from-blue-900 to-purple-900 p-space-3 flex justify-between items-center border-b border-blue-500/30">
             <div className="flex items-center">
               <Cpu className="h-5 w-5 text-blue-300 mr-2" />
               <h3 className="text-white font-medium">AI Resume Assistant</h3>
@@ -3312,7 +3312,7 @@ export default function ResumeBuilder() {
               <X className="h-4 w-4 text-white" />
             </CosmicButton>
           </div>
-          <div className="bg-black/90 border-x border-blue-500/30 border-b p-4 h-96 overflow-y-auto">
+          <div className="bg-black/90 border-x border-blue-500/30 border-b p-space-4 h-96 overflow-y-auto">
             <AIAssistant
               resumeId={resumeId?.toString()}
               onApplySummary={handleApplySummary}

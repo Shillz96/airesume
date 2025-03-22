@@ -428,23 +428,23 @@ export default function AIAssistantDialog({
             </div>
           </TabsContent>
           
-          <TabsContent value="summaries" className="flex-1 overflow-y-auto px-6 space-y-4 m-0">
-            <div className="space-y-4">
-              <div className="cosmic-card p-4 border border-blue-900/30 bg-blue-950/20">
-                <h3 className="text-lg font-semibold flex items-center gap-2 mb-2">
-                  <FileText className="h-5 w-5 text-blue-400" />
+          <TabsContent value="summaries" className="flex-1 overflow-y-auto px-6 space-y-4 m-0" style={{ padding: '0 var(--space-6)', '--space-y': 'var(--space-4)' } as React.CSSProperties}>
+            <div className="space-y-4" style={{ '--space-y': 'var(--space-4)' } as React.CSSProperties}>
+              <div className="cosmic-card p-4 border border-cosmic-border bg-cosmic-card-secondary/30 rounded-lg" style={{ padding: 'var(--space-4)' }}>
+                <h3 className="text-lg font-semibold flex items-center gap-2 mb-2 text-cosmic-text" style={{ gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
+                  <FileText className="h-5 w-5 text-cosmic-accent" />
                   Professional Summary Suggestions
                 </h3>
-                <p className="text-gray-300 mb-4">
+                <p className="text-cosmic-text-secondary mb-4" style={{ marginBottom: 'var(--space-4)' }}>
                   Choose one of these compelling summaries to highlight your professional background
                 </p>
                 
-                <div className="space-y-3">
+                <div className="space-y-3" style={{ '--space-y': 'var(--space-3)' } as React.CSSProperties}>
                   {suggestionsLoading ? (
-                    <div className="space-y-2">
-                      <div className="h-14 bg-gray-800 animate-pulse rounded-md"></div>
-                      <div className="h-14 bg-gray-800 animate-pulse rounded-md"></div>
-                      <div className="h-14 bg-gray-800 animate-pulse rounded-md"></div>
+                    <div className="space-y-2" style={{ '--space-y': 'var(--space-2)' } as React.CSSProperties}>
+                      <div className="h-14 bg-cosmic-card-hover animate-pulse rounded-md"></div>
+                      <div className="h-14 bg-cosmic-card-hover animate-pulse rounded-md"></div>
+                      <div className="h-14 bg-cosmic-card-hover animate-pulse rounded-md"></div>
                     </div>
                   ) : (
                     [
@@ -452,11 +452,11 @@ export default function AIAssistantDialog({
                       "Creative marketing professional with expertise in digital strategy and brand development. Proven track record of increasing customer engagement and driving conversion through innovative campaigns across multiple platforms.",
                       "Analytical financial advisor skilled in portfolio management and wealth preservation strategies. Dedicated to providing personalized financial guidance that helps clients achieve long-term goals and security."
                     ].map((summary, index) => (
-                      <div key={index} className="cosmic-card border border-gray-700 p-3 bg-gray-800/50 rounded-md">
-                        <p className="text-gray-200 text-sm mb-2">{summary}</p>
+                      <div key={index} className="cosmic-card border border-cosmic-border p-3 bg-cosmic-card-hover rounded-md" style={{ padding: 'var(--space-3)' }}>
+                        <p className="text-cosmic-text text-sm mb-2" style={{ marginBottom: 'var(--space-2)' }}>{summary}</p>
                         <Button
                           size="sm"
-                          className="text-xs bg-blue-600 hover:bg-blue-700"
+                          className="text-xs bg-cosmic-accent hover:bg-cosmic-accent-hover text-white"
                           onClick={() => {
                             if (onApplySummary) onApplySummary(summary);
                             toast({
@@ -472,38 +472,38 @@ export default function AIAssistantDialog({
                   )}
                 </div>
                 
-                <p className="text-gray-400 text-xs mt-4">
+                <p className="text-cosmic-text-secondary text-xs mt-4" style={{ marginTop: 'var(--space-4)' }}>
                   Summaries are generated based on your experience and skills. Customize after applying.
                 </p>
               </div>
             </div>
           </TabsContent>
           
-          <TabsContent value="bullets" className="flex-1 overflow-y-auto px-6 space-y-4 m-0">
-            <div className="space-y-4">
-              <div className="cosmic-card p-4 border border-blue-900/30 bg-blue-950/20">
-                <h3 className="text-lg font-semibold flex items-center gap-2 mb-2">
-                  <Briefcase className="h-5 w-5 text-blue-400" />
+          <TabsContent value="bullets" className="flex-1 overflow-y-auto px-6 space-y-4 m-0" style={{ padding: '0 var(--space-6)', '--space-y': 'var(--space-4)' } as React.CSSProperties}>
+            <div className="space-y-4" style={{ '--space-y': 'var(--space-4)' } as React.CSSProperties}>
+              <div className="cosmic-card p-4 border border-cosmic-border bg-cosmic-card-secondary/30 rounded-lg" style={{ padding: 'var(--space-4)' }}>
+                <h3 className="text-lg font-semibold flex items-center gap-2 mb-2 text-cosmic-text" style={{ gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
+                  <Briefcase className="h-5 w-5 text-cosmic-accent" />
                   Experience Bullet Points
                 </h3>
-                <p className="text-gray-300 mb-4">
+                <p className="text-cosmic-text-secondary mb-4" style={{ marginBottom: 'var(--space-4)' }}>
                   Add these impactful bullet points to showcase your achievements
                 </p>
                 
                 <div>
-                  <Label className="text-sm text-blue-300 mb-2 block">Select job position</Label>
-                  <select className="w-full p-2 bg-gray-800 border border-gray-700 rounded-md text-white mb-4">
+                  <Label className="text-sm text-cosmic-accent mb-2 block" style={{ marginBottom: 'var(--space-2)' }}>Select job position</Label>
+                  <select className="w-full p-2 bg-cosmic-card-hover border border-cosmic-border rounded-md text-cosmic-text mb-4" style={{ padding: 'var(--space-2)', marginBottom: 'var(--space-4)' }}>
                     <option value="">Frontend Developer at TechCorp</option>
                     <option value="">Project Manager at Creative Solutions</option>
                   </select>
                 </div>
                 
-                <div className="space-y-3 mt-4">
+                <div className="space-y-3 mt-4" style={{ '--space-y': 'var(--space-3)', marginTop: 'var(--space-4)' } as React.CSSProperties}>
                   {suggestionsLoading ? (
-                    <div className="space-y-2">
-                      <div className="h-12 bg-gray-800 animate-pulse rounded-md"></div>
-                      <div className="h-12 bg-gray-800 animate-pulse rounded-md"></div>
-                      <div className="h-12 bg-gray-800 animate-pulse rounded-md"></div>
+                    <div className="space-y-2" style={{ '--space-y': 'var(--space-2)' } as React.CSSProperties}>
+                      <div className="h-12 bg-cosmic-card-hover animate-pulse rounded-md"></div>
+                      <div className="h-12 bg-cosmic-card-hover animate-pulse rounded-md"></div>
+                      <div className="h-12 bg-cosmic-card-hover animate-pulse rounded-md"></div>
                     </div>
                   ) : (
                     [
@@ -512,11 +512,11 @@ export default function AIAssistantDialog({
                       "Optimized database queries, resulting in a 70% improvement in application load time and enhanced user experience for over 10,000 daily active users.",
                       "Led cross-functional team of 6 developers to deliver project milestones on time and 15% under budget.",
                     ].map((bullet, index) => (
-                      <div key={index} className="cosmic-card border border-gray-700 p-3 bg-gray-800/50 rounded-md">
-                        <p className="text-gray-200 text-sm mb-2">{bullet}</p>
+                      <div key={index} className="cosmic-card border border-cosmic-border p-3 bg-cosmic-card-hover rounded-md" style={{ padding: 'var(--space-3)' }}>
+                        <p className="text-cosmic-text text-sm mb-2" style={{ marginBottom: 'var(--space-2)' }}>{bullet}</p>
                         <Button
                           size="sm"
-                          className="text-xs bg-blue-600 hover:bg-blue-700"
+                          className="text-xs bg-cosmic-accent hover:bg-cosmic-accent-hover text-white"
                           onClick={() => {
                             if (onApplyBulletPoint) onApplyBulletPoint(bullet);
                             toast({
@@ -536,11 +536,17 @@ export default function AIAssistantDialog({
           </TabsContent>
         </Tabs>
         
-        <DialogFooter className="px-6 py-4 border-t border-gray-800">
+        <DialogFooter className="px-6 py-4 border-t border-cosmic-border" style={{ padding: 'var(--space-4) var(--space-6)' }}>
           <DialogClose asChild>
-            <Button variant="outline" className="mr-auto">Close</Button>
+            <Button 
+              variant="outline" 
+              className="mr-auto cosmic-button-outline text-cosmic-text-secondary border-cosmic-border hover:bg-cosmic-accent-muted/20"
+            >
+              Close
+            </Button>
           </DialogClose>
-          <div className="text-xs text-gray-400">
+          <div className="text-xs text-cosmic-text-secondary flex items-center">
+            <Sparkles className="h-3 w-3 mr-2 text-cosmic-accent" />
             AI suggestions are tailored to your resume content
           </div>
         </DialogFooter>

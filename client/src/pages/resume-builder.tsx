@@ -2528,7 +2528,7 @@ export default function ResumeBuilder() {
   const { isDarkMode } = useTheme();
   
   return (
-    <div className="flex flex-col min-h-screen cosmic-page-container">
+    <div className="cosmic-app-container flex flex-col min-h-screen">
       <Navbar />
       <div className="cosmic-main-content container pt-12 pb-20 px-4 md:px-6 max-w-7xl mx-auto relative z-10">
         {/* Page Header */}

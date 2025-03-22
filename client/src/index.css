@@ -24,6 +24,7 @@
 @import './styles/components/cosmic-tabs.css'; /* Added new cosmic tabs styling */
 @import './styles/components/cosmic-dialog.css'; /* Added new cosmic dialog styling */
 @import './styles/components/resume-sections.css'; /* Added resume section styling */
+@import './styles/components/resume-builder.css'; /* Added resume builder styling */
 
 /* Import layout styles */
 @import './styles/layout/navigation.css';

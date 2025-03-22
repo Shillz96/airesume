@@ -1,0 +1,262 @@
+/**
+ * Resume Builder Styles
+ * 
+ * This file contains styles for the resume builder UI components
+ * matching the design shown in the screenshot
+ */
+
+/* Main resume builder container */
+.cosmic-resume-builder {
+  background: rgba(3, 7, 18, 0.8);
+  min-height: 100vh;
+}
+
+/* Tab navigation styling */
+.cosmic-tabs {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cosmic-tab-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+}
+
+.cosmic-tab-trigger {
+  padding: 8px 16px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  background: transparent;
+  border: none;
+}
+
+.cosmic-tab-trigger[data-state="active"] {
+  background: rgba(59, 130, 246, 0.2);
+  color: white;
+}
+
+.cosmic-tab-trigger[data-state="active"] svg {
+  color: #60a5fa;
+}
+
+/* Section card styling */
+.cosmic-card {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  transition: all 0.2s ease-in-out;
+}
+
+.cosmic-card:hover {
+  background: rgba(15, 23, 42, 0.7);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Sections styling */
+.cosmic-section-icon {
+  color: #60a5fa;
+}
+
+.cosmic-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.cosmic-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+}
+
+/* Input fields styling */
+.cosmic-input {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 6px;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.cosmic-input:focus {
+  border-color: rgba(59, 130, 246, 0.6);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.cosmic-input::placeholder {
+  color: rgba(148, 163, 184, 0.6);
+}
+
+.cosmic-textarea {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 6px;
+  color: white;
+  min-height: 120px;
+  transition: all 0.2s ease;
+}
+
+.cosmic-textarea:focus {
+  border-color: rgba(59, 130, 246, 0.6);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+/* Preview area styling */
+.cosmic-preview-container {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  height: 100%;
+}
+
+/* AI Assistant styling */
+.cosmic-ai-assistant {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 50;
+}
+
+.cosmic-ai-button {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cosmic-ai-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px rgba(59, 130, 246, 0.6);
+}
+
+/* Experience section specific styling */
+.cosmic-experience-item {
+  background: rgba(15, 23, 42, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  transition: all 0.2s ease;
+}
+
+.cosmic-experience-item:hover {
+  background: rgba(15, 23, 42, 0.5);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.cosmic-experience-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.cosmic-experience-company {
+  font-weight: 600;
+  color: white;
+}
+
+.cosmic-experience-title {
+  color: #60a5fa;
+  font-size: 14px;
+}
+
+.cosmic-experience-dates {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+}
+
+.cosmic-experience-description {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Generate bullet button styling */
+.cosmic-generate-bullet {
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #60a5fa;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.cosmic-generate-bullet:hover {
+  background: rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+/* Item actions styling */
+.cosmic-item-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.cosmic-item-button {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.cosmic-item-button:hover {
+  background: rgba(59, 130, 246, 0.2);
+  color: white;
+}
+
+.cosmic-item-button-delete:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .cosmic-tab-list {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 5px;
+  }
+  
+  .cosmic-tab-trigger {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}

@@ -1,9 +1,11 @@
 import React, { useState, useRef } from "react";
 import { useResumeData } from "@/hooks/use-resume-data";
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "@/contexts/ThemeContext";
+import { cn } from "@/lib/utils";
 import Navbar from "@/components/navbar";
-import CosmicBackground from "@/components/cosmic-background";
-import { CosmicButton } from "@/components/cosmic-button";
+import CosmicStarfield from "@/components/cosmic-starfield";
+import { CosmicButton } from "@/components/cosmic-button-refactored";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Dialog,
@@ -38,21 +40,23 @@ import { SkillsSection } from "@/components/resume/SkillsSection";
 import { ProjectsSection } from "@/components/resume/ProjectsSection";
 import ResumeTemplate from "@/components/resume-template";
 
-// Only importing the resume preview component until we refactor the others
+// Resume preview component using cosmic styling
 function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { 
   resume: any; 
   onTemplateChange: (template: string) => void; 
   onDownload?: () => void; 
 }) {
+  const { isDarkMode } = useTheme();
+  
   return (
-    <div className="relative flex flex-col h-full">
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center">
-          <FileText className="w-5 h-5 mr-2 text-blue-400" />
-          <h2 className="text-white text-xl font-semibold">Resume Preview</h2>
+    <div className="cosmic-section relative flex flex-col h-full">
+      <div className="cosmic-section-header mb-4 flex items-center justify-between">
+        <div className="cosmic-section-title flex items-center">
+          <FileText className="w-5 h-5 mr-2 text-cosmic-accent" />
+          <h2 className="cosmic-title text-xl font-semibold">Resume Preview</h2>
         </div>
         
-        <div className="flex space-x-2">
+        <div className="cosmic-actions flex space-x-2">
           <CosmicButton
             variant="outline"
             size="sm"
@@ -80,7 +84,10 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: {
         </div>
       </div>
       
-      <div className="p-6 bg-white rounded-lg overflow-hidden flex-grow overflow-y-auto">
+      <div className={cn(
+        "cosmic-preview p-6 rounded-lg overflow-hidden flex-grow overflow-y-auto",
+        isDarkMode ? "bg-white" : "bg-white"
+      )}>
         <ResumeTemplate 
           resume={resume} 
           onTemplateChange={onTemplateChange} 
@@ -185,25 +192,30 @@ export default function ResumeBuilder() {
     setSaveDialogOpen(false);
   };
   
+  const { isDarkMode } = useTheme();
+  
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex flex-col">
+    <div className="min-h-screen flex flex-col cosmic-page">
       <Navbar />
       <div className="container px-4 py-8 mx-auto max-w-7xl flex-grow relative z-10">
         {/* Background cosmic effect */}
         <div className="fixed inset-0 z-0">
-          <CosmicBackground />
+          <CosmicStarfield 
+            starsCount={150}
+            nebulasCount={3}
+            shootingStarsEnabled={true}
+          />
         </div>
         
         {/* Page Title */}
-        <div className="mb-6 flex justify-between items-center relative z-10">
-          <h1 className="text-3xl font-bold tracking-tight text-white">
+        <div className="cosmic-page-header mb-6 flex justify-between items-center relative z-10">
+          <h1 className="cosmic-page-title text-3xl font-bold tracking-tight">
             Resume Builder
           </h1>
           
           <CosmicButton
             onClick={() => setSaveDialogOpen(true)}
             variant="primary"
-            withGlow
             isLoading={isLoading}
             iconLeft={isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           >
@@ -212,7 +224,7 @@ export default function ResumeBuilder() {
         </div>
         
         {/* Main content with tabs */}
-        <div className="mt-6 relative z-10 bg-gray-900/80 backdrop-blur-sm rounded-lg border border-gray-800 overflow-hidden">
+        <div className="cosmic-container mt-6 relative z-10 backdrop-blur-sm rounded-lg overflow-hidden border">
           <Tabs 
             value={activeSection} 
             onValueChange={setActiveSection}
@@ -328,26 +340,26 @@ export default function ResumeBuilder() {
       
       {/* Save Dialog */}
       <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
-        <DialogContent className="bg-gray-900 border-gray-800">
+        <DialogContent className="cosmic-dialog-content">
           <DialogHeader>
-            <DialogTitle className="text-white">Save Resume</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogTitle className="cosmic-dialog-title">Save Resume</DialogTitle>
+            <DialogDescription className="cosmic-dialog-description">
               Give your resume a name before saving.
             </DialogDescription>
           </DialogHeader>
           
-          <div className="py-4">
-            <Label htmlFor="resume-title" className="text-white">Resume Title</Label>
+          <div className="cosmic-form-group py-4">
+            <Label htmlFor="resume-title" className="cosmic-label">Resume Title</Label>
             <Input
               id="resume-title"
               value={resumeTitle}
               onChange={(e) => setResumeTitle(e.target.value)}
               placeholder="e.g., Software Engineer Resume"
-              className="mt-2 bg-gray-800 border-gray-700 text-white"
+              className="cosmic-input mt-2"
             />
           </div>
           
-          <DialogFooter>
+          <DialogFooter className="cosmic-dialog-footer">
             <CosmicButton
               variant="outline"
               onClick={() => setSaveDialogOpen(false)}

@@ -1,0 +1,139 @@
+/* ======== Cosmic Dialog Component ======== */
+
+/* Dialog content container */
+.cosmic-dialog-content {
+  --dialog-padding: var(--spacing-4);
+  --dialog-border-width: 1px;
+  --dialog-radius: var(--theme-radius, 0.5rem);
+  
+  background-color: rgb(var(--color-card));
+  border: var(--dialog-border-width) solid rgb(var(--color-border));
+  border-radius: var(--dialog-radius);
+  padding: var(--dialog-padding);
+  position: relative;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3), 
+              0 0 30px rgba(var(--color-primary), 0.1);
+  color: rgb(var(--color-text));
+  max-width: 90vw;
+  width: 500px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: cosmic-dialog-in 0.3s ease-out;
+}
+
+/* Dialog title */
+.cosmic-dialog-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: rgb(var(--color-text));
+  margin-bottom: var(--spacing-1);
+}
+
+/* Dialog description */
+.cosmic-dialog-description {
+  font-size: var(--font-size-sm);
+  color: rgba(var(--color-text), 0.8);
+  margin-bottom: var(--spacing-3);
+}
+
+/* Dialog footer */
+.cosmic-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-4);
+}
+
+/* Dialog close button */
+.cosmic-dialog-close {
+  position: absolute;
+  top: var(--spacing-3);
+  right: var(--spacing-3);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: rgba(var(--color-background-alt), 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(var(--color-text), 0.7);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cosmic-dialog-close:hover {
+  background-color: rgba(var(--color-background-hover), 0.7);
+  color: rgb(var(--color-text));
+}
+
+/* Dialog form elements */
+.cosmic-dialog .cosmic-label {
+  display: block;
+  margin-bottom: var(--spacing-1);
+  font-weight: 500;
+}
+
+.cosmic-dialog .cosmic-input {
+  width: 100%;
+  background-color: rgba(var(--color-input), 0.3);
+  border: 1px solid rgba(var(--color-border), 0.5);
+  border-radius: calc(var(--dialog-radius) / 2);
+  transition: all 0.2s ease;
+}
+
+.cosmic-dialog .cosmic-input:focus {
+  border-color: rgba(var(--color-primary), 0.7);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary), 0.2);
+}
+
+/* Dialog animation */
+@keyframes cosmic-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Professional theme adjustments */
+:root[data-theme-variant="professional"] .cosmic-dialog-content {
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+  border-width: 1px;
+}
+
+/* Vibrant theme adjustments */
+:root[data-theme-variant="vibrant"] .cosmic-dialog-content {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 
+              0 0 60px rgba(var(--color-primary), 0.15);
+  border-width: 2px;
+  background: linear-gradient(
+    to bottom,
+    rgba(var(--color-card), 1) 0%,
+    rgba(var(--color-card), 0.95) 100%
+  );
+}
+
+:root[data-theme-variant="vibrant"] .cosmic-dialog-title {
+  background: linear-gradient(
+    90deg,
+    rgb(var(--color-text)) 0%,
+    rgba(var(--color-primary), 0.8) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Tint theme adjustments */
+:root[data-theme-variant="tint"] .cosmic-dialog-content {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 0;
+  border-top: 3px solid rgb(var(--color-primary));
+}
+
+:root[data-theme-variant="tint"] .cosmic-dialog-close {
+  border-radius: 2px;
+}

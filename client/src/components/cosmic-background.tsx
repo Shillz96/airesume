@@ -1,18 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { isDarkMode } from '@/lib/theme-utils';
 
 /**
  * CosmicBackground component
  * Creates a dynamic starfield with animated nebula effects using CSS animations
- * Now using our organized animation CSS
+ * Now using our organized animation CSS and memoization to prevent re-renders
  */
 export default function CosmicBackground() {
   const [isClient, setIsClient] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
+  const [starKey, setStarKey] = useState(0); // Used to force re-generation of stars only when theme changes
 
   // Create stars manually to ensure they're visible
-  const generateStars = () => {
-    const stars = [];
+  // Memoize the stars so they don't regenerate on every render
+  const stars = useMemo(() => {
+    if (!isClient) return [];
+    
+    const starsArray = [];
     const starCount = darkMode ? 150 : 100; // Fewer stars in light mode
     
     for (let i = 0; i < starCount; i++) {
@@ -20,16 +24,18 @@ export default function CosmicBackground() {
       const opacity = Math.random() * 0.7 + 0.3;
       const animDuration = Math.random() * 4 + 2;
       const animDelay = Math.random() * 2;
+      const top = Math.random() * 100;
+      const left = Math.random() * 100;
       
-      stars.push(
+      starsArray.push(
         <div
-          key={i}
+          key={`star-${i}-${starKey}`}
           className="star absolute rounded-full"
           style={{
             width: `${size}px`,
             height: `${size}px`,
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
+            top: `${top}%`,
+            left: `${left}%`,
             opacity: darkMode ? opacity : opacity * 0.6, // More translucent in light mode
             animation: `twinkle ${animDuration}s infinite ${animDelay}s`,
             background: darkMode ? 'white' : 'rgba(59, 130, 246, 0.8)', // Blue-tinted stars in light mode
@@ -40,14 +46,15 @@ export default function CosmicBackground() {
         />
       );
     }
-    return stars;
-  };
+    return starsArray;
+  }, [isClient, darkMode, starKey]); // Only regenerate when these values change
 
   useEffect(() => {
     setIsClient(true);
-    setDarkMode(isDarkMode());
+    const currentDarkMode = isDarkMode();
+    setDarkMode(currentDarkMode);
     
-    // Manually create shooting stars
+    // Setup shooting stars only once per mount
     const starfield = document.querySelector('.starfield');
     if (!starfield) return;
     
@@ -84,7 +91,11 @@ export default function CosmicBackground() {
     
     // Listen for theme changes
     const checkTheme = () => {
-      setDarkMode(isDarkMode());
+      const newDarkMode = isDarkMode();
+      if (newDarkMode !== darkMode) {
+        setDarkMode(newDarkMode);
+        setStarKey(prevKey => prevKey + 1); // Force regeneration of stars when theme changes
+      }
     };
     
     window.addEventListener('theme-change', checkTheme);
@@ -93,7 +104,7 @@ export default function CosmicBackground() {
       clearInterval(interval);
       window.removeEventListener('theme-change', checkTheme);
     };
-  }, []);
+  }, []); // Empty dependency array ensures this only runs once on mount
 
   if (!isClient) return null;
 
@@ -101,9 +112,9 @@ export default function CosmicBackground() {
     <div className="cosmic-background absolute inset-0 w-full h-full overflow-hidden z-0">
       {/* Starfield is handled via CSS ::before in animations.css */}
       
-      {/* Dynamic stars with JavaScript */}
+      {/* Dynamic stars with JavaScript - now memoized */}
       <div className="starfield absolute inset-0 pointer-events-none">
-        {generateStars()}
+        {stars}
       </div>
 
       {/* Enhanced Nebula Layers - Using CSS animations */}

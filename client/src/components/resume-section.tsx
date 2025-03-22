@@ -214,14 +214,14 @@ export function ResumeExperienceSection({ experiences, onUpdate }: ResumeExperie
       {experiences.length === 0 && (
         <button
           onClick={handleAdd}
-          className="cosmic-add-experience w-full py-3 mt-2"
+          className="w-full py-3 mt-2 bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-500/30 rounded-md flex items-center justify-center space-x-2"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="8" x2="12" y2="16"></line>
             <line x1="8" y1="12" x2="16" y2="12"></line>
           </svg>
-          Add Your First Experience
+          <span>Add Your First Experience</span>
         </button>
       )}
     </div>
@@ -376,14 +376,14 @@ export function ResumeEducationSection({ education, onUpdate }: ResumeEducationS
       {education.length === 0 && (
         <button
           onClick={handleAdd}
-          className="cosmic-add-button w-full py-3 mt-2"
+          className="w-full py-3 mt-2 bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-500/30 rounded-md flex items-center justify-center space-x-2"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="8" x2="12" y2="16"></line>
             <line x1="8" y1="12" x2="16" y2="12"></line>
           </svg>
-          Add Your First Education
+          <span>Add Your First Education</span>
         </button>
       )}
     </div>
@@ -415,13 +415,13 @@ export function ResumeSkillsSection({ skills, onUpdate }: ResumeSkillsSectionPro
   return (
     <div>
       {skills.length > 0 && (
-        <div className="cosmic-add-button-container flex justify-end">
+        <div className="cosmic-add-button-container flex justify-end mb-4">
           <Button
             onClick={handleAdd}
-            className="cosmic-add-skill"
-            variant="ghost"
+            className="cosmic-add-skill bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-500/30"
+            variant="outline"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
@@ -471,14 +471,14 @@ export function ResumeSkillsSection({ skills, onUpdate }: ResumeSkillsSectionPro
       {skills.length === 0 && (
         <button
           onClick={handleAdd}
-          className="cosmic-add-button w-full py-3 mt-2"
+          className="w-full py-3 mt-2 bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-500/30 rounded-md flex items-center justify-center space-x-2"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="8" x2="12" y2="16"></line>
             <line x1="8" y1="12" x2="16" y2="12"></line>
           </svg>
-          Add Your First Skill
+          <span>Add Your First Skill</span>
         </button>
       )}
     </div>
@@ -518,13 +518,13 @@ export function ResumeProjectsSection({ projects, onUpdate }: ResumeProjectsSect
   return (
     <div>
       {projects.length > 0 && (
-        <div className="cosmic-add-button-container flex justify-end">
+        <div className="cosmic-add-button-container flex justify-end mb-4">
           <Button
             onClick={handleAdd}
-            className="cosmic-add-project"
-            variant="ghost"
+            className="cosmic-add-project bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-500/30"
+            variant="outline"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
@@ -629,14 +629,14 @@ export function ResumeProjectsSection({ projects, onUpdate }: ResumeProjectsSect
       {projects.length === 0 && (
         <button
           onClick={handleAdd}
-          className="cosmic-add-button w-full py-3 mt-2"
+          className="w-full py-3 mt-2 bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-500/30 rounded-md flex items-center justify-center space-x-2"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="8" x2="12" y2="16"></line>
             <line x1="8" y1="12" x2="16" y2="12"></line>
           </svg>
-          Add Your First Project
+          <span>Add Your First Project</span>
         </button>
       )}
     </div>

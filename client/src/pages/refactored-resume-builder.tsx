@@ -2881,69 +2881,76 @@ export default function ResumeBuilder() {
                         </h2>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-2 mb-3">
-                        <div className="cosmic-form-group mb-2">
-                          <Label htmlFor="firstName" className="cosmic-form-label mb-1">
-                            First Name
-                          </Label>
-                          <Input
-                            id="firstName"
-                            value={resume?.personalInfo?.firstName || ""}
-                            onChange={(e) =>
-                              updatePersonalInfo("firstName", e.target.value)
-                            }
-                            className="cosmic-navy-input"
-                            placeholder="Dylan"
-                          />
-                        </div>
-                        <div className="cosmic-form-group mb-2">
-                          <Label htmlFor="lastName" className="cosmic-form-label mb-1">
-                            Last Name
-                          </Label>
-                          <Input
-                            id="lastName"
-                            value={resume?.personalInfo?.lastName || ""}
-                            onChange={(e) =>
-                              updatePersonalInfo("lastName", e.target.value)
-                            }
-                            className="cosmic-navy-input"
-                            placeholder="Spivack"
-                          />
-                        </div>
-                        <div className="cosmic-form-group mb-2">
-                          <Label htmlFor="email" className="cosmic-form-label mb-1">
-                            Email
-                          </Label>
-                          <Input
-                            id="email"
-                            type="email"
-                            value={resume?.personalInfo?.email || ""}
-                            onChange={(e) =>
-                              updatePersonalInfo("email", e.target.value)
-                            }
-                            className="cosmic-navy-input"
-                            placeholder="john.doe@example.com"
-                          />
-                        </div>
-                        <div className="cosmic-form-group mb-2">
-                          <Label htmlFor="phone" className="cosmic-form-label mb-1">
-                            Phone
-                          </Label>
-                          <Input
-                            id="phone"
-                            value={resume?.personalInfo?.phone || ""}
-                            onChange={(e) =>
-                              updatePersonalInfo("phone", e.target.value)
-                            }
-                            className="cosmic-navy-input"
-                            placeholder="(555) 123-4567"
-                          />
+                      <div className="flex flex-col md:flex-row w-full mb-8">
+                        <div className="flex flex-col md:w-2/3 space-y-8">
+                          <div className="flex flex-row w-full space-x-4">
+                            <div className="flex-1">
+                              <Label htmlFor="firstName" className="block text-gray-300 mb-2">
+                                First Name
+                              </Label>
+                              <Input
+                                id="firstName"
+                                value={resume?.personalInfo?.firstName || ""}
+                                onChange={(e) =>
+                                  updatePersonalInfo("firstName", e.target.value)
+                                }
+                                className="w-full bg-navy-800 border-navy-600 text-white"
+                                placeholder="Dylan"
+                              />
+                            </div>
+                            <div className="flex-1">
+                              <Label htmlFor="lastName" className="block text-gray-300 mb-2">
+                                Last Name
+                              </Label>
+                              <Input
+                                id="lastName"
+                                value={resume?.personalInfo?.lastName || ""}
+                                onChange={(e) =>
+                                  updatePersonalInfo("lastName", e.target.value)
+                                }
+                                className="w-full bg-navy-800 border-navy-600 text-white"
+                                placeholder="Spivack"
+                              />
+                            </div>
+                          </div>
+                          
+                          <div className="flex flex-row w-full space-x-4">
+                            <div className="flex-1">
+                              <Label htmlFor="email" className="block text-gray-300 mb-2">
+                                Email
+                              </Label>
+                              <Input
+                                id="email"
+                                type="email"
+                                value={resume?.personalInfo?.email || ""}
+                                onChange={(e) =>
+                                  updatePersonalInfo("email", e.target.value)
+                                }
+                                className="w-full bg-navy-800 border-navy-600 text-white"
+                                placeholder="john.doe@example.com"
+                              />
+                            </div>
+                            <div className="flex-1">
+                              <Label htmlFor="phone" className="block text-gray-300 mb-2">
+                                Phone
+                              </Label>
+                              <Input
+                                id="phone"
+                                value={resume?.personalInfo?.phone || ""}
+                                onChange={(e) =>
+                                  updatePersonalInfo("phone", e.target.value)
+                                }
+                                className="w-full bg-navy-800 border-navy-600 text-white"
+                                placeholder="(555) 123-4567"
+                              />
+                            </div>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="mb-3 border-b border-gray-700 pb-3">
-                        <div className="cosmic-form-group mb-2">
-                          <Label htmlFor="headline" className="cosmic-form-label mb-1">
+                      <div className="mb-8">
+                        <div className="flex flex-col w-full">
+                          <Label htmlFor="headline" className="block text-gray-300 mb-2">
                             Professional Headline
                           </Label>
                           <Input
@@ -2952,16 +2959,16 @@ export default function ResumeBuilder() {
                             onChange={(e) =>
                               updatePersonalInfo("headline", e.target.value)
                             }
-                            className="cosmic-navy-input"
+                            className="w-full bg-navy-800 border-navy-600 text-white"
                             placeholder="Frontend Developer | React & TypeScript Specialist"
                           />
                           <p className="mt-2 text-xs text-blue-300/70">A brief title that describes your professional identity</p>
                         </div>
                       </div>
 
-                      <div>
-                        <div className="cosmic-form-group mb-2">
-                          <Label htmlFor="summary" className="cosmic-form-label mb-1">
+                      <div className="mb-8">
+                        <div className="flex flex-col w-full">
+                          <Label htmlFor="summary" className="block text-gray-300 mb-2">
                             Professional Summary
                           </Label>
                           <Textarea
@@ -2970,7 +2977,7 @@ export default function ResumeBuilder() {
                             onChange={(e) =>
                               updatePersonalInfo("summary", e.target.value)
                             }
-                            className="cosmic-navy-input cosmic-form-textarea min-h-[120px]"
+                            className="w-full bg-navy-800 border-navy-600 text-white min-h-[120px]"
                             rows={5}
                             placeholder="Experienced Staff Development RN with a proven track record in long-term care, adept at enhancing staff competencies through targeted training and compassionate leadership. Holds an RN license with a commitment to high-quality healthcare and improving patient outcomes."
                           />

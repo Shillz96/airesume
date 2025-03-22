@@ -19,6 +19,7 @@
 @import './styles/components/cosmic-tabs.css'; /* Added new cosmic tabs styling */
 @import './styles/components/cosmic-dialog.css'; /* Added new cosmic dialog styling */
 @import './styles/components/cosmic-resume.css';
+@import './styles/components/resume-sections.css'; /* Added resume section styling */
 
 /* Import layout styles */
 @import './styles/layout/navigation.css';

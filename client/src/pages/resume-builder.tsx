@@ -3010,27 +3010,6 @@ export default function ResumeBuilder() {
                         <Briefcase className="h-5 w-5 mr-2 text-blue-400" />
                         Work Experience
                       </h2>
-                      <CosmicButton
-                        variant="ghost"
-                        onClick={() => {
-                          const newExperience: ExperienceItem = {
-                            id: `exp-${Date.now()}`,
-                            title: "Position Title",
-                            company: "Company Name",
-                            startDate: "",
-                            endDate: "",
-                            description: "",
-                          };
-
-                          setResume({
-                            ...resume,
-                            experience: [...(resume?.experience || []), newExperience],
-                          });
-                        }}
-                        iconLeft={<Plus className="h-4 w-4" />}
-                      >
-                        Add Experience
-                      </CosmicButton>
                     </div>
 
                     <ResumeExperienceSection
@@ -3110,27 +3089,6 @@ export default function ResumeBuilder() {
                       <GraduationCap className="h-5 w-5 mr-2 text-blue-400" />
                       Education
                     </h2>
-                    <CosmicButton
-                      variant="ghost"
-                      onClick={() => {
-                        const newEducation: EducationItem = {
-                          id: `edu-${Date.now()}`,
-                          degree: "Degree Name",
-                          institution: "Institution Name",
-                          startDate: "",
-                          endDate: "",
-                          description: "",
-                        };
-
-                        setResume({
-                          ...resume,
-                          education: [...(resume?.education || []), newEducation],
-                        });
-                      }}
-                      iconLeft={<Plus className="h-4 w-4" />}
-                    >
-                      Add Education
-                    </CosmicButton>
                   </div>
 
                   <ResumeEducationSection
@@ -3154,24 +3112,6 @@ export default function ResumeBuilder() {
                         <Code className="h-5 w-5 mr-2 text-blue-400" />
                         Skills
                       </h2>
-                      <CosmicButton
-                        variant="ghost"
-                        onClick={() => {
-                          const newSkill: SkillItem = {
-                            id: `skill-${Date.now()}`,
-                            name: "New Skill",
-                            proficiency: 3,
-                          };
-
-                          setResume({
-                            ...resume,
-                            skills: [...(resume?.skills || []), newSkill],
-                          });
-                        }}
-                        iconLeft={<Plus className="h-4 w-4" />}
-                      >
-                        Add Skill
-                      </CosmicButton>
                     </div>
 
                     <ResumeSkillsSection
@@ -3261,25 +3201,6 @@ export default function ResumeBuilder() {
                       <FolderKanban className="h-5 w-5 mr-2 text-blue-400" />
                       Projects
                     </h2>
-                    <CosmicButton
-                      variant="ghost"
-                      onClick={() => {
-                        const newProject: ProjectItem = {
-                          id: `proj-${Date.now()}`,
-                          title: "Project Name",
-                          description: "",
-                          technologies: [],
-                        };
-
-                        setResume({
-                          ...resume,
-                          projects: [...(resume?.projects || []), newProject],
-                        });
-                      }}
-                      iconLeft={<Plus className="h-4 w-4" />}
-                    >
-                      Add Project
-                    </CosmicButton>
                   </div>
 
                   <ResumeProjectsSection

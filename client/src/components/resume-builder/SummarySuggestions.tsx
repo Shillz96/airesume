@@ -156,16 +156,16 @@ export default function SummarySuggestions({ resumeId, onApply }: SummarySuggest
             onClick={() => handleGenerateSummaries("medium")}
             disabled={isGenerating}
             variant="outline"
-            className="w-full flex items-center justify-center gap-2 bg-[rgba(20,30,70,0.6)] border-blue-500/30 text-blue-100"
+            className="w-full cosmic-button cosmic-button-glow flex items-center justify-center gap-2 border-white/10 text-blue-100"
           >
             {isGenerating ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin cosmic-section-icon" />
                 Generating summaries...
               </>
             ) : (
               <>
-                <Sparkles className="h-4 w-4" />
+                <Sparkles className="h-4 w-4 cosmic-section-icon" />
                 Generate AI summaries
               </>
             )}
@@ -176,13 +176,13 @@ export default function SummarySuggestions({ resumeId, onApply }: SummarySuggest
           {summaries.map((summary, index) => (
             <div
               key={index}
-              className="bg-[rgba(20,30,70,0.6)] p-3 rounded-md border border-blue-500/30 text-sm relative group backdrop-blur-sm"
+              className="cosmic-card cosmic-card-gradient p-3 rounded-md border border-white/10 text-sm relative group backdrop-blur-sm"
             >
               <p className="text-gray-200">{summary}</p>
               <Button
                 onClick={() => onApply(summary)}
                 size="sm"
-                className="mt-2 w-full flex items-center justify-center gap-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0"
+                className="cosmic-button cosmic-button-primary cosmic-button-glow mt-2 w-full flex items-center justify-center gap-1"
               >
                 <Check className="h-3 w-3" />
                 Use this summary
@@ -194,27 +194,27 @@ export default function SummarySuggestions({ resumeId, onApply }: SummarySuggest
               onClick={() => handleGenerateSummaries("short")}
               variant="ghost"
               size="sm"
-              className="flex-1 items-center justify-center text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+              className="flex-1 cosmic-button cosmic-button-outline items-center justify-center border-white/10 hover:text-blue-300 hover:bg-blue-900/30"
             >
-              <RefreshCw className="h-3 w-3 mr-1" />
+              <RefreshCw className="h-3 w-3 mr-1 cosmic-section-icon" />
               Short
             </Button>
             <Button
               onClick={() => handleGenerateSummaries("medium")}
               variant="ghost"
               size="sm"
-              className="flex-1 items-center justify-center text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+              className="flex-1 cosmic-button cosmic-button-outline items-center justify-center border-white/10 hover:text-blue-300 hover:bg-blue-900/30"
             >
-              <RefreshCw className="h-3 w-3 mr-1" />
+              <RefreshCw className="h-3 w-3 mr-1 cosmic-section-icon" />
               Medium
             </Button>
             <Button
               onClick={() => handleGenerateSummaries("long")}
               variant="ghost"
               size="sm"
-              className="flex-1 items-center justify-center text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+              className="flex-1 cosmic-button cosmic-button-outline items-center justify-center border-white/10 hover:text-blue-300 hover:bg-blue-900/30"
             >
-              <RefreshCw className="h-3 w-3 mr-1" />
+              <RefreshCw className="h-3 w-3 mr-1 cosmic-section-icon" />
               Long
             </Button>
           </div>

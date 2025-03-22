@@ -68,8 +68,8 @@ export function SectionCard({
 }: SectionCardProps) {
   return (
     <div 
-      className={`cosmic-card p-4 mb-4 ${withHoverEffect ? 'cosmic-card-hoverable' : ''} ${
-        isEditing ? 'border-primary/30 bg-primary/5' : ''
+      className={`cosmic-card p-4 mb-4 border border-white/10 backdrop-blur-sm ${withHoverEffect ? 'cosmic-card-hoverable cosmic-card-gradient' : ''} ${
+        isEditing ? 'border-primary/30 bg-primary/10' : ''
       } ${className}`}
     >
       {children}
@@ -104,10 +104,10 @@ export function ItemActions({
           variant="ghost" 
           size="sm" 
           onClick={onEdit} 
-          className="h-8 w-8 p-0"
+          className="h-8 w-8 p-0 cosmic-action-button border border-white/10 hover:bg-primary/20 hover:text-primary"
           title="Edit"
         >
-          <EditIcon className="h-4 w-4" />
+          <EditIcon className="h-4 w-4 cosmic-section-icon" />
         </Button>
       )}
       
@@ -116,10 +116,10 @@ export function ItemActions({
           variant="ghost" 
           size="sm" 
           onClick={onSave} 
-          className="h-8 w-8 p-0"
+          className="h-8 w-8 p-0 cosmic-action-button border border-white/10 hover:bg-primary/20 hover:text-primary"
           title="Save changes"
         >
-          <SaveIcon className="h-4 w-4" />
+          <SaveIcon className="h-4 w-4 cosmic-section-icon" />
         </Button>
       )}
       
@@ -128,10 +128,10 @@ export function ItemActions({
           variant="ghost" 
           size="sm" 
           onClick={onCopy} 
-          className="h-8 w-8 p-0"
+          className="h-8 w-8 p-0 cosmic-action-button border border-white/10 hover:bg-primary/20 hover:text-primary"
           title="Duplicate"
         >
-          <CopyIcon className="h-4 w-4" />
+          <CopyIcon className="h-4 w-4 cosmic-section-icon" />
         </Button>
       )}
       
@@ -140,10 +140,10 @@ export function ItemActions({
           variant="ghost" 
           size="sm" 
           onClick={onDelete} 
-          className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
+          className="h-8 w-8 p-0 cosmic-action-button border border-white/10 hover:bg-destructive/20 hover:text-destructive"
           title="Delete"
         >
-          <Trash2Icon className="h-4 w-4" />
+          <Trash2Icon className="h-4 w-4 cosmic-section-icon" />
         </Button>
       )}
     </div>

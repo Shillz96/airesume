@@ -15,11 +15,41 @@ import {
   Cpu,
   FileText,
   Briefcase,
+  Minus,
+  Layout,
+  UserRound,
+  Star,
+  Save,
+  X,
+  Info,
+  Lightbulb,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { 
+  ProfessionalTemplate, 
+  CreativeTemplate, 
+  ExecutiveTemplate,
+  ModernTemplate,
+  MinimalTemplate,
+  IndustryTemplate,
+  BoldTemplate,
+  TemplatePreviewProfessional,
+  TemplatePreviewCreative,
+  TemplatePreviewExecutive,
+  TemplatePreviewModern,
+  TemplatePreviewMinimal,
+  TemplatePreviewIndustry,
+  TemplatePreviewBold
+} from "@/components/resume-template";
 
 // Define Resume interfaces
 interface PersonalInfo {
@@ -713,6 +743,8 @@ export default function FixedResumeBuilder() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("contact");
   const [resumeId, setResumeId] = useState<string | null>(null);
+  const [previewScale, setPreviewScale] = useState(0.8);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const [resume, setResume] = useState<Resume>({
     title: "My Professional Resume",
     personalInfo: {
@@ -1084,129 +1116,248 @@ export default function FixedResumeBuilder() {
           </TabsContent>
           
           <TabsContent value="preview" className="mt-4">
-            <div>
-              <div className="flex justify-end mb-4">
-                <Button
-                  variant="default"
-                  className="bg-blue-600 hover:bg-blue-700"
-                  onClick={downloadResume}
+            <div className="cosmic-resume-panel p-6 rounded-lg bg-gray-900/50 border border-blue-500/30">
+              <div className="flex justify-between mb-6 items-center">
+                <div className="flex items-center space-x-4">
+                  <div className="flex space-x-2 items-center">
+                    <span className="text-white text-sm">Scale:</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPreviewScale(Math.max(0.5, previewScale - 0.1))}
+                      className="h-8 w-8 p-0 rounded-full"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="text-white text-sm w-12 text-center">{Math.round(previewScale * 100)}%</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPreviewScale(Math.min(1.5, previewScale + 0.1))}
+                      className="h-8 w-8 p-0 rounded-full"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    className="border-blue-500/50 text-white"
+                    onClick={() => setShowTemplateSelector(true)}
+                  >
+                    <Layout className="h-4 w-4 mr-2" />
+                    Change Template
+                  </Button>
+                  <Button
+                    variant="default"
+                    className="bg-blue-600 hover:bg-blue-700"
+                    onClick={downloadResume}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download PDF
+                  </Button>
+                </div>
+              </div>
+
+              {/* Template Preview */}
+              <div className="overflow-auto bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+                <div 
+                  className="bg-white rounded-lg mx-auto transition-all"
+                  style={{ 
+                    transform: `scale(${previewScale})`, 
+                    transformOrigin: 'top center',
+                    width: `${100 / previewScale}%`,
+                    maxWidth: '1000px'
+                  }}
                 >
-                  <Download className="h-4 w-4 mr-2" />
-                  Download PDF
-                </Button>
-              </div>
-              
-              <div className="bg-white rounded-lg p-8 text-black min-h-[800px]">
-                <div className="text-center mb-6">
-                  <h1 className="text-3xl font-bold text-gray-900">{resume.personalInfo.firstName} {resume.personalInfo.lastName}</h1>
-                  <p className="text-gray-600 mt-1">{resume.personalInfo.headline}</p>
-                  <div className="flex justify-center mt-2 text-sm text-gray-600">
-                    <span>{resume.personalInfo.email}</span>
-                    <span className="mx-2">•</span>
-                    <span>{resume.personalInfo.phone}</span>
-                  </div>
-                </div>
-                
-                <div className="mb-6">
-                  <h2 className="text-lg font-bold text-gray-900 border-b border-gray-300 pb-1 mb-2">Summary</h2>
-                  <p className="text-gray-700">{resume.personalInfo.summary}</p>
-                </div>
-                
-                <div className="mb-6">
-                  <h2 className="text-lg font-bold text-gray-900 border-b border-gray-300 pb-1 mb-2">Experience</h2>
-                  {resume.experience.map((exp) => (
-                    <div key={exp.id} className="mb-4">
-                      <div className="flex justify-between">
-                        <h3 className="font-bold text-gray-800">{exp.title}</h3>
-                        <span className="text-gray-600 text-sm">{exp.startDate} - {exp.endDate}</span>
-                      </div>
-                      <p className="text-gray-700 font-medium">{exp.company}</p>
-                      <p className="text-gray-700 mt-1">{exp.description}</p>
-                    </div>
-                  ))}
-                </div>
-                
-                <div className="mb-6">
-                  <h2 className="text-lg font-bold text-gray-900 border-b border-gray-300 pb-1 mb-2">Education</h2>
-                  {resume.education.map((edu) => (
-                    <div key={edu.id} className="mb-4">
-                      <div className="flex justify-between">
-                        <h3 className="font-bold text-gray-800">{edu.degree}</h3>
-                        <span className="text-gray-600 text-sm">{edu.startDate} - {edu.endDate}</span>
-                      </div>
-                      <p className="text-gray-700 font-medium">{edu.institution}</p>
-                      <p className="text-gray-700 mt-1">{edu.description}</p>
-                    </div>
-                  ))}
-                </div>
-                
-                <div className="mb-6">
-                  <h2 className="text-lg font-bold text-gray-900 border-b border-gray-300 pb-1 mb-2">Skills</h2>
-                  <div className="flex flex-wrap gap-2">
-                    {resume.skills.map((skill) => (
-                      <span key={skill.id} className="bg-gray-200 text-gray-800 px-2 py-1 rounded text-sm">
-                        {skill.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                
-                <div>
-                  <h2 className="text-lg font-bold text-gray-900 border-b border-gray-300 pb-1 mb-2">Projects</h2>
-                  {resume.projects.map((project) => (
-                    <div key={project.id} className="mb-4">
-                      <h3 className="font-bold text-gray-800">{project.title}</h3>
-                      <div className="flex flex-wrap gap-1 my-1">
-                        {project.technologies.map((tech, index) => (
-                          <span key={index} className="bg-gray-200 text-gray-700 px-1.5 py-0.5 rounded-sm text-xs">
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                      <p className="text-gray-700 mt-1">{project.description}</p>
-                      {project.link && (
-                        <a 
-                          href={project.link} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 text-sm mt-1 inline-block"
-                        >
-                          View Project →
-                        </a>
-                      )}
-                    </div>
-                  ))}
+                  {resume.template === "professional" && <ProfessionalTemplate resume={resume} />}
+                  {resume.template === "creative" && <CreativeTemplate resume={resume} />}
+                  {resume.template === "executive" && <ExecutiveTemplate resume={resume} />}
+                  {resume.template === "modern" && <ModernTemplate resume={resume} />}
+                  {resume.template === "minimal" && <MinimalTemplate resume={resume} />}
+                  {resume.template === "industry" && <IndustryTemplate resume={resume} />}
+                  {resume.template === "bold" && <BoldTemplate resume={resume} />}
                 </div>
               </div>
-              
-              <div className="mt-8">
-                <h3 className="text-white text-lg font-medium mb-4">Select a Template</h3>
-                <div className="grid grid-cols-3 gap-4">
-                  {["professional", "modern", "creative"].map((template) => (
+
+              {/* Template Selection Dialog */}
+              <Dialog open={showTemplateSelector} onOpenChange={setShowTemplateSelector}>
+                <DialogContent className="sm:max-w-4xl">
+                  <DialogHeader>
+                    <DialogTitle>Choose a Resume Template</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid grid-cols-3 gap-4 py-4">
                     <div
-                      key={template}
-                      onClick={() => handleTemplateChange(template)}
+                      onClick={() => {
+                        handleTemplateChange("professional");
+                        setShowTemplateSelector(false);
+                      }}
                       className={`cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
-                        resume.template === template
+                        resume.template === "professional"
                           ? "border-blue-500 ring-2 ring-blue-500/30"
                           : "border-gray-700 hover:border-gray-500"
                       }`}
                     >
-                      <div className="h-32 bg-gray-800">
-                        {/* Thumbnail preview of template */}
+                      <div className="h-32 bg-gray-800 p-2">
+                        <TemplatePreviewProfessional />
                       </div>
                       <div className="p-2 bg-gray-900/80 flex justify-between items-center">
                         <span className="text-sm capitalize text-white">
-                          {template}
+                          Professional
                         </span>
-                        {resume.template === template && (
+                        {resume.template === "professional" && (
                           <Check className="h-4 w-4 text-blue-500" />
                         )}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
+                    
+                    <div
+                      onClick={() => {
+                        handleTemplateChange("creative");
+                        setShowTemplateSelector(false);
+                      }}
+                      className={`cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
+                        resume.template === "creative"
+                          ? "border-blue-500 ring-2 ring-blue-500/30"
+                          : "border-gray-700 hover:border-gray-500"
+                      }`}
+                    >
+                      <div className="h-32 bg-gray-800 p-2">
+                        <TemplatePreviewCreative />
+                      </div>
+                      <div className="p-2 bg-gray-900/80 flex justify-between items-center">
+                        <span className="text-sm capitalize text-white">
+                          Creative
+                        </span>
+                        {resume.template === "creative" && (
+                          <Check className="h-4 w-4 text-blue-500" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div
+                      onClick={() => {
+                        handleTemplateChange("executive");
+                        setShowTemplateSelector(false);
+                      }}
+                      className={`cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
+                        resume.template === "executive"
+                          ? "border-blue-500 ring-2 ring-blue-500/30"
+                          : "border-gray-700 hover:border-gray-500"
+                      }`}
+                    >
+                      <div className="h-32 bg-gray-800 p-2">
+                        <TemplatePreviewExecutive />
+                      </div>
+                      <div className="p-2 bg-gray-900/80 flex justify-between items-center">
+                        <span className="text-sm capitalize text-white">
+                          Executive
+                        </span>
+                        {resume.template === "executive" && (
+                          <Check className="h-4 w-4 text-blue-500" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div
+                      onClick={() => {
+                        handleTemplateChange("modern");
+                        setShowTemplateSelector(false);
+                      }}
+                      className={`cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
+                        resume.template === "modern"
+                          ? "border-blue-500 ring-2 ring-blue-500/30"
+                          : "border-gray-700 hover:border-gray-500"
+                      }`}
+                    >
+                      <div className="h-32 bg-gray-800 p-2">
+                        <TemplatePreviewModern />
+                      </div>
+                      <div className="p-2 bg-gray-900/80 flex justify-between items-center">
+                        <span className="text-sm capitalize text-white">
+                          Modern
+                        </span>
+                        {resume.template === "modern" && (
+                          <Check className="h-4 w-4 text-blue-500" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div
+                      onClick={() => {
+                        handleTemplateChange("minimal");
+                        setShowTemplateSelector(false);
+                      }}
+                      className={`cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
+                        resume.template === "minimal"
+                          ? "border-blue-500 ring-2 ring-blue-500/30"
+                          : "border-gray-700 hover:border-gray-500"
+                      }`}
+                    >
+                      <div className="h-32 bg-gray-800 p-2">
+                        <TemplatePreviewMinimal />
+                      </div>
+                      <div className="p-2 bg-gray-900/80 flex justify-between items-center">
+                        <span className="text-sm capitalize text-white">
+                          Minimal
+                        </span>
+                        {resume.template === "minimal" && (
+                          <Check className="h-4 w-4 text-blue-500" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div
+                      onClick={() => {
+                        handleTemplateChange("industry");
+                        setShowTemplateSelector(false);
+                      }}
+                      className={`cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
+                        resume.template === "industry"
+                          ? "border-blue-500 ring-2 ring-blue-500/30"
+                          : "border-gray-700 hover:border-gray-500"
+                      }`}
+                    >
+                      <div className="h-32 bg-gray-800 p-2">
+                        <TemplatePreviewIndustry />
+                      </div>
+                      <div className="p-2 bg-gray-900/80 flex justify-between items-center">
+                        <span className="text-sm capitalize text-white">
+                          Industry
+                        </span>
+                        {resume.template === "industry" && (
+                          <Check className="h-4 w-4 text-blue-500" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div
+                      onClick={() => {
+                        handleTemplateChange("bold");
+                        setShowTemplateSelector(false);
+                      }}
+                      className={`cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
+                        resume.template === "bold"
+                          ? "border-blue-500 ring-2 ring-blue-500/30"
+                          : "border-gray-700 hover:border-gray-500"
+                      }`}
+                    >
+                      <div className="h-32 bg-gray-800 p-2">
+                        <TemplatePreviewBold />
+                      </div>
+                      <div className="p-2 bg-gray-900/80 flex justify-between items-center">
+                        <span className="text-sm capitalize text-white">
+                          Bold
+                        </span>
+                        {resume.template === "bold" && (
+                          <Check className="h-4 w-4 text-blue-500" />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </TabsContent>
         </Tabs>

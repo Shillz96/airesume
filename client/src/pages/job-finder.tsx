@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/navbar";
 import JobCard, { Job } from "@/components/job-card";
 import JobFilter, { JobFilterValues } from "@/components/job-filter";
-import CosmicBackground from "@/components/cosmic-background";
+
 import AIAssistant from "@/components/ai-assistant";
 import { AlertTriangle, Cpu, Star, Share2, Heart, Briefcase, Clock, Building, Sparkles, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -97,7 +97,6 @@ export default function JobFinder() {
   
   return (
     <>
-      <CosmicBackground />
       <Navbar />
       <div className="container pt-12 pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
         <div className="flex items-center justify-between mb-6">

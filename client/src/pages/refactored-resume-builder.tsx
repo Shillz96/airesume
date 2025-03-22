@@ -30,11 +30,13 @@ import {
   User,
 } from "lucide-react";
 
-// Import resume section components
-import PersonalInfoSection from "@/components/resume/PersonalInfoSection";
-import ExperienceSection from "@/components/resume/ExperienceSection";
+// Import our modular resume section components
+import { PersonalInfoSection } from "@/components/resume/PersonalInfoSection";
+import { ExperienceSection } from "@/components/resume/ExperienceSection";
+import { EducationSection } from "@/components/resume/EducationSection";
+import { SkillsSection } from "@/components/resume/SkillsSection";
+import { ProjectsSection } from "@/components/resume/ProjectsSection";
 import ResumeTemplate from "@/components/resume-template";
-import { ResumeExperienceSection, ResumeEducationSection, ResumeSkillsSection, ResumeProjectsSection } from "@/components/resume-section";
 
 // Only importing the resume preview component until we refactor the others
 function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { 
@@ -275,40 +277,34 @@ export default function ResumeBuilder() {
                 />
               </TabsContent>
               
-              {/* Education Section - Not yet refactored */}
+              {/* Education Section */}
               <TabsContent value="education">
-                <div className="cosmic-resume-section">
-                  <div className="main-content">
-                    <ResumeEducationSection
-                      education={resume.education}
-                      onUpdate={updateEducationList}
-                    />
-                  </div>
-                </div>
+                <EducationSection
+                  education={resume.education}
+                  resumeId={resumeId || undefined}
+                  onUpdate={updateEducationList}
+                  onAdd={addEducation}
+                />
               </TabsContent>
               
-              {/* Skills Section - Not yet refactored */}
+              {/* Skills Section */}
               <TabsContent value="skills">
-                <div className="cosmic-resume-section">
-                  <div className="main-content">
-                    <ResumeSkillsSection
-                      skills={resume.skills}
-                      onUpdate={updateSkillsList}
-                    />
-                  </div>
-                </div>
+                <SkillsSection
+                  skills={resume.skills}
+                  resumeId={resumeId || undefined}
+                  onUpdate={updateSkillsList}
+                  onAdd={addSkill}
+                />
               </TabsContent>
               
-              {/* Projects Section - Not yet refactored */}
+              {/* Projects Section */}
               <TabsContent value="projects">
-                <div className="cosmic-resume-section">
-                  <div className="main-content">
-                    <ResumeProjectsSection
-                      projects={resume.projects}
-                      onUpdate={updateProjectsList}
-                    />
-                  </div>
-                </div>
+                <ProjectsSection
+                  projects={resume.projects}
+                  resumeId={resumeId || undefined}
+                  onUpdate={updateProjectsList}
+                  onAdd={addProject}
+                />
               </TabsContent>
               
               {/* Preview Section */}

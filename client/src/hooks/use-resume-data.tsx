@@ -36,6 +36,7 @@ export interface SkillItem {
   id: string;
   name: string;
   proficiency: number;
+  category?: string; // Added optional category property
 }
 
 export interface ProjectItem {
@@ -366,11 +367,12 @@ export function useResumeData() {
     return newEducation.id;
   };
 
-  const addSkill = () => {
+  const addSkill = (category?: string) => {
     const newSkill: SkillItem = {
       id: crypto.randomUUID(),
       name: '',
-      proficiency: 3
+      proficiency: 3,
+      category: category
     };
     updateSkillsList([...resume.skills, newSkill]);
     return newSkill.id;

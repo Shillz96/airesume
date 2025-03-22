@@ -25,7 +25,6 @@ import Navbar from "@/components/navbar";
 import GoAdminLink from "@/components/go-admin-link";
 import QuickLogin from "@/components/quick-login";
 import AuthDialog from "@/components/auth-dialog";
-import CosmicBackground from "@/components/cosmic-background";
 
 function Router() {
   // Manual check for admin-access path to handle direct navigation
@@ -55,7 +54,7 @@ function AppContent() {
   const [location] = useLocation();
   const { user } = useAuth();
   const { isOpen, activeTab, closeDialog } = useAuthDialog();
-  const { isDarkMode, currentTheme } = useTheme();
+  const { isDarkMode } = useTheme();
   
   // Only show navbar when not on landing page or if authenticated
   const showNavbar = location !== "/" || user;
@@ -84,17 +83,9 @@ function AppContent() {
       window.location.href = "/";
     }
   }, [location]);
-  
-  // Memoize the cosmic background to prevent it from re-rendering
-  const backgroundElement = React.useMemo(() => (
-    <CosmicBackground />
-  ), []);
 
   return (
-    <div className="min-h-screen bg-black cosmic-background relative">
-      {/* Enhanced Cosmic Background - Memoized to prevent re-renders */}
-      {backgroundElement}
-      
+    <div className={`min-h-screen cosmic-app-container ${isDarkMode ? '' : 'light-mode'}`}>
       {/* Content */}
       <div className="relative z-10">
         {showNavbar && <Navbar />}

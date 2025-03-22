@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { CosmicButton } from '@/components/cosmic-button';
+import { CosmicButton } from '@/components/cosmic-button-refactored';
 import { Trash, Plus, Briefcase, Calendar } from 'lucide-react';
 import {
   Accordion,
@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/accordion';
 import { ExperienceItem } from '@/hooks/use-resume-data';
 import { cn } from '@/lib/utils';
-import { getCosmicColor, getSpacing } from '@/lib/theme-utils';
+import { SectionHeader, SectionCard, ItemActions, formatDate } from './ResumeComponentShared';
 
 interface ExperienceSectionProps {
   experiences: ExperienceItem[];
@@ -76,48 +76,45 @@ export function ExperienceSection({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <Briefcase className="h-5 w-5" style={{ color: getCosmicColor('primary') }} />
-          <h3 className="text-lg font-semibold">Work Experience</h3>
-        </div>
-        <CosmicButton
-          size="sm"
-          variant="outline"
-          iconLeft={<Plus className="h-4 w-4" />}
-          onClick={handleAddExperience}
-        >
-          Add Experience
-        </CosmicButton>
-      </div>
+      <SectionHeader
+        title="Work Experience"
+        icon={<Briefcase className="h-5 w-5" />}
+        onAdd={handleAddExperience}
+        addButtonText="Add Experience"
+      />
 
       {experiences.length === 0 ? (
-        <Card className="border border-dashed">
-          <CardContent className="flex flex-col items-center justify-center p-6">
+        <SectionCard withHoverEffect={false}>
+          <div className="flex flex-col items-center justify-center p-6">
             <Briefcase className="h-12 w-12 mb-2 opacity-30" />
             <p className="text-center text-sm mb-4">
               Add your work history including internships and relevant experience
             </p>
-            <Button variant="outline" size="sm" onClick={handleAddExperience}>
+            <CosmicButton 
+              variant="outline" 
+              size="sm" 
+              onClick={handleAddExperience}
+              iconLeft={<Plus className="h-4 w-4" />}
+            >
               Add Experience
-            </Button>
-          </CardContent>
-        </Card>
+            </CosmicButton>
+          </div>
+        </SectionCard>
       ) : (
         <Accordion
           type="single"
           collapsible
           value={expandedItem || undefined}
           onValueChange={(value) => setExpandedItem(value)}
-          className="space-y-2"
+          className="cosmic-tabs space-y-2"
         >
           {experiences.map((experience) => (
             <AccordionItem
               key={experience.id}
               value={experience.id}
               className={cn(
-                "border rounded-md overflow-hidden",
-                expandedItem === experience.id ? "ring-1 ring-primary/20" : ""
+                "cosmic-card overflow-hidden",
+                expandedItem === experience.id ? "ring-1 ring-primary/20 cosmic-card-gradient" : ""
               )}
             >
               <AccordionTrigger className="px-4 py-3 hover:bg-accent/50 data-[state=open]:bg-accent/60">
@@ -132,7 +129,7 @@ export function ExperienceSection({
                   </div>
                   <div className="text-sm opacity-70 mr-4">
                     {experience.startDate && experience.endDate
-                      ? `${experience.startDate} - ${experience.endDate}`
+                      ? `${formatDate(experience.startDate)} - ${formatDate(experience.endDate)}`
                       : ""}
                   </div>
                 </div>
@@ -147,6 +144,7 @@ export function ExperienceSection({
                         value={experience.title}
                         onChange={(e) => handleExperienceChange(experience.id, 'title', e.target.value)}
                         placeholder="e.g., Senior Developer"
+                        className="cosmic-input"
                       />
                     </div>
                     <div className="space-y-2">
@@ -156,6 +154,7 @@ export function ExperienceSection({
                         value={experience.company}
                         onChange={(e) => handleExperienceChange(experience.id, 'company', e.target.value)}
                         placeholder="e.g., Acme Inc."
+                        className="cosmic-input"
                       />
                     </div>
                   </div>
@@ -169,7 +168,7 @@ export function ExperienceSection({
                           id={`exp-start-${experience.id}`}
                           value={experience.startDate}
                           onChange={(e) => handleExperienceChange(experience.id, 'startDate', e.target.value)}
-                          className="pl-10"
+                          className="pl-10 cosmic-input"
                           placeholder="e.g., Jan 2020"
                         />
                       </div>
@@ -182,7 +181,7 @@ export function ExperienceSection({
                           id={`exp-end-${experience.id}`}
                           value={experience.endDate}
                           onChange={(e) => handleExperienceChange(experience.id, 'endDate', e.target.value)}
-                          className="pl-10"
+                          className="pl-10 cosmic-input"
                           placeholder="e.g., Dec 2022 or Present"
                         />
                       </div>
@@ -197,6 +196,7 @@ export function ExperienceSection({
                       onChange={(e) => handleExperienceChange(experience.id, 'description', e.target.value)}
                       placeholder="Describe your responsibilities, achievements, and skills used..."
                       rows={5}
+                      className="cosmic-input cosmic-textarea"
                     />
                     <p className="text-xs text-muted-foreground">
                       Use bullet points for better readability. Start with strong action verbs.
@@ -214,15 +214,9 @@ export function ExperienceSection({
                   </div>
 
                   <div className="flex justify-end pb-2 pt-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
-                      onClick={() => handleRemoveExperience(experience.id)}
-                    >
-                      <Trash className="h-4 w-4 mr-1" />
-                      Remove
-                    </Button>
+                    <ItemActions 
+                      onDelete={() => handleRemoveExperience(experience.id)}
+                    />
                   </div>
                 </div>
               </AccordionContent>

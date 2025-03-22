@@ -6,10 +6,12 @@
  */
 
 /* Import base styles first */
+@import './styles/base/theme-variables.css'; /* Added new theme variables */
 @import './styles/base/variables.css';
 @import './styles/base/base.css';
 
 /* Import component styles */
+@import './styles/components/cosmic-components.css'; /* Added unified cosmic component styles */
 @import './styles/components/buttons.css';
 @import './styles/components/cards.css';
 @import './styles/components/forms.css';
@@ -21,20 +23,21 @@
 
 /* Import animations */
 @import './styles/animations/animations.css';
+@import './styles/animations/cosmic-animations.css';
 
 /* Import utilities last to ensure they have highest specificity */
 @import './styles/utilities/utilities.css';
 
 /**
- * Theme specific variables - these are set dynamically based on theme.json
- * They override the defaults in variables.css
+ * Legacy theme variables - these will be phased out in favor of theme-variables.css
+ * Keeping them for backwards compatibility during the transition
  */
 :root {
   /* These variables will be set dynamically at runtime based on theme.json */
   --primary: hsl(221.2 83.2% 53.3%);
   --primary-foreground: hsl(0 0% 100%);
   
-  /* Base colors for dark mode */
+  /* Base colors for dark mode - being replaced with RGB values in theme-variables.css */
   --background: #050A18;
   --foreground: #ffffff;
   --card: rgba(255, 255, 255, 0.05);

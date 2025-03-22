@@ -1,0 +1,245 @@
+/**
+ * Cosmic Animations
+ * 
+ * These animations add subtle cosmic-themed motion effects to enhance
+ * the user experience throughout the application.
+ */
+
+/* ======== Cosmic Pulsate Effect ======== */
+@keyframes cosmic-pulsate {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--color-primary), 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(var(--color-primary), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--color-primary), 0);
+  }
+}
+
+.animate-cosmic-pulsate {
+  animation: cosmic-pulsate 2s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+
+/* ======== Cosmic Gradient Flow Effect ======== */
+@keyframes cosmic-gradient-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.cosmic-gradient-animate {
+  background-size: 200% 200%;
+  animation: cosmic-gradient-flow 15s ease infinite;
+}
+
+/* ======== Cosmic Button Hover Glow ======== */
+@keyframes cosmic-glow {
+  0% {
+    box-shadow: 0 0 5px rgba(var(--color-primary), 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(var(--color-primary), 0.7);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(var(--color-primary), 0.5);
+  }
+}
+
+.cosmic-button-primary:hover {
+  animation: cosmic-glow 2s infinite;
+}
+
+/* ======== Cosmic Badge Pulse ======== */
+@keyframes cosmic-badge-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.cosmic-badge-pulse {
+  animation: cosmic-badge-pulse 2s infinite ease-in-out;
+}
+
+/* ======== Cosmic Shimmer Effect ======== */
+@keyframes cosmic-shimmer {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.cosmic-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.cosmic-shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: cosmic-shimmer 3s infinite;
+}
+
+/* ======== Cosmic Floating Animation ======== */
+@keyframes cosmic-float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.cosmic-float {
+  animation: cosmic-float 5s ease-in-out infinite;
+}
+
+/* ======== Subtle Cosmic Spin ======== */
+@keyframes cosmic-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.cosmic-spin {
+  animation: cosmic-spin 20s linear infinite;
+}
+
+.cosmic-spin-reverse {
+  animation: cosmic-spin 25s linear infinite reverse;
+}
+
+/* ======== Cosmic Fade Transition ======== */
+.cosmic-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.cosmic-fade-out {
+  animation: fadeOut 0.5s ease-in-out;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* ======== Cosmic Type Animation ======== */
+@keyframes cosmic-typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.cosmic-typing {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  animation: cosmic-typing 2s steps(40, end);
+}
+
+/* ======== Cosmic Background Star Twinkle ======== */
+@keyframes cosmic-twinkle {
+  0% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.2;
+  }
+}
+
+.cosmic-star {
+  position: absolute;
+  background-color: white;
+  border-radius: 50%;
+  animation: cosmic-twinkle var(--twinkle-duration, 3s) infinite ease-in-out;
+  animation-delay: var(--twinkle-delay, 0s);
+}
+
+/* ======== Cosmic Loading Spinner ======== */
+@keyframes cosmic-spinner {
+  0% {
+    transform: rotate(0deg);
+    border-width: 3px;
+  }
+  50% {
+    transform: rotate(180deg);
+    border-width: 1px;
+  }
+  100% {
+    transform: rotate(360deg);
+    border-width: 3px;
+  }
+}
+
+.cosmic-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(var(--color-primary), 0.2);
+  border-left-color: rgb(var(--color-primary));
+  border-radius: 50%;
+  animation: cosmic-spinner 1.2s linear infinite;
+}
+
+/* ======== Variant-Specific Animation Speed Adjustments ======== */
+:root[data-theme-variant="professional"] .cosmic-animation {
+  animation-duration: calc(var(--base-duration, 1s) * 1);
+}
+
+:root[data-theme-variant="vibrant"] .cosmic-animation {
+  animation-duration: calc(var(--base-duration, 1s) * 0.8);
+}
+
+:root[data-theme-variant="tint"] .cosmic-animation {
+  animation-duration: calc(var(--base-duration, 1s) * 1.2);
+}

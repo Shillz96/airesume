@@ -1,0 +1,324 @@
+/**
+ * Cosmic Resume Styles
+ * 
+ * This file contains styles for the resume builder UI components
+ * following the actual design shown in the screenshots
+ */
+
+/* Tab navigation */
+.cosmic-tabs {
+  display: flex;
+  background: rgba(30, 41, 59, 0.7);
+  border-radius: var(--radius-md);
+  padding: var(--space-1);
+  margin-bottom: var(--space-6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow);
+  overflow-x: auto;
+}
+
+.cosmic-tab {
+  padding: var(--space-3) var(--space-4);
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  transition: all var(--transition-fast);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.cosmic-tab svg {
+  width: 18px;
+  height: 18px;
+}
+
+.cosmic-tab:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cosmic-tab[data-state="active"] {
+  background: rgba(59, 130, 246, 0.2);
+  color: white;
+}
+
+.cosmic-tab[data-state="active"] svg {
+  color: #60a5fa;
+}
+
+/* Resume section containers */
+.cosmic-resume-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .cosmic-resume-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.cosmic-section {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.cosmic-section-header {
+  padding: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: white;
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+.cosmic-section-header svg {
+  color: #60a5fa;
+}
+
+.cosmic-section-content {
+  padding: var(--space-4);
+}
+
+/* Form elements */
+.cosmic-form-row {
+  margin-bottom: var(--space-4);
+}
+
+.cosmic-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.cosmic-form-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: var(--space-2);
+  font-size: 0.875rem;
+}
+
+.cosmic-form-input {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+  color: white;
+  padding: var(--space-2) var(--space-3);
+  transition: all var(--transition-fast);
+}
+
+.cosmic-form-input:focus {
+  border-color: rgba(59, 130, 246, 0.5);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.cosmic-form-textarea {
+  min-height: var(--space-20);
+  resize: vertical;
+}
+
+/* Experience items */
+.cosmic-experience-item {
+  background: rgba(17, 24, 39, 0.7);
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: var(--space-4);
+  transition: all var(--transition-fast);
+  overflow: hidden;
+}
+
+.cosmic-experience-item:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.cosmic-experience-header {
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.cosmic-experience-title {
+  font-weight: 500;
+  color: white;
+}
+
+.cosmic-experience-company {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.cosmic-experience-actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.cosmic-experience-content {
+  padding: var(--space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* AI Assistant panel */
+.cosmic-ai-assistant {
+  background: rgba(15, 23, 42, 0.7);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.cosmic-ai-assistant-header {
+  padding: var(--space-4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.cosmic-ai-assistant-title {
+  font-weight: 600;
+  color: white;
+}
+
+.cosmic-ai-assistant-body {
+  padding: var(--space-4);
+}
+
+.cosmic-ai-section {
+  margin-bottom: var(--space-4);
+}
+
+.cosmic-ai-section-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #60a5fa;
+  margin-bottom: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.cosmic-ai-options {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.cosmic-ai-option {
+  padding: var(--space-2) var(--space-3);
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: var(--radius);
+  color: white;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cosmic-ai-option:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.cosmic-ai-option[data-state="active"] {
+  background: rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.4);
+  font-weight: 500;
+}
+
+.cosmic-suggestion {
+  background: rgba(17, 24, 39, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+  position: relative;
+}
+
+.cosmic-suggestion:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.cosmic-suggestion-actions {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  display: flex;
+  gap: var(--space-1);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.cosmic-suggestion:hover .cosmic-suggestion-actions {
+  opacity: 1;
+}
+
+.cosmic-action-button {
+  width: var(--space-6);
+  height: var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(59, 130, 246, 0.2);
+  border-radius: var(--radius);
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cosmic-action-button:hover {
+  background: rgba(59, 130, 246, 0.4);
+}
+
+.cosmic-refresh-button {
+  background: rgba(17, 24, 39, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+  color: white;
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cosmic-refresh-button:hover {
+  background: rgba(17, 24, 39, 0.9);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Add buttons */
+.cosmic-add-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: var(--radius);
+  color: white;
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cosmic-add-button:hover {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.3);
+}

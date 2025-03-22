@@ -262,16 +262,16 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
   const getLengthOptions = () => {
     if (suggestionType === "skill") {
       return (
-        <TabsList className="grid w-full grid-cols-3 h-7">
-          <TabsTrigger className="px-2 py-0 text-xs" value="technical" onClick={() => {
+        <TabsList className="cosmic-tabs-list grid w-full grid-cols-3 h-7">
+          <TabsTrigger className="cosmic-tabs-trigger px-2 py-0 text-xs" value="technical" onClick={() => {
             setActiveTab("technical");
             generateSuggestions("technical");
           }}>Technical</TabsTrigger>
-          <TabsTrigger className="px-2 py-0 text-xs" value="soft" onClick={() => {
+          <TabsTrigger className="cosmic-tabs-trigger px-2 py-0 text-xs" value="soft" onClick={() => {
             setActiveTab("soft");
             generateSuggestions("soft");
           }}>Soft</TabsTrigger>
-          <TabsTrigger className="px-2 py-0 text-xs" value="industry" onClick={() => {
+          <TabsTrigger className="cosmic-tabs-trigger px-2 py-0 text-xs" value="industry" onClick={() => {
             setActiveTab("industry");
             generateSuggestions("industry");
           }}>Industry</TabsTrigger>
@@ -280,12 +280,12 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
     }
     
     return (
-      <TabsList className="grid w-full grid-cols-3 h-7">
-        <TabsTrigger className="px-2 py-0 text-xs" value="short" onClick={() => {
+      <TabsList className="cosmic-tabs-list grid w-full grid-cols-3 h-7">
+        <TabsTrigger className="cosmic-tabs-trigger px-2 py-0 text-xs" value="short" onClick={() => {
           setActiveTab("short");
           generateSuggestions("short");
         }}>Short</TabsTrigger>
-        <TabsTrigger className="px-2 py-0 text-xs" value="medium" onClick={() => {
+        <TabsTrigger className="cosmic-tabs-trigger px-2 py-0 text-xs" value="medium" onClick={() => {
           setActiveTab("medium");
           generateSuggestions("medium");
         }}>Medium</TabsTrigger>

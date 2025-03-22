@@ -1407,14 +1407,14 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
               <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-3">Experience</h3>
                 {editedResume.experience.map((exp, index) => (
-                  <div key={exp.id} className="mb-4 pb-4 border-b border-gray-100">
+                  <div key={exp.id} className="mb-4 pb-4 bg-gray-900/50 border border-blue-500/30 rounded-md p-4">
                     <div className="flex flex-wrap gap-3 mb-2">
                       <div className="flex-1 min-w-[200px]">
                         <label className="text-xs text-gray-500 block mb-1">Job Title</label>
                         <Input
                           value={exp.title}
                           onChange={(e) => handleFieldChange("experience", "title", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full bg-white"
+                          className="cosmic-navy-input"
                         />
                       </div>
                       <div className="flex-1 min-w-[200px]">
@@ -1422,7 +1422,7 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
                         <Input
                           value={exp.company}
                           onChange={(e) => handleFieldChange("experience", "company", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full bg-white"
+                          className="cosmic-navy-input"
                         />
                       </div>
                     </div>
@@ -1432,7 +1432,7 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
                         <Input
                           value={exp.startDate}
                           onChange={(e) => handleFieldChange("experience", "startDate", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full bg-white"
+                          className="cosmic-navy-input"
                         />
                       </div>
                       <div className="flex-1 min-w-[200px]">
@@ -1440,7 +1440,7 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
                         <Input
                           value={exp.endDate}
                           onChange={(e) => handleFieldChange("experience", "endDate", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full bg-white"
+                          className="cosmic-navy-input"
                         />
                       </div>
                     </div>
@@ -1462,11 +1462,11 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
                 <h3 className="text-lg font-semibold mb-3">Skills</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                   {editedResume.skills.map((skill, index) => (
-                    <div key={skill.id} className="border border-gray-200 rounded p-2">
+                    <div key={skill.id} className="bg-gray-900/50 border border-blue-500/30 rounded-md p-2">
                       <Input
                         value={skill.name}
                         onChange={(e) => handleFieldChange("skills", "name", e.target.value, index)}
-                        className="border-none p-0 text-sm w-full"
+                        className="cosmic-navy-input border-none p-0 text-sm w-full"
                       />
                     </div>
                   ))}
@@ -1477,14 +1477,14 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
               <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-3">Education</h3>
                 {editedResume.education.map((edu, index) => (
-                  <div key={edu.id} className="mb-4 pb-4 border-b border-gray-100">
+                  <div key={edu.id} className="mb-4 pb-4 bg-gray-900/50 border border-blue-500/30 rounded-md p-4">
                     <div className="flex flex-wrap gap-3 mb-2">
                       <div className="flex-1 min-w-[200px]">
                         <label className="text-xs text-gray-500 block mb-1">Degree</label>
                         <Input
                           value={edu.degree}
                           onChange={(e) => handleFieldChange("education", "degree", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full bg-white"
+                          className="cosmic-navy-input"
                         />
                       </div>
                       <div className="flex-1 min-w-[200px]">
@@ -1492,7 +1492,7 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
                         <Input
                           value={edu.institution}
                           onChange={(e) => handleFieldChange("education", "institution", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full bg-white"
+                          className="cosmic-navy-input"
                         />
                       </div>
                     </div>

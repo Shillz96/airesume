@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Check, Plus } from "lucide-react";
+import { Sparkles, Check, Plus, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -298,7 +298,7 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
   };
 
   return (
-    <Card className="border border-blue-500/30 shadow-lg bg-gradient-to-r from-blue-950/50 to-purple-950/50 backdrop-blur max-w-full w-full">
+    <Card className="cosmic-card cosmic-card-gradient border border-blue-500/30 shadow-lg max-w-full w-full">
       <CardHeader style={{ padding: "var(--space-3)" }}>
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-blue-400" />
@@ -311,7 +311,7 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
         padding: "var(--space-3)",
         paddingTop: "var(--space-1)"
       }}>
-        <Tabs defaultValue={activeTab} value={activeTab}>
+        <Tabs defaultValue={activeTab} value={activeTab} className="cosmic-tabs">
           {getLengthOptions()}
           
           <div style={{ 
@@ -418,11 +418,18 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
         <Button 
           variant="outline" 
           style={{ height: "var(--space-8)" }}
-          className="w-full text-xs text-blue-300 border-blue-500/30 hover:bg-blue-800/50 hover:text-blue-100"
+          className="cosmic-button w-full text-xs text-blue-300 border-blue-500/30 hover:bg-blue-800/50 hover:text-blue-100"
           onClick={() => generateSuggestions(activeTab)}
           disabled={isGenerating}
         >
-          {isGenerating ? "Generating..." : "Refresh Suggestions"}
+          {isGenerating ? (
+            "Generating..."
+          ) : (
+            <>
+              <RefreshCw className="w-3 h-3 mr-1" />
+              Refresh Suggestions
+            </>
+          )}
         </Button>
       </CardFooter>
     </Card>

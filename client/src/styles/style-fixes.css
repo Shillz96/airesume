@@ -1,21 +1,84 @@
 /**
  * Emergency style fixes to ensure consistent styling across all resume sections
- * These styles should override the existing problematic styles
+ * These styles use !important to override any existing problematic styles
  */
 
-/* Resume Panel Consistency */
-.cosmic-resume-panel {
+/* =========== GLOBAL RESETS =========== */
+* {
+  box-sizing: border-box !important;
+}
+
+/* Fix box model issues and create consistent spacing system */
+.p-space-2, .p-2, .p-space-3, .p-3, .p-space-4, .p-4, .p-space-5, .p-5 {
+  padding: 0.75rem !important;
+}
+
+.mb-space-1, .mb-1 { margin-bottom: 0.25rem !important; }
+.mb-space-2, .mb-2 { margin-bottom: 0.5rem !important; }
+.mb-space-4, .mb-4 { margin-bottom: 1rem !important; }
+.mb-space-5, .mb-5 { margin-bottom: 1.25rem !important; }
+.mb-space-6, .mb-6 { margin-bottom: 1.5rem !important; }
+
+.mt-space-1, .mt-1 { margin-top: 0.25rem !important; }
+.mt-space-2, .mt-2 { margin-top: 0.5rem !important; }
+.mt-space-4, .mt-4 { margin-top: 1rem !important; }
+.mt-space-5, .mt-5 { margin-top: 1.25rem !important; }
+
+.space-y-space-1 > * + *, .space-y-1 > * + * { margin-top: 0.25rem !important; }
+.space-y-space-2 > * + *, .space-y-2 > * + * { margin-top: 0.5rem !important; }
+.space-y-space-4 > * + *, .space-y-4 > * + * { margin-top: 1rem !important; }
+
+.gap-space-2, .gap-2 { gap: 0.5rem !important; }
+.gap-space-4, .gap-4 { gap: 1rem !important; }
+.gap-space-10, .gap-10 { gap: 2.5rem !important; }
+
+/* =========== RESUME PANELS =========== */
+/* Consistent panel styling across all resume sections */
+.cosmic-resume-panel,
+.rounded-lg.bg-gray-900\/50.border.border-blue-500\/30,
+.cosmic-card,
+.bg-gray-900\/50.p-space-4.rounded-lg.border.border-blue-500\/30 {
   background-color: rgba(17, 25, 40, 0.75) !important;
   border: 1px solid rgba(59, 130, 246, 0.3) !important;
   border-radius: 0.5rem !important;
   padding: 1.25rem !important;
   margin-bottom: 1rem !important;
   color: #ffffff !important;
+  box-shadow: none !important;
   transition: all 0.2s ease !important;
 }
 
-/* Input form styling consistency */
-.cosmic-input, input[type="text"], input[type="email"], input[type="number"], .cosmic-textarea, textarea {
+/* =========== CONSISTENT FORM ELEMENTS =========== */
+/* All inputs (text fields, emails, etc.) */
+.cosmic-input,
+input[type="text"], 
+input[type="email"], 
+input[type="number"],
+input[type="password"],
+input[type="date"],
+input[type="tel"],
+input.bg-black\/30,
+input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="reset"]) {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  color: #ffffff !important;
+  border-radius: 0.375rem !important;
+  transition: all 0.2s ease !important;
+  padding: 0.5rem 0.75rem !important;
+  width: 100% !important;
+  height: auto !important;
+  outline: none !important;
+  display: block !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  box-shadow: none !important;
+  line-height: 1.5 !important;
+}
+
+/* Text areas */
+.cosmic-textarea,
+textarea,
+[contenteditable="true"] {
   background-color: rgba(0, 0, 0, 0.3) !important;
   border: 1px solid rgba(59, 130, 246, 0.3) !important;
   color: #ffffff !important;
@@ -24,47 +87,91 @@
   padding: 0.5rem 0.75rem !important;
   width: 100% !important;
   outline: none !important;
+  min-height: 5rem !important;
+  resize: vertical !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  box-shadow: none !important;
+  line-height: 1.5 !important;
 }
 
-.cosmic-input:focus, input:focus, .cosmic-textarea:focus, textarea:focus {
+/* Focus states */
+.cosmic-input:focus, 
+input:focus, 
+.cosmic-textarea:focus, 
+textarea:focus,
+[contenteditable="true"]:focus {
   border-color: rgba(59, 130, 246, 0.5) !important;
   box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3) !important;
+  outline: none !important;
 }
 
-/* Label styling */
-label, .cosmic-label {
+/* Input placeholders */
+.cosmic-input::placeholder, 
+input::placeholder, 
+.cosmic-textarea::placeholder, 
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+  opacity: 1 !important;
+}
+
+/* Labels */
+label, 
+.cosmic-label,
+.text-sm.text-blue-300.block {
   color: #93c5fd !important; /* blue-300 */
   font-size: 0.875rem !important;
   margin-bottom: 0.25rem !important;
   display: block !important;
+  font-weight: normal !important;
 }
 
+/* =========== AI ASSISTANT STYLING =========== */
 /* AI Assistant card consistency */
-.cosmic-ai-card {
+.cosmic-ai-card,
+[class*="min-h-[300px]"] {
   background: linear-gradient(to bottom, rgba(30, 41, 59, 0.95), rgba(17, 24, 39, 0.98)) !important;
   border: 1px solid rgba(59, 130, 246, 0.3) !important;
   border-radius: 0.5rem !important;
   overflow: hidden !important;
   position: relative !important;
   height: 100% !important;
+  min-height: 300px !important;
 }
 
 /* AI Suggestion items */
-.cosmic-ai-card .p-space-2 {
+.cosmic-ai-card .p-space-2,
+.cosmic-ai-card .p-2,
+.space-y-space-2 .p-space-2,
+.space-y-2 .p-2,
+[class*="hover:bg-white/10"],
+[class*="hover:bg-blue-500/10"] {
   padding: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
   border-radius: 0.375rem !important;
   background-color: rgba(17, 25, 40, 0.75) !important;
   border: 1px solid rgba(59, 130, 246, 0.3) !important;
-  margin-bottom: 0.5rem !important;
   transition: background-color 0.2s ease !important;
+  cursor: pointer !important;
+  color: #f3f4f6 !important; /* gray-100 */
 }
 
-.cosmic-ai-card .p-space-2:hover {
+.cosmic-ai-card .p-space-2:hover,
+.cosmic-ai-card .p-2:hover,
+.space-y-space-2 .p-space-2:hover,
+.space-y-2 .p-2:hover,
+[class*="hover:bg-white/10"]:hover,
+[class*="hover:bg-blue-500/10"]:hover {
   background-color: rgba(59, 130, 246, 0.1) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
 }
 
+/* =========== TIP SECTIONS =========== */
 /* Tip section consistency */
-.cosmic-tip-section, .mt-space-4.text-xs.text-gray-300 {
+.cosmic-tip-section,
+.text-xs.text-gray-300.bg-gray-900\/50.p-space-4.rounded-lg.border.border-blue-500\/30,
+.text-xs.text-gray-300.bg-white\/5.p-space-4.rounded-lg.border.border-white\/10,
+[class*="Tips for"] {
   background-color: rgba(17, 25, 40, 0.75) !important;
   border: 1px solid rgba(59, 130, 246, 0.3) !important;
   border-radius: 0.375rem !important;
@@ -74,47 +181,88 @@ label, .cosmic-label {
   margin-top: 1rem !important;
 }
 
-.cosmic-tip-section p, .mt-space-4.text-xs.text-gray-300 p {
+.cosmic-tip-section p,
+.text-xs.text-gray-300 p,
+.text-blue-300.font-medium,
+p[class*="text-blue-300"] {
   color: #93c5fd !important; /* blue-300 */
   font-weight: 500 !important;
   margin-bottom: 0.5rem !important;
 }
 
-/* Remove box-like appearance from input fields */
-input, textarea {
-  appearance: none !important;
-  -webkit-appearance: none !important;
+.cosmic-tip-section ul,
+.text-xs.text-gray-300 ul,
+ul.list-disc {
+  padding-left: 1.5rem !important;
+  margin-top: 0.5rem !important;
 }
 
-/* Section spacing */
-.space-y-space-4 > * + * {
-  margin-top: 1rem !important;
+.cosmic-tip-section li,
+.text-xs.text-gray-300 li,
+ul.list-disc li {
+  margin-bottom: 0.25rem !important;
+  line-height: 1.4 !important;
 }
 
-.space-y-space-5 > * + * {
-  margin-top: 1.25rem !important;
-}
-
-.gap-10 {
-  gap: 2.5rem !important;
-}
-
+/* =========== CONTENT AREAS =========== */
 /* Ensure rich text editor doesn't look like a box */
 .rich-text-content,
-[dangerouslySetInnerHTML] {
+[dangerouslySetInnerHTML],
+div[class*="mt-3 text-sm text-gray-300"] {
   padding: 0 !important;
   border: none !important;
   background: transparent !important;
+  color: #d1d5db !important; /* gray-300 */
+  line-height: 1.5 !important;
 }
 
+/* =========== BUTTONS =========== */
 /* Consistent button styling */
-button.cosmic-btn, button.w-full.mt-space-4.py-2.px-3 {
+button.cosmic-btn, 
+button.w-full.mt-space-4.py-2.px-3,
+button[class*="bg-blue-600/30"],
+button[class*="hover:bg-blue-600/50"] {
   background-color: rgba(59, 130, 246, 0.3) !important;
   color: #ffffff !important;
   border-radius: 0.375rem !important;
   padding: 0.5rem 0.75rem !important;
   transition: all 0.2s ease !important;
   border: none !important;
+  cursor: pointer !important;
+  font-weight: 500 !important;
+}
+
+button.cosmic-btn:hover, 
+button.w-full.mt-space-4.py-2.px-3:hover,
+button[class*="hover:bg-blue-600/50"]:hover {
+  background-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+/* =========== SECTION HEADERS =========== */
+.cosmic-section-header,
+.flex.justify-between.items-center.mb-space-4,
+.flex.justify-between.items-center.mb-space-6 {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 1rem !important;
+}
+
+.cosmic-section-title,
+h2[class*="flex items-center"],
+h2.cosmic-section-title {
+  font-size: 1.125rem !important;
+  font-weight: 500 !important;
+  color: #ffffff !important;
+  display: flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+}
+
+.cosmic-section-icon,
+[class*="cosmic-section-icon"] {
+  color: #60a5fa !important; /* blue-400 */
+  margin-right: 0.5rem !important;
 }
 
 button.cosmic-btn:hover, button.w-full.mt-space-4.py-2.px-3:hover {

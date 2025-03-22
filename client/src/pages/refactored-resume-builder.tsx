@@ -3232,8 +3232,8 @@ export default function ResumeBuilder() {
                       }}
                     />
 
-                    <div className="mt-space-4 text-xs text-gray-300 bg-white/5 p-space-4 rounded-lg border border-white/10">
-                      <p className="mb-space-2 text-blue-300 font-medium">
+                    <div className="mt-4 text-xs text-gray-300 bg-gray-900/50 p-4 rounded-lg border border-blue-500/30">
+                      <p className="mb-2 text-blue-300 font-medium">
                         Tips for showcasing skills:
                       </p>
                       <ul className="list-disc pl-4 space-y-1">

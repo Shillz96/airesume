@@ -1,0 +1,224 @@
+// ... (keep existing imports)
+
+function ResumePreviewComponent({ 
+  resume, 
+  onTemplateChange, 
+  onDownload 
+}: { 
+  resume: Resume; 
+  onTemplateChange: (template: string) => void; 
+  onDownload?: () => void 
+}) {
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [scale, setScale] = useState(0.85);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isAutoAdjusting, setIsAutoAdjusting] = useState(false);
+  const [editedResume, setEditedResume] = useState<Resume>(resume);
+  const [fontScale, setFontScale] = useState(1);
+  const [spacingScale, setSpacingScale] = useState(1);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+
+  // ... (keep existing sectionOrder and visibleSections state)
+
+  // ... (keep onDragEnd and toggleSection)
+
+  const calculatePages = () => {
+    if (!previewRef.current) return 1;
+    const pageHeight = 297 * 3.78; // A4 height in pixels
+    const contentHeight = previewRef.current.scrollHeight;
+    return Math.ceil(contentHeight / pageHeight);
+  };
+
+  // Enhanced auto-adjust function
+  const autoAdjust = () => {
+    setIsAutoAdjusting(true);
+    setScale(1.0); // Reset to default scale for accurate measurement
+
+    setTimeout(() => {
+      if (!previewRef.current) {
+        setIsAutoAdjusting(false);
+        return;
+      }
+
+      const pageHeight = 297 * 3.78; // A4 height in pixels
+      const contentHeight = previewRef.current.scrollHeight;
+      const pages = calculatePages();
+
+      if (pages > 1) {
+        // Content exceeds one page: scale down to fit
+        const heightRatio = pageHeight / contentHeight;
+        let newFontScale = 1;
+        let newSpacingScale = 1;
+
+        if (heightRatio >= 0.9) { // Minor overflow
+          newFontScale = Math.max(0.9, heightRatio * 0.98);
+          newSpacingScale = Math.max(0.9, heightRatio * 0.95);
+        } else if (heightRatio >= 0.8) { // Moderate overflow
+          newFontScale = Math.max(0.8, heightRatio * 0.95);
+          newSpacingScale = Math.max(0.85, heightRatio * 0.90);
+        } else { // Major overflow
+          newFontScale = Math.max(0.7, heightRatio * 0.9);
+          newSpacingScale = Math.max(0.75, heightRatio * 0.85);
+        }
+
+        setFontScale(newFontScale);
+        setSpacingScale(newSpacingScale);
+        setScale(0.85); // Adjust view scale for visibility
+
+        toast({
+          title: "Smart Fit Applied",
+          description: `Content adjusted to fit one page (${Math.round(newFontScale * 100)}% text scale)`,
+        });
+      } else {
+        // Content fits on one page: scale up to fill professionally
+        const heightRatio = contentHeight / pageHeight;
+
+        if (heightRatio < 0.95) { // Less than 95% of page filled
+          // Calculate how much to scale up to fill page (up to a reasonable limit)
+          const targetRatio = 0.95; // Aim to fill 95% of the page
+          const scaleFactor = Math.min(targetRatio / heightRatio, 1.2); // Cap at 120% to avoid overly large text
+
+          const newFontScale = Math.min(1.2, fontScale * scaleFactor);
+          const newSpacingScale = Math.min(1.2, spacingScale * scaleFactor * 1.1); // Slightly more aggressive spacing increase
+
+          setFontScale(newFontScale);
+          setSpacingScale(newSpacingScale);
+          setScale(0.85); // Keep view scale reasonable
+
+          toast({
+            title: "Smart Fill Applied",
+            description: `Content expanded to professionally fill the page (${Math.round(newFontScale * 100)}% text scale)`,
+          });
+        } else {
+          // Content already fills page well
+          setFontScale(1);
+          setSpacingScale(1);
+          setScale(0.85);
+
+          toast({
+            title: "Smart Fit Optimal",
+            description: "Content already professionally fills one page.",
+          });
+        }
+      }
+
+      setIsAutoAdjusting(false);
+    }, 500);
+  };
+
+  // ... (keep handleDownload, toggleFullScreen, toggleEdit, handleFieldChange)
+
+  useEffect(() => {
+    setEditedResume(resume);
+  }, [resume]);
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
+        <div className="flex items-center gap-2">
+          <h3 className="text-lg font-medium text-white">Resume Preview</h3>
+          <Badge variant="outline" className="text-blue-300 border-blue-300/30">
+            {Math.round(scale * 100)}%
+          </Badge>
+          <Badge variant="outline" className="text-blue-300 border-blue-300/30">
+            {calculatePages()} Page{calculatePages() > 1 ? 's' : ''}
+          </Badge>
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setScale(Math.max(0.5, scale - 0.1))}
+            disabled={scale <= 0.5}
+            className="flex items-center text-white border-white/20 hover:bg-white/10"
+          >
+            <Minus className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setScale(Math.min(1.5, scale + 0.1))}
+            disabled={scale >= 1.5}
+            className="flex items-center text-white border-white/20 hover:bg-white/10"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={autoAdjust}
+            disabled={isAutoAdjusting}
+            className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
+            title="Automatically adjust content to fit or fill one page professionally"
+          >
+            {isAutoAdjusting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Zap className="h-4 w-4" />
+            )}
+            Smart Fit
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleFullScreen}
+            className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
+          >
+            <Maximize2 className="h-4 w-4" />
+            {isFullScreen ? "Exit Full Screen" : "Full Screen"}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleEdit}
+            className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
+          >
+            {isEditing ? <Check className="h-4 w-4" /> : <FileText className="h-4 w-4" />}
+            {isEditing ? "Save" : "Edit"}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDownload}
+            disabled={isDownloading}
+            className="flex items-center gap-1 text-white border-white/20 hover:bg-white/10"
+          >
+            {isDownloading ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-1" />
+            ) : (
+              <Download className="h-4 w-4 mr-1" />
+            )}
+            {isDownloading ? "Generating..." : "Download PDF"}
+          </Button>
+        </div>
+      </div>
+
+      {/* ... (keep the rest of the component structure, including drag-and-drop) */}
+
+      <div
+        className={cn(
+          "bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 shadow-xl overflow-auto",
+          isFullScreen ? "fixed inset-0 z-50 m-0 p-8 bg-black/90" : "p-4 h-[80vh]"
+        )}
+      >
+        <div
+          ref={previewRef}
+          className="transition-all duration-300 mx-auto bg-white shadow-lg"
+          style={{
+            transform: `scale(${scale})`,
+            width: "210mm",
+            fontSize: `${fontScale * 100}%`,
+            lineHeight: `${spacingScale * 1.5}`,
+            transformOrigin: "top center",
+          }}
+        >
+          {/* ... (keep existing editing and preview rendering logic) */}
+        </div>
+      </div>
+
+      {/* ... (keep template selection) */}
+    </div>
+  );
+}

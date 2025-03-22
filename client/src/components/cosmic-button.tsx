@@ -6,6 +6,7 @@ type CosmicButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'dest
 
 export interface CosmicButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: CosmicButtonVariant;
+  size?: 'default' | 'sm' | 'lg' | 'icon';
   isLoading?: boolean;
   loadingText?: string;
   iconLeft?: React.ReactNode;
@@ -19,6 +20,7 @@ export interface CosmicButtonProps extends ButtonHTMLAttributes<HTMLButtonElemen
 export const CosmicButton = forwardRef<HTMLButtonElement, CosmicButtonProps>(
   ({ 
     variant = 'primary',
+    size = 'default',
     isLoading = false,
     loadingText,
     iconLeft,
@@ -48,6 +50,7 @@ export const CosmicButton = forwardRef<HTMLButtonElement, CosmicButtonProps>(
       <Button
         ref={ref}
         variant={shadcnVariant}
+        size={size}
         className={cn(variantStyles[variant], className)}
         disabled={isLoading || disabled}
         {...props}

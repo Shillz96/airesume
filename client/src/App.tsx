@@ -20,7 +20,9 @@ import AdminAccess from "@/pages/admin-access";
 import { ProtectedRoute } from "./lib/protected-route";
 import { useEffect, useRef } from "react";
 
+// Try importing both navbar components
 import SimpleNavbar from "@/components/SimpleNavbar";
+import Navbar from "@/components/navbar";
 import GoAdminLink from "@/components/go-admin-link";
 import QuickLogin from "@/components/quick-login";
 import AuthDialog from "@/components/auth-dialog";
@@ -90,6 +92,10 @@ function AppContent() {
       
       {/* Content */}
       <div className="relative z-10">
+        {/* Add an absolute positioned message for testing */}
+        <div style={{position: 'fixed', top: 0, left: 0, background: 'red', color: 'white', zIndex: 9999, padding: '4px'}}>
+          Using SimpleNavbar Component
+        </div>
         {showNavbar && <SimpleNavbar />}
         <div className={showNavbar ? "pt-16" : ""}>
           <Router />

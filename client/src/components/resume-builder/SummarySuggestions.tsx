@@ -61,30 +61,32 @@ export default function SummarySuggestions({
       }
     }
 
-    // Generate sample summaries based on resume content
+    // Generate sample summaries based on resume content and job title
     const getFallbackSummaries = (length: SummaryLength) => {
-      // Short summaries
+      const jobTitle_safe = jobTitle || "professional";
+      
+      // Short summaries with job-specific focus
       if (length === "short") {
         return [
-          "Skilled professional with a proven track record in delivering high-impact solutions.",
-          "Results-oriented professional with expertise in strategic planning and execution.",
-          "Dynamic professional with strong technical and communication skills.",
+          `Results-driven ${jobTitle_safe} with a proven track record of delivering impactful solutions and exceeding performance targets.`,
+          `Innovative ${jobTitle_safe} skilled in leveraging cutting-edge technologies to drive operational excellence and business growth.`,
+          `Dynamic ${jobTitle_safe} combining technical expertise with strategic vision to transform challenges into opportunities.`,
         ];
       }
-      // Long summaries
+      // Long summaries with quantifiable achievements
       else if (length === "long") {
         return [
-          "Accomplished professional with extensive experience driving innovation and operational excellence. Demonstrates exceptional ability to identify opportunities for improvement and implement strategic solutions that enhance business performance. Combines technical expertise with strong leadership capabilities to guide teams through complex projects and initiatives.",
-          "Results-driven professional with a comprehensive background in developing and implementing strategic initiatives. Skilled at translating business requirements into effective solutions while maintaining a focus on quality and efficiency. Recognized for ability to collaborate across departments and deliver measurable improvements to organizational processes.",
-          "Versatile professional with a proven track record of success across multiple domains. Leverages deep technical knowledge and business acumen to drive transformative change and achieve ambitious goals. Excels at building relationships with stakeholders at all levels and communicating complex concepts in accessible terms.",
+          `Accomplished ${jobTitle_safe} with over 5 years of experience spearheading cross-functional teams to achieve strategic goals. Proven ability to optimize processes, resulting in a 30% increase in efficiency and $200K in cost savings. Recognized for exceptional leadership and problem-solving skills in fast-paced environments.`,
+          `Results-oriented ${jobTitle_safe} with a strong background in data-driven decision-making. Successfully implemented innovative solutions that improved customer satisfaction by 25% and reduced operational costs by 15%. Adept at collaborating with stakeholders across all levels to deliver measurable results and drive continuous improvement.`,
+          `Strategic ${jobTitle_safe} with expertise in project management and process optimization. Led multiple high-impact initiatives, including a $1M digital transformation project that increased revenue by 20%. Known for strong communication skills and ability to translate complex technical concepts into actionable business strategies.`,
         ];
       }
-      // Medium summaries (default)
+      // Medium summaries with industry-specific language
       else {
         return [
-          "Accomplished professional with a proven track record of delivering innovative solutions. Adept at leveraging expertise to drive business outcomes and optimize processes.",
-          "Results-driven professional combining technical knowledge with strong communication skills. Committed to continuous improvement and delivering high-quality work that exceeds expectations.",
-          "Versatile and dedicated professional with strong problem-solving abilities. Effectively balances technical excellence with business requirements to create impactful solutions.",
+          `Experienced ${jobTitle_safe} with a track record of delivering innovative solutions that drive business value. Skilled in process optimization and team leadership, resulting in significant efficiency gains and improved stakeholder satisfaction.`,
+          `Dedicated ${jobTitle_safe} with expertise in strategic planning and execution. Proven ability to leverage data-driven insights and cross-functional collaboration to achieve measurable outcomes that exceed expectations.`,
+          `Forward-thinking ${jobTitle_safe} with strong problem-solving abilities and technical acumen. Successfully led initiatives that improved key performance metrics by 25% and enhanced organizational effectiveness through thoughtful implementation of best practices.`,
         ];
       }
     };
@@ -92,12 +94,20 @@ export default function SummarySuggestions({
     // If we have a valid resumeId (not "new" and not null), try to get AI suggestions
     if (resumeId && resumeId !== "new") {
       try {
-        // Use the summaryOnly parameter to get complete summary rewrites
-        // Add length parameter and randomSeed to ensure we get different results each time
-        const res = await apiRequest(
-          "GET",
-          `/api/resumes/${resumeId}/suggestions?summaryOnly=true&length=${length}&seed=${generationCount}`,
-        );
+        // Build URL with all relevant parameters
+        let url = `/api/resumes/${resumeId}/suggestions?summaryOnly=true&length=${length}&seed=${generationCount}`;
+        
+        // Add job title if available for more tailored results
+        if (jobTitle) {
+          url += `&jobTitle=${encodeURIComponent(jobTitle)}`;
+        }
+        
+        // Add existing summary to avoid repetition and ensure complementary suggestions
+        if (existingSummary) {
+          url += `&existingSummary=${encodeURIComponent(existingSummary)}`;
+        }
+        
+        const res = await apiRequest("GET", url);
         const data = await res.json();
 
         if (

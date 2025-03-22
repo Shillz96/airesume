@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/navbar";
 import JobCard, { Job } from "@/components/job-card";
@@ -36,12 +36,12 @@ import { getQueryFn } from "@/lib/queryClient";
 export default function JobFinder() {
   const { user } = useAuth();
   const { isGuestMode } = useGuestMode();
-  
+
   // State for UI
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  
+
   // State for job filters
   const [filterValues, setFilterValues] = useState<JobFilterValues>({
     title: "",
@@ -82,13 +82,13 @@ export default function JobFinder() {
       );
     }
   }, []);
-  
+
   // Query jobs with filters
   const { data: jobs = [], isLoading, error } = useQuery<Job[]>({
     queryKey: [`/api/jobs`, filterValues],
     queryFn: async ({ signal }) => {
       const params = new URLSearchParams();
-      
+
       if (filterValues.title) params.append("title", filterValues.title);
       if (filterValues.location) params.append("location", filterValues.location);
       if (filterValues.type) params.append("type", filterValues.type);
@@ -96,7 +96,7 @@ export default function JobFinder() {
       if (filterValues.remote) params.append("remote", filterValues.remote);
       if (filterValues.salary) params.append("salary", filterValues.salary);
       if (filterValues.country) params.append("country", filterValues.country);
-      
+
       const queryFn = getQueryFn({ on401: "returnNull" });
       return queryFn({ 
         queryKey: [`/api/jobs?${params.toString()}`],
@@ -105,13 +105,13 @@ export default function JobFinder() {
       });
     },
   });
-  
+
   // Handle filter changes
   const handleFilter = (values: JobFilterValues) => {
     setFilterValues(values);
     setCurrentPage(1);
   };
-  
+
   // Filter jobs by status (saved, applied, etc.)
   const filteredJobs = jobs && Array.isArray(jobs) 
     ? jobs.filter((job) => {
@@ -124,7 +124,7 @@ export default function JobFinder() {
         return true;
       })
     : [];
-  
+
   return (
     <>
       <CosmicBackground />
@@ -138,10 +138,10 @@ export default function JobFinder() {
             </p>
           </div>
         </div>
-        
+
         {/* Job Search and Filters */}
         <JobFilter initialValues={filterValues} onFilter={handleFilter} />
-          
+
         {/* AI Match Score Section */}
         <div className="my-8 p-4 cosmic-card border border-white/10 rounded-lg overflow-hidden relative">
           <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-500/10 to-transparent" />
@@ -197,7 +197,7 @@ export default function JobFinder() {
             </TabsTrigger>
           </TabsList>
         </Tabs>
-        
+
         {/* Recommended Jobs Section */}
         {!isLoading && Array.isArray(jobs) && jobs.length > 0 && statusFilter === "all" && (
           <div className="mb-8">
@@ -288,7 +288,7 @@ export default function JobFinder() {
                   ))}
                 </ul>
               </CardContent>
-              
+
               <div className="border-t border-white/10 px-6 py-4">
                 <Pagination>
                   <PaginationContent>
@@ -301,7 +301,7 @@ export default function JobFinder() {
                         Previous
                       </button>
                     </PaginationItem>
-                    
+
                     {Array.from({ length: 3 }, (_, i) => i + 1).map((page) => (
                       <PaginationItem key={page}>
                         <button
@@ -316,7 +316,7 @@ export default function JobFinder() {
                         </button>
                       </PaginationItem>
                     ))}
-                    
+
                     <PaginationItem>
                       <button
                         onClick={() => setCurrentPage(currentPage + 1)}

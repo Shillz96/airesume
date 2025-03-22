@@ -2713,11 +2713,11 @@ export default function ResumeBuilder() {
         <div className="cosmic-card border border-white/10 rounded-xl shadow-lg backdrop-blur-md overflow-hidden">
           {/* Horizontal Tab Navigation */}
           <div className="relative">
-            <div className="bg-gradient-to-r from-blue-900/80 to-purple-900/80 rounded-t-xl px-6 py-4 border-b border-white/10">
+            <div>
               <Tabs
                 value={activeSection}
                 onValueChange={setActiveSection}
-                className="w-full cosmic-tabs"
+                className="cosmic-tabs"
               >
                 <TabsList className="cosmic-tabs-list">
                   <TabsTrigger

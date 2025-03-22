@@ -1,71 +1,128 @@
 /**
  * CSS Variables
  * 
- * This file defines CSS variables used throughout the application.
- * These variables provide consistent design tokens for spacing, colors, shadows, etc.
+ * This file defines default CSS variables that are used throughout the application.
+ * These can be overridden by theme settings in theme.json.
  */
 
 :root {
-  /* Spacing scale */
-  --space-0: 0px;
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-10: 40px;
-  --space-12: 48px;
-  --space-16: 64px;
-  --space-20: 80px;
-  --space-24: 96px;
+  /* Base colors - these will be overridden by theme-loader.ts */
+  --background: #050A18;
+  --foreground: #ffffff;
   
-  /* Border radius */
-  --radius-sm: 0.125rem;
+  --card: rgba(255, 255, 255, 0.05);
+  --card-foreground: #ffffff;
+  
+  --popover: rgba(0, 0, 0, 0.7);
+  --popover-foreground: #ffffff;
+  
+  --primary: hsl(221.2 83.2% 53.3%);
+  --primary-foreground: hsl(0 0% 100%);
+  
+  --secondary: rgba(255, 255, 255, 0.1);
+  --secondary-foreground: #ffffff;
+  
+  --muted: rgba(255, 255, 255, 0.2);
+  --muted-foreground: rgba(255, 255, 255, 0.65);
+  
+  --accent: rgba(59, 130, 246, 0.2);
+  --accent-foreground: #ffffff;
+  
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(0 0% 100%);
+  
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: rgba(59, 130, 246, 0.5);
+  
+  /* Layout */
   --radius: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-full: 9999px;
+  --header-height: 4rem;
+  --sidebar-width: 16rem;
+  --sidebar-collapsed-width: 5rem;
   
-  /* Transitions */
-  --transition-fast: 0.15s;
-  --transition-normal: 0.3s;
-  --transition-slow: 0.5s;
+  /* Spacing tokens */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-32: 8rem;
+  --space-40: 10rem;
+  --space-48: 12rem;
+  --space-56: 14rem;
+  --space-64: 16rem;
   
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.1);
-  --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.5);
-  --shadow-glow-hover: 0 0 25px rgba(59, 130, 246, 0.7);
+  /* Animation */
+  --transition-fast: 150ms;
+  --transition-normal: 300ms;
+  --transition-slow: 500ms;
   
   /* Z-index layers */
-  --z-negative: -1;
-  --z-base: 1;
-  --z-dropdown: 10;
-  --z-sticky: 20;
-  --z-fixed: 30;
-  --z-modal: 40;
-  --z-popover: 50;
-  --z-tooltip: 60;
+  --z-below: -1;
+  --z-normal: 1;
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-fixed: 1200;
+  --z-modal: 1300;
+  --z-popover: 1400;
+  --z-tooltip: 1500;
+  --z-toast: 1600;
+
+  /* Shadow values */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  --shadow-blue: 0 0 15px rgba(59, 130, 246, 0.5);
   
-  /* Typography */
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  /* Font settings */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", 
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", 
+    "Courier New", monospace;
+  
+  /* Typography scale */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  --text-6xl: 3.75rem;
+  --text-7xl: 4.5rem;
+  --text-8xl: 6rem;
+  --text-9xl: 8rem;
   
   /* Line heights */
-  --line-height-tight: 1.25;
-  --line-height-normal: 1.5;
-  --line-height-loose: 1.75;
+  --leading-none: 1;
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
   
-  /* Letter spacing */
-  --letter-spacing-tight: -0.025em;
-  --letter-spacing-normal: 0;
-  --letter-spacing-wide: 0.025em;
-  
-  /* Animation control */
-  --animation-speed: 1;
+  /* Cosmic theme specific */
+  --cosmic-star-1: rgba(59, 130, 246, 0.3);
+  --cosmic-star-2: rgba(139, 92, 246, 0.3);
+  --cosmic-star-3: rgba(236, 72, 153, 0.3);
+  --cosmic-gradient-primary: linear-gradient(45deg, var(--primary), #8b5cf6);
+  --cosmic-gradient-bg: linear-gradient(to bottom right, #020412, #0A1A40);
+  --cosmic-nebula-1: rgba(59, 130, 246, 0.03);
+  --cosmic-nebula-2: rgba(139, 92, 246, 0.03);
+  --cosmic-nebula-3: rgba(236, 72, 153, 0.03);
 }

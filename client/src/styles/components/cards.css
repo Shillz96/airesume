@@ -1,119 +1,278 @@
 /**
  * Card Styles
  * 
- * This file defines styles for card components and containers
+ * This file defines styles for card components and similar containers
  */
 
-/* Base cosmic card */
+/* Basic card */
 .cosmic-card {
-  @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-lg shadow-lg transition-all duration-300;
-  position: relative;
-  overflow: hidden;
-  padding: var(--space-4);
-  margin-bottom: var(--space-4);
+  @apply bg-card text-card-foreground rounded-lg shadow-sm overflow-hidden;
 }
 
-.cosmic-card:hover {
-  @apply shadow-xl;
-  transform: translateY(-2px);
+/* Card with hover effect */
+.cosmic-card-hover {
+  @apply cosmic-card transition-all duration-300 hover:shadow-md hover:translate-y-[-2px];
 }
 
-/* Card with glow effect */
-.cosmic-card-glow {
-  @apply cosmic-card;
+/* Card with border */
+.cosmic-card-bordered {
+  @apply cosmic-card border border-border;
 }
 
-.cosmic-card-glow::before {
-  content: '';
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  right: -10px;
-  bottom: -10px;
-  background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
-  filter: blur(10px);
-  z-index: -1;
+/* Glass card effect */
+.cosmic-card-glass {
+  @apply bg-black/40 backdrop-blur-md border border-white/10 rounded-lg shadow-lg;
 }
 
-/* Interactive card that indicates it's clickable */
-.cosmic-card-interactive {
-  @apply cosmic-card cursor-pointer;
-}
-
-.cosmic-card-interactive:hover {
-  @apply bg-white/10;
-}
-
-/* Card with gradient border */
+/* Gradient border card */
 .cosmic-card-gradient-border {
-  @apply cosmic-card p-0 overflow-hidden;
   position: relative;
+  border-radius: 0.5rem;
+  padding: 1px;
+  overflow: hidden;
 }
 
 .cosmic-card-gradient-border::before {
-  content: '';
+  content: "";
   position: absolute;
-  inset: 0;
-  padding: 1px;
-  border-radius: inherit;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
   background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
+  background-size: 400% 400%;
+  animation: gradientFlow 6s ease infinite;
+  z-index: -1;
+  border-radius: 0.6rem;
 }
 
 .cosmic-card-gradient-border-content {
-  padding: var(--space-4);
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 0.4rem;
+  padding: 1.25rem;
+  position: relative;
+  z-index: 1;
 }
 
-/* Card with gradient background */
-.cosmic-card-gradient {
-  @apply cosmic-card border-0;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(147, 51, 234, 0.15) 100%);
+/* Card sizes */
+.cosmic-card-sm {
+  @apply p-3;
 }
 
-/* Glass card with stronger blur effect */
-.cosmic-card-glass {
-  @apply cosmic-card;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(20px);
+.cosmic-card-md {
+  @apply p-5;
 }
 
-/* Bordered card */
-.cosmic-card-bordered {
-  @apply cosmic-card border border-white/20;
-}
-
-/* Shadowed card */
-.cosmic-card-shadowed {
-  @apply cosmic-card shadow-xl;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+.cosmic-card-lg {
+  @apply p-7;
 }
 
 /* Card with header */
 .cosmic-card-header {
-  @apply mb-4 pb-4 border-b border-white/10 flex items-center justify-between;
+  @apply mb-4 pb-4 border-b border-border;
+}
+
+.cosmic-card-title {
+  @apply text-xl font-semibold tracking-tight;
+}
+
+.cosmic-card-description {
+  @apply text-muted-foreground mt-1 text-sm;
 }
 
 /* Card with footer */
 .cosmic-card-footer {
-  @apply mt-4 pt-4 border-t border-white/10 flex items-center justify-between;
+  @apply mt-6 pt-4 border-t border-border flex justify-between items-center;
 }
 
-/* Card states */
-.cosmic-card-active {
-  @apply border-blue-500/50 bg-blue-600/10;
+/* Card with icon */
+.cosmic-card-icon {
+  @apply inline-block rounded-lg p-2 bg-primary/10 text-primary mb-3;
 }
 
+/* Centered content card */
+.cosmic-card-centered {
+  @apply cosmic-card flex flex-col items-center text-center p-6;
+}
+
+/* Interactive card for navigation */
+.cosmic-card-interactive {
+  @apply cosmic-card-hover cursor-pointer;
+}
+
+/* Card grid layout */
+.cosmic-card-grid {
+  @apply grid gap-4 sm:grid-cols-2 lg:grid-cols-3;
+}
+
+/* Card types for specific use cases */
+
+/* Info card */
+.cosmic-card-info {
+  @apply cosmic-card bg-blue-900/20 border border-blue-500/20;
+}
+
+/* Success card */
 .cosmic-card-success {
-  @apply border-green-500/50 bg-green-600/10;
+  @apply cosmic-card bg-green-900/20 border border-green-500/20;
 }
 
+/* Warning card */
 .cosmic-card-warning {
-  @apply border-yellow-500/50 bg-yellow-600/10;
+  @apply cosmic-card bg-yellow-900/20 border border-yellow-500/20;
 }
 
+/* Error card */
 .cosmic-card-error {
-  @apply border-red-500/50 bg-red-600/10;
+  @apply cosmic-card bg-red-900/20 border border-red-500/20;
+}
+
+/* Feature card */
+.cosmic-card-feature {
+  @apply cosmic-card-hover;
+}
+
+.cosmic-card-feature-icon {
+  @apply h-10 w-10 rounded-lg bg-primary/10 text-primary p-2 mb-4;
+}
+
+/* User card */
+.cosmic-card-user {
+  @apply cosmic-card p-5 flex items-center;
+}
+
+.cosmic-card-user-avatar {
+  @apply mr-4 flex-shrink-0;
+}
+
+.cosmic-card-user-content {
+  @apply flex-1 min-w-0;
+}
+
+.cosmic-card-user-name {
+  @apply font-medium;
+}
+
+.cosmic-card-user-info {
+  @apply text-sm text-muted-foreground truncate;
+}
+
+/* Stats card */
+.cosmic-card-stats {
+  @apply cosmic-card p-5;
+}
+
+.cosmic-card-stats-value {
+  @apply text-3xl font-bold mt-2;
+}
+
+.cosmic-card-stats-label {
+  @apply text-muted-foreground text-sm;
+}
+
+.cosmic-card-stats-change {
+  @apply flex items-center mt-1 text-sm;
+}
+
+.cosmic-card-stats-change-positive {
+  @apply text-green-500;
+}
+
+.cosmic-card-stats-change-negative {
+  @apply text-red-500;
+}
+
+/* Pricing card */
+.cosmic-card-pricing {
+  @apply cosmic-card p-6 flex flex-col;
+}
+
+.cosmic-card-pricing-header {
+  @apply mb-4;
+}
+
+.cosmic-card-pricing-name {
+  @apply font-medium text-lg;
+}
+
+.cosmic-card-pricing-description {
+  @apply text-sm text-muted-foreground mt-1;
+}
+
+.cosmic-card-pricing-price {
+  @apply mt-6 mb-6 flex items-baseline text-3xl font-bold;
+}
+
+.cosmic-card-pricing-period {
+  @apply ml-1 text-muted-foreground text-sm font-normal;
+}
+
+.cosmic-card-pricing-features {
+  @apply space-y-3 mt-6 mb-8 flex-1;
+}
+
+.cosmic-card-pricing-feature {
+  @apply flex items-center text-sm;
+}
+
+.cosmic-card-pricing-feature-icon {
+  @apply text-primary mr-2 h-4 w-4 flex-shrink-0;
+}
+
+.cosmic-card-pricing-action {
+  @apply mt-auto pt-4;
+}
+
+/* Testimonial card */
+.cosmic-card-testimonial {
+  @apply cosmic-card p-6;
+}
+
+.cosmic-card-testimonial-content {
+  @apply text-lg italic mb-4;
+}
+
+.cosmic-card-testimonial-author {
+  @apply flex items-center;
+}
+
+.cosmic-card-testimonial-avatar {
+  @apply mr-3 flex-shrink-0;
+}
+
+.cosmic-card-testimonial-name {
+  @apply font-medium;
+}
+
+.cosmic-card-testimonial-role {
+  @apply text-sm text-muted-foreground;
+}
+
+/* Project card */
+.cosmic-card-project {
+  @apply cosmic-card-hover;
+}
+
+.cosmic-card-project-image {
+  @apply w-full aspect-video rounded-t-lg object-cover;
+}
+
+.cosmic-card-project-content {
+  @apply p-6;
+}
+
+.cosmic-card-project-title {
+  @apply text-xl font-semibold mb-2;
+}
+
+.cosmic-card-project-description {
+  @apply text-muted-foreground mb-4;
+}
+
+.cosmic-card-project-tags {
+  @apply flex flex-wrap gap-2;
+}
+
+.cosmic-card-project-tag {
+  @apply px-2 py-1 rounded-full text-xs bg-secondary text-secondary-foreground;
 }

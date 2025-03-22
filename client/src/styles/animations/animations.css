@@ -1,245 +1,251 @@
 /**
  * Animation Styles
  * 
- * This file defines all animations and transition effects used in the application
+ * This file defines animations and transitions used throughout the application
  */
 
-@tailwind utilities;
-
-/* Starfield animation */
-.starfield {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  z-index: 0;
+/* Fade In Animation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-.star {
-  position: absolute;
-  opacity: 0.7;
+.cosmic-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
 }
 
-@keyframes twinkle {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
-}
-
-/* Dramatic Shooting stars with longer trail */
-@keyframes shooting-star {
-  0% { 
-    transform: translate(0, 0) rotate(var(--angle, 0deg)); 
-    opacity: 1;
-    width: 150px;
-  }
-  100% { 
-    transform: translate(-500px, 500px) rotate(var(--angle, 0deg)); 
+/* Fade In Up Animation */
+@keyframes fadeInUp {
+  from { 
     opacity: 0;
-    width: 50px;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.shooting-star {
-  position: absolute;
-  width: 150px;
-  height: 3px;
-  background: linear-gradient(90deg, 
-    rgba(255,255,255,0) 0%, 
-    rgba(147,197,253,0.3) 10%,
-    rgba(255,255,255,0.9) 50%, 
-    rgba(192,132,252,0.3) 90%,
-    rgba(255,255,255,0) 100%);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
-  animation: shooting-star 1.5s linear;
-  will-change: transform, opacity;
-  z-index: 10;
+.cosmic-fade-in-up {
+  animation: fadeInUp 0.5s ease-out;
 }
 
-/* More dramatic nebula pulse animations */
-@keyframes pulse-slow {
-  0%, 100% { transform: scale(1); opacity: 0.35; }
-  50% { transform: scale(1.08); opacity: 0.5; }
-}
-
-@keyframes pulse-slow2 {
-  0%, 100% { transform: scale(1); opacity: 0.3; }
-  50% { transform: scale(1.15); opacity: 0.45; }
-}
-
-@keyframes pulse-slow3 {
-  0%, 100% { transform: scale(1); opacity: 0.25; }
-  50% { transform: scale(1.12); opacity: 0.4; }
-}
-
-/* Cosmic Pulse Animation for AI Assistant */
-@keyframes cosmicPulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+/* Fade In Down Animation */
+@keyframes fadeInDown {
+  from { 
+    opacity: 0;
+    transform: translateY(-20px);
   }
-  70% {
-    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  to { 
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.cosmic-pulse-slow {
-  animation: cosmicPulse 2s infinite;
+.cosmic-fade-in-down {
+  animation: fadeInDown 0.5s ease-out;
 }
 
-/* Animated border effect */
-.cosmic-border-glow {
-  position: relative;
-}
-
-.cosmic-border-glow::after {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border-radius: inherit;
-  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4);
-  background-size: 200% 200%;
-  animation: gradientFlow 5s ease infinite;
-  z-index: -1;
-  opacity: 0.5;
-}
-
-/* Gradient text animation */
-.cosmic-text-gradient {
-  @apply text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-cyan-400;
-  background-size: 200% 200%;
-  animation: gradientFlow 8s ease infinite;
-}
-
-@keyframes gradientFlow {
-  0% { background-position: 0% 50% }
-  50% { background-position: 100% 50% }
-  100% { background-position: 0% 50% }
-}
-
-/* Cosmic background with animated stars */
-.cosmic-background {
-  background-color: var(--background);
-  background-image: 
-    radial-gradient(circle at 20% 35%, rgba(76, 29, 149, 0.4) 0%, rgba(76, 29, 149, 0) 50%),
-    radial-gradient(circle at 75% 44%, rgba(59, 130, 246, 0.4) 0%, rgba(59, 130, 246, 0) 50%),
-    radial-gradient(circle at 50% 80%, rgba(6, 182, 212, 0.3) 0%, rgba(6, 182, 212, 0) 50%);
-  position: relative;
-  overflow: hidden;
-}
-
-.cosmic-background::before {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background: 
-    radial-gradient(2px 2px at 25% 5%, rgba(255, 255, 255, 0.9), transparent),
-    radial-gradient(2px 2px at 50% 25%, rgba(255, 255, 255, 0.8), transparent),
-    radial-gradient(2px 2px at 75% 45%, rgba(255, 255, 255, 0.9), transparent),
-    radial-gradient(3px 3px at 10% 65%, rgba(255, 255, 255, 0.8), transparent),
-    radial-gradient(3px 3px at 35% 85%, rgba(255, 255, 255, 0.9), transparent),
-    radial-gradient(3px 3px at 60% 10%, rgba(255, 255, 255, 0.9), transparent),
-    radial-gradient(3px 3px at 80% 30%, rgba(255, 255, 255, 0.8), transparent),
-    radial-gradient(3px 3px at 90% 75%, rgba(255, 255, 255, 0.9), transparent),
-    radial-gradient(2px 2px at 15% 15%, rgba(147, 197, 253, 0.9), transparent),
-    radial-gradient(2px 2px at 40% 60%, rgba(192, 132, 252, 0.9), transparent),
-    radial-gradient(2px 2px at 68% 86%, rgba(103, 232, 249, 0.9), transparent),
-    radial-gradient(2px 2px at 92% 10%, rgba(147, 197, 253, 0.9), transparent),
-    radial-gradient(2px 2px at 28% 72%, rgba(192, 132, 252, 0.9), transparent),
-    radial-gradient(2px 2px at 55% 38%, rgba(103, 232, 249, 0.9), transparent);
-  background-size: 150% 150%;
-  opacity: 0.5;
-  z-index: 0;
-  pointer-events: none;
-  animation: starTwinkle 10s ease infinite;
-}
-
-@keyframes starTwinkle {
-  0%, 100% { 
-    background-size: 150% 150%;
-    opacity: 0.5; 
+/* Scale In Animation */
+@keyframes scaleIn {
+  from { 
+    opacity: 0;
+    transform: scale(0.95);
   }
-  50% { 
-    background-size: 155% 155%; 
-    opacity: 0.6;
-  }
-}
-
-/* Avatar animation */
-.cosmic-avatar-pulse {
-  animation: avatarPulse 2.5s ease infinite;
-}
-
-@keyframes avatarPulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  to { 
+    opacity: 1;
     transform: scale(1);
   }
-  70% {
-    box-shadow: 0 0 0 15px rgba(59, 130, 246, 0);
+}
+
+.cosmic-scale-in {
+  animation: scaleIn 0.3s ease-out;
+}
+
+/* Pulse Animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
     transform: scale(1.05);
+    opacity: 0.8;
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
     transform: scale(1);
+    opacity: 1;
   }
 }
 
-/* Progress bar animation */
-.cosmic-progress {
-  position: relative;
-  overflow: hidden;
+.cosmic-pulse {
+  animation: pulse 2s infinite;
 }
 
-.cosmic-progress::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.4) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  animation: progressShimmer 2s infinite;
-  transform: translateX(-100%);
+/* Slide In Animation */
+@keyframes slideInRight {
+  from { 
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-@keyframes progressShimmer {
+.cosmic-slide-in-right {
+  animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes slideInLeft {
+  from { 
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.cosmic-slide-in-left {
+  animation: slideInLeft 0.5s ease-out;
+}
+
+/* Spin Animation */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.cosmic-spin {
+  animation: spin 1.5s linear infinite;
+}
+
+/* Slow Spin Animation */
+.cosmic-spin-slow {
+  animation: spin 3s linear infinite;
+}
+
+/* Bounce Animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.cosmic-bounce {
+  animation: bounce 1s ease infinite;
+}
+
+/* Glow Animation */
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+  }
   100% {
-    transform: translateX(100%);
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
   }
 }
 
-/* Glow effect */
 .cosmic-glow {
-  box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
-  transition: box-shadow 0.3s ease;
+  animation: glow 2s ease-in-out infinite;
 }
 
-.cosmic-glow:hover {
-  box-shadow: 0 0 25px rgba(59, 130, 246, 0.7);
+/* Text Gradient Animation */
+@keyframes textGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-/* Particle trail effect */
-.trail-particle {
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  background: var(--primary);
-  border-radius: 50%;
-  box-shadow: 0 0 5px var(--primary);
-  pointer-events: none;
-  opacity: 0.8;
-  z-index: 100;
+.cosmic-text-gradient {
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textGradient 6s ease infinite;
+}
+
+/* Twinkle animation for stars */
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.2);
+  }
+}
+
+/* Gradient Flow Animation */
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Staggered animations for list items */
+.cosmic-stagger-list > * {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.cosmic-stagger-list > *:nth-child(1) { animation-delay: 0.1s; }
+.cosmic-stagger-list > *:nth-child(2) { animation-delay: 0.2s; }
+.cosmic-stagger-list > *:nth-child(3) { animation-delay: 0.3s; }
+.cosmic-stagger-list > *:nth-child(4) { animation-delay: 0.4s; }
+.cosmic-stagger-list > *:nth-child(5) { animation-delay: 0.5s; }
+.cosmic-stagger-list > *:nth-child(6) { animation-delay: 0.6s; }
+.cosmic-stagger-list > *:nth-child(7) { animation-delay: 0.7s; }
+.cosmic-stagger-list > *:nth-child(8) { animation-delay: 0.8s; }
+.cosmic-stagger-list > *:nth-child(9) { animation-delay: 0.9s; }
+.cosmic-stagger-list > *:nth-child(10) { animation-delay: 1.0s; }
+
+/* Transition utilities */
+.cosmic-transition-all {
+  transition: all 0.3s ease;
+}
+
+.cosmic-transition-transform {
+  transition: transform 0.3s ease;
+}
+
+.cosmic-transition-colors {
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.cosmic-transition-opacity {
+  transition: opacity 0.3s ease;
+}
+
+/* Hover animation utilities */
+.cosmic-hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.cosmic-hover-lift:hover {
+  transform: translateY(-3px);
 }

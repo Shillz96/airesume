@@ -1,140 +1,353 @@
 /**
- * Utility Styles
+ * Utility Classes
  * 
- * This file defines general utility classes that can be used across the application
+ * This file defines utility classes that can be applied directly to elements
+ * to enhance functionality and styling.
  */
 
-@tailwind components;
-@tailwind utilities;
+/* Spacing utilities */
+.cosmic-p-0 { padding: 0; }
+.cosmic-p-1 { padding: 0.25rem; }
+.cosmic-p-2 { padding: 0.5rem; }
+.cosmic-p-3 { padding: 0.75rem; }
+.cosmic-p-4 { padding: 1rem; }
+.cosmic-p-5 { padding: 1.25rem; }
+.cosmic-p-6 { padding: 1.5rem; }
+.cosmic-p-8 { padding: 2rem; }
+.cosmic-p-10 { padding: 2.5rem; }
+.cosmic-p-12 { padding: 3rem; }
 
-/* Page titles and headings */
-.cosmic-page-title {
-  @apply text-3xl font-bold cosmic-text-gradient;
-  margin-bottom: var(--space-6);
+.cosmic-m-0 { margin: 0; }
+.cosmic-m-1 { margin: 0.25rem; }
+.cosmic-m-2 { margin: 0.5rem; }
+.cosmic-m-3 { margin: 0.75rem; }
+.cosmic-m-4 { margin: 1rem; }
+.cosmic-m-5 { margin: 1.25rem; }
+.cosmic-m-6 { margin: 1.5rem; }
+.cosmic-m-8 { margin: 2rem; }
+.cosmic-m-10 { margin: 2.5rem; }
+.cosmic-m-12 { margin: 3rem; }
+
+/* Container classes */
+.content-container {
+  @apply container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl;
 }
 
-/* Nebula background effect */
-.cosmic-nebula {
-  background: 
-    radial-gradient(circle at 20% 35%, rgba(76, 29, 149, 0.15) 0%, rgba(76, 29, 149, 0) 50%),
-    radial-gradient(circle at 75% 44%, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0) 50%),
-    radial-gradient(circle at 50% 80%, rgba(6, 182, 212, 0.1) 0%, rgba(6, 182, 212, 0) 50%);
+.content-container-narrow {
+  @apply container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl;
 }
 
-/* Error page styles */
-.cosmic-error-page {
-  @apply flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)] text-white p-4 text-center cosmic-nebula;
+.content-section {
+  @apply py-12 md:py-16 lg:py-20;
+}
+
+/* Layout utilities */
+.cosmic-page {
+  @apply min-h-screen bg-background text-foreground;
+}
+
+.cosmic-flex-center {
+  @apply flex items-center justify-center;
+}
+
+.cosmic-flex-between {
+  @apply flex items-center justify-between;
+}
+
+.cosmic-flex-col-center {
+  @apply flex flex-col items-center justify-center;
+}
+
+/* Card utilities */
+.cosmic-card {
+  @apply bg-card text-card-foreground rounded-lg p-6;
+}
+
+.cosmic-card-glass {
+  @apply bg-black/40 backdrop-blur-md border border-white/10 rounded-lg shadow-lg;
+}
+
+.cosmic-card-gradient {
+  @apply bg-gradient-to-br from-blue-900/40 to-purple-900/40 border border-white/5 rounded-lg shadow-lg;
+}
+
+.cosmic-card-gradient-border {
   position: relative;
+  border-radius: 0.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 1px;
   overflow: hidden;
 }
 
-.cosmic-error-code {
-  @apply text-9xl font-bold mb-6 cosmic-text-gradient;
-  text-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
-}
-
-/* Spacing helpers */
-.mt-space-1 { margin-top: var(--space-1); }
-.mt-space-2 { margin-top: var(--space-2); }
-.mt-space-3 { margin-top: var(--space-3); }
-.mt-space-4 { margin-top: var(--space-4); }
-.mt-space-6 { margin-top: var(--space-6); }
-.mt-space-8 { margin-top: var(--space-8); }
-
-.mb-space-1 { margin-bottom: var(--space-1); }
-.mb-space-2 { margin-bottom: var(--space-2); }
-.mb-space-3 { margin-bottom: var(--space-3); }
-.mb-space-4 { margin-bottom: var(--space-4); }
-.mb-space-6 { margin-bottom: var(--space-6); }
-.mb-space-8 { margin-bottom: var(--space-8); }
-
-.p-space-1 { padding: var(--space-1); }
-.p-space-2 { padding: var(--space-2); }
-.p-space-3 { padding: var(--space-3); }
-.p-space-4 { padding: var(--space-4); }
-.p-space-6 { padding: var(--space-6); }
-.p-space-8 { padding: var(--space-8); }
-
-/* Responsive padding helpers */
-.p-responsive {
-  padding: var(--space-4);
-}
-
-@media (min-width: 640px) {
-  .p-responsive {
-    padding: var(--space-6);
-  }
-}
-
-@media (min-width: 1024px) {
-  .p-responsive {
-    padding: var(--space-8);
-  }
-}
-
-/* Display helpers */
-.hidden-mobile {
-  @apply hidden sm:block;
-}
-
-.visible-mobile {
-  @apply block sm:hidden;
-}
-
-/* Screen reader only */
-.sr-only {
+.cosmic-card-gradient-border::before {
+  content: "";
   position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4);
+  background-size: 400% 400%;
+  animation: gradientFlow 6s ease infinite;
+  z-index: -1;
+  border-radius: 0.6rem;
 }
 
-/* Focus outline for accessibility */
-.focus-outline {
-  @apply focus:outline-none focus:ring-2 focus:ring-blue-500/70;
+.cosmic-card-gradient-border-content {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 0.4rem;
+  padding: 1.25rem;
+  position: relative;
+  z-index: 1;
 }
 
-/* Aspect ratios */
-.aspect-square {
-  aspect-ratio: 1 / 1;
+/* Text utilities */
+.cosmic-text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500;
 }
 
-.aspect-video {
-  aspect-ratio: 16 / 9;
+.cosmic-text-error {
+  @apply text-red-500;
 }
 
-.aspect-portrait {
-  aspect-ratio: 3 / 4;
+.cosmic-text-success {
+  @apply text-green-500;
 }
 
-/* Text truncation */
-.text-truncate {
-  @apply overflow-hidden whitespace-nowrap text-ellipsis;
+.cosmic-text-warning {
+  @apply text-yellow-500;
 }
 
-/* Line clamping */
-.line-clamp-1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;  
-  overflow: hidden;
+.cosmic-text-info {
+  @apply text-blue-500;
 }
 
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;  
-  overflow: hidden;
+.cosmic-text-ellipsis {
+  @apply truncate;
 }
 
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;  
-  overflow: hidden;
+/* Background utilities */
+.cosmic-bg-gradient {
+  @apply bg-gradient-to-r from-blue-900 via-purple-900 to-blue-900;
+}
+
+.cosmic-bg-dark {
+  @apply bg-gray-900;
+}
+
+.cosmic-bg-card {
+  @apply bg-card;
+}
+
+.cosmic-bg-transparent {
+  @apply bg-transparent;
+}
+
+/* Shadow utilities */
+.cosmic-shadow-sm {
+  @apply shadow-sm;
+}
+
+.cosmic-shadow {
+  @apply shadow;
+}
+
+.cosmic-shadow-md {
+  @apply shadow-md;
+}
+
+.cosmic-shadow-lg {
+  @apply shadow-lg;
+}
+
+.cosmic-shadow-xl {
+  @apply shadow-xl;
+}
+
+.cosmic-shadow-glow {
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+}
+
+.cosmic-shadow-glow-sm {
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+.cosmic-shadow-glow-lg {
+  box-shadow: 0 0 25px rgba(59, 130, 246, 0.7);
+}
+
+/* Border utilities */
+.cosmic-border {
+  @apply border border-border;
+}
+
+.cosmic-border-t {
+  @apply border-t border-border;
+}
+
+.cosmic-border-b {
+  @apply border-b border-border;
+}
+
+.cosmic-border-l {
+  @apply border-l border-border;
+}
+
+.cosmic-border-r {
+  @apply border-r border-border;
+}
+
+.cosmic-rounded-sm {
+  @apply rounded-sm;
+}
+
+.cosmic-rounded {
+  @apply rounded;
+}
+
+.cosmic-rounded-md {
+  @apply rounded-md;
+}
+
+.cosmic-rounded-lg {
+  @apply rounded-lg;
+}
+
+.cosmic-rounded-xl {
+  @apply rounded-xl;
+}
+
+.cosmic-rounded-full {
+  @apply rounded-full;
+}
+
+/* Interaction utilities */
+.cosmic-clickable {
+  @apply cursor-pointer transition-all duration-200 hover:opacity-80;
+}
+
+.cosmic-disabled {
+  @apply opacity-50 cursor-not-allowed pointer-events-none;
+}
+
+.cosmic-focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}
+
+/* Display utilities */
+.cosmic-hidden {
+  @apply hidden;
+}
+
+.cosmic-invisible {
+  @apply invisible;
+}
+
+.cosmic-block {
+  @apply block;
+}
+
+.cosmic-inline {
+  @apply inline;
+}
+
+.cosmic-inline-block {
+  @apply inline-block;
+}
+
+.cosmic-flex {
+  @apply flex;
+}
+
+.cosmic-inline-flex {
+  @apply inline-flex;
+}
+
+.cosmic-grid {
+  @apply grid;
+}
+
+/* Position utilities */
+.cosmic-relative {
+  @apply relative;
+}
+
+.cosmic-absolute {
+  @apply absolute;
+}
+
+.cosmic-fixed {
+  @apply fixed;
+}
+
+.cosmic-sticky {
+  @apply sticky;
+}
+
+/* Z-index utilities */
+.cosmic-z-0 {
+  @apply z-0;
+}
+
+.cosmic-z-10 {
+  @apply z-10;
+}
+
+.cosmic-z-20 {
+  @apply z-20;
+}
+
+.cosmic-z-30 {
+  @apply z-30;
+}
+
+.cosmic-z-40 {
+  @apply z-40;
+}
+
+.cosmic-z-50 {
+  @apply z-50;
+}
+
+/* Overflow utilities */
+.cosmic-overflow-hidden {
+  @apply overflow-hidden;
+}
+
+.cosmic-overflow-auto {
+  @apply overflow-auto;
+}
+
+.cosmic-overflow-scroll {
+  @apply overflow-scroll;
+}
+
+.cosmic-overflow-x-auto {
+  @apply overflow-x-auto;
+}
+
+.cosmic-overflow-y-auto {
+  @apply overflow-y-auto;
+}
+
+/* Opacity utilities */
+.cosmic-opacity-0 {
+  @apply opacity-0;
+}
+
+.cosmic-opacity-25 {
+  @apply opacity-25;
+}
+
+.cosmic-opacity-50 {
+  @apply opacity-50;
+}
+
+.cosmic-opacity-75 {
+  @apply opacity-75;
+}
+
+.cosmic-opacity-100 {
+  @apply opacity-100;
 }

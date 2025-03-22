@@ -159,10 +159,10 @@ export function PersonalInfoSection({
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <ResumePanel>
         <SectionHeader title="Contact Information" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-4">
           <div>
             <label className="text-sm text-gray-400 block mb-1">
               First Name
@@ -211,24 +211,28 @@ export function PersonalInfoSection({
 
       <ResumePanel>
         <SectionHeader title="Professional Headline" />
-        <Input
-          name="headline"
-          value={info.headline}
-          onChange={handleChange}
-          className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
-          placeholder="e.g. Senior Software Engineer | React & Node.js Expert"
-        />
+        <div className="space-y-4">
+          <Input
+            name="headline"
+            value={info.headline}
+            onChange={handleChange}
+            className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
+            placeholder="e.g. Senior Software Engineer | React & Node.js Expert"
+          />
+        </div>
       </ResumePanel>
 
       <ResumePanel>
         <SectionHeader title="Professional Summary" />
-        <RichTextEditor
-          value={info.summary}
-          onChange={handleSummaryChange}
-          className="bg-[#0c101b] border-[#252a47] text-white min-h-20 p-3 focus:border-primary/50 focus:ring-primary/25"
-          placeholder="Write a professional summary that highlights your key strengths and experience..."
-          rows={6}
-        />
+        <div className="space-y-4">
+          <RichTextEditor
+            value={info.summary}
+            onChange={handleSummaryChange}
+            className="bg-[#0c101b] border-[#252a47] text-white min-h-20 p-3 focus:border-primary/50 focus:ring-primary/25"
+            placeholder="Write a professional summary that highlights your key strengths and experience..."
+            rows={6}
+          />
+        </div>
       </ResumePanel>
     </div>
   );
@@ -722,8 +726,8 @@ export function SkillsSection({
   };
 
   return (
-    <div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {skills.map((item) => (
           <ResumePanel
             key={item.id}

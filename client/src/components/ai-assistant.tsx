@@ -732,28 +732,10 @@ export default function AIAssistant({
  ) : (
  <div
  ref={dialogRef}
- className="w-80 bg-[rgba(10,12,24,0.95)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-lg shadow-2xl shadow-blue-700/10 overflow-hidden"
+ className="w-80 bg-[#0c101b] border border-[#252a47] rounded-lg shadow-xl overflow-hidden"
  >
- {/* Starfield Background */}
- <div className="starfield absolute inset-0 pointer-events-none">
- {[...Array(20)].map((_, i) => (
- <div
- key={i}
- className="star absolute bg-white rounded-full animate-twinkle"
- style={{
- width: Math.random() * 2 + 1 + "px",
- height: Math.random() * 2 + 1 + "px",
- top: Math.random() * 100 + "%",
- left: Math.random() * 100 + "%",
- animationDuration: `${Math.random() * 3 + 2}s`,
- animationDelay: `${Math.random() * 2}s`,
- }}
- />
- ))}
- </div>
-
  {/* Chat header */}
- <div className="p-3 border-b border-[rgba(255,255,255,0.1)] flex justify-between items-center bg-gradient-to-r from-blue-900/50 to-purple-900/50">
+ <div className="p-3 border-b border-[#252a47] flex justify-between items-center bg-[#1a203c]">
  <div className="flex items-center">
  <Cpu className="h-5 w-5 text-blue-400 mr-2" />
  <h3 className="text-white font-medium">

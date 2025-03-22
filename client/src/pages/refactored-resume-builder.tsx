@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Loader2, X, ChevronDown, ChevronUp, Save, Download, PenSquare, Star, Plus, Trash, FilePlus } from "lucide-react";
+import { Loader2, X, ChevronDown, ChevronUp, Save, Download, PenSquare, Star, Plus, Trash, FilePlus, Bot, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Resume, useResumeData } from "@/hooks/use-resume-data";
@@ -22,6 +22,9 @@ import ResumePreviewComponent from "@/components/resume-builder/ResumePreviewCom
 export default function ResumeBuilder() {
   // States for resume data and UI controls
   const [activeSection, setActiveSection] = useState<string>("contact");
+  const [aiSuggestionType, setAiSuggestionType] = useState<"short" | "medium" | "long">("medium");
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const { toast } = useToast();
   const { 
     resume, 
@@ -46,6 +49,16 @@ export default function ResumeBuilder() {
   const updateResume = (newResumeData: Resume) => {
     setResume(newResumeData);
   };
+  
+  // Generate new suggestions when active section changes
+  useEffect(() => {
+    if (activeSection !== 'preview') {
+      generateSuggestions(aiSuggestionType);
+    } else {
+      // Clear suggestions when switching to preview
+      setSuggestions([]);
+    }
+  }, [activeSection]);
 
   // Function to handle download
   const handleDownload = () => {
@@ -70,6 +83,234 @@ export default function ResumeBuilder() {
         variant: "destructive"
       });
     }
+  };
+  
+  // Function to generate AI suggestions based on the active section and suggestion type
+  const generateSuggestions = (type: "short" | "medium" | "long") => {
+    setAiSuggestionType(type);
+    setIsLoadingSuggestions(true);
+    
+    // In a real implementation, this would call an API
+    setTimeout(() => {
+      let newSuggestions: string[] = [];
+      
+      // Generate different suggestions based on the active section
+      if (activeSection === "summary") {
+        if (type === "short") {
+          newSuggestions = [
+            "Dedicated software engineer with 5+ years experience in web development, specializing in React and Node.js.",
+            "Results-driven full-stack developer with expertise in building scalable applications and optimizing user experiences.",
+            "Tech professional with a proven track record of delivering efficient solutions in agile environments."
+          ];
+        } else if (type === "medium") {
+          newSuggestions = [
+            "Seasoned software engineer with 5+ years of experience building responsive web applications. Expertise in JavaScript frameworks (React, Vue) and backend technologies (Node.js, Express). Delivered solutions that improved customer engagement by 40%.",
+            "Full-stack developer with a passion for clean code and user-centric design. Specialized in modern JavaScript frameworks and cloud infrastructure. Proven track record of reducing application load times by 60% and increasing conversion rates.",
+            "Innovative web developer with extensive experience in frontend and backend technologies. Skilled in React, Node.js, and cloud platforms. Successfully led multiple teams to deliver enterprise-grade solutions on schedule and under budget."
+          ];
+        } else {
+          newSuggestions = [
+            "Senior software engineer with 5+ years of experience architecting and implementing scalable web applications. Proficient in the entire development lifecycle from concept to deployment. Core expertise includes React, Node.js, GraphQL, and AWS. Successfully reduced API response times by 65% and implemented CI/CD pipelines that decreased deployment times from days to minutes. Known for mentoring junior developers and promoting best practices across development teams.",
+            "Results-driven full-stack developer with a proven track record of converting business requirements into elegant technical solutions. Specialized in JavaScript ecosystems including React, Angular, and Node.js with experience in cloud platforms (AWS, Azure). Led development of an e-commerce platform that processes $2M in annual transactions. Passionate about performance optimization, having reduced application load times by 70% through code refactoring and infrastructure improvements.",
+            "Dedicated software professional with extensive experience developing enterprise-grade applications. Proficient in modern JavaScript frameworks (React, Vue) and server-side technologies (Node.js, Express, PostgreSQL). Implemented microservice architectures that improved system reliability by 99.9%. Strong collaborator who excels in agile environments and consistently delivers high-quality code that exceeds client expectations."
+          ];
+        }
+      } else if (activeSection === "experience") {
+        if (type === "short") {
+          newSuggestions = [
+            "Led development of a customer-facing web application that increased user engagement by 45%.",
+            "Implemented responsive design principles that improved mobile conversion rates by 60%.",
+            "Refactored legacy codebase resulting in 30% performance improvement and 25% reduction in bugs."
+          ];
+        } else if (type === "medium") {
+          newSuggestions = [
+            "Spearheaded the development of a React-based customer portal that improved user engagement by 45% and reduced support tickets by 30%. Implemented state management using Redux and integrated with RESTful APIs.",
+            "Designed and built a responsive e-commerce platform using Vue.js and Node.js that increased mobile conversion rates by 60%. Integrated payment gateways and implemented cart optimization algorithms.",
+            "Led the refactoring of a critical legacy application, resulting in 30% improved performance and 25% fewer bugs. Implemented automated testing that increased code coverage from 20% to 85%."
+          ];
+        } else {
+          newSuggestions = [
+            "Led a team of 5 developers to redesign the company's flagship customer portal using React and GraphQL, resulting in a 45% increase in user engagement and 30% reduction in support tickets. Implemented sophisticated state management with Redux, integrated with 12 internal microservices, and established comprehensive testing protocols that caught 95% of bugs before production.",
+            "Architected and developed a mobile-first e-commerce platform serving 100K+ monthly users using Vue.js frontend and Node.js microservices backend. Implemented advanced caching strategies and responsive design principles that improved mobile conversion rates by 60% and reduced page load times from 4.2s to 1.8s. Integrated with multiple payment gateways and shipping APIs to create a seamless checkout experience.",
+            "Took ownership of a critical legacy Java application with technical debt and transformed it into a modern, maintainable system. Refactored over 200K lines of code while maintaining backward compatibility, resulting in 30% performance improvement and 25% reduction in reported bugs. Implemented CI/CD pipelines that reduced deployment time from 2 days to 20 minutes and increased test coverage from 20% to 85%."
+          ];
+        }
+      } else if (activeSection === "skills") {
+        if (type === "short") {
+          newSuggestions = [
+            "JavaScript (React, Node.js)",
+            "SQL & NoSQL Databases",
+            "Cloud Services (AWS, Azure)"
+          ];
+        } else if (type === "medium") {
+          newSuggestions = [
+            "Frontend: JavaScript, TypeScript, React, Vue.js, HTML5, CSS3, Responsive Design",
+            "Backend: Node.js, Express, RESTful APIs, GraphQL, Java, Python",
+            "Cloud & DevOps: AWS (S3, Lambda, EC2), Azure, Docker, Kubernetes, CI/CD pipelines"
+          ];
+        } else {
+          newSuggestions = [
+            "Programming Languages: JavaScript, TypeScript, Python, Java, SQL\nFrontend: React, Redux, Vue.js, Angular, HTML5, CSS3/SCSS, Webpack, Jest, Cypress\nState Management: Redux, MobX, Context API\nUI/UX: Responsive Design, Material-UI, Bootstrap, Figma",
+            "Backend: Node.js, Express, NestJS, Django, Spring Boot\nAPIs: REST, GraphQL, WebSockets\nDatabases: PostgreSQL, MongoDB, Redis, Elasticsearch\nORM/ODM: Sequelize, TypeORM, Mongoose\nAuthentication: OAuth, JWT, SAML",
+            "Cloud Services: AWS (S3, EC2, Lambda, CloudFront), GCP, Azure\nDevOps: Docker, Kubernetes, Terraform, CI/CD (Jenkins, GitHub Actions)\nMonitoring: Prometheus, Grafana, ELK Stack\nSecurity: OWASP, Penetration Testing, SSL/TLS\nAgile Methodologies: Scrum, Kanban, JIRA"
+          ];
+        }
+      } else if (activeSection === "education") {
+        if (type === "short") {
+          newSuggestions = [
+            "Bachelor of Science in Computer Science, University of Technology, 2018",
+            "Associate's Degree in Web Development, Community College, 2016",
+            "Full-Stack Web Development Bootcamp, Tech Academy, 2020"
+          ];
+        } else if (type === "medium") {
+          newSuggestions = [
+            "Bachelor of Science in Computer Science\nUniversity of Technology\n2014 - 2018\nGPA: 3.8/4.0",
+            "Associate's Degree in Web Development\nCommunity College\n2014 - 2016\nRelevant Coursework: Web Design, Database Management",
+            "Full-Stack Web Development Bootcamp\nTech Academy\nJanuary - June 2020\nCompleted 800+ hours of intensive coding training"
+          ];
+        } else {
+          newSuggestions = [
+            "Bachelor of Science in Computer Science\nUniversity of Technology\n2014 - 2018\nGPA: 3.8/4.0\nRelevant Coursework: Data Structures & Algorithms, Database Systems, Web Development, Software Engineering\nAchievements: Dean's List (all semesters), Senior Project Award for Innovative Web Application",
+            "Associate's Degree in Web Development\nCommunity College\n2014 - 2016\nGPA: 3.9/4.0\nRelevant Coursework: Web Design, Database Management, JavaScript Programming, User Experience Design\nAchievements: President of Web Development Club, Created college's student portal",
+            "Full-Stack Web Development Bootcamp\nTech Academy\nJanuary - June 2020\nCompleted 800+ hours of intensive coding training\nTechnologies learned: JavaScript, React, Node.js, Express, MongoDB\nCapstone Project: Developed a full-stack e-commerce platform with payment processing and inventory management"
+          ];
+        }
+      } else if (activeSection === "projects") {
+        if (type === "short") {
+          newSuggestions = [
+            "E-commerce Platform: Developed a full-stack online store with payment processing using React and Node.js.",
+            "Task Management App: Built a productivity tool with drag-and-drop interface using Vue.js and Firebase.",
+            "Portfolio Website: Designed and implemented a responsive personal website showcasing projects and skills."
+          ];
+        } else if (type === "medium") {
+          newSuggestions = [
+            "E-commerce Platform\nDeveloped a full-stack online store using React, Node.js, and MongoDB. Implemented secure payment processing with Stripe, product search, and user authentication.\nTechnologies: React, Redux, Node.js, Express, MongoDB, Stripe API",
+            "Task Management Application\nBuilt a productivity tool with drag-and-drop interface, real-time updates, and team collaboration features.\nTechnologies: Vue.js, Vuex, Firebase, CSS Grid, Moment.js",
+            "Portfolio Website\nDesigned and implemented a responsive personal website showcasing projects and skills. Implemented animations and contact form with email integration.\nTechnologies: HTML5, CSS3/SCSS, JavaScript, GreenSock Animation"
+          ];
+        } else {
+          newSuggestions = [
+            "E-commerce Platform\nDeveloped a comprehensive full-stack online store with advanced features for both shoppers and administrators. Implemented secure payment processing with Stripe, product search with filters, user authentication, wishlist functionality, and an admin dashboard for inventory management.\n\nTechnologies: React, Redux, Node.js, Express, MongoDB, Stripe API, JWT authentication, Docker\n\nResults: Processed 500+ test transactions with 0% error rate. Achieved 98% performance score on Google Lighthouse.",
+            "Task Management Application\nArchitected and built a productivity tool aimed at remote teams with drag-and-drop interface, real-time updates, and comprehensive team collaboration features. Implemented user roles, task dependencies, time tracking, file attachments, and analytics dashboard.\n\nTechnologies: Vue.js, Vuex, Firebase, CSS Grid, Moment.js, Chart.js, Socket.io, Cloud Storage\n\nResults: Reduced team's meeting time by 30% during beta testing. Application currently used by 15+ teams.",
+            "Portfolio Website\nDesigned and implemented a responsive personal website showcasing projects and skills with a focus on accessibility and performance. Created advanced animations, interactive project showcase, theme switching, and contact form with email integration and spam protection.\n\nTechnologies: HTML5, CSS3/SCSS, JavaScript, GreenSock Animation, Netlify Functions, reCAPTCHA\n\nResults: Achieved 100% score on accessibility audit. Loads in under 2 seconds on 3G connections."
+          ];
+        }
+      } else if (activeSection === "contact") {
+        // For contact info, we'll provide professional headline suggestions
+        if (type === "short") {
+          newSuggestions = [
+            "Senior Software Engineer",
+            "Full-Stack Web Developer",
+            "Frontend Development Specialist"
+          ];
+        } else if (type === "medium") {
+          newSuggestions = [
+            "Senior Software Engineer | React Specialist",
+            "Full-Stack Web Developer | JavaScript Expert",
+            "Frontend Development Specialist | UI/UX Enthusiast"
+          ];
+        } else {
+          newSuggestions = [
+            "Senior Software Engineer | React & Node.js Expert | Cloud Solutions Architect",
+            "Full-Stack Web Developer | JavaScript Ecosystem Specialist | Agile Team Lead",
+            "Frontend Development Specialist | UI/UX Enthusiast | Performance Optimization Guru"
+          ];
+        }
+      }
+      
+      setSuggestions(newSuggestions);
+      setIsLoadingSuggestions(false);
+    }, 600);
+  };
+  
+  // Function to apply a suggestion to the appropriate field based on the active section
+  const applySuggestion = (suggestion: string) => {
+    if (activeSection === "summary") {
+      updateResume({
+        ...resume,
+        personalInfo: {
+          ...resume.personalInfo,
+          summary: suggestion
+        }
+      });
+    } else if (activeSection === "experience") {
+      // For simplicity, we'll just add this as a new experience item
+      // In a real implementation, you'd want to handle this differently
+      const newExp = {
+        id: `exp-${Date.now()}`,
+        title: "Position Title",
+        company: "Company Name",
+        startDate: "Jan 2020",
+        endDate: "Present",
+        description: suggestion
+      };
+      updateResume({
+        ...resume,
+        experience: [...resume.experience, newExp]
+      });
+    } else if (activeSection === "skills") {
+      // Add as a skill or skills
+      const skillParts = suggestion.split('\n');
+      const newSkills = skillParts.map((skill, index) => ({
+        id: `skill-${Date.now()}-${index}`,
+        name: skill,
+        proficiency: 80
+      }));
+      updateResume({
+        ...resume,
+        skills: [...resume.skills, ...newSkills]
+      });
+    } else if (activeSection === "education") {
+      // Parse the education suggestion
+      const lines = suggestion.split('\n');
+      const degree = lines[0] || "Degree";
+      const institution = lines[1] || "Institution";
+      const years = lines[2] || "2018 - 2022";
+      
+      const newEdu = {
+        id: `edu-${Date.now()}`,
+        degree,
+        institution,
+        startDate: years.split(' - ')[0] || "2018",
+        endDate: years.split(' - ')[1] || "2022",
+        description: lines.slice(3).join('\n')
+      };
+      
+      updateResume({
+        ...resume,
+        education: [...resume.education, newEdu]
+      });
+    } else if (activeSection === "projects") {
+      // Parse the project suggestion
+      const lines = suggestion.split('\n');
+      const title = lines[0] || "Project Title";
+      
+      const newProject = {
+        id: `proj-${Date.now()}`,
+        title,
+        description: lines.slice(1).join('\n'),
+        technologies: ["React", "JavaScript", "CSS"],
+        link: ""
+      };
+      
+      updateResume({
+        ...resume,
+        projects: [...resume.projects, newProject]
+      });
+    } else if (activeSection === "contact") {
+      updateResume({
+        ...resume,
+        personalInfo: {
+          ...resume.personalInfo,
+          headline: suggestion
+        }
+      });
+    }
+    
+    toast({
+      title: "Suggestion applied",
+      description: "The AI suggestion has been added to your resume."
+    });
   };
 
   return (
@@ -313,16 +554,97 @@ export default function ResumeBuilder() {
             </Tabs>
           </div>
 
-          {/* Right Sidebar - Only visible on large screens */}
-          <div className="hidden lg:block lg:col-span-1">
+          {/* Right Sidebar - AI Assistant - Only visible on large screens and only for non-preview tabs */}
+          <div className={`hidden lg:block lg:col-span-1 ${activeSection === 'preview' ? 'invisible' : ''}`}>
             <div className="sticky top-4">
-              <h3 className="text-lg font-medium mb-4">Quick Preview</h3>
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                <ResumePreviewComponent
-                  resume={resume}
-                  onTemplateChange={(template) => updateResume({...resume, template})}
-                  onDownload={handleDownload}
-                />
+              <div className="bg-[#161f36] rounded-md border border-[#2a325a] p-5 shadow-md">
+                <div className="flex items-center gap-2 mb-4">
+                  <Bot className="h-5 w-5 text-blue-400" />
+                  <h3 className="text-lg font-medium">AI Assistant</h3>
+                </div>
+                
+                {/* Length selector buttons */}
+                <div className="flex gap-2 mb-4">
+                  <Button 
+                    size="sm" 
+                    variant={aiSuggestionType === 'short' ? 'default' : 'outline'}
+                    onClick={() => generateSuggestions('short')}
+                    className={aiSuggestionType === 'short' 
+                      ? 'bg-gradient-to-r from-blue-600 to-purple-600' 
+                      : 'border-white/10 text-gray-200 hover:bg-white/10'}
+                  >
+                    Short
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant={aiSuggestionType === 'medium' ? 'default' : 'outline'}
+                    onClick={() => generateSuggestions('medium')}
+                    className={aiSuggestionType === 'medium' 
+                      ? 'bg-gradient-to-r from-blue-600 to-purple-600' 
+                      : 'border-white/10 text-gray-200 hover:bg-white/10'}
+                  >
+                    Medium
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant={aiSuggestionType === 'long' ? 'default' : 'outline'}
+                    onClick={() => generateSuggestions('long')}
+                    className={aiSuggestionType === 'long' 
+                      ? 'bg-gradient-to-r from-blue-600 to-purple-600' 
+                      : 'border-white/10 text-gray-200 hover:bg-white/10'}
+                  >
+                    Long
+                  </Button>
+                  <Button 
+                    size="sm"
+                    variant="outline"
+                    onClick={() => generateSuggestions(aiSuggestionType)}
+                    className="border-white/10 text-gray-200 hover:bg-white/10 ml-auto"
+                    title="Generate new suggestions"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                {/* Descriptive text based on active section */}
+                <p className="text-sm text-gray-300 mb-4">
+                  {activeSection === 'contact' && 'Choose a professional headline that captures your expertise and career focus.'}
+                  {activeSection === 'summary' && 'Select a professional summary that highlights your expertise and achievements.'}
+                  {activeSection === 'experience' && 'Add impressive work experience bullet points to showcase your impact and skills.'}
+                  {activeSection === 'education' && 'Choose education entries that present your academic background effectively.'}
+                  {activeSection === 'skills' && 'Add relevant skills that match your experience and target jobs.'}
+                  {activeSection === 'projects' && 'Include projects that demonstrate your capabilities and technical skills.'}
+                </p>
+                
+                {/* Suggestions area */}
+                <div className="space-y-3">
+                  {isLoadingSuggestions ? (
+                    <div className="flex justify-center items-center py-8">
+                      <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+                    </div>
+                  ) : suggestions.length > 0 ? (
+                    suggestions.map((suggestion, index) => (
+                      <div 
+                        key={index}
+                        className="p-3 rounded bg-[#1a2442] border border-[#2a325a] hover:border-blue-500/50 transition-all cursor-pointer"
+                        onClick={() => applySuggestion(suggestion)}
+                      >
+                        <p className="text-sm whitespace-pre-line">{suggestion}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-4 text-center text-gray-400">
+                      <p>Click one of the buttons above to generate suggestions for your {activeSection === 'contact' ? 'headline' : activeSection}.</p>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Hint at bottom */}
+                {suggestions.length > 0 && (
+                  <p className="text-xs text-gray-400 mt-4 text-center">
+                    Click on a suggestion to apply it to your resume
+                  </p>
+                )}
               </div>
             </div>
           </div>

@@ -2972,17 +2972,18 @@ export default function ResumeBuilder() {
 
                   {/* AI Tips Section */}
                   <div className="md:col-span-1">
-                    <div className="cosmic-ai-card">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+                    <div className="cosmic-ai-card min-h-[300px]">
                       <div className="relative z-10">
-                        <div className="flex items-center mb-4">
-                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
-                          <h3 className="font-medium text-white">
+                        <div className="flex items-center gap-2 mb-5">
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center">
+                            <Cpu className="h-4 w-4 text-white" />
+                          </div>
+                          <h3 className="font-medium text-white text-lg">
                             AI Resume Assistant
                           </h3>
                         </div>
 
-                        <div className="w-full">
+                        <div className="w-full space-y-4">
                           <ResumeTips
                             resumeId={resumeId}
                             onApplySuggestion={(suggestion) => {

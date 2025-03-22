@@ -1,20 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { getThemeVar, getCurrentVariant, ThemeVariant } from "@/lib/theme-utils";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
 type CosmicButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
-type CosmicButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 export interface CosmicButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: CosmicButtonVariant;
-  size?: CosmicButtonSize;
   isLoading?: boolean;
   loadingText?: string;
   iconLeft?: React.ReactNode;
   iconRight?: React.ReactNode;
-  fullWidth?: boolean;
-  withGlow?: boolean;
 }
 
 /**
@@ -24,51 +19,23 @@ export interface CosmicButtonProps extends ButtonHTMLAttributes<HTMLButtonElemen
 export const CosmicButton = forwardRef<HTMLButtonElement, CosmicButtonProps>(
   ({ 
     variant = 'primary',
-    size = 'md',
     isLoading = false,
     loadingText,
     iconLeft,
     iconRight,
-    fullWidth = false,
-    withGlow = false,
     className,
     children,
     disabled,
     ...props
   }, ref) => {
-    // Get current theme variant
-    const themeVariant = getCurrentVariant();
-    
-    // Determine button styles based on variant and theme
-    const variantClasses = {
+    const variantStyles = {
       primary: 'cosmic-button-primary',
       secondary: 'cosmic-button-secondary',
       outline: 'cosmic-button-outline',
       ghost: 'cosmic-button-ghost',
       destructive: 'cosmic-button-destructive',
     };
-    
-    // Size classes
-    const sizeClasses = {
-      xs: 'cosmic-button-xs',
-      sm: 'cosmic-button-sm',
-      md: 'cosmic-button-md',
-      lg: 'cosmic-button-lg',
-      xl: 'cosmic-button-xl',
-    };
 
-    // Icon-only button (square)
-    const isIconOnly = iconLeft && !children && !iconRight;
-    
-    // Full width class
-    const fullWidthClass = fullWidth ? 'w-full' : '';
-    
-    // Glow effect class
-    const glowClass = withGlow ? 'cosmic-glow' : '';
-    
-    // Loading state class
-    const loadingClass = isLoading ? 'cosmic-button-loading' : '';
-    
     // Map our custom variants to shadcn/ui Button variants for accessibility and behavior
     const shadcnVariant = variant === 'primary' ? 'default' 
       : variant === 'secondary' ? 'secondary'
@@ -81,16 +48,7 @@ export const CosmicButton = forwardRef<HTMLButtonElement, CosmicButtonProps>(
       <Button
         ref={ref}
         variant={shadcnVariant}
-        className={cn(
-          variantClasses[variant],
-          sizeClasses[size],
-          isIconOnly && 'cosmic-button-icon-only',
-          fullWidthClass,
-          glowClass,
-          loadingClass,
-          "transition-all duration-300", // Use fixed duration instead of CSS variable
-          className
-        )}
+        className={cn(variantStyles[variant], className)}
         disabled={isLoading || disabled}
         {...props}
       >

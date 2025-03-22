@@ -361,7 +361,7 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
   };
 
   return (
-    <div className="cosmic-card bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)] text-white p-4 rounded-lg shadow-lg relative">
+    <div className="bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)] text-white p-4 rounded-lg shadow-lg relative">
       {/* Starfield Background */}
       <div className="starfield absolute inset-0 pointer-events-none overflow-hidden rounded-lg">
         {[...Array(50)].map((_, i) => (
@@ -458,7 +458,7 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
                   )}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="cosmic-card bg-[rgba(10,12,24,0.95)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] text-white">
+              <DialogContent className="bg-[rgba(10,12,24,0.95)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] text-white">
                 <DialogHeader>
                   <DialogTitle className="cosmic-text-gradient">
                     Tailored Resume for {job.title}
@@ -528,7 +528,7 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
                         <h4 className="text-sm font-medium text-purple-300 mb-1">
                           Match Analysis
                         </h4>
-                        <div className="cosmic-card bg-gray-800/50 p-3 rounded-md border border-gray-700 text-sm text-gray-300">
+                        <div className="bg-gray-800/50 p-3 rounded-md border border-gray-700 text-sm text-gray-300">
                           {tailoredResume.matchAnalysis}
                         </div>
                       </div>

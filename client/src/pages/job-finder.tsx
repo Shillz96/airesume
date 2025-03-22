@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/navbar";
 import JobCard, { Job } from "@/components/job-card";
 import JobFilter, { JobFilterValues } from "@/components/job-filter";
-
+import CosmicBackground from "@/components/cosmic-background";
 import AIAssistant from "@/components/ai-assistant";
 import { AlertTriangle, Cpu, Star, Share2, Heart, Briefcase, Clock, Building, Sparkles, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -97,6 +97,7 @@ export default function JobFinder() {
   
   return (
     <>
+      <CosmicBackground />
       <Navbar />
       <div className="container pt-12 pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
         <div className="flex items-center justify-between mb-6">
@@ -327,7 +328,7 @@ export default function JobFinder() {
 
       {/* AI Assistant Chat Box */}
       {isDialogOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-96 max-w-full shadow-xl rounded-lg overflow-hidden transition-all duration-300 ease-in-out cosmic-card">
+        <div className="fixed bottom-24 right-6 z-50 w-96 max-w-full shadow-xl rounded-lg overflow-hidden transition-all duration-300 ease-in-out">
           <div className="bg-gradient-to-r from-blue-900 to-purple-900 p-3 flex justify-between items-center border-b border-blue-500/30">
             <div className="flex items-center">
               <Cpu className="h-5 w-5 text-blue-300 mr-2" />
@@ -342,7 +343,7 @@ export default function JobFinder() {
               <X className="h-4 w-4 text-white" />
             </Button>
           </div>
-          <div className="cosmic-card-inner p-4 h-96 overflow-y-auto border-x border-blue-500/30 border-b">
+          <div className="bg-black/90 border-x border-blue-500/30 border-b p-4 h-96 overflow-y-auto">
             <AIAssistant 
               activeTab="jobs"
             />

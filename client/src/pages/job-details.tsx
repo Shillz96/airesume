@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useGuestMode } from "@/hooks/use-guest-mode";
 import { useAuth } from "@/hooks/use-auth";
-
+import CosmicBackground from "@/components/cosmic-background";
 
 export default function JobDetails() {
   const [, setLocation] = useLocation();
@@ -68,6 +68,7 @@ export default function JobDetails() {
   if (isLoading) {
     return (
       <>
+        <CosmicBackground />
         <Navbar />
         <div className="container pt-24 pb-10 px-4 md:px-6 max-w-4xl mx-auto min-h-screen relative z-10">
           <div className="flex justify-center items-center min-h-[50vh]">
@@ -85,6 +86,7 @@ export default function JobDetails() {
   if (error || !job) {
     return (
       <>
+        <CosmicBackground />
         <Navbar />
         <div className="container pt-24 pb-10 px-4 md:px-6 max-w-4xl mx-auto min-h-screen relative z-10">
           <div className="px-4 py-6 sm:px-0">
@@ -108,6 +110,7 @@ export default function JobDetails() {
 
   return (
     <>
+      <CosmicBackground />
       <Navbar />
       <div className="container pt-24 pb-10 px-4 md:px-6 max-w-4xl mx-auto min-h-screen relative z-10">
         <div className="mb-6">

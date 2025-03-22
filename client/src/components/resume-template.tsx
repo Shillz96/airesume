@@ -46,13 +46,14 @@ function TemplateOption({ name, description, preview, selected, onClick }: Templ
     <div
       onClick={onClick}
       className={`cursor-pointer relative rounded-lg border ${
-        selected ? "ring-2 ring-blue-400/70 border-blue-500/50" : "border-blue-500/20"
-      } backdrop-blur-sm bg-slate-900/40 px-6 py-5 shadow-md flex items-center space-x-3 hover:border-blue-500/40 focus-within:ring-2 focus-within:ring-blue-400/50 transition-all duration-200`}
+        selected ? "ring-2 ring-blue-400/70 border-blue-500/50 shadow-blue-500/20 shadow-lg" : "border-blue-500/20"
+      } cosmic-card backdrop-blur-sm bg-slate-900/40 px-6 py-5 shadow-md flex flex-col items-center space-y-3 hover:border-blue-500/40 hover:shadow-blue-500/20 hover:shadow-lg focus-within:ring-2 focus-within:ring-blue-400/50 transition-all duration-200`}
     >
       <div className="flex-shrink-0 h-40 w-full">{preview}</div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-blue-100">{name}</p>
-        <p className="text-sm text-blue-200/70 truncate">{description}</p>
+      <div className="flex-1 min-w-0 text-center">
+        <p className="text-base font-medium cosmic-text-gradient">{name}</p>
+        <p className="text-sm text-blue-200/80 mt-1 truncate">{description}</p>
+        {selected && <div className="absolute top-2 right-2 h-2 w-2 rounded-full bg-blue-400 animate-pulse"></div>}
       </div>
     </div>
   );
@@ -733,7 +734,7 @@ export default function ResumeTemplate({ resume, onTemplateChange }: ResumeTempl
           <Button 
             variant="outline" 
             size="sm" 
-            className="text-xs"
+            className="text-xs cosmic-button border-blue-500/30 bg-blue-950/20 hover:bg-blue-900/30"
             onClick={async () => {
               try {
                 // Create a form for PDF generation
@@ -800,16 +801,16 @@ export default function ResumeTemplate({ resume, onTemplateChange }: ResumeTempl
           
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="text-xs">
+              <Button variant="outline" size="sm" className="text-xs cosmic-button border-blue-500/30 bg-blue-950/20 hover:bg-blue-900/30">
                 <Download className="h-3 w-3 mr-1" /> DOCX
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="cosmic-dialog-content border-blue-500/30 bg-slate-900/90 backdrop-blur-lg">
               <DialogHeader>
-                <DialogTitle>Export as DOCX</DialogTitle>
+                <DialogTitle className="cosmic-text-gradient text-xl">Export as DOCX</DialogTitle>
               </DialogHeader>
               <div className="py-4">
-                <p className="text-secondary-600">
+                <p className="text-slate-300">
                   This would export your resume as a DOCX file in a real implementation.
                 </p>
               </div>
@@ -818,13 +819,13 @@ export default function ResumeTemplate({ resume, onTemplateChange }: ResumeTempl
           
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="text-xs">
+              <Button variant="outline" size="sm" className="text-xs cosmic-button border-blue-500/30 bg-blue-950/20 hover:bg-blue-900/30">
                 Templates
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-4xl cosmic-dialog-content border-blue-500/30 bg-slate-900/90 backdrop-blur-lg">
               <DialogHeader>
-                <DialogTitle>Choose a Resume Template</DialogTitle>
+                <DialogTitle className="cosmic-text-gradient text-xl">Choose a Resume Template</DialogTitle>
               </DialogHeader>
               <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <TemplateOption

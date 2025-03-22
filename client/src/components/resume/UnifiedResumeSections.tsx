@@ -162,7 +162,7 @@ export function PersonalInfoSection({
     <div className="space-y-space-5">
       <ResumePanel>
         <SectionHeader title="Contact Information" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-3">
           <div>
             <label className="text-sm text-blue-300 block mb-1">
               First Name
@@ -328,7 +328,7 @@ export function ExperienceSection({
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-3">
                 <div>
                   <label className="text-sm text-blue-300 block mb-1">Job Title</label>
                   <Input
@@ -518,7 +518,7 @@ export function EducationSection({
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-3">
                 <div>
                   <label className="text-sm text-blue-300 block mb-1">Degree</label>
                   <Input
@@ -743,7 +743,7 @@ export function SkillsSection({
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-3">
                   <div>
                     <label className="text-sm text-blue-300 block mb-1">Skill Name</label>
                     <Input
@@ -938,7 +938,7 @@ export function ProjectsSection({
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-3">
                 <div className="md:col-span-2">
                   <label className="text-sm text-blue-300 block mb-1">Project Title</label>
                   <Input

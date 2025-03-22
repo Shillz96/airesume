@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useParams, useLocation, useNavigate } from "wouter";
+import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import {
   ChevronLeft,
   ChevronRight,
@@ -119,8 +120,10 @@ type BuilderStage =
 
 export default function ResumeBuilder() {
   const { user } = useAuth();
-  const [, params] = useParams();
-  const [, navigate] = useLocation();
+  const [location, setLocation] = useLocation();
+  // Extract the resume ID from the URL if present
+  const match = location.match(/resume-builder(?:\/(.+))?/) || [];
+  const resumeId = match[1];
   const { toast } = useToast();
   
   // State variables
@@ -152,9 +155,6 @@ export default function ResumeBuilder() {
   const [showAiChat, setShowAiChat] = useState<boolean>(false);
   const [showTips, setShowTips] = useState<boolean>(true);
   const [previewScale, setPreviewScale] = useState<number>(1);
-
-  // Resume ID from URL if present
-  const resumeId = params?.id;
 
   // Fetch resume if ID is provided
   const { data: resumeData, isLoading: isLoadingResume } = useQuery({
@@ -191,7 +191,7 @@ export default function ResumeBuilder() {
         variant: "default",
       });
       if (!resumeId && data.id) {
-        navigate(`/resume-builder/${data.id}`);
+        setLocation(`/resume-builder/${data.id}`);
       }
       queryClient.invalidateQueries({ queryKey: ['/api/resumes'] });
     },

@@ -2881,7 +2881,7 @@ export default function ResumeBuilder() {
                         </h2>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8 mb-12">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4 mb-6">
                         <div className="cosmic-form-group">
                           <Label htmlFor="firstName" className="cosmic-form-label">
                             First Name
@@ -2941,7 +2941,7 @@ export default function ResumeBuilder() {
                         </div>
                       </div>
 
-                      <div className="mb-12 border-b border-gray-700 pb-10">
+                      <div className="mb-6 border-b border-gray-700 pb-6">
                         <div className="cosmic-form-group">
                           <Label htmlFor="headline" className="cosmic-form-label">
                             Professional Headline

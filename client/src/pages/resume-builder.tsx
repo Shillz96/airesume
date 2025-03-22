@@ -2527,15 +2527,16 @@ export default function ResumeBuilder() {
   const { isDarkMode } = useTheme();
   
   return (
-    <div className="min-h-screen text-white">
-      <main className="container mx-auto pt-12 pb-20 px-4 cosmic-container">
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <div className="container pt-12 pb-10 px-4 md:px-6 max-w-7xl mx-auto flex-grow relative z-10">
         {/* Page Header */}
-        <div className="cosmic-page-header mb-8 flex justify-between items-center">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="cosmic-page-title text-3xl font-bold mb-2">
+            <h1 className="text-3xl font-bold tracking-tight cosmic-text-gradient">
               Resume Builder
             </h1>
-            <p className="cosmic-page-description">
+            <p className="text-muted-foreground">
               Create a professional resume that passes ATS systems and gets you
               hired.
             </p>
@@ -3281,7 +3282,6 @@ export default function ResumeBuilder() {
             </div>
           </div>
         </div>
-      </main>
 
       {/* Floating AI Assistant Button */}
       <div className="fixed bottom-6 right-6 z-50 group">

@@ -1,0 +1,404 @@
+/**
+ * Cosmic Components
+ * 
+ * Consistent styling for common components across the application
+ * using our cosmic theme variables
+ */
+
+/* ======== Section Headers ======== */
+.cosmic-section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.cosmic-section-header h2,
+.cosmic-section-header h3 {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.cosmic-section-header h2 {
+  font-size: 1.5rem;
+}
+
+.cosmic-section-header h3 {
+  font-size: 1.25rem;
+}
+
+.cosmic-section-header .icon {
+  color: rgb(var(--color-primary));
+}
+
+/* ======== Cards ======== */
+.cosmic-card {
+  background-color: var(--card-background);
+  border-radius: var(--card-radius);
+  border: var(--card-border);
+  overflow: hidden;
+  transition: box-shadow var(--transition-normal), transform var(--transition-normal);
+}
+
+.cosmic-card-hoverable:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.cosmic-card-gradient {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.cosmic-card-gradient::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--cosmic-gradient-subtle);
+  z-index: -1;
+  opacity: 0.5;
+}
+
+.cosmic-card-header {
+  padding: var(--space-4);
+  border-bottom: var(--card-border);
+}
+
+.cosmic-card-body {
+  padding: var(--space-4);
+}
+
+.cosmic-card-footer {
+  padding: var(--space-4);
+  border-top: var(--card-border);
+}
+
+/* ======== Buttons ======== */
+.cosmic-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  border-radius: var(--button-radius);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+}
+
+.cosmic-button-primary {
+  background-color: rgb(var(--color-primary));
+  color: white;
+  border: none;
+}
+
+.cosmic-button-primary:hover {
+  background-color: rgb(var(--color-primary) / 0.9);
+}
+
+.cosmic-button-primary:active {
+  background-color: rgb(var(--color-primary) / 0.8);
+}
+
+.cosmic-button-secondary {
+  background-color: rgb(var(--color-secondary));
+  color: white;
+  border: none;
+}
+
+.cosmic-button-outline {
+  background-color: transparent;
+  border: 1px solid rgb(var(--color-border));
+  color: rgb(var(--color-text));
+}
+
+.cosmic-button-outline:hover {
+  background-color: rgb(var(--color-background) / 0.1);
+}
+
+.cosmic-button-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.cosmic-button-glow::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--cosmic-gradient);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.cosmic-button-glow:hover::before {
+  opacity: 0.2;
+}
+
+.cosmic-button-glow:active::before {
+  opacity: 0.3;
+}
+
+.cosmic-button-xs {
+  height: var(--button-height-xs);
+  padding: 0 var(--space-2);
+  font-size: 0.75rem;
+}
+
+.cosmic-button-sm {
+  height: var(--button-height-sm);
+  padding: 0 var(--space-3);
+  font-size: 0.875rem;
+}
+
+.cosmic-button-md {
+  height: var(--button-height-md);
+  padding: 0 var(--space-4);
+  font-size: 1rem;
+}
+
+.cosmic-button-lg {
+  height: var(--button-height-lg);
+  padding: 0 var(--space-5);
+  font-size: 1.125rem;
+}
+
+.cosmic-button-xl {
+  height: var(--button-height-xl);
+  padding: 0 var(--space-6);
+  font-size: 1.25rem;
+}
+
+/* ======== Forms ======== */
+.cosmic-input {
+  height: var(--input-height);
+  background-color: var(--input-background);
+  border: var(--input-border);
+  border-radius: var(--border-radius);
+  padding: 0 var(--space-3);
+  font-size: 1rem;
+  color: rgb(var(--color-text));
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.cosmic-input:focus {
+  border-color: rgb(var(--color-primary));
+  box-shadow: var(--input-focus-ring);
+  outline: none;
+}
+
+.cosmic-input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--space-4);
+}
+
+.cosmic-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: var(--space-1);
+  color: rgb(var(--color-text));
+}
+
+.cosmic-textarea {
+  min-height: 5rem;
+  padding: var(--space-2) var(--space-3);
+  resize: vertical;
+}
+
+/* ======== Badges ======== */
+.cosmic-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--space-2);
+  height: 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: var(--border-radius-full);
+  background-color: rgb(var(--color-primary) / 0.1);
+  color: rgb(var(--color-primary));
+}
+
+.cosmic-badge-outline {
+  background-color: transparent;
+  border: 1px solid rgb(var(--color-primary) / 0.3);
+}
+
+.cosmic-badge-secondary {
+  background-color: rgb(var(--color-secondary) / 0.1);
+  color: rgb(var(--color-secondary));
+}
+
+.cosmic-badge-success {
+  background-color: rgb(var(--color-success) / 0.1);
+  color: rgb(var(--color-success));
+}
+
+.cosmic-badge-warning {
+  background-color: rgb(var(--color-warning) / 0.1);
+  color: rgb(var(--color-warning));
+}
+
+.cosmic-badge-error {
+  background-color: rgb(var(--color-error) / 0.1);
+  color: rgb(var(--color-error));
+}
+
+/* ======== Tabs ======== */
+.cosmic-tabs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.cosmic-tabs-list {
+  display: flex;
+  border-bottom: 1px solid rgb(var(--color-border));
+  padding: 0 var(--space-4);
+  overflow-x: auto;
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+}
+
+.cosmic-tabs-list::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome, Safari and Opera */
+}
+
+.cosmic-tab-trigger {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(var(--color-muted));
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  white-space: nowrap;
+}
+
+.cosmic-tab-trigger:hover {
+  color: rgb(var(--color-text));
+}
+
+.cosmic-tab-trigger[data-state="active"] {
+  color: rgb(var(--color-primary));
+  border-bottom-color: rgb(var(--color-primary));
+}
+
+.cosmic-tab-content {
+  padding: var(--space-6);
+}
+
+/* ======== Tooltips ======== */
+.cosmic-tooltip {
+  border-radius: var(--border-radius);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.75rem;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-text));
+  box-shadow: var(--shadow-md);
+  z-index: var(--z-tooltip);
+  max-width: 15rem;
+  word-wrap: break-word;
+}
+
+/* ======== Alerts ======== */
+.cosmic-alert {
+  display: flex;
+  padding: var(--space-4);
+  border-radius: var(--border-radius);
+  border-left: 3px solid rgb(var(--color-primary));
+  background-color: rgb(var(--color-primary) / 0.1);
+  margin-bottom: var(--space-4);
+}
+
+.cosmic-alert-info {
+  border-left-color: rgb(var(--color-info));
+  background-color: rgb(var(--color-info) / 0.1);
+}
+
+.cosmic-alert-success {
+  border-left-color: rgb(var(--color-success));
+  background-color: rgb(var(--color-success) / 0.1);
+}
+
+.cosmic-alert-warning {
+  border-left-color: rgb(var(--color-warning));
+  background-color: rgb(var(--color-warning) / 0.1);
+}
+
+.cosmic-alert-error {
+  border-left-color: rgb(var(--color-error));
+  background-color: rgb(var(--color-error) / 0.1);
+}
+
+/* ======== Accordions ======== */
+.cosmic-accordion-item {
+  border: var(--card-border);
+  border-radius: var(--border-radius);
+  margin-bottom: var(--space-2);
+}
+
+.cosmic-accordion-trigger {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.cosmic-accordion-trigger:hover {
+  background-color: rgb(var(--color-background) / 0.5);
+}
+
+.cosmic-accordion-content {
+  padding: var(--space-4);
+  border-top: var(--card-border);
+}
+
+/* ======== Lists ======== */
+.cosmic-list {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+.cosmic-list-item {
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid rgb(var(--color-border) / 0.3);
+}
+
+.cosmic-list-item:last-child {
+  border-bottom: none;
+}
+
+/* ======== Scrollable Areas ======== */
+.cosmic-scrollable {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--color-muted) / 0.3) transparent;
+}
+
+.cosmic-scrollable::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.cosmic-scrollable::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cosmic-scrollable::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--color-muted) / 0.3);
+  border-radius: 3px;
+}
+
+.cosmic-scrollable::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(var(--color-muted) / 0.5);
+}

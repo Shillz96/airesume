@@ -1,17 +1,20 @@
-import React, { useState } from 'react';
-import { ExperienceItem } from '@/hooks/use-resume-data';
+import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { CosmicButton } from '@/components/cosmic-button';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Briefcase, Plus, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { Trash, Plus, Briefcase, Calendar } from 'lucide-react';
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
-import AIAssistant from '@/components/ai-assistant';
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { ExperienceItem } from '@/hooks/use-resume-data';
+import { cn } from '@/lib/utils';
+import { getCosmicColor, getSpacing } from '@/lib/theme-utils';
 
 interface ExperienceSectionProps {
   experiences: ExperienceItem[];
@@ -24,226 +27,209 @@ interface ExperienceSectionProps {
  * ExperienceSection component for managing work experience items in the resume
  */
 export function ExperienceSection({ 
-  experiences, 
+  experiences,
   resumeId,
-  onUpdate, 
-  onAdd 
+  onUpdate,
+  onAdd
 }: ExperienceSectionProps) {
-  const [openId, setOpenId] = useState<string | null>(experiences[0]?.id || null);
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
 
-  // Handler for adding a new experience item
-  const handleAdd = () => {
+  // Handle adding a new experience entry
+  const handleAddExperience = () => {
     if (onAdd) {
       const newId = onAdd();
-      setOpenId(newId);
+      setExpandedItem(newId);
     } else {
-      // Fallback if onAdd is not provided
-      const newExp: ExperienceItem = {
+      // Fallback if onAdd not provided
+      const newExperience = {
         id: crypto.randomUUID(),
         title: '',
         company: '',
         startDate: '',
         endDate: '',
-        description: '',
+        description: ''
       };
-      onUpdate([...experiences, newExp]);
-      setOpenId(newExp.id);
+      onUpdate([...experiences, newExperience]);
+      setExpandedItem(newExperience.id);
     }
   };
 
-  // Handler for deleting an experience item
-  const handleDelete = (id: string) => {
-    onUpdate(experiences.filter((exp) => exp.id !== id));
-    if (openId === id) {
-      setOpenId(experiences[0]?.id !== id ? experiences[0]?.id : null);
+  // Handle removing an experience entry
+  const handleRemoveExperience = (id: string) => {
+    const updatedExperiences = experiences.filter(exp => exp.id !== id);
+    onUpdate(updatedExperiences);
+    if (expandedItem === id) {
+      setExpandedItem(null);
     }
   };
 
-  // Handler for updating a field in an experience item
-  const handleChange = (id: string, field: keyof ExperienceItem, value: string) => {
-    onUpdate(
-      experiences.map((exp) =>
-        exp.id === id ? { ...exp, [field]: value } : exp
-      )
-    );
-  };
-
-  // Handler for applying a suggestion to a specific experience item
-  const handleApplyBulletPoint = (bulletPoint: string) => {
-    if (openId) {
-      const currentExp = experiences.find(exp => exp.id === openId);
-      if (currentExp) {
-        handleChange(openId, 'description', 
-          currentExp.description 
-            ? `${currentExp.description}\n\n${bulletPoint}` 
-            : bulletPoint
-        );
+  // Handle updating a field in an experience entry
+  const handleExperienceChange = (id: string, field: keyof ExperienceItem, value: string) => {
+    const updatedExperiences = experiences.map(exp => {
+      if (exp.id === id) {
+        return { ...exp, [field]: value };
       }
-    }
+      return exp;
+    });
+    onUpdate(updatedExperiences);
   };
 
   return (
-    <div className="cosmic-resume-section">
-      <div className="main-content">
-        <div className="cosmic-section-header">
-          <h2 className="cosmic-section-title">
-            <Briefcase className="w-5 h-5" />
-            Work Experience
-          </h2>
-          {experiences.length > 0 && (
-            <CosmicButton 
-              variant="primary" 
-              size="sm" 
-              withGlow
-              onClick={handleAdd}
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <Briefcase className="h-5 w-5" style={{ color: getCosmicColor('primary') }} />
+          <h3 className="text-lg font-semibold">Work Experience</h3>
+        </div>
+        <CosmicButton
+          size="sm"
+          variant="outline"
+          iconLeft={<Plus className="h-4 w-4" />}
+          onClick={handleAddExperience}
+        >
+          Add Experience
+        </CosmicButton>
+      </div>
+
+      {experiences.length === 0 ? (
+        <Card className="border border-dashed">
+          <CardContent className="flex flex-col items-center justify-center p-6">
+            <Briefcase className="h-12 w-12 mb-2 opacity-30" />
+            <p className="text-center text-sm mb-4">
+              Add your work history including internships and relevant experience
+            </p>
+            <Button variant="outline" size="sm" onClick={handleAddExperience}>
+              Add Experience
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <Accordion
+          type="single"
+          collapsible
+          value={expandedItem || undefined}
+          onValueChange={(value) => setExpandedItem(value)}
+          className="space-y-2"
+        >
+          {experiences.map((experience) => (
+            <AccordionItem
+              key={experience.id}
+              value={experience.id}
+              className={cn(
+                "border rounded-md overflow-hidden",
+                expandedItem === experience.id ? "ring-1 ring-primary/20" : ""
+              )}
             >
-              <Plus className="w-4 h-4 mr-1" /> Add Experience
-            </CosmicButton>
-          )}
-        </div>
-
-        {/* List of experience items */}
-        {experiences.map((exp) => (
-          <Collapsible
-            key={exp.id}
-            open={openId === exp.id}
-            onOpenChange={() => setOpenId(openId === exp.id ? null : exp.id)}
-            className="mb-4 border border-gray-700 rounded-lg overflow-hidden"
-          >
-            <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 bg-gray-800 hover:bg-gray-700 transition-colors">
-              <div className="flex items-center">
-                <Briefcase className="w-4 h-4 mr-2 text-blue-400" />
-                <div className="text-left">
-                  <span className="font-medium text-white">
-                    {exp.title || "New Position"}
-                  </span>
-                  {exp.company && (
-                    <span className="text-gray-400 ml-2">
-                      at {exp.company}
-                    </span>
-                  )}
+              <AccordionTrigger className="px-4 py-3 hover:bg-accent/50 data-[state=open]:bg-accent/60">
+                <div className="flex flex-1 justify-between items-center">
+                  <div className="text-left">
+                    <p className="font-medium">
+                      {experience.title || "New Position"}
+                    </p>
+                    {experience.company && (
+                      <p className="text-sm opacity-70">{experience.company}</p>
+                    )}
+                  </div>
+                  <div className="text-sm opacity-70 mr-4">
+                    {experience.startDate && experience.endDate
+                      ? `${experience.startDate} - ${experience.endDate}`
+                      : ""}
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(exp.id);
-                  }}
-                  className="p-1 text-gray-400 hover:text-red-400 focus:outline-none mr-2"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-                {openId === exp.id ? (
-                  <ChevronUp className="h-5 w-5 text-gray-400" />
-                ) : (
-                  <ChevronDown className="h-5 w-5 text-gray-400" />
-                )}
-              </div>
-            </CollapsibleTrigger>
+              </AccordionTrigger>
+              <AccordionContent className="pb-0">
+                <div className="p-4 space-y-4 bg-card rounded-b-md">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor={`exp-title-${experience.id}`}>Job Title</Label>
+                      <Input
+                        id={`exp-title-${experience.id}`}
+                        value={experience.title}
+                        onChange={(e) => handleExperienceChange(experience.id, 'title', e.target.value)}
+                        placeholder="e.g., Senior Developer"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`exp-company-${experience.id}`}>Company</Label>
+                      <Input
+                        id={`exp-company-${experience.id}`}
+                        value={experience.company}
+                        onChange={(e) => handleExperienceChange(experience.id, 'company', e.target.value)}
+                        placeholder="e.g., Acme Inc."
+                      />
+                    </div>
+                  </div>
 
-            <CollapsibleContent className="p-4 bg-gray-900">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="cosmic-form-group">
-                  <Label htmlFor={`title-${exp.id}`} className="cosmic-form-label">Job Title</Label>
-                  <Input
-                    id={`title-${exp.id}`}
-                    value={exp.title}
-                    onChange={(e) => handleChange(exp.id, 'title', e.target.value)}
-                    className="cosmic-form-input"
-                    placeholder="Software Engineer"
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor={`exp-start-${experience.id}`}>Start Date</Label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id={`exp-start-${experience.id}`}
+                          value={experience.startDate}
+                          onChange={(e) => handleExperienceChange(experience.id, 'startDate', e.target.value)}
+                          className="pl-10"
+                          placeholder="e.g., Jan 2020"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`exp-end-${experience.id}`}>End Date (or "Present")</Label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id={`exp-end-${experience.id}`}
+                          value={experience.endDate}
+                          onChange={(e) => handleExperienceChange(experience.id, 'endDate', e.target.value)}
+                          className="pl-10"
+                          placeholder="e.g., Dec 2022 or Present"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor={`exp-description-${experience.id}`}>Description</Label>
+                    <Textarea
+                      id={`exp-description-${experience.id}`}
+                      value={experience.description}
+                      onChange={(e) => handleExperienceChange(experience.id, 'description', e.target.value)}
+                      placeholder="Describe your responsibilities, achievements, and skills used..."
+                      rows={5}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Use bullet points for better readability. Start with strong action verbs.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2 mt-4 border-t pt-4">
+                    <h4 className="text-sm font-medium">Formatting Tips:</h4>
+                    <ul className="text-xs space-y-1 text-muted-foreground">
+                      <li>• Start with strong action verbs (e.g., "Developed", "Led", "Managed")</li>
+                      <li>• Include quantifiable achievements (e.g., "Increased sales by 20%")</li>
+                      <li>• Use bullet points for better readability</li>
+                      <li>• Highlight skills relevant to the job you're applying for</li>
+                    </ul>
+                  </div>
+
+                  <div className="flex justify-end pb-2 pt-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                      onClick={() => handleRemoveExperience(experience.id)}
+                    >
+                      <Trash className="h-4 w-4 mr-1" />
+                      Remove
+                    </Button>
+                  </div>
                 </div>
-
-                <div className="cosmic-form-group">
-                  <Label htmlFor={`company-${exp.id}`} className="cosmic-form-label">Company</Label>
-                  <Input
-                    id={`company-${exp.id}`}
-                    value={exp.company}
-                    onChange={(e) => handleChange(exp.id, 'company', e.target.value)}
-                    className="cosmic-form-input"
-                    placeholder="Acme Corp"
-                  />
-                </div>
-
-                <div className="cosmic-form-group">
-                  <Label htmlFor={`start-date-${exp.id}`} className="cosmic-form-label">Start Date</Label>
-                  <Input
-                    id={`start-date-${exp.id}`}
-                    value={exp.startDate}
-                    onChange={(e) => handleChange(exp.id, 'startDate', e.target.value)}
-                    className="cosmic-form-input"
-                    placeholder="2021-03"
-                  />
-                </div>
-
-                <div className="cosmic-form-group">
-                  <Label htmlFor={`end-date-${exp.id}`} className="cosmic-form-label">End Date</Label>
-                  <Input
-                    id={`end-date-${exp.id}`}
-                    value={exp.endDate}
-                    onChange={(e) => handleChange(exp.id, 'endDate', e.target.value)}
-                    className="cosmic-form-input"
-                    placeholder="Present"
-                  />
-                </div>
-
-                <div className="cosmic-form-group cosmic-experience-form-full md:col-span-2">
-                  <Label htmlFor={`description-${exp.id}`} className="cosmic-form-label">Responsibilities & Achievements</Label>
-                  <Textarea
-                    id={`description-${exp.id}`}
-                    value={exp.description}
-                    onChange={(e) => handleChange(exp.id, 'description', e.target.value)}
-                    placeholder="Utilized Python automation to streamline client-specified tasks, efficiently reducing time commitments by 30%. Utilized Git for version control and project management, ensuring code quality and collaboration with other developers."
-                    className="cosmic-form-input cosmic-form-textarea"
-                    rows={5}
-                  />
-                </div>
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-        ))}
-        
-        {/* Empty state - show when there are no experiences */}
-        {experiences.length === 0 && (
-          <button
-            onClick={handleAdd}
-            className="w-full py-3 mt-2 bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-500/30 rounded-md flex items-center justify-center space-x-2"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="8" x2="12" y2="16"></line>
-              <line x1="8" y1="12" x2="16" y2="12"></line>
-            </svg>
-            <span>Add Your First Experience</span>
-          </button>
-        )}
-      </div>
-
-      {/* AI Assistant sidebar */}
-      <div className="assistant-content">
-        <div className="cosmic-assistant-card">
-          <div className="cosmic-glow"></div>
-          <div className="content">
-            <div className="cosmic-assistant-header">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-              </svg>
-              <h3>AI Experience Assistant</h3>
-            </div>
-            
-            <AIAssistant 
-              resumeId={resumeId}
-              onApplyBulletPoint={handleApplyBulletPoint}
-              activeTab="experience"
-            />
-          </div>
-        </div>
-      </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      )}
     </div>
   );
 }
-
-export default ExperienceSection;

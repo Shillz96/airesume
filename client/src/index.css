@@ -43,6 +43,9 @@
 @import './styles/utilities/utilities.css';
 @import './styles/utilities/accessibility.css';
 
+/* Critical fixes for z-index issues - these should be loaded last */
+@import './styles/fixes/z-index-fix.css';
+
 /**
  * Legacy theme variables - these will be phased out in favor of theme-variables.css
  * Keeping them for backwards compatibility during the transition
@@ -91,4 +94,19 @@ div[data-radix-popper-content-wrapper] {
 /* Ensure menu elements are above the navbar */
 [role="menu"] {
   z-index: 999 !important;
+}
+
+/* Fix for avatar and profile elements */
+.cosmic-navbar .cosmic-glow, 
+.cosmic-navbar button,
+.cosmic-navbar [role="button"] {
+  position: relative !important;
+  z-index: 95 !important;
+}
+
+/* Additional fixes for dropdown trigger */
+button[aria-haspopup="menu"],
+div[role="button"] {
+  position: relative;
+  z-index: 95 !important;
 }

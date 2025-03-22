@@ -1,0 +1,63 @@
+/**
+ * Z-Index Fix Stylesheet
+ * This file contains critical fixes for z-index issues throughout the application
+ */
+
+/* Fix for dropdown visibility */
+[data-radix-popper-content-wrapper] {
+  z-index: 9999 !important;
+  position: relative !important;
+}
+
+/* Ensure menu elements are above the navbar */
+[role="menu"] {
+  z-index: 9999 !important;
+  position: relative !important;
+}
+
+/* Fix for avatar and profile elements */
+.cosmic-navbar button,
+.cosmic-navbar [role="button"],
+.cosmic-navbar .cosmic-glow {
+  position: relative !important;
+  z-index: 95 !important;
+}
+
+/* Fix for button hovers and avatar rendering */
+button[aria-haspopup="menu"] {
+  position: relative !important;
+  z-index: 95 !important;
+}
+
+/* Fix for React headlessui DropdownMenu trigger elements */
+button[id^="headlessui-menu-button"] {
+  position: relative !important;
+  z-index: 95 !important;
+}
+
+/* Fix for Shadcn UI components */
+.DropdownMenuTrigger,
+.DropdownMenuContent,
+[data-state="open"] {
+  position: relative !important;
+  z-index: 9999 !important;
+}
+
+/* Fix for any dialog or absolute positioned elements */
+[role="dialog"] {
+  z-index: 9999 !important;
+}
+
+/* Ensure navbar is fixed properly */
+.cosmic-navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 40;
+}
+
+/* Ensure content is below navbar */
+main {
+  z-index: 10;
+  position: relative;
+}

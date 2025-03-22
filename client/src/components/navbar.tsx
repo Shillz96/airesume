@@ -224,6 +224,7 @@ export default function Navbar() {
           <div 
             className="hidden sm:ml-6 sm:flex sm:items-center"
             ref={userMenuRef}
+            style={{ position: 'relative', zIndex: 90 }}
           >
             <Button
               variant="ghost"
@@ -237,8 +238,8 @@ export default function Navbar() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="ml-3 relative" aria-label="User menu">
-                  <Avatar className="h-8 w-8 cosmic-glow">
+                <Button variant="ghost" size="icon" className="ml-3 relative" aria-label="User menu" style={{ position: 'relative', zIndex: 90 }}>
+                  <Avatar className="h-8 w-8 cosmic-glow" style={{ position: 'relative', zIndex: 90 }}>
                     <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold">
                       {initials}
                     </AvatarFallback>

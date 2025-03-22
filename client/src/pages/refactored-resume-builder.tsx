@@ -260,7 +260,7 @@ export default function ResumeBuilder() {
         onSave={handleSaveResume}
         onDownload={handleDownloadResume}
         onOpenAIAssistant={() => setIsDialogOpen(true)}
-        isSaving={updateResumeMutation.isPending || createResumeMutation.isPending}
+        isSaving={false}
         isDirty={isDirty}
       />
       

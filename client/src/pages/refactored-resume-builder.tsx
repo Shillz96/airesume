@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "wouter";
+import { useLocation } from "wouter";
 import { Loader2, X, ChevronDown, ChevronUp, Save, Download, PenSquare, Star, Plus, Trash, FilePlus, Bot } from "lucide-react";
-import cn from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Resume, useResumeData } from "@/hooks/use-resume-data";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -126,16 +126,128 @@ export default function ResumeBuilder() {
               <TabsContent value="contact" className="space-y-4 p-4 bg-card rounded-lg border">
                 <h3 className="text-lg font-medium">Personal Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Contact form fields would go here */}
-                  <p>Contact form placeholder</p>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">First Name</label>
+                    <input
+                      type="text"
+                      className="w-full rounded-md border border-input bg-background px-3 py-2"
+                      value={resume.personalInfo.firstName || ""}
+                      onChange={(e) => updateResume({
+                        ...resume,
+                        personalInfo: {
+                          ...resume.personalInfo,
+                          firstName: e.target.value
+                        }
+                      })}
+                      placeholder="First Name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Last Name</label>
+                    <input
+                      type="text"
+                      className="w-full rounded-md border border-input bg-background px-3 py-2"
+                      value={resume.personalInfo.lastName || ""}
+                      onChange={(e) => updateResume({
+                        ...resume,
+                        personalInfo: {
+                          ...resume.personalInfo,
+                          lastName: e.target.value
+                        }
+                      })}
+                      placeholder="Last Name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Email</label>
+                    <input
+                      type="email"
+                      className="w-full rounded-md border border-input bg-background px-3 py-2"
+                      value={resume.personalInfo.email || ""}
+                      onChange={(e) => updateResume({
+                        ...resume,
+                        personalInfo: {
+                          ...resume.personalInfo,
+                          email: e.target.value
+                        }
+                      })}
+                      placeholder="Email"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Phone</label>
+                    <input
+                      type="tel"
+                      className="w-full rounded-md border border-input bg-background px-3 py-2"
+                      value={resume.personalInfo.phone || ""}
+                      onChange={(e) => updateResume({
+                        ...resume,
+                        personalInfo: {
+                          ...resume.personalInfo,
+                          phone: e.target.value
+                        }
+                      })}
+                      placeholder="Phone"
+                    />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <label className="text-sm font-medium">Professional Headline</label>
+                    <input
+                      type="text"
+                      className="w-full rounded-md border border-input bg-background px-3 py-2"
+                      value={resume.personalInfo.headline || ""}
+                      onChange={(e) => updateResume({
+                        ...resume,
+                        personalInfo: {
+                          ...resume.personalInfo,
+                          headline: e.target.value
+                        }
+                      })}
+                      placeholder="e.g., Senior Software Engineer | AI Specialist | Project Manager"
+                    />
+                  </div>
                 </div>
               </TabsContent>
 
               {/* Summary Tab */}
               <TabsContent value="summary" className="space-y-4 p-4 bg-card rounded-lg border">
-                <h3 className="text-lg font-medium">Professional Summary</h3>
-                {/* Summary form fields would go here */}
-                <p>Summary form placeholder</p>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-medium">Professional Summary</h3>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setIsDialogOpen(true)}
+                  >
+                    <Bot className="h-4 w-4 mr-2" />
+                    Get AI Suggestions
+                  </Button>
+                </div>
+                <div className="space-y-4">
+                  <textarea
+                    className="w-full min-h-[200px] rounded-md border border-input bg-background px-3 py-2"
+                    value={resume.personalInfo.summary || ""}
+                    onChange={(e) => updateResume({
+                      ...resume,
+                      personalInfo: {
+                        ...resume.personalInfo,
+                        summary: e.target.value
+                      }
+                    })}
+                    placeholder="Write a compelling professional summary that highlights your expertise, experience, and key strengths."
+                  />
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-md border border-blue-200 dark:border-blue-800">
+                    <h4 className="text-sm font-medium mb-2 flex items-center">
+                      <Star className="h-4 w-4 mr-2 text-blue-500" />
+                      Pro Tips for a Great Summary
+                    </h4>
+                    <ul className="text-xs space-y-1 text-gray-600 dark:text-gray-300">
+                      <li>• Keep it between 3-5 sentences for optimal ATS scanning</li>
+                      <li>• Mention years of experience and key specializations</li>
+                      <li>• Include notable achievements with measurable results</li>
+                      <li>• Tailor it to match the job descriptions you're targeting</li>
+                    </ul>
+                  </div>
+                </div>
               </TabsContent>
 
               {/* Experience Tab */}

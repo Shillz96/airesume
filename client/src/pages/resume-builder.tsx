@@ -886,12 +886,12 @@ export default function ResumeBuilder() {
           </div>
         ) : (
           // Edit mode
-          <div className="flex flex-col xl:flex-row gap-6">
+          <div className="flex flex-col xl:flex-row gap-8">
             {/* Left sidebar with resume sections navigation */}
             <div className="xl:w-64 shrink-0">
-              <div className="cosmic-card p-4 sticky top-24">
-                <h3 className="text-lg font-medium mb-4 text-blue-300">Resume Sections</h3>
-                <div className="space-y-2">
+              <div className="cosmic-card p-6 sticky top-24 shadow-lg shadow-blue-900/10">
+                <h3 className="text-xl font-semibold mb-5 text-blue-300 border-b border-blue-800/50 pb-2">Resume Sections</h3>
+                <div className="space-y-3">
                   <Button
                     variant={currentTab === "contact" ? "default" : "ghost"}
                     className={cn(

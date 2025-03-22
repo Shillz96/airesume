@@ -237,15 +237,15 @@ export default function Navbar() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="ml-3 relative" aria-label="User menu">
-                  <Avatar className="h-8 w-8 cosmic-glow">
+                <Button variant="ghost" size="icon" className="ml-3 relative profile-dropdown-trigger" aria-label="User menu">
+                  <Avatar className="h-8 w-8 cosmic-glow profile-avatar">
                     <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold">
                       {initials}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="cosmic-card border-white/10 py-2">
+              <DropdownMenuContent align="end" className="cosmic-card border-white/10 py-2 profile-dropdown-content">
                 {user ? (
                   <>
                     <div className="px-4 py-2 text-sm text-gray-300 font-medium border-b border-white/10 mb-1">
@@ -310,7 +310,7 @@ export default function Navbar() {
               variant="ghost"
               size="icon"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="inline-flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/10"
+              className="inline-flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/10 mobile-menu-button"
               aria-label={mobileMenuOpen ? "Close main menu" : "Open main menu"}
               aria-expanded={mobileMenuOpen}
             >
@@ -327,7 +327,7 @@ export default function Navbar() {
       {/* Mobile menu */}
       {mobileMenuOpen && (
         <div
-          className="sm:hidden bg-gradient-to-b from-blue-900/80 to-purple-900/80 backdrop-blur-lg shadow-lg border-t border-white/10"
+          className="sm:hidden bg-gradient-to-b from-blue-900/80 to-purple-900/80 backdrop-blur-lg shadow-lg border-t border-white/10 mobile-menu-container"
           ref={mobileMenuRef}
         >
           <div style={{ 

@@ -14,19 +14,25 @@
   z-index: 999 !important;
 }
 
-/* Fix for avatar and profile elements */
-.cosmic-navbar .cosmic-glow, 
-.cosmic-navbar button,
-.cosmic-navbar [role="button"] {
+/* Specific profile dropdown fixes */
+.profile-dropdown-trigger {
   position: relative !important;
-  z-index: 95 !important;
+  z-index: 50 !important;
 }
 
-/* Additional fixes for dropdown trigger */
-button[aria-haspopup="menu"],
-div[role="button"] {
+.profile-avatar {
   position: relative !important;
-  z-index: 95 !important;
+  z-index: 51 !important;
+  display: block !important;
+}
+
+.profile-dropdown-content {
+  z-index: 1000 !important; 
+  position: absolute !important;
+  margin-top: 8px !important;
+  background-color: rgba(17, 24, 39, 0.95) !important;
+  backdrop-filter: blur(8px) !important;
+  border-radius: 8px !important;
 }
 
 /* Navbar z-index */

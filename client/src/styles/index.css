@@ -3,7 +3,7 @@
 
 /* Base styles */
 :root {
-  --cosmicBackground: linear-gradient(to bottom, #0f172a, #1e293b);
+  --cosmicBackground: linear-gradient(to bottom, #1d2c4e, #1e293b);
   --cosmicCard: rgba(15, 23, 42, 0.7);
   --cosmicCardHover: rgba(15, 23, 42, 0.9);
   --cosmicBlue: #38bdf8;

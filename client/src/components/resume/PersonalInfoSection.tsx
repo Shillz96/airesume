@@ -92,7 +92,7 @@ export function PersonalInfoSection({
                   type="email"
                   value={personalInfo.email}
                   onChange={(e) => onUpdate('email', e.target.value)}
-                  className="cosmic-form-input pl-10"
+                  className="cosmic-navy-input pl-10"
                   placeholder="your.email@example.com"
                 />
               </div>
@@ -106,7 +106,7 @@ export function PersonalInfoSection({
                   id="phone"
                   value={personalInfo.phone}
                   onChange={(e) => onUpdate('phone', e.target.value)}
-                  className="cosmic-form-input pl-10"
+                  className="cosmic-navy-input pl-10"
                   placeholder="(555) 123-4567"
                 />
               </div>
@@ -123,7 +123,7 @@ export function PersonalInfoSection({
                   id="headline"
                   value={personalInfo.headline}
                   onChange={(e) => onUpdate('headline', e.target.value)}
-                  className="cosmic-form-input pl-10"
+                  className="cosmic-navy-input pl-10"
                   placeholder="e.g., Senior Software Engineer | React Specialist"
                 />
               </div>
@@ -139,7 +139,7 @@ export function PersonalInfoSection({
                 value={personalInfo.summary}
                 onChange={(e) => onUpdate('summary', e.target.value)}
                 rows={8}
-                className="cosmic-form-input cosmic-form-textarea"
+                className="cosmic-navy-input cosmic-form-textarea"
                 placeholder="Briefly introduce yourself, highlighting your expertise, experience, and unique value proposition..."
               />
               <p className="mt-2 text-xs text-primary/70">

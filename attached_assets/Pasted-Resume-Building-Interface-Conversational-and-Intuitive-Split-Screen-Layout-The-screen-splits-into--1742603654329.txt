@@ -1,0 +1,32 @@
+Resume-Building Interface: Conversational and Intuitive
+Split-Screen Layout: The screen splits into two parts:
+Left Side: The conversational AI asks one question at a time, like “What was your job title at [Company]?” with a text box for your answer. “Next” and “Back” buttons guide you through the process.
+Right Side: A live preview of your resume updates as you type, showing how your input is formatted in real-time.
+AI Suggestions: Real-time feedback appears as subtle pop-ups or highlighted text. For example, if you write a vague bullet point, a tip might say, “Try adding a number, like ‘Increased sales by 20%.’” These can be dismissed if not needed.
+Section Navigation: A collapsible menu on the left lets you jump to sections like “Work Experience” or “Education” if you prefer a non-linear approach.
+Template Selection: Visual and Customizable
+Template Gallery: A grid of thumbnail previews showcases different resume styles—some sleek and professional, others bold and creative.
+Filters and Recommendations: Filters like “Modern” or “Creative” sit at the top, and the AI might flag a “Recommended” template based on your job type (e.g., “Great for tech roles!”).
+Live Preview: Hovering over a template enlarges it, and clicking shows a full-screen preview with your data already filled in.
+Customization Editor: Hands-On Control
+Side-by-Side View: The screen splits again:
+Left Side: The resume preview.
+Right Side: An editor panel with options to adjust fonts, colors, spacing, or section order, all clearly labeled.
+AI Highlights: The AI might highlight areas for improvement (e.g., “This section is a bit long—try condensing it”) with clickable links to edit those parts.
+Drag-and-Drop: You can reorder sections or bullet points by dragging them, offering flexibility for advanced users.
+Smart Features: Accessible and Clear
+Sidebar Menu: A persistent sidebar on the dashboard links to features like “Optimize for Job Description,” “Get Resume Score,” or “Save New Version,” each with a small icon for clarity.
+Pop-Up Windows: Selecting a feature opens a clean pop-up. For example, “Optimize for Job Description” includes a text box for a job listing, a “Scan” button, and suggested keywords.
+Resource Hub: Easy to Navigate
+Dedicated Page: Accessible via the main menu, this section has a search bar and categories like “Resume Writing Tips” or “Career Advice,” featuring articles and videos.
+Card Layout: Resources appear as cards with thumbnails, titles, and short descriptions, opening into full content when clicked.
+Real-Time Chat: Always Available
+Chat Icon: A floating chat bubble in the bottom-right corner opens a window where you can ask the AI questions like “How do I describe my internship?” It responds instantly with examples or tips.
+Design: The chat window is compact and minimizable, staying out of the way when not in use.
+Download and Share: One-Click Simplicity
+Download Button: On the final preview page, a bold “Download” button offers PDF or Word options via a dropdown.
+Share Options: Icons for email, LinkedIn, or job sites (like Indeed) sit nearby, opening pre-filled forms or links for easy sharing.
+Additional Design Touches
+Animations: Subtle effects—like a smooth fade between sections or a slight bounce for suggestions—add polish.
+Mobile Responsiveness: The site adapts to smaller screens, stacking sections vertically and enlarging buttons for touch.
+Accessibility: High contrast options, alt text, and keyboard navigation ensure inclusivity.

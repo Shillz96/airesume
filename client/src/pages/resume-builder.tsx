@@ -3102,7 +3102,7 @@ export default function ResumeBuilder() {
 
               {/* Education Section */}
               {activeSection === "education" && (
-                <div>
+                <div className="grid grid-cols-1 gap-10">
                   <div className="cosmic-section-header flex justify-between items-center mb-4">
                     <h2 className="cosmic-section-title flex items-center">
                       <GraduationCap className="cosmic-section-icon h-5 w-5 mr-2" />
@@ -3143,7 +3143,7 @@ export default function ResumeBuilder() {
                       }}
                     />
 
-                    <div className="mt-2 text-xs text-gray-300 bg-white/5 p-3 rounded-lg">
+                    <div className="mt-4 text-xs text-gray-300 bg-white/5 p-4 rounded-lg border border-white/10">
                       <p className="mb-2 text-blue-300 font-medium">
                         Tips for showcasing skills:
                       </p>
@@ -3214,7 +3214,7 @@ export default function ResumeBuilder() {
 
               {/* Projects Section */}
               {activeSection === "projects" && (
-                <div>
+                <div className="grid grid-cols-1 gap-10">
                   <div className="cosmic-section-header flex justify-between items-center mb-4">
                     <h2 className="cosmic-section-title flex items-center">
                       <FolderKanban className="cosmic-section-icon h-5 w-5 mr-2" />
@@ -3250,7 +3250,7 @@ export default function ResumeBuilder() {
                       Download PDF
                     </CosmicButton>
                   </div>
-                  <div className="bg-white/5 backdrop-blur-sm p-8 rounded-xl border border-white/10 shadow-xl">
+                  <div className="cosmic-card border border-white/10 backdrop-blur-sm p-8 rounded-xl shadow-lg">
                     <ResumePreviewComponent
                       resume={resume || {
                         title: "My Professional Resume",

@@ -2786,14 +2786,14 @@ export default function ResumeBuilder() {
             </div>
 
             {/* Tab Content */}
-            <div className="p-8">
+            <div className="p-space-8">
               {/* Profile Section */}
               {activeSection === "profile" && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                   {/* Tailored Resume Banner - show briefly when coming from job details */}
                   {isTailoredResume && (
                     <div className="md:col-span-3 mb-4">
-                      <div className="cosmic-card border border-green-500/30 bg-green-900/20 p-4 rounded-lg relative overflow-hidden backdrop-blur-sm">
+                      <div className="cosmic-card border border-green-500/30 bg-green-900/20 p-space-4 rounded-lg relative overflow-hidden backdrop-blur-sm">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-3xl"></div>
                         <div className="relative z-10">
                           <div className="flex items-center mb-2">
@@ -2817,7 +2817,7 @@ export default function ResumeBuilder() {
                   {!resume?.personalInfo?.firstName &&
                     !resume?.personalInfo?.lastName && (
                       <div className="md:col-span-3 mb-4">
-                        <div className="cosmic-card border border-blue-500/30 bg-blue-900/20 p-6 rounded-lg relative overflow-hidden backdrop-blur-sm">
+                        <div className="cosmic-card border border-blue-500/30 bg-blue-900/20 p-space-6 rounded-lg relative overflow-hidden backdrop-blur-sm">
                           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
                           <div className="relative z-10">
                             <div className="flex items-center mb-3">

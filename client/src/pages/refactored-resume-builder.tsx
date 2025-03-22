@@ -2855,15 +2855,15 @@ export default function ResumeBuilder() {
                       </div>
                     )}
                   <div className="md:col-span-2 space-y-8">
-                    <div className="cosmic-resume-section">
-                      <div className="cosmic-section-header mb-6">
-                        <User className="cosmic-section-icon h-5 w-5" />
-                        <h2 className="cosmic-section-title">Contact Information</h2>
+                    <div className="mb-8">
+                      <div className="flex items-center mb-10 ml-3">
+                        <User className="h-6 w-6 text-blue-400 mr-3" />
+                        <h2 className="text-2xl font-semibold text-white">Contact Information</h2>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6 mb-8">
-                        <div className="cosmic-form-group">
-                          <Label htmlFor="firstName" className="cosmic-form-label mb-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8 mb-12">
+                        <div>
+                          <Label htmlFor="firstName" className="block text-sm font-medium text-gray-300 mb-2">
                             First Name
                           </Label>
                           <Input
@@ -2872,12 +2872,12 @@ export default function ResumeBuilder() {
                             onChange={(e) =>
                               updatePersonalInfo("firstName", e.target.value)
                             }
-                            className="cosmic-form-input"
+                            className="bg-navy-800 border border-gray-700 rounded-md text-white w-full p-2.5 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Dylan"
                           />
                         </div>
-                        <div className="cosmic-form-group">
-                          <Label htmlFor="lastName" className="cosmic-form-label mb-2">
+                        <div>
+                          <Label htmlFor="lastName" className="block text-sm font-medium text-gray-300 mb-2">
                             Last Name
                           </Label>
                           <Input
@@ -2886,12 +2886,12 @@ export default function ResumeBuilder() {
                             onChange={(e) =>
                               updatePersonalInfo("lastName", e.target.value)
                             }
-                            className="cosmic-form-input"
+                            className="bg-navy-800 border border-gray-700 rounded-md text-white w-full p-2.5 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Spivack"
                           />
                         </div>
-                        <div className="cosmic-form-group">
-                          <Label htmlFor="email" className="cosmic-form-label mb-2">
+                        <div>
+                          <Label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
                             Email
                           </Label>
                           <Input
@@ -2901,12 +2901,12 @@ export default function ResumeBuilder() {
                             onChange={(e) =>
                               updatePersonalInfo("email", e.target.value)
                             }
-                            className="cosmic-form-input"
-                            placeholder="dylan.spivack@example.com"
+                            className="bg-navy-800 border border-gray-700 rounded-md text-white w-full p-2.5 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="john.doe@example.com"
                           />
                         </div>
-                        <div className="cosmic-form-group">
-                          <Label htmlFor="phone" className="cosmic-form-label mb-2">
+                        <div>
+                          <Label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-2">
                             Phone
                           </Label>
                           <Input
@@ -2915,15 +2915,15 @@ export default function ResumeBuilder() {
                             onChange={(e) =>
                               updatePersonalInfo("phone", e.target.value)
                             }
-                            className="cosmic-form-input"
-                            placeholder="(303) 555-9307"
+                            className="bg-navy-800 border border-gray-700 rounded-md text-white w-full p-2.5 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="(555) 123-4567"
                           />
                         </div>
                       </div>
 
-                      <div className="mb-8 pt-2 pb-8 border-b border-blue-500/20">
-                        <div className="cosmic-form-group">
-                          <Label htmlFor="headline" className="cosmic-form-label mb-2">
+                      <div className="mb-12 border-b border-gray-700 pb-10">
+                        <div>
+                          <Label htmlFor="headline" className="block text-sm font-medium text-gray-300 mb-2">
                             Professional Headline
                           </Label>
                           <Input
@@ -2932,16 +2932,16 @@ export default function ResumeBuilder() {
                             onChange={(e) =>
                               updatePersonalInfo("headline", e.target.value)
                             }
-                            className="cosmic-form-input"
-                            placeholder="Dynamic Software Engineer"
+                            className="bg-navy-800 border border-gray-700 rounded-md text-white w-full p-2.5 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Frontend Developer | React & TypeScript Specialist"
                           />
                           <p className="mt-2 text-xs text-blue-300/70">A brief title that describes your professional identity</p>
                         </div>
                       </div>
 
                       <div>
-                        <div className="cosmic-form-group">
-                          <Label htmlFor="summary" className="cosmic-form-label mb-2">
+                        <div>
+                          <Label htmlFor="summary" className="block text-sm font-medium text-gray-300 mb-2">
                             Professional Summary
                           </Label>
                           <Textarea
@@ -2950,11 +2950,11 @@ export default function ResumeBuilder() {
                             onChange={(e) =>
                               updatePersonalInfo("summary", e.target.value)
                             }
-                            className="cosmic-form-input cosmic-form-textarea"
+                            className="bg-navy-800 border border-gray-700 rounded-md text-white w-full p-2.5 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 min-h-[120px]"
                             rows={5}
-                            placeholder="Dynamic Software Engineer with 4 years of experience in web development and optimization. Engineered client websites, resulting in 30% efficiency gains, and developed a custom CMS improving content management by 20%. Seeking to leverage skills in coding and project management to contribute to innovative projects."
+                            placeholder="Experienced Staff Development RN with a proven track record in long-term care, adept at enhancing staff competencies through targeted training and compassionate leadership. Holds an RN license with a commitment to high-quality healthcare and improving patient outcomes."
                           />
-                          <div className="mt-3 text-xs text-blue-100/60 bg-blue-500/5 p-space-3 rounded-lg border border-blue-500/10">
+                          <div className="mt-4 text-xs text-blue-100/80 bg-blue-500/5 p-4 rounded-lg border border-blue-500/20">
                             <p className="mb-2 text-blue-300 font-medium">
                               Tips for a great summary:
                             </p>

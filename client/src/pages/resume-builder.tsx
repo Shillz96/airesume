@@ -3102,23 +3102,103 @@ export default function ResumeBuilder() {
 
               {/* Education Section */}
               {activeSection === "education" && (
-                <div className="grid grid-cols-1 gap-10">
-                  <div className="cosmic-section-header flex justify-between items-center mb-4">
-                    <h2 className="cosmic-section-title flex items-center">
-                      <GraduationCap className="cosmic-section-icon h-5 w-5 mr-2" />
-                      Education
-                    </h2>
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                  <div className="md:col-span-2">
+                    <div className="cosmic-section-header flex justify-between items-center mb-4">
+                      <h2 className="cosmic-section-title flex items-center">
+                        <GraduationCap className="cosmic-section-icon h-5 w-5 mr-2" />
+                        Education
+                      </h2>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="ml-auto"
+                        onClick={() => {
+                          // Add an empty education entry
+                          const newEducation = {
+                            id: `education-${Date.now()}`,
+                            degree: "",
+                            institution: "",
+                            startDate: "",
+                            endDate: "",
+                            description: "",
+                          };
+                          setResume({
+                            ...resume,
+                            education: [...(resume?.education || []), newEducation],
+                          });
+                        }}
+                      >
+                        Add Education
+                      </Button>
+                    </div>
 
-                  <ResumeEducationSection
-                    education={resume?.education || []}
-                    onUpdate={(education) => {
-                      setResume({
-                        ...resume,
-                        education,
-                      });
-                    }}
-                  />
+                    <ResumeEducationSection
+                      education={resume?.education || []}
+                      onUpdate={(education) => {
+                        setResume({
+                          ...resume,
+                          education,
+                        });
+                      }}
+                    />
+                    
+                    <div className="mt-4 text-xs text-gray-300 bg-white/5 p-space-4 rounded-lg border border-white/10">
+                      <p className="mb-2 text-blue-300 font-medium">
+                        Tips for education section:
+                      </p>
+                      <ul className="list-disc pl-4 space-y-1">
+                        <li>List your most recent education first</li>
+                        <li>Include relevant coursework and achievements</li>
+                        <li>Mention academic honors and awards</li>
+                        <li>Only include GPA if it strengthens your profile</li>
+                      </ul>
+                    </div>
+                  </div>
+                  
+                  {/* Education AI Assistant */}
+                  <div className="md:col-span-1">
+                    <div className="cosmic-ai-card min-h-[300px]">
+                      <div className="relative z-10">
+                        <div className="flex items-center gap-2 mb-5">
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center">
+                            <GraduationCap className="h-4 w-4 text-white" />
+                          </div>
+                          <h3 className="font-medium text-white text-lg">
+                            Education Assistant
+                          </h3>
+                        </div>
+
+                        <div className="space-y-4">
+                          <p className="text-sm text-blue-100">
+                            Enhance your education section with these tips from our AI assistant:
+                          </p>
+                          
+                          <div className="space-y-2 text-sm">
+                            <div className="p-2 rounded bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                              Focus on relevant coursework that aligns with your target job
+                            </div>
+                            <div className="p-2 rounded bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                              Highlight leadership roles in student organizations
+                            </div>
+                            <div className="p-2 rounded bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                              Include special projects, research, or thesis work
+                            </div>
+                            <div className="p-2 rounded bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                              List certifications or specialized training programs
+                            </div>
+                          </div>
+                          
+                          <button 
+                            className="w-full mt-4 py-2 px-3 bg-blue-600/30 hover:bg-blue-600/50 rounded-md text-white text-sm transition-colors"
+                            onClick={() => setIsDialogOpen(true)}
+                          >
+                            Get AI suggestions
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -3215,23 +3295,45 @@ export default function ResumeBuilder() {
 
               {/* Projects Section */}
               {activeSection === "projects" && (
-                <div className="grid grid-cols-1 gap-10">
-                  <div className="cosmic-section-header flex justify-between items-center mb-4">
-                    <h2 className="cosmic-section-title flex items-center">
-                      <FolderKanban className="cosmic-section-icon h-5 w-5 mr-2" />
-                      Projects
-                    </h2>
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                  <div className="md:col-span-3">
+                    <div className="cosmic-section-header flex justify-between items-center mb-4">
+                      <h2 className="cosmic-section-title flex items-center">
+                        <FolderKanban className="cosmic-section-icon h-5 w-5 mr-2" />
+                        Projects
+                      </h2>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="ml-auto"
+                        onClick={() => {
+                          // Add an empty project
+                          const newProject = {
+                            id: `project-${Date.now()}`,
+                            title: "",
+                            description: "",
+                            technologies: [],
+                          };
+                          setResume({
+                            ...resume,
+                            projects: [...(resume?.projects || []), newProject],
+                          });
+                        }}
+                      >
+                        Add Project
+                      </Button>
+                    </div>
 
-                  <ResumeProjectsSection
-                    projects={resume?.projects || []}
-                    onUpdate={(projects) => {
-                      setResume({
-                        ...resume,
-                        projects,
-                      });
-                    }}
-                  />
+                    <ResumeProjectsSection
+                      projects={resume?.projects || []}
+                      onUpdate={(projects) => {
+                        setResume({
+                          ...resume,
+                          projects,
+                        });
+                      }}
+                    />
+                  </div>
                 </div>
               )}
 

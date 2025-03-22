@@ -81,3 +81,14 @@
     scrollbar-width: none;  /* Firefox */
   }
 }
+
+/* Critical fix for Radix UI popper elements z-index issues */
+div[data-radix-popper-content-wrapper] {
+  z-index: 999 !important;
+  position: relative !important; 
+}
+
+/* Ensure menu elements are above the navbar */
+[role="menu"] {
+  z-index: 999 !important;
+}

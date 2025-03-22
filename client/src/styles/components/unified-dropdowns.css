@@ -27,7 +27,8 @@
 
 /* Ensure shadcn dropdown content has proper z-index */
 [data-radix-popper-content-wrapper] {
-  z-index: var(--z-dropdown) !important; /* Override any existing z-index */
+  z-index: 999 !important; /* Override any existing z-index with a very high value */
+  position: relative !important;
 }
 
 /* Style specifically for shadcn DropdownMenuContent */
@@ -187,6 +188,6 @@
 /* Ensure dropdown is above navbar for all themes */
 .dropdown-above-navbar, 
 [data-radix-popper-content-wrapper] {
-  z-index: var(--z-dropdown) !important;
-  position: relative;
+  z-index: 999 !important;
+  position: relative !important;
 }

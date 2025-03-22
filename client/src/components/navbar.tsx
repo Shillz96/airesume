@@ -173,7 +173,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className="cosmic-navbar fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-lg shadow-lg border-b border-white/10"
+      className="cosmic-navbar fixed top-0 left-0 right-0 z-40 bg-black/50 backdrop-blur-lg shadow-lg border-b border-white/10"
       ref={navbarRef}
       role="navigation"
       aria-label="Main navigation"
@@ -245,7 +245,7 @@ export default function Navbar() {
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="cosmic-card border-white/10 py-2 z-60" style={{ zIndex: 100 }}>
+              <DropdownMenuContent align="end" className="cosmic-card border-white/10 py-2" style={{ zIndex: 999, position: 'relative' }}>
                 {user ? (
                   <>
                     <div className="px-4 py-2 text-sm text-gray-300 font-medium border-b border-white/10 mb-1">

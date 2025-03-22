@@ -11,7 +11,7 @@
   left: 0;
   right: 0;
   width: 100%;
-  z-index: var(--z-sticky);
+  z-index: 50;
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -46,4 +46,39 @@
 
 .cosmic-breadcrumbs-separator {
   @apply mx-2 text-blue-300/40;
+}
+
+/* Profile dropdown fixes */
+.cosmic-navbar .Avatar {
+  display: block;
+  position: relative;
+  z-index: 52;
+}
+
+.cosmic-navbar [data-radix-popper-content-wrapper] {
+  z-index: 100;
+  position: absolute;
+}
+
+/* Dropdown menu styling overrides */
+[role="menu"] {
+  background-color: rgba(17, 24, 39, 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Fix for scroll bars appearing when dropdowns are toggled */
+html {
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.cosmic-app-container {
+  overflow-x: hidden;
 }

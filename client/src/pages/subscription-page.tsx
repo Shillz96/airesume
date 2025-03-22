@@ -236,23 +236,26 @@ export default function SubscriptionPage() {
   };
   
   return (
-    <div className="min-h-screen">
-      <Navbar />
+    <>
       <div className="container pt-12 pb-10 px-4 md:px-6 max-w-7xl mx-auto relative z-10">
-        <div className="flex justify-between items-center mb-2">
-          <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Subscription Management</h1>
-            <p className="text-sm text-gray-400">Manage your plans, add-ons, and payment history</p>
-          </div>
-          <Button
-            variant="outline"
-            onClick={() => setLocation("/")}
-            className="hidden sm:flex items-center bg-transparent border border-gray-700 hover:bg-gray-800 text-white"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Dashboard
-          </Button>
-        </div>
+        <PageHeader
+          title={
+            <span className="cosmic-text-gradient">
+              Subscription Management
+            </span>
+          }
+          subtitle="Manage your plans, add-ons, and payment history"
+          actions={
+            <Button
+              variant="outline"
+              onClick={() => setLocation("/dashboard")}
+              className="hidden sm:flex items-center bg-transparent border border-gray-700 hover:bg-gray-800 text-white cosmic-glow"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Dashboard
+            </Button>
+          }
+        />
         
         <Tabs defaultValue="subscription" className="w-full mt-6">
           <TabsList className="grid w-full grid-cols-3 bg-[#151830] rounded-md border border-[#252a47] p-0.5 mb-4">
@@ -283,7 +286,7 @@ export default function SubscriptionPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Current Subscription Card */}
-              <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
+              <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden">
                 <CardHeader>
                   <CardTitle className="text-white">Current Plan</CardTitle>
                   <CardDescription className="text-gray-400">Your active subscription details</CardDescription>
@@ -379,7 +382,7 @@ export default function SubscriptionPage() {
               </Card>
 
               {/* Starter Plan Card */}
-              <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
+              <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <div>
@@ -426,7 +429,7 @@ export default function SubscriptionPage() {
               </Card>
 
               {/* Pro Plan Card */}
-              <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
+              <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <div>
@@ -477,7 +480,7 @@ export default function SubscriptionPage() {
               </Card>
 
               {/* Career Builder Plan Card */}
-              <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
+              <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <div>
@@ -574,7 +577,7 @@ export default function SubscriptionPage() {
               </Card>
               
               {/* Add-on Cards */}
-              <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden" id="add-ons-section">
+              <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden" id="add-ons-section">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <div>
@@ -619,7 +622,7 @@ export default function SubscriptionPage() {
                 </CardFooter>
               </Card>
               
-              <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
+              <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <div>
@@ -664,7 +667,7 @@ export default function SubscriptionPage() {
                 </CardFooter>
               </Card>
               
-              <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
+              <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <div>
@@ -712,7 +715,7 @@ export default function SubscriptionPage() {
           </TabsContent>
 
           <TabsContent value="billing" className="space-y-4">
-            <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
+            <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden">
               <CardHeader>
                 <CardTitle className="text-white">Payment History</CardTitle>
                 <CardDescription className="text-gray-400">Your recent payments and transactions</CardDescription>
@@ -774,7 +777,7 @@ export default function SubscriptionPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
+            <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden">
               <CardHeader>
                 <CardTitle className="text-white">Payment Methods</CardTitle>
                 <CardDescription className="text-gray-400">Manage your payment options</CardDescription>
@@ -858,6 +861,6 @@ export default function SubscriptionPage() {
           </DialogContent>
         </Dialog>
       </div>
-    </div>
+    </>
   );
 }

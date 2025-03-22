@@ -87,7 +87,7 @@ function AppContent() {
 
   return (
     <div className={`min-h-screen cosmic-app-container ${isDarkMode ? '' : 'light-mode'}`}>
-      {/* Global Cosmic Background */}
+      {/* Global Cosmic Background with consistent styling across all pages */}
       <CosmicBackground />
       
       {/* Content */}

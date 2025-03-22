@@ -4,10 +4,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { CosmicButton } from '@/components/cosmic-button';
-import { Upload, User, Mail, Phone, Briefcase } from 'lucide-react';
+import { CosmicButton } from '@/components/cosmic-button-refactored';
+import { Upload, User, Mail, Phone, Briefcase, CheckIcon } from 'lucide-react';
 import { PersonalInfo } from '@/hooks/use-resume-data';
 import { getCosmicColor, getSpacing } from '@/lib/theme-utils';
+import { SectionHeader, SectionCard } from './ResumeComponentShared';
 
 interface PersonalInfoSectionProps {
   personalInfo: PersonalInfo;
@@ -19,6 +20,7 @@ interface PersonalInfoSectionProps {
 
 /**
  * PersonalInfoSection component for managing personal information in the resume
+ * Updated to use the cosmic styling consistently across all resume sections
  */
 export function PersonalInfoSection({
   personalInfo,
@@ -28,18 +30,18 @@ export function PersonalInfoSection({
   showUploadCard = false
 }: PersonalInfoSectionProps) {
   return (
-    <div className="space-y-6">
-      <div className="cosmic-section-header">
-        <User className="cosmic-section-icon h-5 w-5" />
-        <h3 className="cosmic-section-title">Personal Information</h3>
-      </div>
+    <div className="cosmic-resume-section">
+      <SectionHeader 
+        title="Personal Information" 
+        icon={<User className="cosmic-section-icon h-5 w-5" />}
+      />
 
       {showUploadCard && onFileUpload && (
-        <Card className="cosmic-card cosmic-card-gradient border-white/10 mb-6">
-          <CardContent className="cosmic-card-body flex items-center justify-between">
+        <SectionCard withHoverEffect={true} className="mb-6">
+          <div className="flex items-center justify-between">
             <div>
-              <h4 className="font-medium text-lg cosmic-text-gradient">Import from Existing Resume</h4>
-              <p className="text-sm opacity-70 mt-1">
+              <h4 className="cosmic-text-gradient font-medium text-lg">Import from Existing Resume</h4>
+              <p className="text-sm text-white/70 mt-1">
                 Upload your existing resume to extract your information automatically
               </p>
             </div>
@@ -47,138 +49,136 @@ export function PersonalInfoSection({
               variant="outline"
               onClick={onFileUpload}
               iconLeft={<Upload className="h-4 w-4 mr-2" />}
+              withGlow
             >
               Upload Resume
             </CosmicButton>
-          </CardContent>
-        </Card>
+          </div>
+        </SectionCard>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* First column */}
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="firstName">First Name</Label>
-            <Input
-              id="firstName"
-              value={personalInfo.firstName}
-              onChange={(e) => onUpdate('firstName', e.target.value)}
-              placeholder="Your first name"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="lastName">Last Name</Label>
-            <Input
-              id="lastName"
-              value={personalInfo.lastName}
-              onChange={(e) => onUpdate('lastName', e.target.value)}
-              placeholder="Your last name"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <SectionCard className="transition-all duration-300">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* First column */}
+          <div className="space-y-6">
+            <div className="cosmic-form-group">
+              <Label htmlFor="firstName" className="cosmic-form-label">First Name</Label>
               <Input
-                id="email"
-                type="email"
-                value={personalInfo.email}
-                onChange={(e) => onUpdate('email', e.target.value)}
-                className="pl-10"
-                placeholder="your.email@example.com"
+                id="firstName"
+                value={personalInfo.firstName}
+                onChange={(e) => onUpdate('firstName', e.target.value)}
+                placeholder="Your first name"
+                className="cosmic-form-input"
               />
+            </div>
+
+            <div className="cosmic-form-group">
+              <Label htmlFor="lastName" className="cosmic-form-label">Last Name</Label>
+              <Input
+                id="lastName"
+                value={personalInfo.lastName}
+                onChange={(e) => onUpdate('lastName', e.target.value)}
+                placeholder="Your last name"
+                className="cosmic-form-input"
+              />
+            </div>
+
+            <div className="cosmic-form-group">
+              <Label htmlFor="email" className="cosmic-form-label">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/70" />
+                <Input
+                  id="email"
+                  type="email"
+                  value={personalInfo.email}
+                  onChange={(e) => onUpdate('email', e.target.value)}
+                  className="cosmic-form-input pl-10"
+                  placeholder="your.email@example.com"
+                />
+              </div>
+            </div>
+
+            <div className="cosmic-form-group">
+              <Label htmlFor="phone" className="cosmic-form-label">Phone</Label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/70" />
+                <Input
+                  id="phone"
+                  value={personalInfo.phone}
+                  onChange={(e) => onUpdate('phone', e.target.value)}
+                  className="cosmic-form-input pl-10"
+                  placeholder="(555) 123-4567"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="phone"
-                value={personalInfo.phone}
-                onChange={(e) => onUpdate('phone', e.target.value)}
-                className="pl-10"
-                placeholder="(555) 123-4567"
+          {/* Second column */}
+          <div className="space-y-6">
+            <div className="cosmic-form-group">
+              <Label htmlFor="headline" className="cosmic-form-label">Professional Headline</Label>
+              <div className="relative">
+                <Briefcase className="absolute left-3 top-3 h-4 w-4 text-primary/70" />
+                <Input
+                  id="headline"
+                  value={personalInfo.headline}
+                  onChange={(e) => onUpdate('headline', e.target.value)}
+                  className="cosmic-form-input pl-10"
+                  placeholder="e.g., Senior Software Engineer | React Specialist"
+                />
+              </div>
+              <p className="mt-2 text-xs text-primary/70">
+                A short headline that appears below your name
+              </p>
+            </div>
+
+            <div className="cosmic-form-group">
+              <Label htmlFor="summary" className="cosmic-form-label">Professional Summary</Label>
+              <Textarea
+                id="summary"
+                value={personalInfo.summary}
+                onChange={(e) => onUpdate('summary', e.target.value)}
+                rows={8}
+                className="cosmic-form-input cosmic-form-textarea"
+                placeholder="Briefly introduce yourself, highlighting your expertise, experience, and unique value proposition..."
               />
+              <p className="mt-2 text-xs text-primary/70">
+                Aim for 3-5 sentences that highlight your professional strengths and career goals
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Second column */}
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="headline">Professional Headline</Label>
-            <div className="relative">
-              <Briefcase className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="headline"
-                value={personalInfo.headline}
-                onChange={(e) => onUpdate('headline', e.target.value)}
-                className="pl-10"
-                placeholder="e.g., Senior Software Engineer | React Specialist"
-              />
-            </div>
-            <p className="text-xs text-muted-foreground">
-              A short headline that appears below your name
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="summary">Professional Summary</Label>
-            <Textarea
-              id="summary"
-              value={personalInfo.summary}
-              onChange={(e) => onUpdate('summary', e.target.value)}
-              rows={8}
-              placeholder="Briefly introduce yourself, highlighting your expertise, experience, and unique value proposition..."
-            />
-            <p className="text-xs text-muted-foreground">
-              Aim for 3-5 sentences that highlight your professional strengths and career goals
-            </p>
-          </div>
+        <div className="mt-6 pt-4 border-t border-primary/20">
+          <h4 className="text-sm font-medium text-white/80 mb-3">Recommendations:</h4>
+          <ul className="space-y-2 text-sm">
+            <li className="flex items-start gap-2">
+              <div className="rounded-full bg-primary/20 text-primary p-0.5 mt-0.5">
+                <CheckIcon size={12} />
+              </div>
+              <span className="text-white/70">Keep your summary concise and impactful - aim for 3-5 sentences</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <div className="rounded-full bg-primary/20 text-primary p-0.5 mt-0.5">
+                <CheckIcon size={12} />
+              </div>
+              <span className="text-white/70">Include relevant keywords from job descriptions you're targeting</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <div className="rounded-full bg-primary/20 text-primary p-0.5 mt-0.5">
+                <CheckIcon size={12} />
+              </div>
+              <span className="text-white/70">Your professional headline should be specific and include your specialty</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <div className="rounded-full bg-primary/20 text-primary p-0.5 mt-0.5">
+                <CheckIcon size={12} />
+              </div>
+              <span className="text-white/70">Use a professional email address, ideally with your name</span>
+            </li>
+          </ul>
         </div>
-      </div>
-
-      <div className="space-y-2 mt-4">
-        <h4 className="text-sm font-medium text-muted-foreground">Recommendations:</h4>
-        <ul className="space-y-1 text-sm">
-          <li className="flex items-start gap-2">
-            <div className="rounded-full bg-green-500/20 text-green-500 p-0.5 mt-0.5">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            </div>
-            Keep your summary concise and impactful - aim for 3-5 sentences
-          </li>
-          <li className="flex items-start gap-2">
-            <div className="rounded-full bg-green-500/20 text-green-500 p-0.5 mt-0.5">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            </div>
-            Include relevant keywords from job descriptions you're targeting
-          </li>
-          <li className="flex items-start gap-2">
-            <div className="rounded-full bg-green-500/20 text-green-500 p-0.5 mt-0.5">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            </div>
-            Your professional headline should be specific and include your specialty
-          </li>
-          <li className="flex items-start gap-2">
-            <div className="rounded-full bg-green-500/20 text-green-500 p-0.5 mt-0.5">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            </div>
-            Use a professional email address, ideally with your name
-          </li>
-        </ul>
-      </div>
+      </SectionCard>
     </div>
   );
 }

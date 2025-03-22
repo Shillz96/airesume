@@ -1571,7 +1571,9 @@ export default function ResumeBuilder() {
   const [isTailoredResume, setIsTailoredResume] = useState<boolean>(
     searchParams.get("tailored") === "true",
   );
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  // Dialog state no longer needed as we removed the floating assistant
+  // But keeping it for compatibility with existing code
+  const [isDialogOpen, setIsDialogOpen] = useState(true);
   const [showTips, setShowTips] = useState<
     "summary" | "experience" | "skills" | null
   >(null);
@@ -3290,68 +3292,7 @@ export default function ResumeBuilder() {
         </div>
       </main>
 
-      {/* Floating AI Assistant Button */}
-      <div className="fixed bottom-6 right-6 z-50 group">
-        <div className="absolute -inset-1 rounded-full bg-blue-500 opacity-75 blur-md group-hover:opacity-100 transition duration-300 animate-pulse"></div>
-        <CosmicButton
-          variant="primary"
-          onClick={() => setIsDialogOpen(!isDialogOpen)}
-          className="relative h-16 w-16 rounded-full p-0 shadow-xl group-hover:scale-105 transition duration-300"
-          aria-label="Open AI Assistant"
-        >
-          <div className="absolute inset-0 rounded-full border border-white/20 animate-ping opacity-40"></div>
-          <div className="bg-gradient-to-br from-blue-400 to-purple-600 absolute inset-0 rounded-full opacity-80"></div>
-          <Sparkles className="h-6 w-6 text-white relative z-10" />
-        </CosmicButton>
-        <span className="absolute top-0 right-20 bg-black/80 text-white text-sm py-1.5 px-3 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-          AI Assistant
-        </span>
-      </div>
-
-      {/* AI Assistant Chat Box */}
-      {isDialogOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-[450px] max-w-full shadow-xl rounded-lg overflow-hidden transition-all duration-300 ease-in-out">
-          <div className="bg-gradient-to-r from-blue-900 to-purple-900 p-4 flex justify-between items-center border-b border-blue-500/30">
-            <div className="flex items-center">
-              <Cpu className="h-6 w-6 text-blue-300 mr-3" />
-              <h3 className="text-white font-medium text-lg">AI Resume Assistant</h3>
-            </div>
-            <CosmicButton
-              variant="ghost"
-              onClick={() => setIsDialogOpen(false)}
-              className="h-9 w-9 rounded-full p-0"
-              aria-label="Close"
-            >
-              <X className="h-5 w-5 text-white" />
-            </CosmicButton>
-          </div>
-          <div className="bg-black/90 border-x border-blue-500/30 border-b p-5 h-[450px] overflow-y-auto">
-            <AIAssistant
-              resumeId={resumeId?.toString()}
-              onApplySummary={handleApplySummary}
-              onApplyBulletPoint={handleApplyBulletPoint}
-              onApplySkill={handleApplySkill}
-              resume={resume || {
-                title: "My Professional Resume",
-                personalInfo: {
-                  firstName: "",
-                  lastName: "",
-                  email: "",
-                  phone: "",
-                  headline: "",
-                  summary: "",
-                },
-                experience: [],
-                education: [],
-                skills: [],
-                projects: [],
-                template: "professional",
-              }}
-              activeTab={activeSection || 'contact'}
-            />
-          </div>
-        </div>
-      )}
+      {/* We've removed the floating AI assistant button and popup chat window as requested */}
     </div>
   );
 }

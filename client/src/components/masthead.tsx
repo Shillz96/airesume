@@ -11,9 +11,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { isDarkMode } from "@/lib/theme-utils";
+import { toggleDarkMode as toggleTheme } from "@/lib/theme-loader";
 import gsap from "gsap";
-
-// CSS for the stars and trail effects should be added to index.css
 
 export default function Masthead() {
   const [location] = useLocation();
@@ -32,8 +31,10 @@ export default function Masthead() {
   ];
 
   function toggleDarkMode() {
+    // Toggle theme using our theme-loader utility
+    toggleTheme();
+    // Update local state
     setDarkMode(!darkMode);
-    // In a real implementation, this would update the theme in theme.json
   }
 
   function handleLogout() {

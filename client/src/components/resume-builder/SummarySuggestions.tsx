@@ -8,10 +8,17 @@ export type SummaryLength = "short" | "medium" | "long";
 
 export interface SummarySuggestionsProps {
   resumeId: string;
+  jobTitle?: string;
+  existingSummary?: string; // Added to avoid repetition
   onApply: (summary: string) => void;
 }
 
-export default function SummarySuggestions({ resumeId, onApply }: SummarySuggestionsProps) {
+export default function SummarySuggestions({ 
+  resumeId, 
+  jobTitle,
+  existingSummary,
+  onApply 
+}: SummarySuggestionsProps) {
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [summaries, setSummaries] = useState<string[]>([]);

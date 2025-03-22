@@ -26,24 +26,22 @@ import ResumeTemplate, {
   TemplatePreviewBold,
 } from "@/components/resume-template";
 
-// Import our modular resume section components
-import { PersonalInfoSection } from "@/components/resume/PersonalInfoSection";
-import { ExperienceSection } from "@/components/resume/ExperienceSection";
-import { EducationSection } from "@/components/resume/EducationSection";
-import { SkillsSection } from "@/components/resume/SkillsSection";
-import { ProjectsSection } from "@/components/resume/ProjectsSection";
-
-// Keep legacy imports for now to ensure backward compatibility during refactoring
+// Import our unified resume section components for consistent styling
 import {
-  ResumeExperienceSection,
-  ResumeEducationSection,
-  ResumeSkillsSection,
-  ResumeProjectsSection,
+  PersonalInfoSection,
+  ExperienceSection,
+  EducationSection,
+  SkillsSection,
+  ProjectsSection
+} from "@/components/resume/UnifiedResumeSections";
+
+// Types for resume data
+import {
   ExperienceItem,
   EducationItem,
   SkillItem,
   ProjectItem,
-} from "@/components/resume-section";
+} from "@/hooks/use-resume-data";
 import { Resume } from "@/components/resume-template";
 
 // UI Components

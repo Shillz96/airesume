@@ -2986,18 +2986,19 @@ export default function ResumeBuilder() {
                   </div>
 
                   {/* AI Tips Section */}
-                  <div className="md:col-span-1">
-                    <div className="cosmic-card border border-white/10 bg-black/40 p-6 rounded-lg relative overflow-hidden shadow-lg">
-                      <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-2xl"></div>
-                      <div className="relative z-10">
-                        <div className="flex items-center mb-4">
-                          <Cpu className="h-6 w-6 mr-3 text-blue-400 animate-pulse" />
-                          <h3 className="font-medium text-white text-lg">
+                  <div className="md:col-span-1 flex flex-col h-full">
+                    <div className="cosmic-card border border-blue-500/30 bg-gradient-to-br from-blue-950/40 to-indigo-950/40 p-6 rounded-lg relative overflow-hidden shadow-lg flex-grow h-full">
+                      <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl"></div>
+                      <div className="absolute bottom-0 left-0 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl"></div>
+                      <div className="relative z-10 h-full flex flex-col">
+                        <div className="flex items-center mb-5">
+                          <Cpu className="h-7 w-7 mr-3 text-blue-400 animate-pulse" />
+                          <h3 className="font-medium text-blue-100 text-xl">
                             AI Resume Assistant
                           </h3>
                         </div>
 
-                        <div className="w-full">
+                        <div className="w-full flex-grow">
                           <ResumeTips
                             resumeId={resumeId}
                             onApplySuggestion={(suggestion) => {
@@ -3058,18 +3059,19 @@ export default function ResumeBuilder() {
                   </div>
 
                   {/* Tips for Experience */}
-                  <div className="md:col-span-1">
-                    <div className="cosmic-card border border-white/10 bg-black/40 p-5 rounded-lg relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
-                      <div className="relative z-10">
-                        <div className="flex items-center mb-4">
-                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
-                          <h3 className="font-medium text-white">
+                  <div className="md:col-span-1 flex flex-col h-full">
+                    <div className="cosmic-card border border-blue-500/30 bg-gradient-to-br from-blue-950/40 to-indigo-950/40 p-6 rounded-lg relative overflow-hidden shadow-lg flex-grow h-full">
+                      <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl"></div>
+                      <div className="absolute bottom-0 left-0 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl"></div>
+                      <div className="relative z-10 h-full flex flex-col">
+                        <div className="flex items-center mb-5">
+                          <Cpu className="h-7 w-7 mr-3 text-blue-400 animate-pulse" />
+                          <h3 className="font-medium text-blue-100 text-xl">
                             AI Experience Assistant
                           </h3>
                         </div>
 
-                        <div className="w-full">
+                        <div className="w-full flex-grow">
                           <ResumeTips
                             resumeId={resumeId}
                             onApplySuggestion={(bulletPoint) => {
@@ -3172,18 +3174,19 @@ export default function ResumeBuilder() {
                   </div>
 
                   {/* Tips for Skills */}
-                  <div className="md:col-span-1">
-                    <div className="cosmic-card border border-white/10 bg-black/40 p-5 rounded-lg relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
-                      <div className="relative z-10">
-                        <div className="flex items-center mb-4">
-                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
-                          <h3 className="font-medium text-white">
+                  <div className="md:col-span-1 flex flex-col h-full">
+                    <div className="cosmic-card border border-blue-500/30 bg-gradient-to-br from-blue-950/40 to-indigo-950/40 p-6 rounded-lg relative overflow-hidden shadow-lg flex-grow h-full">
+                      <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl"></div>
+                      <div className="absolute bottom-0 left-0 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl"></div>
+                      <div className="relative z-10 h-full flex flex-col">
+                        <div className="flex items-center mb-5">
+                          <Cpu className="h-7 w-7 mr-3 text-blue-400 animate-pulse" />
+                          <h3 className="font-medium text-blue-100 text-xl">
                             AI Skills Assistant
                           </h3>
                         </div>
 
-                        <div className="w-full">
+                        <div className="w-full flex-grow">
                           <ResumeTips
                             resumeId={resumeId}
                             onApplySuggestion={(skill) => {

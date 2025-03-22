@@ -77,7 +77,7 @@ export default function ResumeBuilder() {
   return (
     <div className="cosmic-app-container flex flex-col min-h-screen">
       
-      <div className="cosmic-main-content container pt-12 pb-20 px-4 md:px-6 max-w-7xl mx-auto relative z-10">
+      <div className="cosmic-main-content container pt-4 pb-20 px-4 md:px-6 max-w-7xl mx-auto relative z-10">
         {/* Page Header */}
         <PageHeader 
           title={<span className="cosmic-text-gradient">Resume Builder</span>}

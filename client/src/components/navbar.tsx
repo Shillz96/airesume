@@ -24,10 +24,9 @@ import {
 export default function Navbar() {
   console.log("USING SIMPLIFIED NAVBAR FROM navbar.tsx!");
   
-  // Added to alert that component is loaded for debugging
+  // Added to log that component is loaded for debugging
   useEffect(() => {
     console.log("SimpleNavbar mounted from navbar.tsx");
-    alert("Using simplified navbar.tsx - Fixed!");
   }, []);
   
   const [location] = useLocation();
@@ -83,7 +82,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="bg-gray-900 text-white py-2 px-4">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-900 text-white py-2 px-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
         <div className="flex items-center">

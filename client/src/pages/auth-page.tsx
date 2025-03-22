@@ -351,7 +351,7 @@ export default function LandingPage() {
       </Dialog>
       
       {/* Main Content */}
-      <div className="container pt-12 pb-10 px-4 md:px-6 mx-auto min-h-screen relative z-10 cosmic-page">
+      <div className="container pt-4 pb-10 px-4 md:px-6 mx-auto min-h-screen relative z-10 cosmic-page">
         {/* Hero Section */}
         <section className="py-12 md:py-20">
           <div className="text-center max-w-3xl mx-auto">
@@ -728,7 +728,7 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-          <div className="mt-8 pt-8 border-t border-white/10 text-center text-gray-400 text-sm">
+          <div className="mt-8 pt-4 border-t border-white/10 text-center text-gray-400 text-sm">
             <p>© {new Date().getFullYear()} AIreHire. All rights reserved.</p>
           </div>
         </div>

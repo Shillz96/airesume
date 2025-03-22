@@ -2851,14 +2851,11 @@ export default function ResumeBuilder() {
                   <div className="md:col-span-2 space-y-6">
                     <div>
                       <div className="cosmic-section-header flex items-center mb-5">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="cosmic-section-icon mr-2">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                          <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        <h2 className="cosmic-section-title">Personal Information</h2>
+                        <User className="cosmic-section-icon h-5 w-5 mr-2" />
+                        <h2 className="cosmic-section-title">Contact Information</h2>
                       </div>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                         <div className="cosmic-form-group">
                           <Label htmlFor="firstName" className="cosmic-form-label">
                             First Name
@@ -2918,7 +2915,7 @@ export default function ResumeBuilder() {
                         </div>
                       </div>
 
-                      <div className="mb-6 pb-4 border-b border-gray-200/20">
+                      <div className="mb-8 pb-6 border-b border-blue-500/20">
                         <div className="cosmic-form-group">
                           <Label htmlFor="headline" className="cosmic-form-label">
                             Professional Headline
@@ -2932,6 +2929,7 @@ export default function ResumeBuilder() {
                             className="cosmic-form-input"
                             placeholder="Dynamic Software Engineer"
                           />
+                          <p className="mt-2 text-xs text-blue-300/70">A brief title that describes your professional identity</p>
                         </div>
                       </div>
 

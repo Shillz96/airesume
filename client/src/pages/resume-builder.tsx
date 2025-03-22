@@ -68,7 +68,6 @@ import {
   Loader2,
   Cpu,
   Check,
-  CheckCircle,
   RefreshCw,
   Sparkles,
   Plus,
@@ -3439,11 +3438,11 @@ export default function ResumeBuilder() {
                           
                           <div className="space-y-space-2 text-sm">
                             <div className="p-space-2 rounded bg-white/5 border border-white/10 flex items-start">
-                              <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
+                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span>Check for spelling and grammar errors</span>
                             </div>
                             <div className="p-space-2 rounded bg-white/5 border border-white/10 flex items-start">
-                              <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
+                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span>Ensure consistent formatting throughout</span>
                             </div>
                             <div className="p-space-2 rounded bg-white/5 border border-white/10 flex items-start">

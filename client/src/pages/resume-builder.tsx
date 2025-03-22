@@ -3,6 +3,9 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/contexts/ThemeContext";
+
+// Resume components
 import ResumeTips from "@/components/resume-tips";
 import Navbar from "@/components/navbar";
 import ResumeTemplate, {
@@ -21,6 +24,15 @@ import ResumeTemplate, {
   TemplatePreviewIndustry,
   TemplatePreviewBold,
 } from "@/components/resume-template";
+
+// Import our modular resume section components
+import { PersonalInfoSection } from "@/components/resume/PersonalInfoSection";
+import { ExperienceSection } from "@/components/resume/ExperienceSection";
+import { EducationSection } from "@/components/resume/EducationSection";
+import { SkillsSection } from "@/components/resume/SkillsSection";
+import { ProjectsSection } from "@/components/resume/ProjectsSection";
+
+// Keep legacy imports for now to ensure backward compatibility during refactoring
 import {
   ResumeExperienceSection,
   ResumeEducationSection,
@@ -32,12 +44,16 @@ import {
   ProjectItem,
 } from "@/components/resume-section";
 import { Resume } from "@/components/resume-template";
+
+// UI Components
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { CosmicButton } from "@/components/cosmic-button";
+import { CosmicButton } from "@/components/cosmic-button-refactored";
 import RichTextEditor from "@/components/rich-text-editor";
+
+// Icons
 import {
   FileText,
   GraduationCap,
@@ -63,6 +79,8 @@ import {
   X,
   Zap,
 } from "lucide-react";
+
+// UI Components
 import { Badge } from "@/components/ui/badge";
 import {
   Accordion,
@@ -94,8 +112,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+// AI and Background Components
 import AIAssistant from "@/components/ai-assistant";
-import CosmicBackground from "@/components/cosmic-background";
+import CosmicStarfield from "@/components/cosmic-starfield";
 
 // Component for professional summary AI suggestions
 interface SummarySuggestionsProps {
@@ -2505,25 +2524,25 @@ export default function ResumeBuilder() {
     fileInputRef.current?.click();
   };
 
+  const { isDarkMode } = useTheme();
+  
   return (
-    <div className="min-h-screen" style={{ background: 'var(--cosmicBackground)' }}>
-      <CosmicBackground />
+    <div className="min-h-screen cosmic-page">
+      <CosmicStarfield 
+        starsCount={160}
+        nebulasCount={3}
+        shootingStarsEnabled={true} 
+      />
       <Navbar />
 
-      <main className="container mx-auto pt-12 pb-20 px-4" style={{ 
-        '--cosmic-primary': 'var(--cosmicPrimary)',
-        '--cosmic-text': 'var(--cosmicText)',
-        '--cosmic-border-glow': 'var(--cosmicBorderGlow)',
-        '--cosmic-card-bg': 'var(--cosmicCardBg)',
-        '--cosmic-card-border': 'var(--cosmicCardBorder)'
-      } as React.CSSProperties}>
+      <main className="container mx-auto pt-12 pb-20 px-4 cosmic-container">
         {/* Page Header */}
-        <div className="mb-8 flex justify-between items-center">
+        <div className="cosmic-page-header mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold cosmic-text-gradient mb-2">
+            <h1 className="cosmic-page-title text-3xl font-bold mb-2">
               Resume Builder
             </h1>
-            <p className="text-gray-300">
+            <p className="cosmic-page-description">
               Create a professional resume that passes ATS systems and gets you
               hired.
             </p>

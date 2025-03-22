@@ -3343,8 +3343,8 @@ export default function ResumeBuilder() {
                       }}
                     />
 
-                    <div className="mt-space-4 text-xs text-gray-300 bg-white/5 p-space-4 rounded-lg border border-white/10">
-                      <p className="mb-space-2 text-blue-300 font-medium">
+                    <div className="mt-4 text-xs text-gray-300 bg-gray-900/50 p-4 rounded-lg border border-blue-500/30">
+                      <p className="mb-2 text-blue-300 font-medium">
                         Tips for adding projects:
                       </p>
                       <ul className="list-disc pl-4 space-y-1">
@@ -3374,17 +3374,17 @@ export default function ResumeBuilder() {
                             Enhance your projects section with these formatting tips:
                           </p>
 
-                          <div className="space-y-space-2 text-sm">
-                            <div className="p-space-2 rounded bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                          <div className="space-y-2 text-sm">
+                            <div className="p-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
                               Use action verbs to describe your contributions
                             </div>
-                            <div className="p-space-2 rounded bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                            <div className="p-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
                               Quantify achievements with metrics when possible
                             </div>
-                            <div className="p-space-2 rounded bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                            <div className="p-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
                               Showcase problem-solving and technical skills
                             </div>
-                            <div className="p-space-2 rounded bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                            <div className="p-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
                               Include the business impact of your project
                             </div>
                           </div>
@@ -3461,20 +3461,20 @@ export default function ResumeBuilder() {
                             Before downloading, review your resume for these common issues:
                           </p>
 
-                          <div className="space-y-space-2 text-sm">
-                            <div className="p-space-2 rounded bg-white/5 border border-white/10 flex items-start">
+                          <div className="space-y-2 text-sm">
+                            <div className="p-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
                               <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span>Check for spelling and grammar errors</span>
                             </div>
-                            <div className="p-space-2 rounded bg-white/5 border border-white/10 flex items-start">
+                            <div className="p-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
                               <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span>Ensure consistent formatting throughout</span>
                             </div>
-                            <div className="p-space-2 rounded bg-white/5 border border-white/10 flex items-start">
+                            <div className="p-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
                               <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span>Verify all contact information is correct</span>
                             </div>
-                            <div className="p-space-2 rounded bg-white/5 border border-white/10 flex items-start">
+                            <div className="p-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
                               <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span>Confirm dates are accurate and consistent</span>
                             </div>

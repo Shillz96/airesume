@@ -17,23 +17,25 @@ function CosmicBackgroundComponent() {
     if (!isClient) return [];
     
     const starsArray = [];
-    const starCount = darkMode ? 150 : 100; // Fewer stars in light mode
+    const starCount = darkMode ? 200 : 150; // Increase star count for better distribution
     
-    // Use a seed-based approach to make stars consistent
-    const seed = darkMode ? 42 : 24; // Different seeds for dark/light
-    const pseudoRandom = (i: number, mod = 1): number => {
-      // Simple deterministic "random" function
-      return ((Math.sin(i * seed * 9999) + 1) / 2) * mod;
-    };
-    
+    // True random values for natural star distribution
     for (let i = 0; i < starCount; i++) {
-      const size = pseudoRandom(i, 2) + 1;
-      const opacity = pseudoRandom(i + 0.3, 0.7) + 0.3;
-      const animDuration = pseudoRandom(i + 0.7, 4) + 2;
-      const animDelay = pseudoRandom(i + 0.5, 2);
-      const top = pseudoRandom(i + 0.1, 100);
-      const left = pseudoRandom(i + 0.2, 100);
+      // More variation in star sizes
+      const size = Math.random() * 2.5 + 0.5;
+      const opacity = Math.random() * 0.6 + 0.4;
+      const animDuration = Math.random() * 5 + 2;
+      const animDelay = Math.random() * 3;
       
+      // Use truly random position across the entire viewport
+      const top = Math.random() * 120 - 10; // Some stars slightly outside the viewport
+      const left = Math.random() * 120 - 10; // For a more natural feel
+      
+      // Slight color variation for more realism
+      const hue = Math.random() > 0.7 ? 
+        Math.floor(Math.random() * 40) + 200 : // Occasional blue tint
+        0; // Mostly white
+
       starsArray.push(
         <div
           key={`star-${i}-${starKey}`}
@@ -45,10 +47,12 @@ function CosmicBackgroundComponent() {
             left: `${left}%`,
             opacity: darkMode ? opacity : opacity * 0.6, // More translucent in light mode
             animation: `twinkle ${animDuration}s infinite ${animDelay}s`,
-            background: darkMode ? 'white' : 'rgba(59, 130, 246, 0.8)', // Blue-tinted stars in light mode
+            background: darkMode 
+              ? (hue === 0 ? 'white' : `hsl(${hue}, 100%, 90%)`) 
+              : `rgba(59, 130, 246, ${opacity * 0.8})`, // Blue-tinted stars in light mode
             boxShadow: darkMode 
-              ? '0 0 4px rgba(255, 255, 255, 0.3)' 
-              : '0 0 4px rgba(59, 130, 246, 0.3)',
+              ? `0 0 ${Math.floor(size * 2)}px rgba(255, 255, 255, 0.3)` 
+              : `0 0 ${Math.floor(size * 2)}px rgba(59, 130, 246, 0.3)`,
           }}
         />
       );
@@ -158,7 +162,7 @@ function CosmicBackgroundComponent() {
   if (!isClient) return null;
 
   return (
-    <div className="cosmic-background absolute inset-0 w-full h-full overflow-hidden z-0">
+    <div className="cosmic-background fixed inset-0 w-full min-h-screen overflow-hidden z-0">
       {/* Starfield is handled via CSS ::before in animations.css */}
       
       {/* Dynamic stars with JavaScript - now memoized */}

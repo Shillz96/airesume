@@ -2790,8 +2790,8 @@ export default function ResumeBuilder() {
             <div 
               className="p-space-8"
               style={{
-                lineHeight: `${spacingScale * 1.5}`, // Dynamic line height scaling
-                padding: spacingScale < 1 ? "0.75rem" : "2rem", // Dynamic padding based on scale
+                lineHeight: "1.5", // Default line height
+                padding: "2rem", // Default padding
               }}
             >
               {/* Profile Section */}

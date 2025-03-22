@@ -237,15 +237,24 @@ export default function Navbar() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="ml-3 relative profile-dropdown-trigger" aria-label="User menu">
-                  <Avatar className="h-8 w-8 cosmic-glow profile-avatar">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="ml-3 relative profile-dropdown-trigger" 
+                  aria-label="User menu"
+                  style={{ position: 'relative', zIndex: 100 }}
+                >
+                  <Avatar 
+                    className="h-8 w-8 cosmic-glow profile-avatar"
+                    style={{ position: 'relative', zIndex: 100 }}
+                  >
                     <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold">
                       {initials}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="cosmic-card border-white/10 py-2 profile-dropdown-content">
+              <DropdownMenuContent align="end" className="cosmic-card border-white/10 py-2 profile-dropdown-content" style={{ zIndex: 9999, position: 'absolute' }}>
                 {user ? (
                   <>
                     <div className="px-4 py-2 text-sm text-gray-300 font-medium border-b border-white/10 mb-1">

@@ -1,8 +1,23 @@
 /* 
- * Simple z-index fixes for dropdown menus
+ * Z-index fixes for dropdown menus and profile avatar
  */
 
-/* Minimal fix for dropdown z-index issues */
+/* Fix for radix dropdown content wrappers to ensure they're above everything */
 [data-radix-popper-content-wrapper] {
   z-index: 9999 !important;
+}
+
+/* Ensure profile dropdown icon is visible */
+.profile-dropdown-trigger {
+  z-index: 100 !important;
+}
+
+/* Profile dropdown content should be above everything */
+.profile-dropdown-content {
+  z-index: 9999 !important;
+}
+
+/* Ensure Avatar component is visible */
+.profile-avatar {
+  z-index: 100 !important;
 }

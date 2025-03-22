@@ -2863,12 +2863,14 @@ export default function ResumeBuilder() {
                     )}
                   <div className="md:col-span-2 space-y-6">
                     <div>
-                      <div className="cosmic-section-header flex items-center mb-5">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="cosmic-section-icon mr-2">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                          <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        <h2 className="cosmic-section-title">Personal Information</h2>
+                      <div className="cosmic-section-header flex justify-between items-center mb-5">
+                        <h2 className="cosmic-section-title flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="cosmic-section-icon mr-2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                          </svg>
+                          Personal Information
+                        </h2>
                       </div>
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -2985,12 +2987,12 @@ export default function ResumeBuilder() {
 
                   {/* AI Tips Section */}
                   <div className="md:col-span-1">
-                    <div className="cosmic-card border border-white/10 bg-black/40 p-5 rounded-lg relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+                    <div className="cosmic-card border border-white/10 bg-black/40 p-6 rounded-lg relative overflow-hidden shadow-lg">
+                      <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-2xl"></div>
                       <div className="relative z-10">
                         <div className="flex items-center mb-4">
-                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
-                          <h3 className="font-medium text-white">
+                          <Cpu className="h-6 w-6 mr-3 text-blue-400 animate-pulse" />
+                          <h3 className="font-medium text-white text-lg">
                             AI Resume Assistant
                           </h3>
                         </div>

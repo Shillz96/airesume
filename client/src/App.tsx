@@ -93,7 +93,7 @@ function AppContent() {
       <div className="relative z-10">
         {/* Master Navbar Component */}
         {showNavbar && <Navbar />}
-        <div>
+        <div className="pt-14">
           <Router />
         </div>
         {/* Admin access button - always visible */}

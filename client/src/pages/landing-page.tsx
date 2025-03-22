@@ -580,7 +580,7 @@ export default function LandingPage() {
         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-fit px-4 py-1 bg-blue-500 text-white text-sm font-medium rounded-full">
           Most Popular
         </div>
-        <CardHeader className="pb-4 pt-4">
+        <CardHeader className="pb-4 ">
           <CardTitle className="text-xl text-white">Pro</CardTitle>
           <CardDescription className="text-gray-300">For individuals actively job hunting</CardDescription>
           <div className="mt-2">
@@ -785,7 +785,7 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-          <div className="mt-8 pt-4 border-t border-white/10 text-center text-gray-400 text-sm">
+          <div className="mt-8  border-t border-white/10 text-center text-gray-400 text-sm">
             <p>© {new Date().getFullYear()} AIreHire. All rights reserved.</p>
           </div>
         </div>

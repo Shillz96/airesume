@@ -237,7 +237,7 @@ export default function SubscriptionPage() {
   
   return (
     <>
-      <div className="container pt-4 pb-10 px-4 md:px-6 max-w-7xl mx-auto relative z-10">
+      <div className="container  pb-10 px-4 md:px-6 max-w-7xl mx-auto relative z-10">
         <PageHeader
           title={
             <span className="cosmic-text-gradient">
@@ -354,7 +354,7 @@ export default function SubscriptionPage() {
                     </div>
                   )}
                 </CardContent>
-                <CardFooter className="flex flex-col gap-2 border-t border-[#252a47] pt-4">
+                <CardFooter className="flex flex-col gap-2 border-t border-[#252a47] ">
                   {subscription ? (
                     <>
                       <Button
@@ -415,7 +415,7 @@ export default function SubscriptionPage() {
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter className="border-t border-[#252a47] pt-4">
+                <CardFooter className="border-t border-[#252a47] ">
                   <Button 
                     className="w-full bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
                     onClick={() => {
@@ -466,7 +466,7 @@ export default function SubscriptionPage() {
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter className="border-t border-[#252a47] pt-4">
+                <CardFooter className="border-t border-[#252a47] ">
                   <Button 
                     className="w-full bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
                     onClick={() => {
@@ -517,7 +517,7 @@ export default function SubscriptionPage() {
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter className="border-t border-[#252a47] pt-4">
+                <CardFooter className="border-t border-[#252a47] ">
                   <Button 
                     className="w-full bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
                     onClick={() => {
@@ -606,7 +606,7 @@ export default function SubscriptionPage() {
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter className="border-t border-[#252a47] pt-4">
+                <CardFooter className="border-t border-[#252a47] ">
                   <Button 
                     className="w-full bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
                     onClick={() => {
@@ -651,7 +651,7 @@ export default function SubscriptionPage() {
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter className="border-t border-[#252a47] pt-4">
+                <CardFooter className="border-t border-[#252a47] ">
                   <Button 
                     className="w-full bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
                     onClick={() => {
@@ -696,7 +696,7 @@ export default function SubscriptionPage() {
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter className="border-t border-[#252a47] pt-4">
+                <CardFooter className="border-t border-[#252a47] ">
                   <Button 
                     className="w-full bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
                     onClick={() => {
@@ -840,7 +840,7 @@ export default function SubscriptionPage() {
               </div>
             </div>
             
-            <DialogFooter className="border-t border-[#252a47] pt-4">
+            <DialogFooter className="border-t border-[#252a47] ">
               <Button
                 className="bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
                 onClick={() => setActivePlanDialog(false)}

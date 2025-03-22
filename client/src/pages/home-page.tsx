@@ -79,7 +79,7 @@ export default function HomePage() {
   
   return (
     <>
-      <div className="container pt-4 pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
+      <div className="container  pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
         <div ref={welcomeRef}>
           <PageHeader
             title={
@@ -117,7 +117,7 @@ export default function HomePage() {
           </div>
         </div>
         
-        <div className="mt-16 mb-12 pt-4">
+        <div className="mt-16 mb-12 ">
           <JobSearchProgress />
         </div>
       </div>

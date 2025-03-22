@@ -3045,17 +3045,18 @@ export default function ResumeBuilder() {
 
                   {/* Tips for Experience */}
                   <div className="md:col-span-1">
-                    <div className="cosmic-ai-card">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+                    <div className="cosmic-ai-card min-h-[300px]">
                       <div className="relative z-10">
-                        <div className="flex items-center mb-4">
-                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
-                          <h3 className="font-medium text-white">
+                        <div className="flex items-center gap-2 mb-5">
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center">
+                            <Briefcase className="h-4 w-4 text-white" />
+                          </div>
+                          <h3 className="font-medium text-white text-lg">
                             AI Experience Assistant
                           </h3>
                         </div>
 
-                        <div className="w-full">
+                        <div className="w-full space-y-4">
                           <ResumeTips
                             resumeId={resumeId}
                             onApplySuggestion={(bulletPoint) => {
@@ -3159,17 +3160,18 @@ export default function ResumeBuilder() {
 
                   {/* Tips for Skills */}
                   <div className="md:col-span-1">
-                    <div className="cosmic-ai-card">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+                    <div className="cosmic-ai-card min-h-[300px]">
                       <div className="relative z-10">
-                        <div className="flex items-center mb-4">
-                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
-                          <h3 className="font-medium text-white">
+                        <div className="flex items-center gap-2 mb-5">
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center">
+                            <Code className="h-4 w-4 text-white" />
+                          </div>
+                          <h3 className="font-medium text-white text-lg">
                             AI Skills Assistant
                           </h3>
                         </div>
 
-                        <div className="w-full">
+                        <div className="w-full space-y-4">
                           <ResumeTips
                             resumeId={resumeId}
                             onApplySuggestion={(skill) => {
@@ -3298,22 +3300,24 @@ export default function ResumeBuilder() {
 
       {/* AI Assistant Chat Box */}
       {isDialogOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-96 max-w-full shadow-xl rounded-lg overflow-hidden transition-all duration-300 ease-in-out">
-          <div className="bg-gradient-to-r from-blue-900 to-purple-900 p-space-3 flex justify-between items-center border-b border-blue-500/30">
-            <div className="flex items-center">
-              <Cpu className="h-5 w-5 text-blue-300 mr-2" />
-              <h3 className="text-white font-medium">AI Resume Assistant</h3>
+        <div className="fixed bottom-24 right-6 z-50 w-96 max-w-full shadow-xl rounded-lg overflow-hidden transition-all duration-300 ease-in-out cosmic-ai-card border-0">
+          <div className="bg-gradient-to-r from-blue-900 to-purple-900 p-space-4 flex justify-between items-center border-b border-blue-500/30">
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center">
+                <Sparkles className="h-4 w-4 text-white" />
+              </div>
+              <h3 className="text-white font-medium text-lg">AI Resume Assistant</h3>
             </div>
             <CosmicButton
               variant="ghost"
               onClick={() => setIsDialogOpen(false)}
-              className="h-8 w-8 rounded-full p-0"
+              className="h-8 w-8 rounded-full p-0 hover:bg-white/10"
               aria-label="Close"
             >
               <X className="h-4 w-4 text-white" />
             </CosmicButton>
           </div>
-          <div className="bg-black/90 border-x border-blue-500/30 border-b p-space-4 h-96 overflow-y-auto">
+          <div className="bg-black/90 border-x border-blue-500/30 border-b p-space-5 h-96 overflow-y-auto">
             <AIAssistant
               resumeId={resumeId?.toString()}
               onApplySummary={handleApplySummary}

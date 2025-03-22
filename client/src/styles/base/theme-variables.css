@@ -1,150 +1,157 @@
-/**
- * Theme Variables
- * 
- * This file defines all the CSS variables that control the application's theming.
- * These variables are applied to the :root element and can be modified by theme settings.
- */
+/* 
+   Theme Variables
+   Core CSS variables for the cosmic theme system
+*/
 
 :root {
-  /* ======== Base Colors ======== */
-  --color-primary: 59 130 246; /* Cosmic blue */
-  --color-secondary: 139 92 246; /* Cosmic purple */
-  --color-accent: 245 158 11; /* Cosmic orange */
-  --color-background: 17 24 39; /* Dark background */
-  --color-card: 31 41 55; /* Dark card background */
-  --color-text: 229 231 235; /* Light text */
-  --color-muted: 156 163 175; /* Muted text */
-  --color-border: 55 65 81; /* Border color */
+  /* Color Variables */
   
-  /* ======== Semantic Colors ======== */
-  --color-success: 34 197 94; /* Green */
-  --color-info: 6 182 212; /* Cyan */
-  --color-warning: 245 158 11; /* Orange */
-  --color-error: 239 68 68; /* Red */
+  /* Primary palette */
+  --cosmic-accent-primary: #3b82f6;
+  --cosmic-accent-primary-hover: #2563eb;
+  --cosmic-accent-primary-active: #1d4ed8;
+  --cosmic-accent-primary-rgb: 59, 130, 246;
   
-  /* ======== Elevation ======== */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  --shadow-cosmic: 0 0 15px rgba(var(--color-primary), 0.5);
-
-  /* ======== Typography ======== */
-  --font-primary: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-heading: var(--font-primary);
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --cosmic-accent-secondary: #8b5cf6;
+  --cosmic-accent-secondary-hover: #7c3aed;
+  --cosmic-accent-secondary-active: #6d28d9;
+  --cosmic-accent-secondary-rgb: 139, 92, 246;
   
-  /* ======== Spacing ======== */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
-  --space-20: 5rem;
-  --space-24: 6rem;
-  --space-32: 8rem;
-  --space-40: 10rem;
-  --space-48: 12rem;
-  --space-64: 16rem;
+  /* Status colors */
+  --cosmic-success: #10b981;
+  --cosmic-success-hover: #059669;
+  --cosmic-success-active: #047857;
+  --cosmic-success-rgb: 16, 185, 129;
   
-  /* ======== Borders ======== */
-  --border-radius-sm: 0.125rem;
-  --border-radius: 0.25rem;
-  --border-radius-md: 0.375rem;
-  --border-radius-lg: 0.5rem;
-  --border-radius-xl: 0.75rem;
-  --border-radius-2xl: 1rem;
-  --border-radius-3xl: 1.5rem;
-  --border-radius-full: 9999px;
+  --cosmic-warning: #f59e0b;
+  --cosmic-warning-hover: #d97706;
+  --cosmic-warning-active: #b45309;
+  --cosmic-warning-rgb: 245, 158, 11;
   
-  /* ======== Animation ======== */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-in: cubic-bezier(0.4, 0, 1, 1);
-  --ease-out: cubic-bezier(0, 0, 0.2, 1);
-  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --cosmic-danger: #ef4444;
+  --cosmic-danger-hover: #dc2626;
+  --cosmic-danger-active: #b91c1c;
+  --cosmic-danger-rgb: 239, 68, 68;
   
-  /* ======== Component Specific ======== */
-  /* Card */
-  --card-background: rgb(var(--color-card));
-  --card-foreground: rgb(var(--color-text));
-  --card-border: 1px solid rgb(var(--color-border) / 0.2);
-  --card-hover: rgb(var(--color-card) / 0.8);
-  --card-shadow: var(--shadow-md);
+  --cosmic-info: #0ea5e9;
+  --cosmic-info-hover: #0284c7;
+  --cosmic-info-active: #0369a1;
+  --cosmic-info-rgb: 14, 165, 233;
   
-  /* Button */
-  --button-height-xs: 1.5rem;
-  --button-height-sm: 2rem;
-  --button-height-md: 2.5rem;
-  --button-height-lg: 3rem;
-  --button-height-xl: 3.5rem;
+  /* Background colors */
+  --cosmic-background-primary: #111827;
+  --cosmic-background-secondary: #1f2937;
+  --cosmic-background-tertiary: #374151;
+  --cosmic-background-input: #1f2937;
   
-  /* Form Controls */
-  --input-height: 2.5rem;
-  --input-background: rgb(var(--color-card));
-  --input-border: 1px solid rgb(var(--color-border) / 0.3);
-  --input-focus-ring: 0 0 0 2px rgb(var(--color-primary) / 0.25);
+  /* Text colors */
+  --cosmic-text-primary: #f9fafb;
+  --cosmic-text-secondary: #e5e7eb;
+  --cosmic-text-tertiary: #9ca3af;
   
-  /* Z-index layers */
-  --z-dropdown: 10;
-  --z-sticky: 20;
-  --z-fixed: 30;
-  --z-modal-backdrop: 40;
-  --z-modal: 50;
-  --z-popover: 60;
-  --z-tooltip: 70;
-  --z-toast: 80;
+  /* Border colors */
+  --cosmic-border-color: #374151;
+  --cosmic-border-color-hover: #4b5563;
   
-  /* ======== Cosmic Theme Elements ======== */
-  --cosmic-gradient: linear-gradient(
-    135deg,
-    rgb(var(--color-primary) / 0.8),
-    rgb(var(--color-secondary) / 0.8)
-  );
-  --cosmic-gradient-subtle: linear-gradient(
-    135deg,
-    rgb(var(--color-primary) / 0.1),
-    rgb(var(--color-secondary) / 0.1)
-  );
-  --cosmic-shadow-glow: 0 0 20px rgb(var(--color-primary) / 0.5);
-  --cosmic-shadow-glow-strong: 0 0 30px rgb(var(--color-primary) / 0.8);
+  /* Font variables */
+  --cosmic-font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --cosmic-font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --cosmic-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   
-  /* ======== Dark Mode Overrides ======== */
-  &.dark {
-    color-scheme: dark;
-  }
+  /* Sizing variables */
+  --cosmic-header-height: 64px;
+  --cosmic-footer-height: 48px;
+  --cosmic-sidebar-width: 280px;
+  --cosmic-sidebar-width-collapsed: 64px;
+  
+  /* Animation variables */
+  --cosmic-transition-duration: 200ms;
+  --cosmic-transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ======== Light Mode Overrides ======== */
-:root:not(.dark) {
-  --color-background: 249 250 251; /* Light background */
-  --color-card: 255 255 255; /* White card background */
-  --color-text: 17 24 39; /* Dark text */
-  --color-muted: 107 114 128; /* Muted text */
-  --color-border: 229 231 235; /* Light border */
+/* Dark Mode Variables (default in cosmic theme) */
+/* For future light mode support */
+.light-mode {
+  /* Primary palette */
+  --cosmic-accent-primary: #2563eb;
+  --cosmic-accent-primary-hover: #1d4ed8;
+  --cosmic-accent-primary-active: #1e40af;
+  --cosmic-accent-primary-rgb: 37, 99, 235;
+  
+  --cosmic-accent-secondary: #7c3aed;
+  --cosmic-accent-secondary-hover: #6d28d9;
+  --cosmic-accent-secondary-active: #5b21b6;
+  --cosmic-accent-secondary-rgb: 124, 58, 237;
+  
+  /* Status colors */
+  --cosmic-success: #059669;
+  --cosmic-success-hover: #047857;
+  --cosmic-success-active: #065f46;
+  --cosmic-success-rgb: 5, 150, 105;
+  
+  --cosmic-warning: #d97706;
+  --cosmic-warning-hover: #b45309;
+  --cosmic-warning-active: #92400e;
+  --cosmic-warning-rgb: 217, 119, 6;
+  
+  --cosmic-danger: #dc2626;
+  --cosmic-danger-hover: #b91c1c;
+  --cosmic-danger-active: #991b1b;
+  --cosmic-danger-rgb: 220, 38, 38;
+  
+  --cosmic-info: #0284c7;
+  --cosmic-info-hover: #0369a1;
+  --cosmic-info-active: #075985;
+  --cosmic-info-rgb: 2, 132, 199;
+  
+  /* Background colors */
+  --cosmic-background-primary: #ffffff;
+  --cosmic-background-secondary: #f9fafb;
+  --cosmic-background-tertiary: #f3f4f6;
+  --cosmic-background-input: #ffffff;
+  
+  /* Text colors */
+  --cosmic-text-primary: #111827;
+  --cosmic-text-secondary: #374151;
+  --cosmic-text-tertiary: #6b7280;
+  
+  /* Border colors */
+  --cosmic-border-color: #e5e7eb;
+  --cosmic-border-color-hover: #d1d5db;
 }
 
-/* ======== Theme Variants ======== */
-:root[data-theme-variant="professional"] {
-  --button-radius: var(--border-radius);
-  --card-radius: var(--border-radius-lg);
+/* Professional variant */
+.cosmic-theme-professional {
+  /* Professional has more muted, corporate-friendly colors */
+  --cosmic-accent-primary: #2563eb;
+  --cosmic-accent-secondary: #4f46e5;
+
+  /* More subtle shadow */
+  --shadow-cosmic-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+  --shadow-cosmic-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-cosmic-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-:root[data-theme-variant="vibrant"] {
-  --button-radius: var(--border-radius-lg);
-  --card-radius: var(--border-radius-xl);
-  --cosmic-shadow-glow: 0 0 25px rgb(var(--color-primary) / 0.6);
+/* Vibrant variant */
+.cosmic-theme-vibrant {
+  /* Vibrant has more saturated, eye-catching colors */
+  --cosmic-accent-primary: #3b82f6;
+  --cosmic-accent-secondary: #8b5cf6;
+
+  /* More pronounced shadow with slight color */
+  --shadow-cosmic-sm: 0 2px 6px 0 rgba(59, 130, 246, 0.2);
+  --shadow-cosmic-md: 0 4px 12px 0 rgba(59, 130, 246, 0.25), 0 2px 4px 0 rgba(59, 130, 246, 0.15);
+  --shadow-cosmic-lg: 0 10px 20px -5px rgba(59, 130, 246, 0.3), 0 4px 10px -5px rgba(59, 130, 246, 0.2);
 }
 
-:root[data-theme-variant="tint"] {
-  --button-radius: var(--border-radius-full);
-  --card-radius: var(--border-radius-2xl);
+/* Tint variant */
+.cosmic-theme-tint {
+  /* Tint uses more monochromatic palette with a single accent */
+  --cosmic-accent-primary: #06b6d4;
+  --cosmic-accent-secondary: #0891b2;
+
+  /* Colored shadow matches the accent */
+  --shadow-cosmic-sm: 0 2px 6px 0 rgba(6, 182, 212, 0.15);
+  --shadow-cosmic-md: 0 4px 12px 0 rgba(6, 182, 212, 0.2), 0 2px 4px 0 rgba(6, 182, 212, 0.1);
+  --shadow-cosmic-lg: 0 10px 20px -5px rgba(6, 182, 212, 0.25), 0 4px 10px -5px rgba(6, 182, 212, 0.15);
 }

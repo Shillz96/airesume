@@ -1,149 +1,207 @@
-/**
- * Button Styles
- * 
- * This file defines styles for buttons and interactive elements
- */
+/* 
+   Button Styles
+   Standardized cosmic-themed button styles
+*/
 
-/* Standardized Button Styles for Cosmic Theme */
-.cosmic-button-primary {
-  @apply bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 
-    text-white font-medium py-2 px-4 rounded-md transition-all duration-300 
-    shadow-[0_0_10px_rgba(59,130,246,0.5)] hover:shadow-[0_0_15px_rgba(59,130,246,0.7)]
-    border-0 inline-flex items-center justify-center gap-2;
-}
-
-.cosmic-button-secondary {
-  @apply border border-white/10 bg-blue-600/40 text-white hover:bg-blue-600/60
-    font-medium py-2 px-4 rounded-md transition-all duration-300
-    inline-flex items-center justify-center gap-2;
-}
-
-.cosmic-button-outline {
-  @apply border border-blue-500/30 bg-transparent text-blue-200 hover:bg-blue-900/30 hover:text-blue-100
-    font-medium py-2 px-4 rounded-md transition-all duration-300
-    inline-flex items-center justify-center gap-2;
-}
-
-.cosmic-button-ghost {
-  @apply bg-transparent text-blue-400 hover:text-blue-300 hover:bg-blue-900/30
-    font-medium py-2 px-4 rounded-md transition-all duration-300
-    inline-flex items-center justify-center gap-2;
-}
-
-.cosmic-button-destructive {
-  @apply bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700
-    text-white font-medium py-2 px-4 rounded-md transition-all duration-300
-    shadow-[0_0_10px_rgba(220,38,38,0.5)] hover:shadow-[0_0_15px_rgba(220,38,38,0.7)]
-    border-0 inline-flex items-center justify-center gap-2;
+/* Base button class */
+.cosmic-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  padding: var(--space-button-padding);
+  gap: var(--spacing-xs);
 }
 
 /* Button sizes */
 .cosmic-button-xs {
-  @apply text-xs py-1 px-2;
+  padding: var(--spacing-xxs) var(--spacing-xs);
+  font-size: 0.75rem;
 }
 
 .cosmic-button-sm {
-  @apply text-sm py-1.5 px-3;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 0.875rem;
 }
 
 .cosmic-button-md {
-  @apply text-base py-2 px-4;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 1rem;
 }
 
 .cosmic-button-lg {
-  @apply text-lg py-2.5 px-5;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: 1.125rem;
 }
 
 .cosmic-button-xl {
-  @apply text-xl py-3 px-6;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  font-size: 1.25rem;
 }
 
-/* Button with icon */
-.cosmic-button-icon {
-  @apply inline-flex items-center gap-2;
-}
-
-.cosmic-button-icon-only {
-  @apply p-2 justify-center;
-}
-
-/* Disabled state */
-.cosmic-button-disabled,
-.cosmic-button-primary[disabled],
-.cosmic-button-secondary[disabled],
-.cosmic-button-outline[disabled],
-.cosmic-button-ghost[disabled],
-.cosmic-button-destructive[disabled] {
-  @apply opacity-50 cursor-not-allowed pointer-events-none;
-}
-
-/* Loading state */
-.cosmic-button-loading {
-  @apply relative text-opacity-0 !important;
-}
-
-.cosmic-button-loading::after {
-  content: '';
-  @apply absolute w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin;
-}
-
-/* Legacy cosmic-button class for backward compatibility */
-.cosmic-button {
-  @apply cosmic-button-primary;
-}
-
-/* Cosmic button glow effect */
-.cosmic-btn-glow {
-  background: linear-gradient(to right, #3b82f6, #8b5cf6);
+/* Button variants */
+.cosmic-button-primary {
+  background-color: var(--cosmic-accent-primary);
   color: white;
-  font-weight: 500;
-  border-radius: 0.375rem; 
-  transition: all 0.3s ease;
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
   border: none;
 }
 
-.cosmic-btn-glow:hover {
-  background: linear-gradient(to right, #2563eb, #7c3aed);
-  box-shadow: 0 0 15px rgba(59, 130, 246, 0.7);
+.cosmic-button-primary:hover {
+  background-color: var(--cosmic-accent-primary-hover);
+  box-shadow: var(--shadow-cosmic-sm);
 }
 
-/* Icon button */
-.cosmic-icon-button {
-  @apply rounded-full p-2 flex items-center justify-center transition-all duration-300;
+.cosmic-button-primary:active {
+  background-color: var(--cosmic-accent-primary-active);
+  transform: translateY(1px);
 }
 
-.cosmic-icon-button-primary {
-  @apply bg-blue-600 text-white hover:bg-blue-700 
-    shadow-[0_0_10px_rgba(59,130,246,0.5)] hover:shadow-[0_0_15px_rgba(59,130,246,0.7)];
+.cosmic-button-secondary {
+  background-color: var(--cosmic-accent-secondary);
+  color: white;
+  border: none;
 }
 
-.cosmic-icon-button-secondary {
-  @apply bg-blue-600/40 text-white hover:bg-blue-600/60;
+.cosmic-button-secondary:hover {
+  background-color: var(--cosmic-accent-secondary-hover);
+  box-shadow: var(--shadow-cosmic-sm);
 }
 
-.cosmic-icon-button-ghost {
-  @apply bg-transparent text-blue-400 hover:text-blue-300 hover:bg-blue-900/30;
+.cosmic-button-secondary:active {
+  background-color: var(--cosmic-accent-secondary-active);
+  transform: translateY(1px);
 }
 
-/* Circular gradient button */
-.cosmic-gradient-button {
-  @apply relative overflow-hidden rounded-full p-px;
-  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4);
-  background-size: 200% 200%;
-  animation: gradientFlow 5s ease infinite;
+.cosmic-button-outline {
+  background-color: transparent;
+  color: var(--cosmic-accent-primary);
+  border: 1px solid var(--cosmic-accent-primary);
 }
 
-.cosmic-gradient-button-inner {
-  @apply bg-black/80 rounded-full px-4 py-2 text-white transition-all duration-300;
+.cosmic-button-outline:hover {
+  background-color: rgba(var(--cosmic-accent-primary-rgb), 0.1);
+  box-shadow: var(--shadow-cosmic-sm);
 }
 
-.cosmic-gradient-button:hover .cosmic-gradient-button-inner {
-  @apply bg-black/50;
+.cosmic-button-outline:active {
+  background-color: rgba(var(--cosmic-accent-primary-rgb), 0.2);
+  transform: translateY(1px);
 }
 
-@keyframes gradientFlow {
-  0% { background-position: 0% 50% }
-  50% { background-position: 100% 50% }
-  100% { background-position: 0% 50% }
+.cosmic-button-ghost {
+  background-color: transparent;
+  color: var(--cosmic-text-primary);
+  border: none;
+}
+
+.cosmic-button-ghost:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.cosmic-button-ghost:active {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(1px);
+}
+
+.cosmic-button-destructive {
+  background-color: var(--cosmic-danger);
+  color: white;
+  border: none;
+}
+
+.cosmic-button-destructive:hover {
+  background-color: var(--cosmic-danger-hover);
+  box-shadow: var(--shadow-cosmic-sm);
+}
+
+.cosmic-button-destructive:active {
+  background-color: var(--cosmic-danger-active);
+  transform: translateY(1px);
+}
+
+/* Button states */
+.cosmic-button-loading {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.cosmic-button-disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Button with icon */
+.cosmic-button-icon-left {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.cosmic-button-icon-left svg,
+.cosmic-button-icon-left img {
+  margin-right: var(--spacing-xs);
+}
+
+.cosmic-button-icon-right {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.cosmic-button-icon-right svg,
+.cosmic-button-icon-right img {
+  margin-left: var(--spacing-xs);
+}
+
+/* Button with glow effect */
+.cosmic-button-glow {
+  box-shadow: var(--shadow-cosmic-glow);
+}
+
+.cosmic-button-glow:hover {
+  box-shadow: var(--shadow-cosmic-lg);
+}
+
+/* Full width button */
+.cosmic-button-full-width {
+  width: 100%;
+}
+
+/* Button groups */
+.cosmic-button-group {
+  display: inline-flex;
+  align-items: center;
+}
+
+.cosmic-button-group .cosmic-button:not(:last-child) {
+  margin-right: calc(-1 * var(--spacing-xxs));
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.cosmic-button-group .cosmic-button:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* Loading spinner animation */
+.cosmic-button-spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: cosmic-spin 0.75s linear infinite;
+}
+
+@keyframes cosmic-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

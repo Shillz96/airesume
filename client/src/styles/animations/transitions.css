@@ -1,0 +1,267 @@
+/* 
+   Transitions
+   Standard transition animations for cosmic-themed elements
+*/
+
+/* Transition durations */
+:root {
+  --transition-fast: 100ms;
+  --transition-base: 200ms;
+  --transition-slow: 300ms;
+  --transition-slower: 500ms;
+  --transition-slowest: 700ms;
+  
+  /* Easings */
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Standard transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: var(--ease-in-out);
+  transition-duration: var(--transition-base);
+}
+
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: var(--ease-in-out);
+  transition-duration: var(--transition-base);
+}
+
+.transition-opacity {
+  transition-property: opacity;
+  transition-timing-function: var(--ease-in-out);
+  transition-duration: var(--transition-base);
+}
+
+.transition-transform {
+  transition-property: transform;
+  transition-timing-function: var(--ease-in-out);
+  transition-duration: var(--transition-base);
+}
+
+/* Duration variations */
+.duration-fast {
+  transition-duration: var(--transition-fast);
+}
+
+.duration-base {
+  transition-duration: var(--transition-base);
+}
+
+.duration-slow {
+  transition-duration: var(--transition-slow);
+}
+
+.duration-slower {
+  transition-duration: var(--transition-slower);
+}
+
+.duration-slowest {
+  transition-duration: var(--transition-slowest);
+}
+
+/* Easing variations */
+.ease-in-out {
+  transition-timing-function: var(--ease-in-out);
+}
+
+.ease-in {
+  transition-timing-function: var(--ease-in);
+}
+
+.ease-out {
+  transition-timing-function: var(--ease-out);
+}
+
+.ease-bounce {
+  transition-timing-function: var(--ease-bounce);
+}
+
+/* Fade transitions */
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity var(--transition-base) var(--ease-out);
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity var(--transition-base) var(--ease-in);
+}
+
+/* Slide transitions */
+.slide-up-enter {
+  transform: translateY(20px);
+  opacity: 0;
+}
+
+.slide-up-enter-active {
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform var(--transition-slow) var(--ease-out), 
+              opacity var(--transition-slow) var(--ease-out);
+}
+
+.slide-up-exit {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.slide-up-exit-active {
+  transform: translateY(-20px);
+  opacity: 0;
+  transition: transform var(--transition-slow) var(--ease-in), 
+              opacity var(--transition-slow) var(--ease-in);
+}
+
+.slide-down-enter {
+  transform: translateY(-20px);
+  opacity: 0;
+}
+
+.slide-down-enter-active {
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform var(--transition-slow) var(--ease-out), 
+              opacity var(--transition-slow) var(--ease-out);
+}
+
+.slide-down-exit {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.slide-down-exit-active {
+  transform: translateY(20px);
+  opacity: 0;
+  transition: transform var(--transition-slow) var(--ease-in), 
+              opacity var(--transition-slow) var(--ease-in);
+}
+
+.slide-left-enter {
+  transform: translateX(20px);
+  opacity: 0;
+}
+
+.slide-left-enter-active {
+  transform: translateX(0);
+  opacity: 1;
+  transition: transform var(--transition-slow) var(--ease-out), 
+              opacity var(--transition-slow) var(--ease-out);
+}
+
+.slide-left-exit {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.slide-left-exit-active {
+  transform: translateX(-20px);
+  opacity: 0;
+  transition: transform var(--transition-slow) var(--ease-in), 
+              opacity var(--transition-slow) var(--ease-in);
+}
+
+.slide-right-enter {
+  transform: translateX(-20px);
+  opacity: 0;
+}
+
+.slide-right-enter-active {
+  transform: translateX(0);
+  opacity: 1;
+  transition: transform var(--transition-slow) var(--ease-out), 
+              opacity var(--transition-slow) var(--ease-out);
+}
+
+.slide-right-exit {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.slide-right-exit-active {
+  transform: translateX(20px);
+  opacity: 0;
+  transition: transform var(--transition-slow) var(--ease-in), 
+              opacity var(--transition-slow) var(--ease-in);
+}
+
+/* Scale transitions */
+.scale-enter {
+  transform: scale(0.95);
+  opacity: 0;
+}
+
+.scale-enter-active {
+  transform: scale(1);
+  opacity: 1;
+  transition: transform var(--transition-slow) var(--ease-out), 
+              opacity var(--transition-slow) var(--ease-out);
+}
+
+.scale-exit {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.scale-exit-active {
+  transform: scale(0.95);
+  opacity: 0;
+  transition: transform var(--transition-slow) var(--ease-in), 
+              opacity var(--transition-slow) var(--ease-in);
+}
+
+/* Cosmic specific transitions */
+.cosmic-glow-enter {
+  box-shadow: none;
+}
+
+.cosmic-glow-enter-active {
+  box-shadow: var(--shadow-cosmic-glow);
+  transition: box-shadow var(--transition-slower) var(--ease-out);
+}
+
+.cosmic-glow-exit {
+  box-shadow: var(--shadow-cosmic-glow);
+}
+
+.cosmic-glow-exit-active {
+  box-shadow: none;
+  transition: box-shadow var(--transition-slower) var(--ease-in);
+}
+
+/* Page transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity var(--transition-slow) var(--ease-out),
+              transform var(--transition-slow) var(--ease-out);
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity var(--transition-fast) var(--ease-in),
+              transform var(--transition-fast) var(--ease-in);
+}

@@ -85,10 +85,15 @@ function AppContent() {
     }
   }, [location]);
   
+  // Memoize the cosmic background to prevent it from re-rendering
+  const backgroundElement = React.useMemo(() => (
+    <CosmicBackground />
+  ), []);
+
   return (
     <div className="min-h-screen bg-black cosmic-background relative">
-      {/* Enhanced Cosmic Background */}
-      <CosmicBackground />
+      {/* Enhanced Cosmic Background - Memoized to prevent re-renders */}
+      {backgroundElement}
       
       {/* Content */}
       <div className="relative z-10">

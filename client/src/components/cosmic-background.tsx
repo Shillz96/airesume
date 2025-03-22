@@ -1,12 +1,12 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, memo } from 'react';
 import { isDarkMode } from '@/lib/theme-utils';
 
 /**
  * CosmicBackground component
  * Creates a dynamic starfield with animated nebula effects using CSS animations
- * Now using our organized animation CSS and memoization to prevent re-renders
+ * Optimized with memoization to prevent re-renders and flickering when state changes
  */
-export default function CosmicBackground() {
+function CosmicBackgroundComponent() {
   const [isClient, setIsClient] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
   const [starKey, setStarKey] = useState(0); // Used to force re-generation of stars only when theme changes
@@ -19,13 +19,20 @@ export default function CosmicBackground() {
     const starsArray = [];
     const starCount = darkMode ? 150 : 100; // Fewer stars in light mode
     
+    // Use a seed-based approach to make stars consistent
+    const seed = darkMode ? 42 : 24; // Different seeds for dark/light
+    const pseudoRandom = (i: number, mod = 1): number => {
+      // Simple deterministic "random" function
+      return ((Math.sin(i * seed * 9999) + 1) / 2) * mod;
+    };
+    
     for (let i = 0; i < starCount; i++) {
-      const size = Math.random() * 2 + 1;
-      const opacity = Math.random() * 0.7 + 0.3;
-      const animDuration = Math.random() * 4 + 2;
-      const animDelay = Math.random() * 2;
-      const top = Math.random() * 100;
-      const left = Math.random() * 100;
+      const size = pseudoRandom(i, 2) + 1;
+      const opacity = pseudoRandom(i + 0.3, 0.7) + 0.3;
+      const animDuration = pseudoRandom(i + 0.7, 4) + 2;
+      const animDelay = pseudoRandom(i + 0.5, 2);
+      const top = pseudoRandom(i + 0.1, 100);
+      const left = pseudoRandom(i + 0.2, 100);
       
       starsArray.push(
         <div
@@ -49,61 +56,103 @@ export default function CosmicBackground() {
     return starsArray;
   }, [isClient, darkMode, starKey]); // Only regenerate when these values change
 
+  // Memoize the nebula layers to prevent re-renders
+  const nebulaLayers = useMemo(() => (
+    <div className="absolute inset-0 pointer-events-none">
+      <div 
+        className="absolute top-[10%] left-[15%] w-[35%] h-[35%] rounded-full filter blur-3xl opacity-25"
+        style={{
+          background: darkMode
+            ? 'radial-gradient(circle, rgba(147,197,253,0.15) 0%, rgba(59,130,246,0) 70%)'
+            : 'radial-gradient(circle, rgba(59,130,246,0.1) 0%, rgba(59,130,246,0) 70%)',
+          animation: 'pulse-slow 8s infinite ease-in-out',
+        }}
+      />
+      <div 
+        className="absolute bottom-[15%] right-[10%] w-[25%] h-[45%] rounded-full filter blur-3xl opacity-20"
+        style={{
+          background: darkMode
+            ? 'radial-gradient(circle, rgba(192,132,252,0.15) 0%, rgba(107,33,168,0) 70%)'
+            : 'radial-gradient(circle, rgba(192,132,252,0.1) 0%, rgba(107,33,168,0) 70%)',
+          animation: 'pulse-slow2 10s infinite ease-in-out',
+        }}
+      />
+      <div 
+        className="absolute top-[25%] right-[25%] w-[30%] h-[30%] rounded-full filter blur-3xl opacity-15"
+        style={{
+          background: darkMode
+            ? 'radial-gradient(circle, rgba(103,232,249,0.15) 0%, rgba(6,182,212,0) 70%)'
+            : 'radial-gradient(circle, rgba(103,232,249,0.1) 0%, rgba(6,182,212,0) 70%)',
+          animation: 'pulse-slow3 12s infinite ease-in-out',
+        }}
+      />
+    </div>
+  ), [darkMode]);
+
+  // Setup once on component mount
   useEffect(() => {
-    setIsClient(true);
-    const currentDarkMode = isDarkMode();
-    setDarkMode(currentDarkMode);
-    
-    // Setup shooting stars only once per mount
-    const starfield = document.querySelector('.starfield');
-    if (!starfield) return;
-    
-    const createShootingStar = () => {
-      const star = document.createElement('div');
-      star.className = 'shooting-star';
+    if (typeof window !== 'undefined') {
+      setIsClient(true);
+      const currentDarkMode = isDarkMode();
+      setDarkMode(currentDarkMode);
       
-      // Set random position and angle
-      const startX = Math.random() * 100;
-      const startY = Math.random() * 30; // Only from top portion
-      const angle = Math.random() * 60 - 30;
+      // Setup shooting stars only once per mount
+      const handleShootingStars = () => {
+        const starfield = document.querySelector('.starfield');
+        if (!starfield) return null;
+        
+        const createShootingStar = () => {
+          const star = document.createElement('div');
+          star.className = 'shooting-star';
+          
+          // Set random position and angle
+          const startX = Math.random() * 100;
+          const startY = Math.random() * 30; // Only from top portion
+          const angle = Math.random() * 60 - 30;
+          
+          star.style.top = `${startY}%`;
+          star.style.left = `${startX}%`;
+          star.style.setProperty('--angle', `${angle}deg`);
+          
+          // Add the CSS variable to use in our animation
+          starfield.appendChild(star);
+          
+          // Remove star after animation
+          setTimeout(() => {
+            if (star.parentNode === starfield) {
+              starfield.removeChild(star);
+            }
+          }, 1500); // Match animation duration
+        };
+        
+        // Create shooting stars at random intervals
+        const interval = setInterval(() => {
+          if (Math.random() > 0.7) { // 30% chance each interval
+            createShootingStar();
+          }
+        }, Math.random() * 3000 + 2000);
+        
+        return interval;
+      };
       
-      star.style.top = `${startY}%`;
-      star.style.left = `${startX}%`;
-      star.style.setProperty('--angle', `${angle}deg`);
+      const interval = handleShootingStars();
       
-      // Add the CSS variable to use in our animation
-      starfield.appendChild(star);
-      
-      // Remove star after animation
-      setTimeout(() => {
-        if (star.parentNode === starfield) {
-          starfield.removeChild(star);
+      // Listen for theme changes
+      const checkTheme = () => {
+        const newDarkMode = isDarkMode();
+        if (newDarkMode !== darkMode) {
+          setDarkMode(newDarkMode);
+          setStarKey(prevKey => prevKey + 1); // Force regeneration of stars when theme changes
         }
-      }, 1500); // Match animation duration
-    };
-    
-    // Create shooting stars at random intervals
-    const interval = setInterval(() => {
-      if (Math.random() > 0.7) { // 30% chance each interval
-        createShootingStar();
-      }
-    }, Math.random() * 3000 + 2000);
-    
-    // Listen for theme changes
-    const checkTheme = () => {
-      const newDarkMode = isDarkMode();
-      if (newDarkMode !== darkMode) {
-        setDarkMode(newDarkMode);
-        setStarKey(prevKey => prevKey + 1); // Force regeneration of stars when theme changes
-      }
-    };
-    
-    window.addEventListener('theme-change', checkTheme);
-    
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('theme-change', checkTheme);
-    };
+      };
+      
+      window.addEventListener('theme-change', checkTheme);
+      
+      return () => {
+        if (interval) clearInterval(interval);
+        window.removeEventListener('theme-change', checkTheme);
+      };
+    }
   }, []); // Empty dependency array ensures this only runs once on mount
 
   if (!isClient) return null;
@@ -117,36 +166,12 @@ export default function CosmicBackground() {
         {stars}
       </div>
 
-      {/* Enhanced Nebula Layers - Using CSS animations */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div 
-          className="absolute top-[10%] left-[15%] w-[35%] h-[35%] rounded-full filter blur-3xl opacity-25"
-          style={{
-            background: darkMode
-              ? 'radial-gradient(circle, rgba(147,197,253,0.15) 0%, rgba(59,130,246,0) 70%)'
-              : 'radial-gradient(circle, rgba(59,130,246,0.1) 0%, rgba(59,130,246,0) 70%)',
-            animation: 'pulse-slow 8s infinite ease-in-out',
-          }}
-        />
-        <div 
-          className="absolute bottom-[15%] right-[10%] w-[25%] h-[45%] rounded-full filter blur-3xl opacity-20"
-          style={{
-            background: darkMode
-              ? 'radial-gradient(circle, rgba(192,132,252,0.15) 0%, rgba(107,33,168,0) 70%)'
-              : 'radial-gradient(circle, rgba(192,132,252,0.1) 0%, rgba(107,33,168,0) 70%)',
-            animation: 'pulse-slow2 10s infinite ease-in-out',
-          }}
-        />
-        <div 
-          className="absolute top-[25%] right-[25%] w-[30%] h-[30%] rounded-full filter blur-3xl opacity-15"
-          style={{
-            background: darkMode
-              ? 'radial-gradient(circle, rgba(103,232,249,0.15) 0%, rgba(6,182,212,0) 70%)'
-              : 'radial-gradient(circle, rgba(103,232,249,0.1) 0%, rgba(6,182,212,0) 70%)',
-            animation: 'pulse-slow3 12s infinite ease-in-out',
-          }}
-        />
-      </div>
+      {/* Enhanced Nebula Layers - Now memoized */}
+      {nebulaLayers}
     </div>
   );
 }
+
+// Export a memoized version to prevent re-renders when parent components update
+const CosmicBackground = memo(CosmicBackgroundComponent);
+export default CosmicBackground;

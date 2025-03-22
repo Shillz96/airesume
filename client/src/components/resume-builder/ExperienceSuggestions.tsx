@@ -9,12 +9,16 @@ export type BulletLength = "short" | "medium" | "long";
 export interface ExperienceSuggestionsProps {
   resumeId: string;
   jobTitle?: string;
+  currentRole?: string; // Current role/title for more targeted suggestions
+  existingBulletPoints?: string[]; // Current bullet points to avoid duplicates
   onApply: (bulletPoint: string) => void;
 }
 
 export default function ExperienceSuggestions({
   resumeId,
   jobTitle,
+  currentRole = '',
+  existingBulletPoints = [],
   onApply,
 }: ExperienceSuggestionsProps) {
   const { toast } = useToast();
@@ -100,11 +104,20 @@ export default function ExperienceSuggestions({
     // If we have a valid resumeId (not "new" and not null), try to get AI suggestions
     if (resumeId && resumeId !== "new") {
       try {
+        // Create query string parameters including context information
+        const existingBulletPointsParam = existingBulletPoints.length > 0 
+          ? `&existingBulletPoints=${encodeURIComponent(existingBulletPoints.join('||'))}` 
+          : '';
+        
+        const currentRoleParam = currentRole 
+          ? `&currentRole=${encodeURIComponent(currentRole)}` 
+          : '';
+          
         const res = await apiRequest(
           "GET",
           `/api/resumes/${resumeId}/suggestions?experienceOnly=true&jobTitle=${encodeURIComponent(
             jobTitle || "",
-          )}&length=${length}&seed=${generationCount}`,
+          )}&length=${length}&seed=${generationCount}${currentRoleParam}${existingBulletPointsParam}`,
         );
         const data = await res.json();
 
@@ -113,7 +126,25 @@ export default function ExperienceSuggestions({
           data.suggestions &&
           Array.isArray(data.suggestions)
         ) {
-          setBulletPoints(data.suggestions.slice(0, 5));
+          // Filter out any bullet points that might duplicate existing ones
+          // Perform similarity check - here we're just checking if they start with the same words
+          const filteredBulletPoints = data.suggestions.filter(bullet => {
+            // Function to normalize text for comparison (lowercase, remove punctuation)
+            const normalize = (text: string) => text.toLowerCase().replace(/[^\w\s]/g, '').trim();
+            
+            // Get first 5 words for similarity comparison
+            const bulletStart = normalize(bullet).split(' ').slice(0, 5).join(' ');
+            
+            // Check if any existing bullet points start similarly
+            return !existingBulletPoints.some(existing => {
+              const existingStart = normalize(existing).split(' ').slice(0, 5).join(' ');
+              return existingStart.includes(bulletStart) || bulletStart.includes(existingStart);
+            });
+          });
+          
+          setBulletPoints(filteredBulletPoints.length > 0 
+            ? filteredBulletPoints.slice(0, 5) 
+            : data.suggestions.slice(0, 5));
           setIsGenerating(false);
           return;
         }
@@ -122,8 +153,21 @@ export default function ExperienceSuggestions({
       }
     }
 
-    // Fallback to generated bullet points
-    setBulletPoints(getFallbackBulletPoints(length));
+    // Fallback to generated bullet points, but filter out any duplicates
+    const fallbackBulletPoints = getFallbackBulletPoints(length).filter(bullet => {
+      // Simple check for duplicate bullet points
+      const normalize = (text: string) => text.toLowerCase().replace(/[^\w\s]/g, '').trim();
+      const bulletNormalized = normalize(bullet);
+      
+      return !existingBulletPoints.some(existing => {
+        const existingNormalized = normalize(existing);
+        return existingNormalized.includes(bulletNormalized) || bulletNormalized.includes(existingNormalized);
+      });
+    });
+    
+    setBulletPoints(fallbackBulletPoints.length > 0 
+      ? fallbackBulletPoints 
+      : getFallbackBulletPoints(length));
     setIsGenerating(false);
   };
 

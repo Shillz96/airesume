@@ -9,12 +9,14 @@ export type SkillsCategory = "technical" | "soft" | "industry";
 export interface SkillSuggestionsProps {
   resumeId: string;
   jobTitle?: string;
+  existingSkills?: string[]; // Added to avoid duplicating skills
   onApply: (skill: string) => void;
 }
 
 export default function SkillSuggestions({
   resumeId,
   jobTitle,
+  existingSkills = [], // Default to empty array
   onApply,
 }: SkillSuggestionsProps) {
   const { toast } = useToast();
@@ -144,11 +146,16 @@ export default function SkillSuggestions({
     // If we have a valid resumeId (not "new" and not null), try to get AI suggestions
     if (resumeId && resumeId !== "new") {
       try {
+        // Create a query string that includes existingSkills to avoid duplicates
+        const existingSkillsParam = existingSkills.length > 0 
+          ? `&existingSkills=${encodeURIComponent(existingSkills.join(','))}` 
+          : '';
+          
         const res = await apiRequest(
           "GET",
           `/api/resumes/${resumeId}/suggestions?skillsOnly=true&jobTitle=${encodeURIComponent(
             jobTitle || "",
-          )}&category=${category}&seed=${generationCount}`,
+          )}&category=${category}&seed=${generationCount}${existingSkillsParam}`,
         );
         const data = await res.json();
 
@@ -157,7 +164,14 @@ export default function SkillSuggestions({
           data.suggestions &&
           Array.isArray(data.suggestions)
         ) {
-          setSkills(data.suggestions.slice(0, 10));
+          // Filter out any skills that might be duplicates (case insensitive comparison)
+          const filteredSkills = data.suggestions.filter(skill => 
+            !existingSkills.some(existingSkill => 
+              existingSkill.toLowerCase() === skill.toLowerCase()
+            )
+          );
+          
+          setSkills(filteredSkills.slice(0, 10));
           setIsGenerating(false);
           return;
         }
@@ -166,8 +180,14 @@ export default function SkillSuggestions({
       }
     }
 
-    // Fallback to generated skills
-    setSkills(getFallbackSkills(category));
+    // Fallback to generated skills, but filter out any existing skills
+    const fallbackSkills = getFallbackSkills(category).filter(
+      skill => !existingSkills.some(existingSkill => 
+        existingSkill.toLowerCase() === skill.toLowerCase()
+      )
+    );
+    
+    setSkills(fallbackSkills.length > 0 ? fallbackSkills : getFallbackSkills(category));
     setIsGenerating(false);
   };
 

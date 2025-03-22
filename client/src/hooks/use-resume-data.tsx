@@ -12,6 +12,7 @@ export interface PersonalInfo {
   phone: string;
   headline: string;
   summary: string;
+  location?: string;
 }
 
 export interface ExperienceItem {
@@ -67,7 +68,8 @@ const initialResume: Resume = {
     email: '',
     phone: '',
     headline: '',
-    summary: ''
+    summary: '',
+    location: ''
   },
   experience: [],
   education: [],
@@ -162,7 +164,8 @@ export function useResumeData() {
             email: content.personalInfo?.email || '',
             phone: content.personalInfo?.phone || '',
             headline: content.personalInfo?.headline || '',
-            summary: content.personalInfo?.summary || ''
+            summary: content.personalInfo?.summary || '',
+            location: content.personalInfo?.location || ''
           },
           experience: Array.isArray(content.experience) ? content.experience.map((exp: any) => ({
             ...exp,

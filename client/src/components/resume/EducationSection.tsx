@@ -1,20 +1,12 @@
-import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { CosmicButton } from '@/components/cosmic-button-refactored';
-import { Trash, Plus, GraduationCap, Calendar } from 'lucide-react';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import { EducationItem } from '@/hooks/use-resume-data';
-import { cn } from '@/lib/utils';
-import { SectionHeader, SectionCard, ItemActions, formatDate } from './ResumeComponentShared';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import { GraduationCap, Plus, Edit, Trash2 } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
+import { EducationItem } from "@/hooks/use-resume-data";
 
 interface EducationSectionProps {
   education: EducationItem[];
@@ -27,195 +19,222 @@ interface EducationSectionProps {
  * EducationSection component for managing education history in the resume
  */
 export function EducationSection({ 
-  education,
-  resumeId,
+  education, 
+  resumeId, 
   onUpdate,
-  onAdd
+  onAdd 
 }: EducationSectionProps) {
-  const [expandedItem, setExpandedItem] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [formData, setFormData] = useState<EducationItem>({
+    id: "",
+    degree: "",
+    institution: "",
+    startDate: "",
+    endDate: "",
+    description: ""
+  });
 
-  // Handle adding a new education entry
-  const handleAddEducation = () => {
-    if (onAdd) {
-      const newId = onAdd();
-      setExpandedItem(newId);
-    } else {
-      // Fallback if onAdd not provided
-      const newEducation = {
-        id: crypto.randomUUID(),
-        degree: '',
-        institution: '',
-        startDate: '',
-        endDate: '',
-        description: ''
-      };
-      onUpdate([...education, newEducation]);
-      setExpandedItem(newEducation.id);
-    }
+  // Start editing an education entry
+  const startEditing = (item: EducationItem) => {
+    setFormData({ ...item });
+    setEditingId(item.id);
+    setIsAdding(false);
   };
 
-  // Handle removing an education entry
-  const handleRemoveEducation = (id: string) => {
-    const updatedEducation = education.filter(edu => edu.id !== id);
-    onUpdate(updatedEducation);
-    if (expandedItem === id) {
-      setExpandedItem(null);
-    }
-  };
-
-  // Handle updating a field in an education entry
-  const handleEducationChange = (id: string, field: keyof EducationItem, value: string) => {
-    const updatedEducation = education.map(edu => {
-      if (edu.id === id) {
-        return { ...edu, [field]: value };
-      }
-      return edu;
+  // Start adding a new education entry
+  const startAdding = () => {
+    setFormData({
+      id: onAdd ? onAdd() : uuidv4(),
+      degree: "",
+      institution: "",
+      startDate: "",
+      endDate: "",
+      description: ""
     });
-    onUpdate(updatedEducation);
+    setEditingId(null);
+    setIsAdding(true);
+  };
+
+  // Cancel editing or adding
+  const cancelEditing = () => {
+    setEditingId(null);
+    setIsAdding(false);
+  };
+
+  // Handle form input changes
+  const handleChange = (field: keyof EducationItem, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Save the current education entry being edited or added
+  const saveEducation = () => {
+    if (isAdding) {
+      onUpdate([...education, formData]);
+    } else if (editingId) {
+      onUpdate(education.map(item => item.id === editingId ? formData : item));
+    }
+    setEditingId(null);
+    setIsAdding(false);
+  };
+
+  // Delete an education entry
+  const deleteEducation = (id: string) => {
+    onUpdate(education.filter(item => item.id !== id));
   };
 
   return (
-    <div className="space-y-4">
-      <SectionHeader
-        title="Education"
-        icon={<GraduationCap className="h-5 w-5 cosmic-section-icon" />}
-        onAdd={handleAddEducation}
-        addButtonText="Add Education"
-        className="cosmic-text-gradient"
-      />
-
-      {education.length === 0 ? (
-        <SectionCard withHoverEffect={false} className="border border-dashed border-white/10">
-          <div className="flex flex-col items-center justify-center p-6">
-            <GraduationCap className="h-12 w-12 mb-2 opacity-40 cosmic-section-icon" />
-            <p className="text-center text-sm mb-4 opacity-80">
-              Add your educational background, degrees, and certifications
-            </p>
-            <CosmicButton 
-              variant="outline" 
-              size="sm" 
-              onClick={handleAddEducation}
-              iconLeft={<Plus className="h-4 w-4" />}
-              withGlow
-            >
-              Add Education
-            </CosmicButton>
-          </div>
-        </SectionCard>
-      ) : (
-        <Accordion
-          type="single"
-          collapsible
-          value={expandedItem || undefined}
-          onValueChange={(value) => setExpandedItem(value)}
-          className="cosmic-tabs space-y-2"
+    <div className="cosmic-card border border-white/10 bg-black/30 p-6 rounded-lg">
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center gap-2">
+          <GraduationCap className="h-5 w-5 text-blue-400" />
+          <h2 className="text-lg font-medium text-white">Education</h2>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
+          onClick={startAdding}
+          disabled={isAdding}
         >
-          {education.map((edu) => (
-            <AccordionItem
-              key={edu.id}
-              value={edu.id}
-              className={cn(
-                "cosmic-card overflow-hidden border border-white/10 backdrop-blur-sm",
-                expandedItem === edu.id ? "ring-1 ring-primary/20 cosmic-card-gradient" : ""
-              )}
-            >
-              <AccordionTrigger className="px-4 py-3 hover:bg-primary/5 data-[state=open]:bg-primary/10 border-white/10">
-                <div className="flex flex-1 justify-between items-center">
-                  <div className="text-left">
-                    <p className={cn("font-medium", expandedItem === edu.id ? "cosmic-text-gradient" : "")}>
-                      {edu.degree || "New Degree"}
-                    </p>
-                    {edu.institution && (
-                      <p className="text-sm opacity-80">{edu.institution}</p>
-                    )}
-                  </div>
-                  <div className="text-sm opacity-80 mr-4">
-                    {edu.startDate && edu.endDate
-                      ? `${formatDate(edu.startDate)} - ${formatDate(edu.endDate)}`
-                      : ""}
-                  </div>
+          <Plus className="h-4 w-4 mr-1" />
+          Add Education
+        </Button>
+      </div>
+      
+      {/* Education Form (editing or adding) */}
+      {(isAdding || editingId) && (
+        <Card className="mb-6 bg-gray-800/50 border-gray-700">
+          <CardContent className="pt-6">
+            <div className="grid gap-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="degree" className="text-gray-200">Degree/Certificate</Label>
+                  <Input
+                    id="degree"
+                    value={formData.degree}
+                    onChange={e => handleChange('degree', e.target.value)}
+                    className="cosmic-input mt-1"
+                    placeholder="e.g., Bachelor of Science"
+                  />
                 </div>
-              </AccordionTrigger>
-              <AccordionContent className="pb-0">
-                <div className="p-4 space-y-4 bg-card/10 backdrop-blur-sm rounded-b-md border-t border-white/10">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor={`edu-degree-${edu.id}`} className="cosmic-label">Degree/Certification</Label>
-                      <Input
-                        id={`edu-degree-${edu.id}`}
-                        value={edu.degree}
-                        onChange={(e) => handleEducationChange(edu.id, 'degree', e.target.value)}
-                        placeholder="e.g., Bachelor of Science in Computer Science"
-                        className="cosmic-navy-input"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor={`edu-institution-${edu.id}`} className="cosmic-label">Institution</Label>
-                      <Input
-                        id={`edu-institution-${edu.id}`}
-                        value={edu.institution}
-                        onChange={(e) => handleEducationChange(edu.id, 'institution', e.target.value)}
-                        placeholder="e.g., University of Technology"
-                        className="cosmic-navy-input"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor={`edu-start-${edu.id}`} className="cosmic-label">Start Date</Label>
-                      <div className="relative">
-                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 cosmic-section-icon" />
-                        <Input
-                          id={`edu-start-${edu.id}`}
-                          value={edu.startDate}
-                          onChange={(e) => handleEducationChange(edu.id, 'startDate', e.target.value)}
-                          className="pl-10 cosmic-navy-input"
-                          placeholder="e.g., Sep 2018"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor={`edu-end-${edu.id}`} className="cosmic-label">End Date (or "Present")</Label>
-                      <div className="relative">
-                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 cosmic-section-icon" />
-                        <Input
-                          id={`edu-end-${edu.id}`}
-                          value={edu.endDate}
-                          onChange={(e) => handleEducationChange(edu.id, 'endDate', e.target.value)}
-                          className="pl-10 cosmic-navy-input"
-                          placeholder="e.g., May 2022 or Present"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor={`edu-description-${edu.id}`} className="cosmic-label">Description</Label>
-                    <Textarea
-                      id={`edu-description-${edu.id}`}
-                      value={edu.description}
-                      onChange={(e) => handleEducationChange(edu.id, 'description', e.target.value)}
-                      placeholder="Describe your academic achievements, relevant coursework, or activities"
-                      rows={3}
-                      className="cosmic-navy-input cosmic-form-textarea"
-                    />
-                    <p className="text-xs text-muted-foreground opacity-80">
-                      Include relevant coursework, academic achievements, and extracurricular activities.
-                    </p>
-                  </div>
-
-                  <div className="flex justify-end pb-2 pt-2">
-                    <ItemActions 
-                      onDelete={() => handleRemoveEducation(edu.id)}
-                    />
-                  </div>
+                <div>
+                  <Label htmlFor="institution" className="text-gray-200">Institution</Label>
+                  <Input
+                    id="institution"
+                    value={formData.institution}
+                    onChange={e => handleChange('institution', e.target.value)}
+                    className="cosmic-input mt-1"
+                    placeholder="e.g., University of California"
+                  />
                 </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="startDate" className="text-gray-200">Start Date</Label>
+                  <Input
+                    id="startDate"
+                    type="month"
+                    value={formData.startDate}
+                    onChange={e => handleChange('startDate', e.target.value)}
+                    className="cosmic-input mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="endDate" className="text-gray-200">End Date</Label>
+                  <Input
+                    id="endDate"
+                    type="month"
+                    value={formData.endDate}
+                    onChange={e => handleChange('endDate', e.target.value)}
+                    className="cosmic-input mt-1"
+                    placeholder="Present (if still studying)"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="description" className="text-gray-200">Description</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={e => handleChange('description', e.target.value)}
+                  className="cosmic-textarea mt-1"
+                  placeholder="Additional details about your education, honors, relevant coursework, etc."
+                  rows={4}
+                />
+              </div>
+              
+              <div className="flex justify-end space-x-2 mt-2">
+                <Button 
+                  variant="outline" 
+                  onClick={cancelEditing}
+                  className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={saveEducation}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  Save
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
+      
+      {/* List of Education Items */}
+      <div className="space-y-4">
+        {education.length === 0 && !isAdding ? (
+          <div className="text-center py-6 text-gray-400">
+            <GraduationCap className="h-10 w-10 mx-auto mb-2 opacity-50" />
+            <p>No education added yet. Add your education to enhance your resume.</p>
+          </div>
+        ) : (
+          education.map(item => (
+            <div 
+              key={item.id} 
+              className={`cosmic-experience-item ${editingId === item.id ? 'ring-2 ring-blue-500' : ''}`}
+            >
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="font-semibold text-white">{item.degree}</h3>
+                  <div className="text-blue-400">{item.institution}</div>
+                  <div className="text-gray-400 text-sm">
+                    {item.startDate} - {item.endDate || "Present"}
+                  </div>
+                </div>
+                <div className="cosmic-item-actions">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="cosmic-item-button"
+                    onClick={() => startEditing(item)}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="cosmic-item-button cosmic-item-button-delete"
+                    onClick={() => deleteEducation(item.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              {item.description && (
+                <div className="mt-2 text-gray-300 text-sm">
+                  {item.description}
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }

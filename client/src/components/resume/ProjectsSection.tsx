@@ -1,21 +1,12 @@
-import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { CosmicButton } from '@/components/cosmic-button';
-import { Trash, Plus, FolderGit2, Link as LinkIcon, X } from 'lucide-react';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import { Badge } from '@/components/ui/badge';
-import { ProjectItem } from '@/hooks/use-resume-data';
-import { cn } from '@/lib/utils';
-import { getCosmicColor, getSpacing } from '@/lib/theme-utils';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import { Folder, Plus, Edit, Trash2, LinkIcon, X } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
+import { ProjectItem } from "@/hooks/use-resume-data";
 
 interface ProjectsSectionProps {
   projects: ProjectItem[];
@@ -25,275 +16,287 @@ interface ProjectsSectionProps {
 }
 
 /**
- * ProjectsSection component for managing projects in the resume
+ * ProjectsSection component for managing project items in the resume
  */
 export function ProjectsSection({ 
-  projects,
-  resumeId,
+  projects, 
+  resumeId, 
   onUpdate,
   onAdd
 }: ProjectsSectionProps) {
-  const [expandedItem, setExpandedItem] = useState<string | null>(null);
-  const [techInput, setTechInput] = useState<string>('');
-  const [activeTechProjectId, setActiveTechProjectId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [formData, setFormData] = useState<ProjectItem>({
+    id: "",
+    title: "",
+    description: "",
+    technologies: [],
+    link: ""
+  });
+  const [newTechnology, setNewTechnology] = useState("");
 
-  // Handle adding a new project
-  const handleAddProject = () => {
-    if (onAdd) {
-      const newId = onAdd();
-      setExpandedItem(newId);
-    } else {
-      // Fallback if onAdd not provided
-      const newProject = {
-        id: crypto.randomUUID(),
-        title: '',
-        description: '',
-        technologies: [],
-        link: ''
-      };
-      onUpdate([...projects, newProject]);
-      setExpandedItem(newProject.id);
-    }
+  // Start editing a project
+  const startEditing = (item: ProjectItem) => {
+    setFormData({ ...item });
+    setEditingId(item.id);
+    setIsAdding(false);
   };
 
-  // Handle removing a project
-  const handleRemoveProject = (id: string) => {
-    const updatedProjects = projects.filter(project => project.id !== id);
-    onUpdate(updatedProjects);
-    if (expandedItem === id) {
-      setExpandedItem(null);
-    }
-  };
-
-  // Handle updating a field in a project
-  const handleProjectChange = (id: string, field: keyof ProjectItem, value: any) => {
-    const updatedProjects = projects.map(project => {
-      if (project.id === id) {
-        return { ...project, [field]: value };
-      }
-      return project;
+  // Start adding a new project
+  const startAdding = () => {
+    setFormData({
+      id: onAdd ? onAdd() : uuidv4(),
+      title: "",
+      description: "",
+      technologies: [],
+      link: ""
     });
-    onUpdate(updatedProjects);
+    setEditingId(null);
+    setIsAdding(true);
   };
 
-  // Handle adding a technology to a project
-  const handleAddTechnology = (projectId: string) => {
-    if (!techInput.trim()) return;
-    
-    const updatedProjects = projects.map(project => {
-      if (project.id === projectId) {
-        // Check if tech already exists to avoid duplicates
-        if (!project.technologies.includes(techInput.trim())) {
-          return {
-            ...project,
-            technologies: [...project.technologies, techInput.trim()]
-          };
-        }
-      }
-      return project;
-    });
-    
-    onUpdate(updatedProjects);
-    setTechInput('');
+  // Cancel editing or adding
+  const cancelEditing = () => {
+    setEditingId(null);
+    setIsAdding(false);
   };
 
-  // Handle removing a technology from a project
-  const handleRemoveTechnology = (projectId: string, tech: string) => {
-    const updatedProjects = projects.map(project => {
-      if (project.id === projectId) {
-        return {
-          ...project,
-          technologies: project.technologies.filter(t => t !== tech)
-        };
-      }
-      return project;
-    });
-    
-    onUpdate(updatedProjects);
+  // Handle form input changes
+  const handleChange = (field: keyof ProjectItem, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  // Handle key press in technology input (add on Enter)
-  const handleTechKeyPress = (e: React.KeyboardEvent, projectId: string) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddTechnology(projectId);
+  // Save the current project being edited or added
+  const saveProject = () => {
+    if (isAdding) {
+      onUpdate([...projects, formData]);
+    } else if (editingId) {
+      onUpdate(projects.map(item => item.id === editingId ? formData : item));
     }
+    setEditingId(null);
+    setIsAdding(false);
+  };
+
+  // Delete a project
+  const deleteProject = (id: string) => {
+    onUpdate(projects.filter(item => item.id !== id));
+  };
+
+  // Add a technology to the project
+  const addTechnology = () => {
+    if (newTechnology.trim() === "") return;
+    
+    setFormData(prev => ({
+      ...prev,
+      technologies: [...prev.technologies, newTechnology.trim()]
+    }));
+    
+    setNewTechnology("");
+  };
+
+  // Remove a technology from the project
+  const removeTechnology = (tech: string) => {
+    setFormData(prev => ({
+      ...prev,
+      technologies: prev.technologies.filter(t => t !== tech)
+    }));
   };
 
   return (
-    <div className="resume-space-y-4">
-      <div className="flex justify-between items-center resume-mb-4">
-        <div className="flex items-center resume-gap-2">
-          <FolderGit2 className="h-5 w-5 text-resume-text-accent" />
-          <h3 className="text-lg font-semibold text-resume-text-primary">Projects</h3>
+    <div className="cosmic-card border border-white/10 bg-black/30 p-6 rounded-lg">
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center gap-2">
+          <Folder className="h-5 w-5 text-blue-400" />
+          <h2 className="text-lg font-medium text-white">Projects</h2>
         </div>
-        <CosmicButton
-          size="sm"
+        <Button
           variant="outline"
-          iconLeft={<Plus className="h-4 w-4" />}
-          onClick={handleAddProject}
-          withGlow
+          size="sm"
+          className="border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
+          onClick={startAdding}
+          disabled={isAdding}
         >
+          <Plus className="h-4 w-4 mr-1" />
           Add Project
-        </CosmicButton>
+        </Button>
       </div>
-
-      {projects.length === 0 ? (
-        <div className="cosmic-panel resume-p-6 flex flex-col items-center justify-center">
-          <FolderGit2 className="h-12 w-12 resume-mb-2 text-resume-text-accent opacity-30" />
-          <p className="text-center text-sm resume-mb-4 text-resume-text-secondary">
-            Add your notable projects to showcase your practical skills and achievements
-          </p>
-          <CosmicButton 
-            variant="outline" 
-            size="sm" 
-            onClick={handleAddProject}
-            withGlow
-          >
-            Add Project
-          </CosmicButton>
-        </div>
-      ) : (
-        <Accordion
-          type="single"
-          collapsible
-          value={expandedItem || undefined}
-          onValueChange={(value) => setExpandedItem(value)}
-          className="resume-space-y-2"
-        >
-          {projects.map((project) => (
-            <AccordionItem
-              key={project.id}
-              value={project.id}
-              className={cn(
-                "cosmic-panel overflow-hidden",
-                expandedItem === project.id ? "ring-1 ring-resume-panel-border" : ""
-              )}
-            >
-              <AccordionTrigger className="resume-p-4 hover:bg-primary/10 data-[state=open]:bg-primary/20">
-                <div className="flex flex-1 justify-between items-center">
-                  <div className="text-left">
-                    <p className="font-medium text-resume-text-primary">
-                      {project.title || "New Project"}
-                    </p>
-                    {project.technologies && project.technologies.length > 0 && (
-                      <div className="flex flex-wrap resume-gap-1 resume-mt-1 max-w-xs">
-                        {project.technologies.slice(0, 3).map((tech, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs px-1.5 py-0 bg-primary/20 text-resume-text-accent">
-                            {tech}
-                          </Badge>
-                        ))}
-                        {project.technologies.length > 3 && (
-                          <Badge variant="outline" className="text-xs px-1.5 py-0 text-resume-text-muted border-resume-panel-border">
-                            +{project.technologies.length - 3} more
-                          </Badge>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  {project.link && (
-                    <div className="resume-mr-4 text-resume-text-accent">
-                      <LinkIcon className="h-4 w-4" />
+      
+      {/* Project Form (editing or adding) */}
+      {(isAdding || editingId) && (
+        <Card className="mb-6 bg-gray-800/50 border-gray-700">
+          <CardContent className="pt-6">
+            <div className="grid gap-4">
+              <div>
+                <Label htmlFor="title" className="text-gray-200">Project Title</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={e => handleChange('title', e.target.value)}
+                  className="cosmic-input mt-1"
+                  placeholder="e.g., E-commerce Website"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="description" className="text-gray-200">Description</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={e => handleChange('description', e.target.value)}
+                  className="cosmic-textarea mt-1"
+                  placeholder="Describe the project, your role, and its impact..."
+                  rows={3}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="link" className="text-gray-200">Project Link (Optional)</Label>
+                <Input
+                  id="link"
+                  value={formData.link || ""}
+                  onChange={e => handleChange('link', e.target.value)}
+                  className="cosmic-input mt-1"
+                  placeholder="e.g., https://github.com/username/project"
+                />
+              </div>
+              
+              <div>
+                <Label className="text-gray-200">Technologies Used</Label>
+                <div className="flex mt-1 mb-2">
+                  <Input
+                    value={newTechnology}
+                    onChange={e => setNewTechnology(e.target.value)}
+                    className="cosmic-input flex-1"
+                    placeholder="e.g., React, Node.js"
+                    onKeyDown={e => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addTechnology();
+                      }
+                    }}
+                  />
+                  <Button
+                    className="ml-2 bg-blue-600 hover:bg-blue-700"
+                    onClick={addTechnology}
+                  >
+                    Add
+                  </Button>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {formData.technologies.map((tech, index) => (
+                    <div 
+                      key={index} 
+                      className="flex items-center bg-blue-900/20 border border-blue-900/30 rounded-md py-1 px-2"
+                    >
+                      <span className="text-blue-300 text-sm">{tech}</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-4 w-4 p-0 ml-1 text-gray-400 hover:text-white"
+                        onClick={() => removeTechnology(tech)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
+                  
+                  {formData.technologies.length === 0 && (
+                    <div className="text-gray-400 text-sm italic">
+                      No technologies added yet
                     </div>
                   )}
                 </div>
-              </AccordionTrigger>
-              <AccordionContent className="pb-0">
-                <div className="resume-p-4 resume-space-y-4 bg-resume-panel-bg rounded-b-md">
-                  <div className="resume-space-y-2">
-                    <Label htmlFor={`project-title-${project.id}`} className="text-resume-text-secondary">Project Title</Label>
-                    <Input
-                      id={`project-title-${project.id}`}
-                      value={project.title}
-                      onChange={(e) => handleProjectChange(project.id, 'title', e.target.value)}
-                      placeholder="e.g., E-commerce Website, Mobile App, Research Paper"
-                      className="cosmic-input"
-                    />
-                  </div>
-
-                  <div className="resume-space-y-2">
-                    <Label htmlFor={`project-description-${project.id}`} className="text-resume-text-secondary">Description</Label>
-                    <Textarea
-                      id={`project-description-${project.id}`}
-                      value={project.description}
-                      onChange={(e) => handleProjectChange(project.id, 'description', e.target.value)}
-                      placeholder="Describe the project, your role, and key achievements"
-                      rows={3}
-                      className="cosmic-input"
-                    />
-                  </div>
-
-                  <div className="resume-space-y-2">
-                    <Label htmlFor={`project-link-${project.id}`} className="text-resume-text-secondary">Project Link (Optional)</Label>
-                    <Input
-                      id={`project-link-${project.id}`}
-                      value={project.link || ''}
-                      onChange={(e) => handleProjectChange(project.id, 'link', e.target.value)}
-                      placeholder="e.g., https://github.com/yourusername/project"
-                      className="cosmic-input"
-                    />
-                  </div>
-
-                  <div className="resume-space-y-2">
-                    <Label htmlFor={`project-tech-${project.id}`} className="text-resume-text-secondary">Technologies Used</Label>
-                    <div className="flex flex-wrap resume-gap-2 resume-mb-2">
-                      {project.technologies.map((tech, index) => (
-                        <Badge 
-                          key={index} 
-                          className="flex items-center resume-gap-1 px-2 py-1 bg-primary/20 text-resume-text-accent"
-                        >
-                          {tech}
-                          <X
-                            className="h-3 w-3 cursor-pointer ml-1"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRemoveTechnology(project.id, tech);
-                            }}
-                          />
-                        </Badge>
-                      ))}
-                    </div>
-                    <div className="flex resume-gap-2">
-                      <Input
-                        id={`project-tech-${project.id}`}
-                        value={activeTechProjectId === project.id ? techInput : ''}
-                        onChange={(e) => setTechInput(e.target.value)}
-                        onFocus={() => setActiveTechProjectId(project.id)}
-                        onKeyDown={(e) => handleTechKeyPress(e, project.id)}
-                        placeholder="e.g., React, TypeScript, Node.js"
-                        className="cosmic-input"
-                      />
-                      <Button 
-                        type="button" 
-                        size="sm"
-                        onClick={() => handleAddTechnology(project.id)}
-                        className="bg-primary/20 text-resume-text-accent hover:bg-primary/30 hover:text-resume-text-primary"
-                      >
-                        Add
-                      </Button>
-                    </div>
-                    <p className="text-xs text-resume-text-muted resume-mt-1">
-                      Press Enter after each technology to add it, or click the Add button
-                    </p>
-                  </div>
-
-                  <div className="flex justify-end resume-pt-2 resume-pb-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive/90 hover:bg-destructive/10 border border-resume-panel-border"
-                      onClick={() => handleRemoveProject(project.id)}
-                    >
-                      <Trash className="h-4 w-4 resume-mr-1" />
-                      Remove
-                    </Button>
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+              </div>
+              
+              <div className="flex justify-end space-x-2 mt-2">
+                <Button 
+                  variant="outline" 
+                  onClick={cancelEditing}
+                  className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={saveProject}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  Save
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
+      
+      {/* List of Project Items */}
+      <div className="space-y-4">
+        {projects.length === 0 && !isAdding ? (
+          <div className="text-center py-6 text-gray-400">
+            <Folder className="h-10 w-10 mx-auto mb-2 opacity-50" />
+            <p>No projects added yet. Add projects to showcase your work and technical abilities.</p>
+          </div>
+        ) : (
+          projects.map(item => (
+            <div 
+              key={item.id} 
+              className={`cosmic-experience-item ${editingId === item.id ? 'ring-2 ring-blue-500' : ''}`}
+            >
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="font-semibold text-white">{item.title}</h3>
+                  {item.link && (
+                    <a 
+                      href={item.link} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-400 text-sm flex items-center hover:underline"
+                    >
+                      <LinkIcon className="h-3 w-3 mr-1" />
+                      {item.link.replace(/^https?:\/\//, '')}
+                    </a>
+                  )}
+                </div>
+                <div className="cosmic-item-actions">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="cosmic-item-button"
+                    onClick={() => startEditing(item)}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="cosmic-item-button cosmic-item-button-delete"
+                    onClick={() => deleteProject(item.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="mt-2 text-gray-300 text-sm">
+                {item.description}
+              </div>
+              
+              {item.technologies.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-3">
+                  {item.technologies.map((tech, index) => (
+                    <span 
+                      key={index}
+                      className="inline-block bg-blue-900/30 text-blue-300 px-2 py-0.5 rounded text-xs"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }

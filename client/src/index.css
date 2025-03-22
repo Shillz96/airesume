@@ -8,6 +8,7 @@
 /* Import base styles first */
 @import './styles/base/variables.css';
 @import './styles/base/base.css';
+@import './styles/base/typography.css';
 
 /* Import component styles */
 @import './styles/components/buttons.css';

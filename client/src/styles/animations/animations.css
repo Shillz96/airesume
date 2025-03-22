@@ -1,12 +1,10 @@
 /**
- * Animations
+ * Animation Styles
  * 
- * This file contains reusable animations for the application
+ * This file contains reusable animation classes and keyframes
  */
 
-/* Keyframe Animations */
-
-/* Fade In animation */
+/* Fade in animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -16,96 +14,104 @@
   }
 }
 
-/* Fade Out animation */
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+.cosmic-animate-fade-in {
+  animation: fadeIn var(--transition-normal) ease-in-out;
 }
 
-/* Slide In from bottom animation */
-@keyframes slideInUp {
+/* Fade in up animation */
+@keyframes fadeInUp {
   from {
-    transform: translateY(30px);
     opacity: 0;
+    transform: translateY(20px);
   }
   to {
+    opacity: 1;
     transform: translateY(0);
-    opacity: 1;
   }
 }
 
-/* Slide In from top animation */
-@keyframes slideInDown {
+.cosmic-animate-fade-in-up {
+  animation: fadeInUp var(--transition-normal) ease-out;
+}
+
+/* Fade in down animation */
+@keyframes fadeInDown {
   from {
-    transform: translateY(-30px);
     opacity: 0;
+    transform: translateY(-20px);
   }
   to {
+    opacity: 1;
     transform: translateY(0);
-    opacity: 1;
   }
 }
 
-/* Slide In from left animation */
-@keyframes slideInLeft {
+.cosmic-animate-fade-in-down {
+  animation: fadeInDown var(--transition-normal) ease-out;
+}
+
+/* Fade in left animation */
+@keyframes fadeInLeft {
   from {
-    transform: translateX(-30px);
     opacity: 0;
+    transform: translateX(-20px);
   }
   to {
-    transform: translateX(0);
     opacity: 1;
+    transform: translateX(0);
   }
 }
 
-/* Slide In from right animation */
-@keyframes slideInRight {
+.cosmic-animate-fade-in-left {
+  animation: fadeInLeft var(--transition-normal) ease-out;
+}
+
+/* Fade in right animation */
+@keyframes fadeInRight {
   from {
-    transform: translateX(30px);
     opacity: 0;
+    transform: translateX(20px);
   }
   to {
-    transform: translateX(0);
     opacity: 1;
+    transform: translateX(0);
   }
 }
 
-/* Scale Up animation */
-@keyframes scaleUp {
+.cosmic-animate-fade-in-right {
+  animation: fadeInRight var(--transition-normal) ease-out;
+}
+
+/* Scale in animation */
+@keyframes scaleIn {
   from {
+    opacity: 0;
     transform: scale(0.95);
-    opacity: 0;
   }
   to {
-    transform: scale(1);
     opacity: 1;
+    transform: scale(1);
   }
 }
 
-/* Scale Down animation */
-@keyframes scaleDown {
+.cosmic-animate-scale-in {
+  animation: scaleIn var(--transition-normal) ease-out;
+}
+
+/* Scale out animation */
+@keyframes scaleOut {
   from {
-    transform: scale(1.05);
-    opacity: 0;
+    opacity: 1;
+    transform: scale(1);
   }
   to {
-    transform: scale(1);
-    opacity: 1;
+    opacity: 0;
+    transform: scale(0.95);
   }
 }
 
-/* Rotate animation */
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.cosmic-animate-scale-out {
+  animation: scaleOut var(--transition-normal) ease-in;
 }
 
 /* Pulse animation */
@@ -121,254 +127,302 @@
   }
 }
 
+.cosmic-animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Pulse subtle animation */
+@keyframes pulseSubtle {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.cosmic-animate-pulse-subtle {
+  animation: pulseSubtle 3s infinite;
+}
+
+/* Wiggle animation */
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+.cosmic-animate-wiggle {
+  animation: wiggle 1s ease-in-out infinite;
+}
+
 /* Bounce animation */
 @keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
+  0%, 100% {
     transform: translateY(0);
   }
-  40% {
-    transform: translateY(-20px);
-  }
-  60% {
+  50% {
     transform: translateY(-10px);
   }
 }
 
-/* Shake animation */
-@keyframes shake {
-  0%, 100% {
-    transform: translateX(0);
+.cosmic-animate-bounce {
+  animation: bounce 1.5s infinite;
+}
+
+/* Slide in animation */
+@keyframes slideIn {
+  from {
+    transform: translateY(100%);
   }
-  10%, 30%, 50%, 70%, 90% {
-    transform: translateX(-5px);
-  }
-  20%, 40%, 60%, 80% {
-    transform: translateX(5px);
+  to {
+    transform: translateY(0);
   }
 }
 
-/* Gradient flow animation */
-@keyframes gradientFlow {
-  0% {
-    background-position: 0% 50%;
+.cosmic-animate-slide-in {
+  animation: slideIn var(--transition-normal) ease-out forwards;
+}
+
+/* Slide out animation */
+@keyframes slideOut {
+  from {
+    transform: translateY(0);
   }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
+  to {
+    transform: translateY(100%);
   }
 }
 
-/* Progress bar animation */
-@keyframes progressBar {
-  0% {
-    width: 0%;
+.cosmic-animate-slide-out {
+  animation: slideOut var(--transition-normal) ease-in forwards;
+}
+
+/* Spin animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
   }
-  100% {
-    width: 100%;
+  to {
+    transform: rotate(360deg);
   }
 }
 
-/* Star twinkle animation */
+.cosmic-animate-spin {
+  animation: spin 1.5s linear infinite;
+}
+
+.cosmic-animate-spin-slow {
+  animation: spin 3s linear infinite;
+}
+
+/* Cosmic star twinkle */
 @keyframes twinkle {
   0%, 100% {
-    opacity: 0.2;
+    opacity: 0.1;
   }
   50% {
-    opacity: 1;
+    opacity: 0.9;
   }
 }
 
-/* Nebula drift animation */
-@keyframes nebulaDrift {
-  0% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  25% {
-    transform: translate(5px, 5px) rotate(1deg);
+.cosmic-animate-twinkle {
+  animation: twinkle 4s ease-in-out infinite;
+}
+
+.cosmic-animate-twinkle-fast {
+  animation: twinkle 2s ease-in-out infinite;
+}
+
+.cosmic-animate-twinkle-slow {
+  animation: twinkle 6s ease-in-out infinite;
+}
+
+/* Float animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
   }
   50% {
-    transform: translate(0, 10px) rotate(0deg);
+    transform: translateY(-10px);
   }
-  75% {
-    transform: translate(-5px, 5px) rotate(-1deg);
+}
+
+.cosmic-animate-float {
+  animation: float 5s ease-in-out infinite;
+}
+
+/* Shimmer effect for loading states */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
   }
   100% {
-    transform: translate(0, 0) rotate(0deg);
+    background-position: 200% 0;
   }
 }
 
-/* Utility Animation Classes */
-
-.cosmic-fade-in {
-  animation: fadeIn 0.5s ease-in-out forwards;
+.cosmic-animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--muted) 0%,
+    var(--card) 50%,
+    var(--muted) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
 }
 
-.cosmic-fade-out {
-  animation: fadeOut 0.5s ease-in-out forwards;
-}
-
-.cosmic-slide-up {
-  animation: slideInUp 0.5s ease-out forwards;
-}
-
-.cosmic-slide-down {
-  animation: slideInDown 0.5s ease-out forwards;
-}
-
-.cosmic-slide-left {
-  animation: slideInLeft 0.5s ease-out forwards;
-}
-
-.cosmic-slide-right {
-  animation: slideInRight 0.5s ease-out forwards;
-}
-
-.cosmic-scale-up {
-  animation: scaleUp 0.5s ease-out forwards;
-}
-
-.cosmic-scale-down {
-  animation: scaleDown 0.5s ease-out forwards;
-}
-
-.cosmic-spin {
-  animation: rotate 1s linear infinite;
-}
-
-.cosmic-pulse {
-  animation: pulse 2s infinite;
-}
-
-.cosmic-bounce {
-  animation: bounce 2s infinite;
-}
-
-.cosmic-shake {
-  animation: shake 0.5s;
-}
-
-.cosmic-gradient-flow {
-  animation: gradientFlow 6s ease infinite;
-}
-
-.cosmic-progress {
-  animation: progressBar 2s ease-out forwards;
-}
-
-.cosmic-twinkle {
-  animation: twinkle 3s infinite alternate;
-}
-
-.cosmic-nebula-drift {
-  animation: nebulaDrift 20s infinite ease-in-out;
-}
-
-/* Animation Delays */
-.cosmic-delay-100 {
+/* Animation delays */
+.cosmic-animate-delay-100 {
   animation-delay: 100ms;
 }
 
-.cosmic-delay-200 {
+.cosmic-animate-delay-200 {
   animation-delay: 200ms;
 }
 
-.cosmic-delay-300 {
+.cosmic-animate-delay-300 {
   animation-delay: 300ms;
 }
 
-.cosmic-delay-400 {
-  animation-delay: 400ms;
-}
-
-.cosmic-delay-500 {
+.cosmic-animate-delay-500 {
   animation-delay: 500ms;
 }
 
-.cosmic-delay-700 {
+.cosmic-animate-delay-700 {
   animation-delay: 700ms;
 }
 
-.cosmic-delay-1000 {
+.cosmic-animate-delay-1000 {
   animation-delay: 1000ms;
 }
 
-/* Animation Speeds */
-.cosmic-duration-fast {
+/* Animation durations */
+.cosmic-animate-duration-fast {
+  animation-duration: 150ms;
+}
+
+.cosmic-animate-duration-normal {
   animation-duration: 300ms;
 }
 
-.cosmic-duration-normal {
+.cosmic-animate-duration-slow {
   animation-duration: 500ms;
 }
 
-.cosmic-duration-slow {
+.cosmic-animate-duration-slower {
   animation-duration: 800ms;
 }
 
-.cosmic-duration-very-slow {
-  animation-duration: 1.5s;
+.cosmic-animate-duration-slowest {
+  animation-duration: 1200ms;
 }
 
-/* Animation Easing */
-.cosmic-ease-linear {
-  animation-timing-function: linear;
+/* Stagger animations for multiple elements */
+.cosmic-stagger-children > *:nth-child(1) {
+  animation-delay: 0ms;
 }
 
-.cosmic-ease {
-  animation-timing-function: ease;
-}
-
-.cosmic-ease-in {
-  animation-timing-function: ease-in;
-}
-
-.cosmic-ease-out {
-  animation-timing-function: ease-out;
-}
-
-.cosmic-ease-in-out {
-  animation-timing-function: ease-in-out;
-}
-
-/* Staggered animation setup for lists */
-.cosmic-stagger > *:nth-child(1) {
+.cosmic-stagger-children > *:nth-child(2) {
   animation-delay: 100ms;
 }
 
-.cosmic-stagger > *:nth-child(2) {
+.cosmic-stagger-children > *:nth-child(3) {
   animation-delay: 200ms;
 }
 
-.cosmic-stagger > *:nth-child(3) {
+.cosmic-stagger-children > *:nth-child(4) {
   animation-delay: 300ms;
 }
 
-.cosmic-stagger > *:nth-child(4) {
+.cosmic-stagger-children > *:nth-child(5) {
   animation-delay: 400ms;
 }
 
-.cosmic-stagger > *:nth-child(5) {
+.cosmic-stagger-children > *:nth-child(6) {
   animation-delay: 500ms;
 }
 
-.cosmic-stagger > *:nth-child(6) {
+.cosmic-stagger-children > *:nth-child(7) {
   animation-delay: 600ms;
 }
 
-.cosmic-stagger > *:nth-child(7) {
+.cosmic-stagger-children > *:nth-child(8) {
   animation-delay: 700ms;
 }
 
-.cosmic-stagger > *:nth-child(8) {
+.cosmic-stagger-children > *:nth-child(9) {
   animation-delay: 800ms;
 }
 
-.cosmic-stagger > *:nth-child(9) {
+.cosmic-stagger-children > *:nth-child(10) {
   animation-delay: 900ms;
 }
 
-.cosmic-stagger > *:nth-child(10) {
-  animation-delay: 1000ms;
+/* Animation fill modes */
+.cosmic-animate-forwards {
+  animation-fill-mode: forwards;
+}
+
+.cosmic-animate-backwards {
+  animation-fill-mode: backwards;
+}
+
+.cosmic-animate-both {
+  animation-fill-mode: both;
+}
+
+/* Animation timing functions */
+.cosmic-animate-linear {
+  animation-timing-function: linear;
+}
+
+.cosmic-animate-ease {
+  animation-timing-function: ease;
+}
+
+.cosmic-animate-ease-in {
+  animation-timing-function: ease-in;
+}
+
+.cosmic-animate-ease-out {
+  animation-timing-function: ease-out;
+}
+
+.cosmic-animate-ease-in-out {
+  animation-timing-function: ease-in-out;
+}
+
+/* Prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .cosmic-animate-fade-in,
+  .cosmic-animate-fade-in-up,
+  .cosmic-animate-fade-in-down,
+  .cosmic-animate-fade-in-left,
+  .cosmic-animate-fade-in-right,
+  .cosmic-animate-scale-in,
+  .cosmic-animate-scale-out,
+  .cosmic-animate-pulse,
+  .cosmic-animate-pulse-subtle,
+  .cosmic-animate-wiggle,
+  .cosmic-animate-bounce,
+  .cosmic-animate-slide-in,
+  .cosmic-animate-slide-out,
+  .cosmic-animate-spin,
+  .cosmic-animate-spin-slow,
+  .cosmic-animate-twinkle,
+  .cosmic-animate-twinkle-fast,
+  .cosmic-animate-twinkle-slow,
+  .cosmic-animate-float,
+  .cosmic-animate-shimmer {
+    animation: none !important;
+    transition: none !important;
+  }
 }

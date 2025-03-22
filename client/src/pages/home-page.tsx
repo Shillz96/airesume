@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { useAuth } from "@/hooks/use-auth";
-import Navbar from "@/components/navbar";
 import DashboardStats from "@/components/dashboard-stats";
 import RecentActivity from "@/components/recent-activity";
 import JobSearchProgress from "@/components/job-search-progress";
@@ -80,7 +79,6 @@ export default function HomePage() {
   
   return (
     <>
-      <Navbar />
       <div className="container pt-12 pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
         <div ref={welcomeRef}>
           <PageHeader

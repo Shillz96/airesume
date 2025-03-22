@@ -26,7 +26,7 @@ import { Separator } from "@/components/ui/separator";
 import { Loader2, CreditCardIcon, ArrowRightIcon, GiftIcon, PlusCircleIcon, ArrowLeft, CheckIcon } from "lucide-react";
 
 import { AdminControls } from "@/components/admin-tools";
-import Navbar from "@/components/navbar";
+
 import PageHeader from "@/components/page-header";
 
 interface Subscription {

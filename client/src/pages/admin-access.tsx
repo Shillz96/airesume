@@ -24,7 +24,7 @@ import {
   ShieldCheck
 } from "lucide-react";
 
-import Navbar from "@/components/navbar";
+
 import PageHeader from "@/components/page-header";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
@@ -153,7 +153,7 @@ export default function AdminAccess() {
   if (!user) {
     return (
       <>
-        <Navbar />
+        
         <div className="container pt-24 pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
           <div className="flex flex-col items-center justify-center h-[60vh]">
             <h2 className="text-xl font-semibold mb-2">Authentication Required</h2>
@@ -167,7 +167,7 @@ export default function AdminAccess() {
   
   return (
     <>
-      <Navbar />
+      
       <div className="container pt-24 pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
         <PageHeader
           title="Admin Dashboard"

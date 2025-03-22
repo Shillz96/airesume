@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import Navbar from "@/components/navbar";
+
 import JobListing from "@/components/job-listing";
 import { Job } from "@/components/job-card";
 import { getQueryFn } from "@/lib/queryClient";
@@ -68,7 +68,7 @@ export default function JobDetails() {
   if (isLoading) {
     return (
       <>
-        <Navbar />
+        
         <div className="container pt-24 pb-10 px-4 md:px-6 max-w-4xl mx-auto min-h-screen relative z-10">
           <div className="flex justify-center items-center min-h-[50vh]">
             <div className="text-center">
@@ -85,7 +85,7 @@ export default function JobDetails() {
   if (error || !job) {
     return (
       <>
-        <Navbar />
+        
         <div className="container pt-24 pb-10 px-4 md:px-6 max-w-4xl mx-auto min-h-screen relative z-10">
           <div className="px-4 py-6 sm:px-0">
             <div className="cosmic-card border border-white/10 rounded-lg p-8 text-center">
@@ -108,7 +108,7 @@ export default function JobDetails() {
 
   return (
     <>
-      <Navbar />
+      
       <div className="container pt-24 pb-10 px-4 md:px-6 max-w-4xl mx-auto min-h-screen relative z-10">
         <div className="mb-6">
           <Button 

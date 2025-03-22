@@ -9,7 +9,7 @@ import AIAssistantDialog from "@/components/resume-builder/AIAssistantDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import Navbar from "@/components/navbar";
+
 import PageHeader from "@/components/page-header";
 import { 
   ResumeExperienceSection, 
@@ -76,7 +76,7 @@ export default function ResumeBuilder() {
 
   return (
     <div className="cosmic-app-container flex flex-col min-h-screen">
-      <Navbar />
+      
       <div className="cosmic-main-content container pt-12 pb-20 px-4 md:px-6 max-w-7xl mx-auto relative z-10">
         {/* Page Header */}
         <PageHeader 

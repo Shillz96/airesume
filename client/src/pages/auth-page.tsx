@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 
-import Navbar from "@/components/navbar";
+
 import { 
   FileText, 
   Briefcase, 
@@ -194,7 +194,7 @@ export default function LandingPage() {
 
   return (
     <>
-      <Navbar />
+      
       
       {/* Login Dialog */}
       <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>

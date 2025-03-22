@@ -5,7 +5,8 @@
  * It converts theme.json values into CSS variables that are applied to the document root
  */
 
-import { getThemeConfig, isDarkMode, ThemeAppearance, ThemeVariant } from './theme-utils';
+import { getThemeConfig, isDarkMode } from './theme-utils';
+import { ThemeAppearance, ThemeVariant, ThemeUpdateParams } from './theme-types';
 
 /**
  * Initialize theme by setting CSS variables from theme.json
@@ -131,6 +132,12 @@ export function toggleDarkMode(): void {
     root.classList.add('dark-theme');
     root.classList.remove('light-theme');
   }
+  
+  // Dispatch a custom event that components can listen for
+  const themeChangeEvent = new CustomEvent('theme-change', {
+    detail: { isDarkMode: !isDark }
+  });
+  window.dispatchEvent(themeChangeEvent);
   
   // In a production app, we would update the theme.json file or localStorage
 }

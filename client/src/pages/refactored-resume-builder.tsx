@@ -3347,7 +3347,7 @@ export default function ResumeBuilder() {
                       <p className="mb-space-2 text-blue-300 font-medium">
                         Tips for adding projects:
                       </p>
-                      <ul className="list-disc pl-space-4 space-y-space-1">
+                      <ul className="list-disc pl-4 space-y-1">
                         <li>Include personal projects or significant academic/work initiatives</li>
                         <li>Highlight technologies and methodologies used</li>
                         <li>Detail your specific contributions to team projects</li>
@@ -3463,19 +3463,19 @@ export default function ResumeBuilder() {
 
                           <div className="space-y-space-2 text-sm">
                             <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
-                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-space-2 flex-shrink-0" />
+                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span>Check for spelling and grammar errors</span>
                             </div>
                             <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
-                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-space-2 flex-shrink-0" />
+                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span>Ensure consistent formatting throughout</span>
                             </div>
                             <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
-                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-space-2 flex-shrink-0" />
+                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span>Verify all contact information is correct</span>
                             </div>
                             <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
-                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-space-2 flex-shrink-0" />
+                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span>Confirm dates are accurate and consistent</span>
                             </div>
                           </div>

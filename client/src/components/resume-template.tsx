@@ -46,13 +46,13 @@ function TemplateOption({ name, description, preview, selected, onClick }: Templ
     <div
       onClick={onClick}
       className={`cursor-pointer relative rounded-lg border ${
-        selected ? "ring-2 ring-offset-2 ring-primary-500 border-primary-400" : "border-secondary-300"
-      } bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-primary-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500`}
+        selected ? "ring-2 ring-blue-400/70 border-blue-500/50" : "border-blue-500/20"
+      } backdrop-blur-sm bg-slate-900/40 px-6 py-5 shadow-md flex items-center space-x-3 hover:border-blue-500/40 focus-within:ring-2 focus-within:ring-blue-400/50 transition-all duration-200`}
     >
       <div className="flex-shrink-0 h-40 w-full">{preview}</div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-secondary-900">{name}</p>
-        <p className="text-sm text-secondary-500 truncate">{description}</p>
+        <p className="text-sm font-medium text-blue-100">{name}</p>
+        <p className="text-sm text-blue-200/70 truncate">{description}</p>
       </div>
     </div>
   );
@@ -726,9 +726,9 @@ export default function ResumeTemplate({ resume, onTemplateChange }: ResumeTempl
   };
 
   return (
-    <Card>
-      <CardHeader className="border-b border-secondary-200 px-4 py-4 sm:px-6 flex justify-between items-center">
-        <h2 className="text-lg font-medium text-secondary-900">{resume.title || "Untitled Resume"}</h2>
+    <Card className="cosmic-card border border-blue-500/30 bg-slate-900/40 backdrop-blur-sm shadow-lg">
+      <CardHeader className="border-b border-blue-500/20 px-4 py-4 sm:px-6 flex justify-between items-center">
+        <h2 className="text-lg font-medium cosmic-text-gradient">{resume.title || "Untitled Resume"}</h2>
         <div className="flex space-x-2">
           <Button 
             variant="outline" 
@@ -822,7 +822,7 @@ export default function ResumeTemplate({ resume, onTemplateChange }: ResumeTempl
                 Templates
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl">
+            <DialogContent className="max-w-4xl cosmic-dialog-content border-blue-500/30 bg-slate-900/90 backdrop-blur-lg">
               <DialogHeader>
                 <DialogTitle>Choose a Resume Template</DialogTitle>
               </DialogHeader>

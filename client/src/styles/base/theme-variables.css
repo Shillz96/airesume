@@ -117,6 +117,18 @@
   --cosmic-shadow-glow: 0 0 20px rgb(var(--color-primary) / 0.5);
   --cosmic-shadow-glow-strong: 0 0 30px rgb(var(--color-primary) / 0.8);
   
+  /* ======== Legacy Variables Support ======== */
+  /* These provide backwards compatibility with older components */
+  --primary: rgb(var(--color-primary));
+  --primary-foreground: rgb(var(--color-text));
+  --secondary: rgb(var(--color-secondary));
+  --secondary-foreground: rgb(var(--color-text));
+  --background: rgb(var(--color-background));
+  --foreground: rgb(var(--color-text));
+  --border: rgb(var(--color-border));
+  --input: rgb(var(--color-card));
+  --ring: rgb(var(--color-primary) / 0.5);
+  
   /* ======== Dark Mode Overrides ======== */
   &.dark {
     color-scheme: dark;
@@ -130,6 +142,12 @@
   --color-text: 17 24 39; /* Dark text */
   --color-muted: 107 114 128; /* Muted text */
   --color-border: 229 231 235; /* Light border */
+  
+  /* Update legacy variables for light mode */
+  --background: rgb(var(--color-background));
+  --foreground: rgb(var(--color-text));
+  --border: rgb(var(--color-border));
+  --input: rgb(var(--color-card));
 }
 
 /* ======== Theme Variants ======== */
@@ -147,4 +165,46 @@
 :root[data-theme-variant="tint"] {
   --button-radius: var(--border-radius-full);
   --card-radius: var(--border-radius-2xl);
+}
+
+/* ======== Global Cosmic Theme Class ======== */
+.cosmic-theme {
+  /* This class ensures cosmic theme styling is applied consistently */
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-text));
+  font-family: var(--font-primary);
+}
+
+/* Override AI Assistant specific styling to match cosmic theme */
+.ai-assistant,
+.ai-chat-container,
+.cosmic-ai-assistant {
+  border-radius: var(--card-radius);
+  background-color: var(--card-background);
+  border: var(--card-border);
+  color: rgb(var(--color-text));
+}
+
+/* Ensure consistent tab styling across all components */
+.tab-content,
+.cosmic-tab-content,
+[role="tabpanel"] {
+  padding: var(--space-6);
+}
+
+/* Apply consistent button styling */
+button:not([class*="cosmic"]):not([class*="shadcn"]) {
+  border-radius: var(--button-radius);
+  transition: all var(--transition-normal);
+}
+
+/* Consistent resume section styling */
+.resume-section,
+.section-card,
+.cosmic-resume-section {
+  border-radius: var(--card-radius);
+  background-color: var(--card-background);
+  border: var(--card-border);
+  margin-bottom: var(--space-4);
+  overflow: hidden;
 }

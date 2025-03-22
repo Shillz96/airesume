@@ -2070,12 +2070,16 @@ export default function ResumeBuilder() {
       
       try {
         // The API returns resume data with a nested 'content' object
-        const content = fetchedResume.content || {};
+        const content = fetchedResume.content ? 
+          (typeof fetchedResume.content === 'string' 
+            ? JSON.parse(fetchedResume.content) 
+            : fetchedResume.content) 
+          : {};
         console.log("Resume content extracted:", content);
         
         // Ensure we have complete data structure for all fields
         const completeResume = {
-          id: fetchedResume.id,
+          id: fetchedResume.id || "",
           title: fetchedResume.title || "Untitled Resume",
           personalInfo: {
             firstName: content.personalInfo?.firstName || "",

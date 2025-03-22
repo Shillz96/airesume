@@ -118,7 +118,7 @@ export default function SummarySuggestions({ resumeId, onApply }: SummarySuggest
       {summaries.length === 0 ? (
         <div className="space-y-4 py-3">
           <div className="text-center">
-            <h4 className="text-sm font-medium text-blue-300 mb-2">
+            <h4 className="cosmic-text-gradient text-sm font-medium mb-2">
               Choose Summary Length
             </h4>
             <div className="flex space-x-2 mb-4">
@@ -127,7 +127,7 @@ export default function SummarySuggestions({ resumeId, onApply }: SummarySuggest
                 disabled={isGenerating}
                 variant="outline"
                 size="sm"
-                className="flex-1 border-blue-500/30 text-blue-200 hover:bg-blue-900/30 hover:text-blue-100"
+                className="flex-1 cosmic-button cosmic-button-outline border-white/10 hover:bg-blue-900/30 hover:text-blue-100"
               >
                 Short
               </Button>
@@ -136,7 +136,7 @@ export default function SummarySuggestions({ resumeId, onApply }: SummarySuggest
                 disabled={isGenerating}
                 variant="outline"
                 size="sm"
-                className="flex-1 border-blue-500/30 text-blue-200 hover:bg-blue-900/30 hover:text-blue-100"
+                className="flex-1 cosmic-button cosmic-button-outline border-white/10 hover:bg-blue-900/30 hover:text-blue-100"
               >
                 Medium
               </Button>
@@ -145,7 +145,7 @@ export default function SummarySuggestions({ resumeId, onApply }: SummarySuggest
                 disabled={isGenerating}
                 variant="outline"
                 size="sm"
-                className="flex-1 border-blue-500/30 text-blue-200 hover:bg-blue-900/30 hover:text-blue-100"
+                className="flex-1 cosmic-button cosmic-button-outline border-white/10 hover:bg-blue-900/30 hover:text-blue-100"
               >
                 Long
               </Button>

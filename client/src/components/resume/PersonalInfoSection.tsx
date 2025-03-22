@@ -29,16 +29,16 @@ export function PersonalInfoSection({
 }: PersonalInfoSectionProps) {
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <User className="h-5 w-5" style={{ color: getCosmicColor('primary') }} />
-        <h3 className="text-lg font-semibold">Personal Information</h3>
+      <div className="cosmic-section-header">
+        <User className="cosmic-section-icon h-5 w-5" />
+        <h3 className="cosmic-section-title">Personal Information</h3>
       </div>
 
       {showUploadCard && onFileUpload && (
-        <Card className="bg-gradient-to-r from-indigo-900/40 to-purple-900/40 border-indigo-500/30 mb-6">
-          <CardContent className="p-4 flex items-center justify-between">
+        <Card className="cosmic-card cosmic-card-gradient border-white/10 mb-6">
+          <CardContent className="cosmic-card-body flex items-center justify-between">
             <div>
-              <h4 className="font-medium text-lg">Import from Existing Resume</h4>
+              <h4 className="font-medium text-lg cosmic-text-gradient">Import from Existing Resume</h4>
               <p className="text-sm opacity-70 mt-1">
                 Upload your existing resume to extract your information automatically
               </p>

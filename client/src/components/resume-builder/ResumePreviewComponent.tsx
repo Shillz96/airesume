@@ -57,9 +57,9 @@ export default function ResumePreviewComponent({
   };
 
   return (
-    <div className="bg-slate-900/50 backdrop-blur-sm border border-blue-500/20 rounded-lg overflow-hidden h-full flex flex-col">
-      <div className="p-3 border-b border-blue-500/20 bg-gradient-to-r from-blue-900/30 to-indigo-900/30 flex justify-between items-center">
-        <h3 className="text-blue-50 font-medium text-sm">Resume Preview</h3>
+    <div className="cosmic-card border border-white/10 backdrop-blur-sm rounded-lg overflow-hidden h-full flex flex-col">
+      <div className="cosmic-card-header p-3 border-b border-white/10 flex justify-between items-center">
+        <h3 className="cosmic-text-gradient font-medium text-sm">Resume Preview</h3>
         <div className="flex space-x-1">
           {onDownload && (
             <Button
@@ -95,7 +95,7 @@ export default function ResumePreviewComponent({
         </div>
       </div>
       
-      <div className="flex-grow overflow-auto bg-white p-4">
+      <div className="cosmic-card-body flex-grow overflow-auto bg-white p-4">
         <div className="max-w-[800px] mx-auto shadow-md">
           {renderSelectedTemplate()}
         </div>

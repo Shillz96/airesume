@@ -22,6 +22,14 @@ import {
 
 // Simple Navbar with minimal styling and vanilla JavaScript for dropdown
 export default function SimpleNavbar() {
+  console.log("SimpleNavbar component loaded!");
+  
+  // Added to alert that component is loaded for debugging
+  useEffect(() => {
+    console.log("SimpleNavbar mounted!");
+    // Alert will help us see if component is being mounted
+    alert("SimpleNavbar mounted - using our simplified component now!");
+  }, []);
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
   const { openLogin, openRegister } = useAuthDialog();

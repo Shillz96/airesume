@@ -55,8 +55,8 @@ function AppContent() {
   const { isOpen, activeTab, closeDialog } = useAuthDialog();
   const { isDarkMode } = useTheme();
   
-  // Only show navbar when not on landing page or if authenticated
-  const showNavbar = location !== "/" || user;
+  // Force show navbar for all pages for testing purposes
+  const showNavbar = true; // Force navbar to always show for testing
   
   // Handle browser refresh and direct URL navigation
   React.useEffect(() => {

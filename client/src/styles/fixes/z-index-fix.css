@@ -1,74 +1,46 @@
 /**
  * Z-Index Fix Stylesheet
  * This file contains critical fixes for z-index issues throughout the application
- * These rules have higher specificity and !important flags to override conflicting styles
  */
 
-/* CRITICAL FIX: Override dropdown menu wrapper elements to be on top of everything */
+/* Fix for dropdown visibility - less aggressive approach */
 [data-radix-popper-content-wrapper] {
-  z-index: 99999 !important;
-  position: absolute !important;
-  top: auto !important;
+  z-index: 999 !important;
+  position: relative !important;
 }
 
 /* Ensure menu elements are above the navbar */
-[role="menu"],
-.DropdownMenuContent {
-  z-index: 99999 !important;
-  position: absolute !important;
+[role="menu"] {
+  z-index: 999 !important;
 }
 
-/* Fix for dropdown menu visibility for all UI libraries */
-[data-state="open"],
-[data-radix-menu-content],
-div[role="menu"] {
-  z-index: 99999 !important;
-  position: absolute !important;
-  background-color: rgba(17, 24, 39, 0.95) !important;
-  backdrop-filter: blur(8px) !important;
-}
-
-/* Fix for avatar and profile elements to have appropriate stacking context */
+/* Fix for avatar and profile elements */
+.cosmic-navbar .cosmic-glow, 
 .cosmic-navbar button,
-.cosmic-navbar [role="button"],
-.cosmic-navbar .cosmic-glow,
-.cosmic-navbar .DropdownMenuTrigger,
+.cosmic-navbar [role="button"] {
+  position: relative !important;
+  z-index: 95 !important;
+}
+
+/* Additional fixes for dropdown trigger */
 button[aria-haspopup="menu"],
-button[id^="headlessui-menu-button"] {
+div[role="button"] {
   position: relative !important;
-  z-index: 200 !important;
+  z-index: 95 !important;
 }
 
-/* Ensure Avatar component has proper stacking context */
-.Avatar {
-  z-index: 200 !important;
-  position: relative !important;
-}
-
-/* Fix for any dialog or absolute positioned elements */
-[role="dialog"] {
-  z-index: 99999 !important;
-  position: absolute !important;
-}
-
-/* Ensure navbar is fixed properly */
+/* Navbar z-index */
 .cosmic-navbar {
-  position: fixed !important;
-  top: 0 !important;
-  width: 100% !important;
-  z-index: 500 !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 40;
 }
 
-/* Ensure dropdown content when child of navbar has correct positioning */
-.cosmic-navbar [role="menu"],
-.cosmic-navbar [data-radix-popper-content-wrapper] {
-  position: absolute !important;
-  z-index: 99999 !important;
-}
-
-/* Ensure main content is below navbar */
-main,
-.cosmic-app-container {
-  z-index: 10 !important;
-  position: relative !important;
+/* Main content below navbar */
+main {
+  z-index: 10;
+  position: relative;
 }

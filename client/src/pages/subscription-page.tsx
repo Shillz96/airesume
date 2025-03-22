@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation, Link } from "wouter";
+import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,7 +23,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, CreditCardIcon, ArrowRightIcon, GiftIcon, PlusCircleIcon } from "lucide-react";
+import { Loader2, CreditCardIcon, ArrowRightIcon, GiftIcon, PlusCircleIcon, ArrowLeft, CheckIcon } from "lucide-react";
 
 import { AdminControls } from "@/components/admin-tools";
 import Navbar from "@/components/navbar";
@@ -235,88 +236,105 @@ export default function SubscriptionPage() {
   };
   
   return (
-    <div className="min-h-screen cosmic-page">
+    <div className="min-h-screen bg-[#0a0c19] bg-gradient-to-b from-[#0a0c19] to-[#0f1229] text-white">
       <Navbar />
-      <div className="container pt-12 pb-10 px-4 md:px-6 max-w-7xl mx-auto relative z-10 cosmic-container">
-        <PageHeader
-          title="Subscription Management"
-          subtitle="Manage your plans, add-ons, and payment history"
-          actions={
-            <Button
-              variant="outline"
-              onClick={() => setLocation("/")}
-              className="hidden sm:flex items-center gap-2"
-            >
-              <ArrowRightIcon className="w-4 h-4 rotate-180" />
-              Back to Dashboard
-            </Button>
-          }
-        />
+      <div className="container pt-12 pb-10 px-4 md:px-6 max-w-7xl mx-auto relative z-10">
+        <div className="flex justify-between items-center mb-2">
+          <div>
+            <h1 className="text-2xl font-bold text-white tracking-tight">Subscription Management</h1>
+            <p className="text-sm text-gray-400">Manage your plans, add-ons, and payment history</p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => setLocation("/")}
+            className="hidden sm:flex items-center bg-transparent border border-gray-700 hover:bg-gray-800 text-white"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Dashboard
+          </Button>
+        </div>
         
-        <Tabs defaultValue="subscription" className="w-full">
-          <TabsList className="grid w-full sm:w-auto grid-cols-3 mb-8">
-            <TabsTrigger value="subscription">Plans</TabsTrigger>
-            <TabsTrigger value="addons">Add-ons</TabsTrigger>
-            <TabsTrigger value="billing">Billing</TabsTrigger>
+        <Tabs defaultValue="subscription" className="w-full mt-6">
+          <TabsList className="grid w-full grid-cols-3 bg-[#151830] rounded-md border border-[#252a47] p-0.5 mb-4">
+            <TabsTrigger 
+              value="subscription" 
+              className="data-[state=active]:bg-[#2a2f4e] rounded-sm py-2 text-sm">
+              Plans
+            </TabsTrigger>
+            <TabsTrigger 
+              value="addons" 
+              className="data-[state=active]:bg-[#2a2f4e] rounded-sm py-2 text-sm">
+              Add-ons
+            </TabsTrigger>
+            <TabsTrigger 
+              value="billing" 
+              className="data-[state=active]:bg-[#2a2f4e] rounded-sm py-2 text-sm">
+              Billing
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="subscription" className="space-y-4">
             {/* Admin Controls Section */}
-            {!isGuestMode && user && <AdminControls />}
+            {!isGuestMode && user && (
+              <div className="bg-[#151830] border border-[#252a47] rounded-md p-4 shadow-lg mb-4">
+                <p className="text-gray-400 text-sm">You already have admin privileges.</p>
+              </div>
+            )}
+            
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Current Subscription Card */}
-              <Card className="col-span-1 md:col-span-2 lg:col-span-1 bg-card/60 backdrop-blur shadow-md">
+              <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
                 <CardHeader>
-                  <CardTitle>Current Plan</CardTitle>
-                  <CardDescription>Your active subscription details</CardDescription>
+                  <CardTitle className="text-white">Current Plan</CardTitle>
+                  <CardDescription className="text-gray-400">Your active subscription details</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {isLoadingSubscription ? (
                     <div className="flex justify-center py-6">
-                      <Loader2 className="h-6 w-6 animate-spin" />
+                      <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
                     </div>
                   ) : subscription ? (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium">Plan</p>
-                          <p className="text-xl font-bold capitalize">
+                          <p className="text-sm font-medium text-gray-400">Plan</p>
+                          <p className="text-xl font-bold text-white capitalize">
                             {subscription.planType.replace('_', ' ')}
                           </p>
                         </div>
                         <Badge
-                          variant={
-                            subscription.status === 'active'
-                              ? 'default'
-                              : subscription.status === 'cancelled'
-                              ? 'destructive'
-                              : 'outline'
-                          }
+                          className={cn(
+                            "bg-gradient-to-r rounded-full px-3 text-xs font-medium",
+                            subscription.status === 'active' 
+                              ? "from-green-500 to-emerald-600 text-white" 
+                              : "from-red-500 to-red-600 text-white"
+                          )}
                         >
                           {subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
                         </Badge>
                       </div>
                       
-                      <Separator className="my-2" />
+                      <div className="h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent my-3" />
                       
                       <div>
-                        <p className="text-sm font-medium">Started</p>
-                        <p>{formatDate(subscription.startDate)}</p>
+                        <p className="text-sm font-medium text-gray-400">Started</p>
+                        <p className="text-white">{formatDate(subscription.startDate)}</p>
                       </div>
                       
                       {subscription.endDate && (
                         <div>
-                          <p className="text-sm font-medium">Expires</p>
-                          <p>{formatDate(subscription.endDate)}</p>
+                          <p className="text-sm font-medium text-gray-400">Expires</p>
+                          <p className="text-white">{formatDate(subscription.endDate)}</p>
                         </div>
                       )}
                       
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium">Auto-renew</p>
+                          <p className="text-sm font-medium text-gray-400">Auto-renew</p>
                           <Switch
                             id="auto-renew"
                             checked={subscription.autoRenew}
+                            className="data-[state=checked]:bg-indigo-600"
                             onCheckedChange={() => {
                               toast({
                                 title: 'Coming Soon',
@@ -329,16 +347,16 @@ export default function SubscriptionPage() {
                     </div>
                   ) : (
                     <div className="py-6 text-center">
-                      <p className="mb-4">You don't have an active subscription.</p>
+                      <p className="mb-4 text-gray-400">You don't have an active subscription.</p>
                     </div>
                   )}
                 </CardContent>
-                <CardFooter className="flex flex-col gap-2">
+                <CardFooter className="flex flex-col gap-2 border-t border-[#252a47] pt-4">
                   {subscription ? (
                     <>
                       <Button
                         variant="outline"
-                        className="w-full"
+                        className="w-full bg-transparent border border-gray-700 hover:bg-gray-800 text-white"
                         disabled={cancelSubscriptionMutation.isPending}
                         onClick={handleCancelSubscription}
                       >
@@ -348,8 +366,7 @@ export default function SubscriptionPage() {
                         Cancel Subscription
                       </Button>
                       <Button
-                        variant="default"
-                        className="w-full"
+                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white border-0"
                         onClick={() => setActivePlanDialog(true)}
                       >
                         Upgrade Plan
@@ -361,52 +378,43 @@ export default function SubscriptionPage() {
                 </CardFooter>
               </Card>
 
-              {/* Plan Options Cards */}
-              <Card className="bg-card/60 backdrop-blur shadow-md border-primary/40">
-                <CardHeader className="pb-4">
+              {/* Starter Plan Card */}
+              <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
+                <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle>Starter</CardTitle>
-                      <CardDescription>Essentials for job seekers</CardDescription>
+                      <CardTitle className="text-white">Starter</CardTitle>
+                      <CardDescription className="text-gray-400">Essentials for job seekers</CardDescription>
                     </div>
                     <div className="text-right">
-                      <span className="text-2xl font-bold">$9.99</span>
-                      <span className="text-sm text-muted-foreground">/month</span>
+                      <span className="text-2xl font-bold text-white">$9.99</span>
+                      <span className="text-sm text-gray-400">/month</span>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="pb-2 min-h-[216px]">
-                  <ul className="space-y-2 text-sm">
+                <CardContent className="pb-4 min-h-[200px]">
+                  <ul className="space-y-3 mt-3 text-sm">
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      Create up to 3 custom resumes
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">Create up to 3 custom resumes</span>
                     </li>
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      Basic AI suggestions
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">Basic AI suggestions</span>
                     </li>
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      Job match recommendations
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">Job match recommendations</span>
                     </li>
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      Application tracking
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">Application tracking</span>
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="border-t border-[#252a47] pt-4">
                   <Button 
-                    className="w-full"
-                    variant="outline"
+                    className="w-full bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
                     onClick={() => {
                       setSelectedPlan("starter");
                       setActivePlanDialog(true);
@@ -417,7 +425,8 @@ export default function SubscriptionPage() {
                 </CardFooter>
               </Card>
 
-              <Card className="bg-card/60 backdrop-blur shadow-md border-primary/40">
+              {/* Pro Plan Card */}
+              <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
                 <CardHeader className="pb-4">
                   <div className="flex justify-between items-start">
                     <div>

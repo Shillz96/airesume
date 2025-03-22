@@ -10050,3 +10050,4017 @@ export function useResumeData() {
     saveResume
   };
 }```
+## 4. Resume Builder Components
+### AIAssistantDialog.tsx
+```tsx
+import React from "react";
+import AIAssistant from "@/components/ai-assistant";
+import { Button } from "@/components/ui/button";
+import { Cpu, X } from "lucide-react";
+
+interface AIAssistantDialogProps {
+  resumeId?: string;
+  isOpen: boolean;
+  onClose: () => void;
+  onApplySummary?: (summary: string) => void;
+  onApplyBulletPoint?: (bulletPoint: string) => void;
+  onApplySkill?: (skill: string) => void;
+  resume?: any;
+  activeTab?: string;
+}
+
+export default function AIAssistantDialog({
+  resumeId,
+  isOpen,
+  onClose,
+  onApplySummary,
+  onApplyBulletPoint,
+  onApplySkill,
+  resume,
+  activeTab
+}: AIAssistantDialogProps) {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed bottom-24 right-6 z-50 w-96 max-w-full shadow-xl rounded-lg overflow-hidden transition-all duration-300 ease-in-out">
+      <div className="bg-gradient-to-r from-blue-900 to-purple-900 p-3 flex justify-between items-center border-b border-blue-500/30">
+        <div className="flex items-center">
+          <Cpu className="h-5 w-5 text-blue-300 mr-2" />
+          <h3 className="text-white font-medium">AI Resume Assistant</h3>
+        </div>
+        <Button
+          variant="ghost"
+          onClick={onClose}
+          className="h-7 w-7 p-0 text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+      <div className="bg-black/90 border-x border-blue-500/30 border-b p-4 h-96 overflow-y-auto">
+        <AIAssistant
+          resumeId={resumeId?.toString()}
+          onApplySummary={onApplySummary}
+          onApplyBulletPoint={onApplyBulletPoint}
+          onApplySkill={onApplySkill}
+          resume={resume}
+          activeTab={activeTab}
+        />
+      </div>
+    </div>
+  );
+}```
+### ExperienceSuggestions.tsx
+```tsx
+import React, { useState } from "react";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Loader2, Sparkles, Check, RefreshCw } from "lucide-react";
+
+export type BulletLength = "short" | "medium" | "long";
+
+export interface ExperienceSuggestionsProps {
+  resumeId: string;
+  jobTitle?: string;
+  onApply: (bulletPoint: string) => void;
+}
+
+export default function ExperienceSuggestions({
+  resumeId,
+  jobTitle,
+  onApply,
+}: ExperienceSuggestionsProps) {
+  const { toast } = useToast();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [bulletPoints, setBulletPoints] = useState<string[]>([]);
+  const [lastUsedLength, setLastUsedLength] = useState<BulletLength>("medium");
+  const [generationCount, setGenerationCount] = useState(0);
+  const [refreshCount, setRefreshCount] = useState<
+    Record<BulletLength, number>
+  >({
+    short: 0,
+    medium: 0,
+    long: 0,
+  });
+
+  // Generate AI bullet points for experience section with length options
+  const handleGenerateBulletPoints = async (
+    length: BulletLength = "medium",
+  ) => {
+    setIsGenerating(true);
+
+    // Reset refresh count if changing length type
+    if (lastUsedLength !== length) {
+      setLastUsedLength(length);
+      setGenerationCount((prev) => prev + 1);
+      setRefreshCount((prev) => ({ ...prev, [length]: 0 }));
+    } else {
+      // Increment refresh count for this length type
+      const newRefreshCount = refreshCount[length] + 1;
+
+      // Only allow up to 5 refreshes per length type
+      if (newRefreshCount <= 5) {
+        setRefreshCount((prev) => ({ ...prev, [length]: newRefreshCount }));
+        setGenerationCount((prev) => prev + 1);
+      } else {
+        toast({
+          title: "Refresh limit reached",
+          description:
+            "You've reached the maximum number of refreshes. Try a different style option.",
+          variant: "default",
+        });
+        setIsGenerating(false);
+        return;
+      }
+    }
+
+    // Generate fallback bullet points based on job title and length
+    const getFallbackBulletPoints = (length: BulletLength) => {
+      const jobTitle_safe = jobTitle || "professional";
+
+      // Short bullet points
+      if (length === "short") {
+        return [
+          `Improved ${jobTitle_safe} processes by 30%.`,
+          `Led cross-functional teams to deliver key projects.`,
+          `Reduced costs by 25% through strategic optimization.`,
+          `Increased customer satisfaction scores to 95%.`,
+          `Implemented innovative solutions with measurable results.`,
+        ];
+      }
+      // Long bullet points
+      else if (length === "long") {
+        return [
+          `Spearheaded a comprehensive overhaul of ${jobTitle_safe} processes, resulting in a 30% increase in operational efficiency while simultaneously reducing implementation costs by $150,000 annually and improving team morale through more streamlined workflows.`,
+          `Led cross-functional team of 12 professionals in the successful delivery of 5 high-priority projects valued at $2.3M collectively, consistently meeting or exceeding stakeholder expectations while maintaining budget constraints and aggressive timeline requirements.`,
+          `Implemented innovative ${jobTitle_safe} solutions that dramatically improved data processing capabilities by 45%, resulting in faster decision-making processes and enabling the business to respond more effectively to rapidly changing market conditions.`,
+          `Developed and executed strategic initiatives that increased departmental productivity by 37% within the first quarter, recognized by senior leadership for exceptional performance and promoted to lead advanced projects with greater scope and complexity.`,
+          `Redesigned critical ${jobTitle_safe} infrastructure, resulting in 99.9% uptime, a 28% reduction in maintenance costs, and significantly enhanced user experience as measured by a 40-point improvement in Net Promoter Score.`,
+        ];
+      }
+      // Medium bullet points (default)
+      else {
+        return [
+          `Improved ${jobTitle_safe} processes by 30%, resulting in time savings of 15 hours per week and enhanced team productivity.`,
+          `Led cross-functional team of 8 professionals to successfully deliver key projects on time and 10% under budget.`,
+          `Implemented innovative solutions that reduced operational costs by 25% while improving service quality metrics.`,
+          `Developed and executed optimization strategies that increased efficiency by 40% and reduced turnaround times by half.`,
+          `Created comprehensive documentation and training materials that improved onboarding efficiency by 35% for new team members.`,
+        ];
+      }
+    };
+
+    // If we have a valid resumeId (not "new" and not null), try to get AI suggestions
+    if (resumeId && resumeId !== "new") {
+      try {
+        const res = await apiRequest(
+          "GET",
+          `/api/resumes/${resumeId}/suggestions?experienceOnly=true&jobTitle=${encodeURIComponent(
+            jobTitle || "",
+          )}&length=${length}&seed=${generationCount}`,
+        );
+        const data = await res.json();
+
+        if (
+          data.success &&
+          data.suggestions &&
+          Array.isArray(data.suggestions)
+        ) {
+          setBulletPoints(data.suggestions.slice(0, 5));
+          setIsGenerating(false);
+          return;
+        }
+      } catch (error) {
+        console.error("Error generating experience bullet points:", error);
+      }
+    }
+
+    // Fallback to generated bullet points
+    setBulletPoints(getFallbackBulletPoints(length));
+    setIsGenerating(false);
+  };
+
+  return (
+    <div>
+      {bulletPoints.length === 0 ? (
+        <div className="space-y-4 py-3">
+          <div className="text-center">
+            <h4 className="text-sm font-medium text-blue-300 mb-2">
+              Choose Bullet Point Length
+            </h4>
+            <div className="flex space-x-2 mb-4">
+              <Button
+                onClick={() => handleGenerateBulletPoints("short")}
+                disabled={isGenerating}
+                variant="outline"
+                size="sm"
+                className="flex-1 border-blue-500/30 text-blue-200 hover:bg-blue-900/30 hover:text-blue-100"
+              >
+                Concise
+              </Button>
+              <Button
+                onClick={() => handleGenerateBulletPoints("medium")}
+                disabled={isGenerating}
+                variant="outline"
+                size="sm"
+                className="flex-1 border-blue-500/30 text-blue-200 hover:bg-blue-900/30 hover:text-blue-100"
+              >
+                Balanced
+              </Button>
+              <Button
+                onClick={() => handleGenerateBulletPoints("long")}
+                disabled={isGenerating}
+                variant="outline"
+                size="sm"
+                className="flex-1 border-blue-500/30 text-blue-200 hover:bg-blue-900/30 hover:text-blue-100"
+              >
+                Detailed
+              </Button>
+            </div>
+          </div>
+
+          <Button
+            onClick={() => handleGenerateBulletPoints("medium")}
+            disabled={isGenerating}
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2 bg-[rgba(20,30,70,0.6)] border-blue-500/30 text-blue-100"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generating bullet points...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                Generate AI bullet points
+              </>
+            )}
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {bulletPoints.map((bullet, index) => (
+            <div
+              key={index}
+              className="bg-[rgba(20,30,70,0.6)] p-3 rounded-md border border-blue-500/30 text-sm relative group backdrop-blur-sm"
+            >
+              <p className="text-gray-200">{bullet}</p>
+              <Button
+                onClick={() => onApply(bullet)}
+                size="sm"
+                className="mt-2 w-full flex items-center justify-center gap-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0"
+              >
+                <Check className="h-3 w-3" />
+                Use this bullet point
+              </Button>
+            </div>
+          ))}
+          <div className="flex space-x-2">
+            <Button
+              onClick={() => handleGenerateBulletPoints("short")}
+              variant="ghost"
+              size="sm"
+              className="flex-1 items-center justify-center text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Concise
+            </Button>
+            <Button
+              onClick={() => handleGenerateBulletPoints("medium")}
+              variant="ghost"
+              size="sm"
+              className="flex-1 items-center justify-center text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Balanced
+            </Button>
+            <Button
+              onClick={() => handleGenerateBulletPoints("long")}
+              variant="ghost"
+              size="sm"
+              className="flex-1 items-center justify-center text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Detailed
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}```
+### ResumeBuilderHeader.tsx
+```tsx
+import React from "react";
+import { CosmicButton } from "@/components/cosmic-button-refactored";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Save,
+  FileText,
+  Loader2,
+  Download,
+  Cpu
+} from "lucide-react";
+
+interface ResumeBuilderHeaderProps {
+  resumeTitle: string;
+  onTitleChange: (value: string) => void;
+  onSave: () => void;
+  onDownload: () => void;
+  onOpenAIAssistant: () => void;
+  isSaving: boolean;
+  isDirty: boolean;
+}
+
+export default function ResumeBuilderHeader({
+  resumeTitle,
+  onTitleChange,
+  onSave,
+  onDownload,
+  onOpenAIAssistant,
+  isSaving,
+  isDirty
+}: ResumeBuilderHeaderProps) {
+  return (
+    <div className="border-b border-white/10 backdrop-blur-md p-4 flex justify-between items-center sticky top-0 z-10">
+      <div className="flex items-center space-x-4">
+        <div className="flex items-center">
+          <FileText className="cosmic-section-icon h-5 w-5 mr-2" />
+          <Input
+            value={resumeTitle}
+            onChange={(e) => onTitleChange(e.target.value)}
+            className="max-w-xs cosmic-input border-white/10 focus:border-blue-400 placeholder:text-blue-300/50"
+            placeholder="Resume Title"
+          />
+        </div>
+      </div>
+      
+      <div className="flex items-center space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="cosmic-button cosmic-button-outline border-white/10 hover:bg-blue-900/30 hover:text-blue-100"
+          onClick={onOpenAIAssistant}
+        >
+          <Cpu className="h-4 w-4 mr-1" />
+          AI Assistant
+        </Button>
+        
+        <Button
+          variant="outline"
+          size="sm"
+          className="cosmic-button cosmic-button-outline border-white/10 hover:bg-blue-900/30 hover:text-blue-100"
+          onClick={onDownload}
+        >
+          <Download className="h-4 w-4 mr-1" />
+          Download PDF
+        </Button>
+        
+        <CosmicButton
+          variant="primary"
+          size="sm"
+          disabled={isSaving || !isDirty}
+          onClick={onSave}
+          className="cosmic-button cosmic-button-primary cosmic-button-glow"
+        >
+          {isSaving ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save className="h-4 w-4 mr-1" />
+              Save Resume
+            </>
+          )}
+        </CosmicButton>
+      </div>
+    </div>
+  );
+}```
+### ResumePreviewComponent.tsx
+```tsx
+import React, { useState } from "react";
+import { 
+  ProfessionalTemplate,
+  CreativeTemplate,
+  ExecutiveTemplate,
+  ModernTemplate,
+  MinimalTemplate,
+  IndustryTemplate,
+  BoldTemplate
+} from "@/components/resume-template";
+import { Button } from "@/components/ui/button";
+import { 
+  Download, 
+  Printer, 
+  Maximize2 
+} from "lucide-react";
+import { 
+  Dialog, 
+  DialogContent,
+  DialogClose 
+} from "@/components/ui/dialog";
+import { Resume } from "@/hooks/use-resume-data";
+
+interface ResumePreviewComponentProps {
+  resume: Resume;
+  onTemplateChange: (template: string) => void;
+  onDownload?: () => void;
+}
+
+export default function ResumePreviewComponent({ 
+  resume, 
+  onTemplateChange, 
+  onDownload 
+}: ResumePreviewComponentProps) {
+  const [isFullScreenPreview, setIsFullScreenPreview] = useState(false);
+
+  // Render the appropriate resume template based on the selected template
+  const renderSelectedTemplate = () => {
+    switch (resume.template) {
+      case "professional":
+        return <ProfessionalTemplate resume={resume} />;
+      case "creative":
+        return <CreativeTemplate resume={resume} />;
+      case "executive":
+        return <ExecutiveTemplate resume={resume} />;
+      case "modern":
+        return <ModernTemplate resume={resume} />;
+      case "minimal":
+        return <MinimalTemplate resume={resume} />;
+      case "industry":
+        return <IndustryTemplate resume={resume} />;
+      case "bold":
+        return <BoldTemplate resume={resume} />;
+      default:
+        return <ProfessionalTemplate resume={resume} />;
+    }
+  };
+
+  return (
+    <div className="cosmic-card border border-white/10 backdrop-blur-sm rounded-lg overflow-hidden h-full flex flex-col">
+      <div className="cosmic-card-header p-3 border-b border-white/10 flex justify-between items-center">
+        <h3 className="cosmic-text-gradient font-medium text-sm">Resume Preview</h3>
+        <div className="flex space-x-1">
+          {onDownload && (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 w-7 p-0 text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
+              onClick={onDownload}
+              title="Download as PDF"
+            >
+              <Download className="h-4 w-4" />
+            </Button>
+          )}
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-7 w-7 p-0 text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
+            onClick={() => {
+              if (onDownload) onDownload(); // Print
+            }}
+            title="Print resume"
+          >
+            <Printer className="h-4 w-4" />
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-7 w-7 p-0 text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
+            onClick={() => setIsFullScreenPreview(true)}
+            title="View in full screen"
+          >
+            <Maximize2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+      
+      <div className="cosmic-card-body flex-grow overflow-auto bg-white p-4">
+        <div className="max-w-[800px] mx-auto shadow-md">
+          {renderSelectedTemplate()}
+        </div>
+      </div>
+
+      {/* Full Screen Preview Dialog */}
+      <Dialog open={isFullScreenPreview} onOpenChange={setIsFullScreenPreview}>
+        <DialogContent className="max-w-[900px] h-[90vh] p-0 bg-white">
+          <div className="h-full overflow-auto p-6">
+            {renderSelectedTemplate()}
+          </div>
+          <DialogClose className="absolute top-4 right-4" />
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}```
+### SkillSuggestions.tsx
+```tsx
+import React, { useState } from "react";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Loader2, Sparkles, Check, RefreshCw } from "lucide-react";
+
+export type SkillsCategory = "technical" | "soft" | "industry";
+
+export interface SkillSuggestionsProps {
+  resumeId: string;
+  jobTitle?: string;
+  onApply: (skill: string) => void;
+}
+
+export default function SkillSuggestions({
+  resumeId,
+  jobTitle,
+  onApply,
+}: SkillSuggestionsProps) {
+  const { toast } = useToast();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [skills, setSkills] = useState<string[]>([]);
+  const [lastUsedCategory, setLastUsedCategory] = useState<SkillsCategory>("technical");
+  const [generationCount, setGenerationCount] = useState(0);
+  const [refreshCount, setRefreshCount] = useState<
+    Record<SkillsCategory, number>
+  >({
+    technical: 0,
+    soft: 0,
+    industry: 0,
+  });
+
+  // Generate AI skills with category options
+  const handleGenerateSkills = async (
+    category: SkillsCategory = "technical",
+  ) => {
+    setIsGenerating(true);
+
+    // Reset refresh count if changing category type
+    if (lastUsedCategory !== category) {
+      setLastUsedCategory(category);
+      setGenerationCount((prev) => prev + 1);
+      setRefreshCount((prev) => ({ ...prev, [category]: 0 }));
+    } else {
+      // Increment refresh count for this category type
+      const newRefreshCount = refreshCount[category] + 1;
+
+      // Only allow up to 5 refreshes per category type
+      if (newRefreshCount <= 5) {
+        setRefreshCount((prev) => ({ ...prev, [category]: newRefreshCount }));
+        setGenerationCount((prev) => prev + 1);
+      } else {
+        toast({
+          title: "Refresh limit reached",
+          description:
+            "You've reached the maximum number of refreshes. Try a different category option.",
+          variant: "default",
+        });
+        setIsGenerating(false);
+        return;
+      }
+    }
+
+    // Generate fallback skills based on job title and category
+    const getFallbackSkills = (category: SkillsCategory) => {
+      const jobTitle_safe = jobTitle || "professional";
+
+      // Technical skills
+      if (category === "technical") {
+        if (jobTitle_safe.toLowerCase().includes("developer") || 
+            jobTitle_safe.toLowerCase().includes("engineer") ||
+            jobTitle_safe.toLowerCase().includes("programmer")) {
+          return [
+            "JavaScript", "TypeScript", "React", "Node.js", "Express", 
+            "PostgreSQL", "MongoDB", "GraphQL", "REST API Design", 
+            "Docker", "AWS", "GitHub", "CI/CD", "Test-Driven Development"
+          ];
+        } else if (jobTitle_safe.toLowerCase().includes("data") || 
+                  jobTitle_safe.toLowerCase().includes("analyst")) {
+          return [
+            "SQL", "Python", "R", "Excel", "Tableau", "Power BI", 
+            "Data Visualization", "Statistical Analysis", "Machine Learning",
+            "Data Cleaning", "ETL Processes", "Regression Analysis"
+          ];
+        } else if (jobTitle_safe.toLowerCase().includes("design")) {
+          return [
+            "Figma", "Adobe Creative Suite", "Sketch", "UI/UX Design", 
+            "Wireframing", "Prototyping", "Design Systems", "User Research",
+            "Information Architecture", "Accessibility Standards"
+          ];
+        } else {
+          return [
+            "Microsoft Office Suite", "Project Management", "Data Analysis", 
+            "CRM Systems", "Business Intelligence Tools", "Cloud Services",
+            "Digital Marketing Platforms", "Presentation Software", 
+            "Email Marketing Tools", "Spreadsheet Proficiency"
+          ];
+        }
+      }
+      // Soft skills
+      else if (category === "soft") {
+        return [
+          "Communication", "Teamwork", "Leadership", "Problem Solving", 
+          "Critical Thinking", "Time Management", "Adaptability",
+          "Emotional Intelligence", "Conflict Resolution", "Attention to Detail",
+          "Creativity", "Negotiation", "Decision Making", "Active Listening"
+        ];
+      }
+      // Industry skills (default)
+      else {
+        if (jobTitle_safe.toLowerCase().includes("tech") || 
+            jobTitle_safe.toLowerCase().includes("developer") ||
+            jobTitle_safe.toLowerCase().includes("engineering")) {
+          return [
+            "Agile Methodologies", "Scrum", "DevOps", "Cloud Computing", 
+            "Microservices Architecture", "Cybersecurity", "API Integration",
+            "System Design", "Technical Documentation", "Code Review"
+          ];
+        } else if (jobTitle_safe.toLowerCase().includes("market") || 
+                  jobTitle_safe.toLowerCase().includes("sales")) {
+          return [
+            "Market Research", "Brand Management", "Social Media Marketing", 
+            "Content Strategy", "SEO/SEM", "Email Campaigns", "CRM",
+            "Analytics & Reporting", "Customer Segmentation", "Sales Funnel Optimization"
+          ];
+        } else if (jobTitle_safe.toLowerCase().includes("finance") || 
+                  jobTitle_safe.toLowerCase().includes("account")) {
+          return [
+            "Financial Analysis", "Budgeting", "Forecasting", "Risk Assessment", 
+            "Financial Reporting", "Regulatory Compliance", "Tax Planning",
+            "Investment Analysis", "Internal Controls", "ERP Systems"
+          ];
+        } else {
+          return [
+            "Strategic Planning", "Stakeholder Management", "Process Optimization", 
+            "Quality Assurance", "Vendor Management", "Compliance",
+            "Cross-functional Coordination", "Operational Excellence", 
+            "Resource Allocation", "Business Process Management"
+          ];
+        }
+      }
+    };
+
+    // If we have a valid resumeId (not "new" and not null), try to get AI suggestions
+    if (resumeId && resumeId !== "new") {
+      try {
+        const res = await apiRequest(
+          "GET",
+          `/api/resumes/${resumeId}/suggestions?skillsOnly=true&jobTitle=${encodeURIComponent(
+            jobTitle || "",
+          )}&category=${category}&seed=${generationCount}`,
+        );
+        const data = await res.json();
+
+        if (
+          data.success &&
+          data.suggestions &&
+          Array.isArray(data.suggestions)
+        ) {
+          setSkills(data.suggestions.slice(0, 10));
+          setIsGenerating(false);
+          return;
+        }
+      } catch (error) {
+        console.error("Error generating skills:", error);
+      }
+    }
+
+    // Fallback to generated skills
+    setSkills(getFallbackSkills(category));
+    setIsGenerating(false);
+  };
+
+  return (
+    <div>
+      {skills.length === 0 ? (
+        <div className="space-y-4 py-3">
+          <div className="text-center">
+            <h4 className="text-sm font-medium text-blue-300 mb-2">
+              Choose Skill Category
+            </h4>
+            <div className="flex space-x-2 mb-4">
+              <Button
+                onClick={() => handleGenerateSkills("technical")}
+                disabled={isGenerating}
+                variant="outline"
+                size="sm"
+                className="flex-1 border-blue-500/30 text-blue-200 hover:bg-blue-900/30 hover:text-blue-100"
+              >
+                Technical
+              </Button>
+              <Button
+                onClick={() => handleGenerateSkills("soft")}
+                disabled={isGenerating}
+                variant="outline"
+                size="sm"
+                className="flex-1 border-blue-500/30 text-blue-200 hover:bg-blue-900/30 hover:text-blue-100"
+              >
+                Soft Skills
+              </Button>
+              <Button
+                onClick={() => handleGenerateSkills("industry")}
+                disabled={isGenerating}
+                variant="outline"
+                size="sm"
+                className="flex-1 border-blue-500/30 text-blue-200 hover:bg-blue-900/30 hover:text-blue-100"
+              >
+                Industry
+              </Button>
+            </div>
+          </div>
+
+          <Button
+            onClick={() => handleGenerateSkills("technical")}
+            disabled={isGenerating}
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2 bg-[rgba(20,30,70,0.6)] border-blue-500/30 text-blue-100"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generating skills...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                Generate AI skill suggestions
+              </>
+            )}
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            {skills.map((skill, index) => (
+              <div
+                key={index}
+                className="bg-[rgba(20,30,70,0.6)] p-2 rounded-md border border-blue-500/30 text-sm relative group backdrop-blur-sm"
+              >
+                <p className="text-gray-200 text-center mb-2">{skill}</p>
+                <Button
+                  onClick={() => onApply(skill)}
+                  size="sm"
+                  className="w-full flex items-center justify-center gap-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0"
+                >
+                  <Check className="h-3 w-3" />
+                  Add
+                </Button>
+              </div>
+            ))}
+          </div>
+          <div className="flex space-x-2">
+            <Button
+              onClick={() => handleGenerateSkills("technical")}
+              variant="ghost"
+              size="sm"
+              className="flex-1 items-center justify-center text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Technical
+            </Button>
+            <Button
+              onClick={() => handleGenerateSkills("soft")}
+              variant="ghost"
+              size="sm"
+              className="flex-1 items-center justify-center text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Soft Skills
+            </Button>
+            <Button
+              onClick={() => handleGenerateSkills("industry")}
+              variant="ghost"
+              size="sm"
+              className="flex-1 items-center justify-center text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Industry
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}```
+### SummarySuggestions.tsx
+```tsx
+import React, { useState } from "react";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Loader2, Sparkles, Check, RefreshCw } from "lucide-react";
+
+export type SummaryLength = "short" | "medium" | "long";
+
+export interface SummarySuggestionsProps {
+  resumeId: string;
+  onApply: (summary: string) => void;
+}
+
+export default function SummarySuggestions({ resumeId, onApply }: SummarySuggestionsProps) {
+  const { toast } = useToast();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [summaries, setSummaries] = useState<string[]>([]);
+  const [lastUsedLength, setLastUsedLength] = useState<SummaryLength>("medium");
+  const [generationCount, setGenerationCount] = useState(0);
+  const [refreshCount, setRefreshCount] = useState<
+    Record<SummaryLength, number>
+  >({
+    short: 0,
+    medium: 0,
+    long: 0,
+  });
+
+  // Generate AI summaries with length option
+  const handleGenerateSummaries = async (length: SummaryLength = "medium") => {
+    setIsGenerating(true);
+
+    // Reset refresh count if changing length type
+    if (lastUsedLength !== length) {
+      setLastUsedLength(length);
+      setGenerationCount((prev) => prev + 1);
+      setRefreshCount((prev) => ({ ...prev, [length]: 0 }));
+    } else {
+      // Increment refresh count for this length type
+      const newRefreshCount = refreshCount[length] + 1;
+
+      // Only allow up to 5 refreshes per length type
+      if (newRefreshCount <= 5) {
+        setRefreshCount((prev) => ({ ...prev, [length]: newRefreshCount }));
+        setGenerationCount((prev) => prev + 1);
+      } else {
+        toast({
+          title: "Refresh limit reached",
+          description:
+            "You've reached the maximum number of refreshes. Try a different length option.",
+          variant: "default",
+        });
+        setIsGenerating(false);
+        return;
+      }
+    }
+
+    // Generate sample summaries based on resume content
+    const getFallbackSummaries = (length: SummaryLength) => {
+      // Short summaries
+      if (length === "short") {
+        return [
+          "Skilled professional with a proven track record in delivering high-impact solutions.",
+          "Results-oriented professional with expertise in strategic planning and execution.",
+          "Dynamic professional with strong technical and communication skills.",
+        ];
+      }
+      // Long summaries
+      else if (length === "long") {
+        return [
+          "Accomplished professional with extensive experience driving innovation and operational excellence. Demonstrates exceptional ability to identify opportunities for improvement and implement strategic solutions that enhance business performance. Combines technical expertise with strong leadership capabilities to guide teams through complex projects and initiatives.",
+          "Results-driven professional with a comprehensive background in developing and implementing strategic initiatives. Skilled at translating business requirements into effective solutions while maintaining a focus on quality and efficiency. Recognized for ability to collaborate across departments and deliver measurable improvements to organizational processes.",
+          "Versatile professional with a proven track record of success across multiple domains. Leverages deep technical knowledge and business acumen to drive transformative change and achieve ambitious goals. Excels at building relationships with stakeholders at all levels and communicating complex concepts in accessible terms.",
+        ];
+      }
+      // Medium summaries (default)
+      else {
+        return [
+          "Accomplished professional with a proven track record of delivering innovative solutions. Adept at leveraging expertise to drive business outcomes and optimize processes.",
+          "Results-driven professional combining technical knowledge with strong communication skills. Committed to continuous improvement and delivering high-quality work that exceeds expectations.",
+          "Versatile and dedicated professional with strong problem-solving abilities. Effectively balances technical excellence with business requirements to create impactful solutions.",
+        ];
+      }
+    };
+
+    // If we have a valid resumeId (not "new" and not null), try to get AI suggestions
+    if (resumeId && resumeId !== "new") {
+      try {
+        // Use the summaryOnly parameter to get complete summary rewrites
+        // Add length parameter and randomSeed to ensure we get different results each time
+        const res = await apiRequest(
+          "GET",
+          `/api/resumes/${resumeId}/suggestions?summaryOnly=true&length=${length}&seed=${generationCount}`,
+        );
+        const data = await res.json();
+
+        if (
+          data.success &&
+          data.suggestions &&
+          Array.isArray(data.suggestions)
+        ) {
+          setSummaries(data.suggestions.slice(0, 3));
+          setIsGenerating(false);
+          return;
+        }
+      } catch (error) {
+        console.error("Error generating summaries:", error);
+      }
+    }
+
+    // If we get here, either the API call failed or we don't have a valid resumeId
+    // Use the fallback summaries
+    setSummaries(getFallbackSummaries(length));
+    setIsGenerating(false);
+  };
+
+  return (
+    <div>
+      {summaries.length === 0 ? (
+        <div className="space-y-4 py-3">
+          <div className="text-center">
+            <h4 className="cosmic-text-gradient text-sm font-medium mb-2">
+              Choose Summary Length
+            </h4>
+            <div className="flex space-x-2 mb-4">
+              <Button
+                onClick={() => handleGenerateSummaries("short")}
+                disabled={isGenerating}
+                variant="outline"
+                size="sm"
+                className="flex-1 cosmic-button cosmic-button-outline border-white/10 hover:bg-blue-900/30 hover:text-blue-100"
+              >
+                Short
+              </Button>
+              <Button
+                onClick={() => handleGenerateSummaries("medium")}
+                disabled={isGenerating}
+                variant="outline"
+                size="sm"
+                className="flex-1 cosmic-button cosmic-button-outline border-white/10 hover:bg-blue-900/30 hover:text-blue-100"
+              >
+                Medium
+              </Button>
+              <Button
+                onClick={() => handleGenerateSummaries("long")}
+                disabled={isGenerating}
+                variant="outline"
+                size="sm"
+                className="flex-1 cosmic-button cosmic-button-outline border-white/10 hover:bg-blue-900/30 hover:text-blue-100"
+              >
+                Long
+              </Button>
+            </div>
+          </div>
+
+          <Button
+            onClick={() => handleGenerateSummaries("medium")}
+            disabled={isGenerating}
+            variant="outline"
+            className="w-full cosmic-button cosmic-button-glow flex items-center justify-center gap-2 border-white/10 text-blue-100"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin cosmic-section-icon" />
+                Generating summaries...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4 cosmic-section-icon" />
+                Generate AI summaries
+              </>
+            )}
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {summaries.map((summary, index) => (
+            <div
+              key={index}
+              className="cosmic-card cosmic-card-gradient p-3 rounded-md border border-white/10 text-sm relative group backdrop-blur-sm"
+            >
+              <p className="text-gray-200">{summary}</p>
+              <Button
+                onClick={() => onApply(summary)}
+                size="sm"
+                className="cosmic-button cosmic-button-primary cosmic-button-glow mt-2 w-full flex items-center justify-center gap-1"
+              >
+                <Check className="h-3 w-3" />
+                Use this summary
+              </Button>
+            </div>
+          ))}
+          <div className="flex space-x-2">
+            <Button
+              onClick={() => handleGenerateSummaries("short")}
+              variant="ghost"
+              size="sm"
+              className="flex-1 cosmic-button cosmic-button-outline items-center justify-center border-white/10 hover:text-blue-300 hover:bg-blue-900/30"
+            >
+              <RefreshCw className="h-3 w-3 mr-1 cosmic-section-icon" />
+              Short
+            </Button>
+            <Button
+              onClick={() => handleGenerateSummaries("medium")}
+              variant="ghost"
+              size="sm"
+              className="flex-1 cosmic-button cosmic-button-outline items-center justify-center border-white/10 hover:text-blue-300 hover:bg-blue-900/30"
+            >
+              <RefreshCw className="h-3 w-3 mr-1 cosmic-section-icon" />
+              Medium
+            </Button>
+            <Button
+              onClick={() => handleGenerateSummaries("long")}
+              variant="ghost"
+              size="sm"
+              className="flex-1 cosmic-button cosmic-button-outline items-center justify-center border-white/10 hover:text-blue-300 hover:bg-blue-900/30"
+            >
+              <RefreshCw className="h-3 w-3 mr-1 cosmic-section-icon" />
+              Long
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}```
+### TemplateSelector.tsx
+```tsx
+import React from "react";
+import {
+  TemplatePreviewProfessional,
+  TemplatePreviewCreative,
+  TemplatePreviewExecutive,
+  TemplatePreviewModern,
+  TemplatePreviewMinimal,
+  TemplatePreviewIndustry,
+  TemplatePreviewBold
+} from "@/components/resume-template";
+import { Check } from "lucide-react";
+
+interface TemplateOptionProps {
+  name: string;
+  description: string;
+  preview: React.ReactNode;
+  selected: boolean;
+  onClick: () => void;
+}
+
+function TemplateOption({ name, description, preview, selected, onClick }: TemplateOptionProps) {
+  return (
+    <div
+      className={`relative group cursor-pointer overflow-hidden rounded-md border transition-all ${
+        selected
+          ? "border-blue-500 bg-blue-500/10"
+          : "border-blue-500/20 hover:border-blue-500/50 bg-slate-900/50"
+      }`}
+      onClick={onClick}
+    >
+      <div className="p-3 bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border-b border-blue-500/20">
+        <div className="flex justify-between items-center">
+          <h3 className="font-medium text-blue-100">{name}</h3>
+          {selected && (
+            <span className="bg-blue-500 text-white p-1 rounded-full">
+              <Check className="h-3 w-3" />
+            </span>
+          )}
+        </div>
+        <p className="text-xs text-blue-300 mt-1">{description}</p>
+      </div>
+      <div className="p-2 aspect-[3/4] overflow-hidden bg-white flex items-center justify-center">
+        {preview}
+      </div>
+    </div>
+  );
+}
+
+interface TemplateSelectorProps {
+  selectedTemplate: string;
+  onTemplateChange: (template: string) => void;
+}
+
+export default function TemplateSelector({ 
+  selectedTemplate, 
+  onTemplateChange 
+}: TemplateSelectorProps) {
+  const templates = [
+    {
+      id: "professional",
+      name: "Professional",
+      description: "Clean and traditional layout for corporate roles",
+      preview: <TemplatePreviewProfessional />,
+    },
+    {
+      id: "modern",
+      name: "Modern",
+      description: "Contemporary design with a fresh layout",
+      preview: <TemplatePreviewModern />,
+    },
+    {
+      id: "creative",
+      name: "Creative",
+      description: "Unique design for creative industries",
+      preview: <TemplatePreviewCreative />,
+    },
+    {
+      id: "executive",
+      name: "Executive",
+      description: "Sophisticated layout for senior positions",
+      preview: <TemplatePreviewExecutive />,
+    },
+    {
+      id: "minimal",
+      name: "Minimal",
+      description: "Simple, clean design with focus on content",
+      preview: <TemplatePreviewMinimal />,
+    },
+    {
+      id: "industry",
+      name: "Industry",
+      description: "Specialized format for technical roles",
+      preview: <TemplatePreviewIndustry />,
+    },
+    {
+      id: "bold",
+      name: "Bold",
+      description: "High-impact design that stands out",
+      preview: <TemplatePreviewBold />,
+    },
+  ];
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
+      {templates.map((template) => (
+        <TemplateOption
+          key={template.id}
+          name={template.name}
+          description={template.description}
+          preview={template.preview}
+          selected={selectedTemplate === template.id}
+          onClick={() => onTemplateChange(template.id)}
+        />
+      ))}
+    </div>
+  );
+}```
+## 5. Resume Section Components
+### EducationSection.tsx
+```tsx
+import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { CosmicButton } from '@/components/cosmic-button-refactored';
+import { Trash, Plus, GraduationCap, Calendar } from 'lucide-react';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { EducationItem } from '@/hooks/use-resume-data';
+import { cn } from '@/lib/utils';
+import { SectionHeader, SectionCard, ItemActions, formatDate } from './ResumeComponentShared';
+
+interface EducationSectionProps {
+  education: EducationItem[];
+  resumeId?: string;
+  onUpdate: (education: EducationItem[]) => void;
+  onAdd?: () => string; // Returns the new ID
+}
+
+/**
+ * EducationSection component for managing education history in the resume
+ */
+export function EducationSection({ 
+  education,
+  resumeId,
+  onUpdate,
+  onAdd
+}: EducationSectionProps) {
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
+
+  // Handle adding a new education entry
+  const handleAddEducation = () => {
+    if (onAdd) {
+      const newId = onAdd();
+      setExpandedItem(newId);
+    } else {
+      // Fallback if onAdd not provided
+      const newEducation = {
+        id: crypto.randomUUID(),
+        degree: '',
+        institution: '',
+        startDate: '',
+        endDate: '',
+        description: ''
+      };
+      onUpdate([...education, newEducation]);
+      setExpandedItem(newEducation.id);
+    }
+  };
+
+  // Handle removing an education entry
+  const handleRemoveEducation = (id: string) => {
+    const updatedEducation = education.filter(edu => edu.id !== id);
+    onUpdate(updatedEducation);
+    if (expandedItem === id) {
+      setExpandedItem(null);
+    }
+  };
+
+  // Handle updating a field in an education entry
+  const handleEducationChange = (id: string, field: keyof EducationItem, value: string) => {
+    const updatedEducation = education.map(edu => {
+      if (edu.id === id) {
+        return { ...edu, [field]: value };
+      }
+      return edu;
+    });
+    onUpdate(updatedEducation);
+  };
+
+  return (
+    <div className="space-y-4">
+      <SectionHeader
+        title="Education"
+        icon={<GraduationCap className="h-5 w-5 cosmic-section-icon" />}
+        onAdd={handleAddEducation}
+        addButtonText="Add Education"
+        className="cosmic-text-gradient"
+      />
+
+      {education.length === 0 ? (
+        <SectionCard withHoverEffect={false} className="border border-dashed border-white/10">
+          <div className="flex flex-col items-center justify-center p-6">
+            <GraduationCap className="h-12 w-12 mb-2 opacity-40 cosmic-section-icon" />
+            <p className="text-center text-sm mb-4 opacity-80">
+              Add your educational background, degrees, and certifications
+            </p>
+            <CosmicButton 
+              variant="outline" 
+              size="sm" 
+              onClick={handleAddEducation}
+              iconLeft={<Plus className="h-4 w-4" />}
+              withGlow
+            >
+              Add Education
+            </CosmicButton>
+          </div>
+        </SectionCard>
+      ) : (
+        <Accordion
+          type="single"
+          collapsible
+          value={expandedItem || undefined}
+          onValueChange={(value) => setExpandedItem(value)}
+          className="cosmic-tabs space-y-2"
+        >
+          {education.map((edu) => (
+            <AccordionItem
+              key={edu.id}
+              value={edu.id}
+              className={cn(
+                "cosmic-card overflow-hidden border border-white/10 backdrop-blur-sm",
+                expandedItem === edu.id ? "ring-1 ring-primary/20 cosmic-card-gradient" : ""
+              )}
+            >
+              <AccordionTrigger className="px-4 py-3 hover:bg-primary/5 data-[state=open]:bg-primary/10 border-white/10">
+                <div className="flex flex-1 justify-between items-center">
+                  <div className="text-left">
+                    <p className={cn("font-medium", expandedItem === edu.id ? "cosmic-text-gradient" : "")}>
+                      {edu.degree || "New Degree"}
+                    </p>
+                    {edu.institution && (
+                      <p className="text-sm opacity-80">{edu.institution}</p>
+                    )}
+                  </div>
+                  <div className="text-sm opacity-80 mr-4">
+                    {edu.startDate && edu.endDate
+                      ? `${formatDate(edu.startDate)} - ${formatDate(edu.endDate)}`
+                      : ""}
+                  </div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pb-0">
+                <div className="p-4 space-y-4 bg-card/10 backdrop-blur-sm rounded-b-md border-t border-white/10">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor={`edu-degree-${edu.id}`} className="cosmic-label">Degree/Certification</Label>
+                      <Input
+                        id={`edu-degree-${edu.id}`}
+                        value={edu.degree}
+                        onChange={(e) => handleEducationChange(edu.id, 'degree', e.target.value)}
+                        placeholder="e.g., Bachelor of Science in Computer Science"
+                        className="cosmic-navy-input"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`edu-institution-${edu.id}`} className="cosmic-label">Institution</Label>
+                      <Input
+                        id={`edu-institution-${edu.id}`}
+                        value={edu.institution}
+                        onChange={(e) => handleEducationChange(edu.id, 'institution', e.target.value)}
+                        placeholder="e.g., University of Technology"
+                        className="cosmic-navy-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor={`edu-start-${edu.id}`} className="cosmic-label">Start Date</Label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 cosmic-section-icon" />
+                        <Input
+                          id={`edu-start-${edu.id}`}
+                          value={edu.startDate}
+                          onChange={(e) => handleEducationChange(edu.id, 'startDate', e.target.value)}
+                          className="pl-10 cosmic-navy-input"
+                          placeholder="e.g., Sep 2018"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`edu-end-${edu.id}`} className="cosmic-label">End Date (or "Present")</Label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 cosmic-section-icon" />
+                        <Input
+                          id={`edu-end-${edu.id}`}
+                          value={edu.endDate}
+                          onChange={(e) => handleEducationChange(edu.id, 'endDate', e.target.value)}
+                          className="pl-10 cosmic-navy-input"
+                          placeholder="e.g., May 2022 or Present"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor={`edu-description-${edu.id}`} className="cosmic-label">Description</Label>
+                    <Textarea
+                      id={`edu-description-${edu.id}`}
+                      value={edu.description}
+                      onChange={(e) => handleEducationChange(edu.id, 'description', e.target.value)}
+                      placeholder="Describe your academic achievements, relevant coursework, or activities"
+                      rows={3}
+                      className="cosmic-navy-input cosmic-form-textarea"
+                    />
+                    <p className="text-xs text-muted-foreground opacity-80">
+                      Include relevant coursework, academic achievements, and extracurricular activities.
+                    </p>
+                  </div>
+
+                  <div className="flex justify-end pb-2 pt-2">
+                    <ItemActions 
+                      onDelete={() => handleRemoveEducation(edu.id)}
+                    />
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      )}
+    </div>
+  );
+}```
+### ExperienceSection.tsx
+```tsx
+import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { CosmicButton } from '@/components/cosmic-button-refactored';
+import { Trash, Plus, Briefcase, Calendar } from 'lucide-react';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { ExperienceItem } from '@/hooks/use-resume-data';
+import { cn } from '@/lib/utils';
+import { SectionHeader, SectionCard, ItemActions, formatDate } from './ResumeComponentShared';
+
+interface ExperienceSectionProps {
+  experiences: ExperienceItem[];
+  resumeId?: string;
+  onUpdate: (experiences: ExperienceItem[]) => void;
+  onAdd?: () => string; // Returns the new ID
+}
+
+/**
+ * ExperienceSection component for managing work experience items in the resume
+ */
+export function ExperienceSection({ 
+  experiences,
+  resumeId,
+  onUpdate,
+  onAdd
+}: ExperienceSectionProps) {
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
+
+  // Handle adding a new experience entry
+  const handleAddExperience = () => {
+    if (onAdd) {
+      const newId = onAdd();
+      setExpandedItem(newId);
+    } else {
+      // Fallback if onAdd not provided
+      const newExperience = {
+        id: crypto.randomUUID(),
+        title: '',
+        company: '',
+        startDate: '',
+        endDate: '',
+        description: ''
+      };
+      onUpdate([...experiences, newExperience]);
+      setExpandedItem(newExperience.id);
+    }
+  };
+
+  // Handle removing an experience entry
+  const handleRemoveExperience = (id: string) => {
+    const updatedExperiences = experiences.filter(exp => exp.id !== id);
+    onUpdate(updatedExperiences);
+    if (expandedItem === id) {
+      setExpandedItem(null);
+    }
+  };
+
+  // Handle updating a field in an experience entry
+  const handleExperienceChange = (id: string, field: keyof ExperienceItem, value: string) => {
+    const updatedExperiences = experiences.map(exp => {
+      if (exp.id === id) {
+        return { ...exp, [field]: value };
+      }
+      return exp;
+    });
+    onUpdate(updatedExperiences);
+  };
+
+  return (
+    <div className="space-y-4">
+      <SectionHeader
+        title="Work Experience"
+        icon={<Briefcase className="h-5 w-5 cosmic-section-icon" />}
+        onAdd={handleAddExperience}
+        addButtonText="Add Experience"
+        className="cosmic-text-gradient"
+      />
+
+      {experiences.length === 0 ? (
+        <SectionCard withHoverEffect={false} className="border border-dashed border-white/10">
+          <div className="flex flex-col items-center justify-center p-6">
+            <Briefcase className="h-12 w-12 mb-2 opacity-40 cosmic-section-icon" />
+            <p className="text-center text-sm mb-4 opacity-80">
+              Add your work history including internships and relevant experience
+            </p>
+            <CosmicButton 
+              variant="outline" 
+              size="sm" 
+              onClick={handleAddExperience}
+              iconLeft={<Plus className="h-4 w-4" />}
+              withGlow
+            >
+              Add Experience
+            </CosmicButton>
+          </div>
+        </SectionCard>
+      ) : (
+        <Accordion
+          type="single"
+          collapsible
+          value={expandedItem || undefined}
+          onValueChange={(value) => setExpandedItem(value)}
+          className="cosmic-tabs space-y-2"
+        >
+          {experiences.map((experience) => (
+            <AccordionItem
+              key={experience.id}
+              value={experience.id}
+              className={cn(
+                "cosmic-card overflow-hidden border border-white/10 backdrop-blur-sm",
+                expandedItem === experience.id ? "ring-1 ring-primary/20 cosmic-card-gradient" : ""
+              )}
+            >
+              <AccordionTrigger className="px-4 py-3 hover:bg-primary/5 data-[state=open]:bg-primary/10 border-white/10">
+                <div className="flex flex-1 justify-between items-center">
+                  <div className="text-left">
+                    <p className={cn("font-medium", expandedItem === experience.id ? "cosmic-text-gradient" : "")}>
+                      {experience.title || "New Position"}
+                    </p>
+                    {experience.company && (
+                      <p className="text-sm opacity-80">{experience.company}</p>
+                    )}
+                  </div>
+                  <div className="text-sm opacity-80 mr-4">
+                    {experience.startDate && experience.endDate
+                      ? `${formatDate(experience.startDate)} - ${formatDate(experience.endDate)}`
+                      : ""}
+                  </div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pb-0">
+                <div className="p-4 space-y-4 bg-card/10 backdrop-blur-sm rounded-b-md border-t border-white/10">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor={`exp-title-${experience.id}`} className="cosmic-label">Job Title</Label>
+                      <Input
+                        id={`exp-title-${experience.id}`}
+                        value={experience.title}
+                        onChange={(e) => handleExperienceChange(experience.id, 'title', e.target.value)}
+                        placeholder="e.g., Senior Developer"
+                        className="cosmic-navy-input"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`exp-company-${experience.id}`} className="cosmic-label">Company</Label>
+                      <Input
+                        id={`exp-company-${experience.id}`}
+                        value={experience.company}
+                        onChange={(e) => handleExperienceChange(experience.id, 'company', e.target.value)}
+                        placeholder="e.g., Acme Inc."
+                        className="cosmic-navy-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor={`exp-start-${experience.id}`} className="cosmic-label">Start Date</Label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 cosmic-section-icon" />
+                        <Input
+                          id={`exp-start-${experience.id}`}
+                          value={experience.startDate}
+                          onChange={(e) => handleExperienceChange(experience.id, 'startDate', e.target.value)}
+                          className="pl-10 cosmic-navy-input"
+                          placeholder="e.g., Jan 2020"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`exp-end-${experience.id}`} className="cosmic-label">End Date (or "Present")</Label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 cosmic-section-icon" />
+                        <Input
+                          id={`exp-end-${experience.id}`}
+                          value={experience.endDate}
+                          onChange={(e) => handleExperienceChange(experience.id, 'endDate', e.target.value)}
+                          className="pl-10 cosmic-navy-input"
+                          placeholder="e.g., Dec 2022 or Present"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor={`exp-description-${experience.id}`} className="cosmic-label">Description</Label>
+                    <Textarea
+                      id={`exp-description-${experience.id}`}
+                      value={experience.description}
+                      onChange={(e) => handleExperienceChange(experience.id, 'description', e.target.value)}
+                      placeholder="Describe your responsibilities, achievements, and skills used..."
+                      rows={5}
+                      className="cosmic-navy-input cosmic-form-textarea"
+                    />
+                    <p className="text-xs text-muted-foreground opacity-80">
+                      Use bullet points for better readability. Start with strong action verbs.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2 mt-4 border-t border-white/10 pt-4">
+                    <h4 className="text-sm font-medium cosmic-text-gradient">Formatting Tips:</h4>
+                    <ul className="text-xs space-y-1 text-muted-foreground opacity-80">
+                      <li>• Start with strong action verbs (e.g., "Developed", "Led", "Managed")</li>
+                      <li>• Include quantifiable achievements (e.g., "Increased sales by 20%")</li>
+                      <li>• Use bullet points for better readability</li>
+                      <li>• Highlight skills relevant to the job you're applying for</li>
+                    </ul>
+                  </div>
+
+                  <div className="flex justify-end pb-2 pt-2">
+                    <ItemActions 
+                      onDelete={() => handleRemoveExperience(experience.id)}
+                    />
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      )}
+    </div>
+  );
+}```
+### PersonalInfoSection.tsx
+```tsx
+import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { CosmicButton } from '@/components/cosmic-button-refactored';
+import { Upload, User, Mail, Phone, Briefcase, CheckIcon } from 'lucide-react';
+import { PersonalInfo } from '@/hooks/use-resume-data';
+import { getCosmicColor, getSpacing } from '@/lib/theme-utils';
+import { SectionHeader, SectionCard } from './ResumeComponentShared';
+
+interface PersonalInfoSectionProps {
+  personalInfo: PersonalInfo;
+  resumeId?: string;
+  onUpdate: (field: keyof PersonalInfo, value: string) => void;
+  onFileUpload?: () => void;
+  showUploadCard?: boolean;
+}
+
+/**
+ * PersonalInfoSection component for managing personal information in the resume
+ * Updated to use the cosmic styling consistently across all resume sections
+ */
+export function PersonalInfoSection({
+  personalInfo,
+  resumeId,
+  onUpdate,
+  onFileUpload,
+  showUploadCard = false
+}: PersonalInfoSectionProps) {
+  return (
+    <div className="cosmic-resume-section">
+      <SectionHeader 
+        title="Personal Information" 
+        icon={<User className="cosmic-section-icon h-5 w-5" />}
+      />
+
+      {showUploadCard && onFileUpload && (
+        <SectionCard withHoverEffect={true} className="mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="cosmic-text-gradient font-medium text-lg">Import from Existing Resume</h4>
+              <p className="text-sm text-white/70 mt-1">
+                Upload your existing resume to extract your information automatically
+              </p>
+            </div>
+            <CosmicButton
+              variant="outline"
+              onClick={onFileUpload}
+              iconLeft={<Upload className="h-4 w-4 mr-2" />}
+              withGlow
+            >
+              Upload Resume
+            </CosmicButton>
+          </div>
+        </SectionCard>
+      )}
+
+      <SectionCard className="transition-all duration-300">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* First column */}
+          <div className="space-y-6">
+            <div className="cosmic-form-group">
+              <Label htmlFor="firstName" className="cosmic-form-label">First Name</Label>
+              <Input
+                id="firstName"
+                value={personalInfo.firstName}
+                onChange={(e) => onUpdate('firstName', e.target.value)}
+                placeholder="Your first name"
+                className="cosmic-navy-input"
+              />
+            </div>
+
+            <div className="cosmic-form-group">
+              <Label htmlFor="lastName" className="cosmic-form-label">Last Name</Label>
+              <Input
+                id="lastName"
+                value={personalInfo.lastName}
+                onChange={(e) => onUpdate('lastName', e.target.value)}
+                placeholder="Your last name"
+                className="cosmic-navy-input"
+              />
+            </div>
+
+            <div className="cosmic-form-group">
+              <Label htmlFor="email" className="cosmic-form-label">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/70" />
+                <Input
+                  id="email"
+                  type="email"
+                  value={personalInfo.email}
+                  onChange={(e) => onUpdate('email', e.target.value)}
+                  className="cosmic-navy-input pl-10"
+                  placeholder="your.email@example.com"
+                />
+              </div>
+            </div>
+
+            <div className="cosmic-form-group">
+              <Label htmlFor="phone" className="cosmic-form-label">Phone</Label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary/70" />
+                <Input
+                  id="phone"
+                  value={personalInfo.phone}
+                  onChange={(e) => onUpdate('phone', e.target.value)}
+                  className="cosmic-navy-input pl-10"
+                  placeholder="(555) 123-4567"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Second column */}
+          <div className="space-y-6">
+            <div className="cosmic-form-group">
+              <Label htmlFor="headline" className="cosmic-form-label">Professional Headline</Label>
+              <div className="relative">
+                <Briefcase className="absolute left-3 top-3 h-4 w-4 text-primary/70" />
+                <Input
+                  id="headline"
+                  value={personalInfo.headline}
+                  onChange={(e) => onUpdate('headline', e.target.value)}
+                  className="cosmic-navy-input pl-10"
+                  placeholder="e.g., Senior Software Engineer | React Specialist"
+                />
+              </div>
+              <p className="mt-2 text-xs text-primary/70">
+                A short headline that appears below your name
+              </p>
+            </div>
+
+            <div className="cosmic-form-group">
+              <Label htmlFor="summary" className="cosmic-form-label">Professional Summary</Label>
+              <Textarea
+                id="summary"
+                value={personalInfo.summary}
+                onChange={(e) => onUpdate('summary', e.target.value)}
+                rows={8}
+                className="cosmic-navy-input cosmic-form-textarea"
+                placeholder="Briefly introduce yourself, highlighting your expertise, experience, and unique value proposition..."
+              />
+              <p className="mt-2 text-xs text-primary/70">
+                Aim for 3-5 sentences that highlight your professional strengths and career goals
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 pt-4 border-t border-primary/20">
+          <h4 className="text-sm font-medium text-white/80 mb-3">Recommendations:</h4>
+          <ul className="space-y-2 text-sm">
+            <li className="flex items-start gap-2">
+              <div className="rounded-full bg-primary/20 text-primary p-0.5 mt-0.5">
+                <CheckIcon size={12} />
+              </div>
+              <span className="text-white/70">Keep your summary concise and impactful - aim for 3-5 sentences</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <div className="rounded-full bg-primary/20 text-primary p-0.5 mt-0.5">
+                <CheckIcon size={12} />
+              </div>
+              <span className="text-white/70">Include relevant keywords from job descriptions you're targeting</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <div className="rounded-full bg-primary/20 text-primary p-0.5 mt-0.5">
+                <CheckIcon size={12} />
+              </div>
+              <span className="text-white/70">Your professional headline should be specific and include your specialty</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <div className="rounded-full bg-primary/20 text-primary p-0.5 mt-0.5">
+                <CheckIcon size={12} />
+              </div>
+              <span className="text-white/70">Use a professional email address, ideally with your name</span>
+            </li>
+          </ul>
+        </div>
+      </SectionCard>
+    </div>
+  );
+}```
+### ProjectsSection.tsx
+```tsx
+import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { CosmicButton } from '@/components/cosmic-button';
+import { Trash, Plus, FolderGit2, Link as LinkIcon, X } from 'lucide-react';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { Badge } from '@/components/ui/badge';
+import { ProjectItem } from '@/hooks/use-resume-data';
+import { cn } from '@/lib/utils';
+import { getCosmicColor, getSpacing } from '@/lib/theme-utils';
+
+interface ProjectsSectionProps {
+  projects: ProjectItem[];
+  resumeId?: string;
+  onUpdate: (projects: ProjectItem[]) => void;
+  onAdd?: () => string; // Returns the new ID
+}
+
+/**
+ * ProjectsSection component for managing projects in the resume
+ */
+export function ProjectsSection({ 
+  projects,
+  resumeId,
+  onUpdate,
+  onAdd
+}: ProjectsSectionProps) {
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
+  const [techInput, setTechInput] = useState<string>('');
+  const [activeTechProjectId, setActiveTechProjectId] = useState<string | null>(null);
+
+  // Handle adding a new project
+  const handleAddProject = () => {
+    if (onAdd) {
+      const newId = onAdd();
+      setExpandedItem(newId);
+    } else {
+      // Fallback if onAdd not provided
+      const newProject = {
+        id: crypto.randomUUID(),
+        title: '',
+        description: '',
+        technologies: [],
+        link: ''
+      };
+      onUpdate([...projects, newProject]);
+      setExpandedItem(newProject.id);
+    }
+  };
+
+  // Handle removing a project
+  const handleRemoveProject = (id: string) => {
+    const updatedProjects = projects.filter(project => project.id !== id);
+    onUpdate(updatedProjects);
+    if (expandedItem === id) {
+      setExpandedItem(null);
+    }
+  };
+
+  // Handle updating a field in a project
+  const handleProjectChange = (id: string, field: keyof ProjectItem, value: any) => {
+    const updatedProjects = projects.map(project => {
+      if (project.id === id) {
+        return { ...project, [field]: value };
+      }
+      return project;
+    });
+    onUpdate(updatedProjects);
+  };
+
+  // Handle adding a technology to a project
+  const handleAddTechnology = (projectId: string) => {
+    if (!techInput.trim()) return;
+    
+    const updatedProjects = projects.map(project => {
+      if (project.id === projectId) {
+        // Check if tech already exists to avoid duplicates
+        if (!project.technologies.includes(techInput.trim())) {
+          return {
+            ...project,
+            technologies: [...project.technologies, techInput.trim()]
+          };
+        }
+      }
+      return project;
+    });
+    
+    onUpdate(updatedProjects);
+    setTechInput('');
+  };
+
+  // Handle removing a technology from a project
+  const handleRemoveTechnology = (projectId: string, tech: string) => {
+    const updatedProjects = projects.map(project => {
+      if (project.id === projectId) {
+        return {
+          ...project,
+          technologies: project.technologies.filter(t => t !== tech)
+        };
+      }
+      return project;
+    });
+    
+    onUpdate(updatedProjects);
+  };
+
+  // Handle key press in technology input (add on Enter)
+  const handleTechKeyPress = (e: React.KeyboardEvent, projectId: string) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddTechnology(projectId);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <FolderGit2 className="h-5 w-5" style={{ color: getCosmicColor('primary') }} />
+          <h3 className="text-lg font-semibold">Projects</h3>
+        </div>
+        <CosmicButton
+          size="sm"
+          variant="outline"
+          iconLeft={<Plus className="h-4 w-4" />}
+          onClick={handleAddProject}
+        >
+          Add Project
+        </CosmicButton>
+      </div>
+
+      {projects.length === 0 ? (
+        <Card className="border border-dashed">
+          <CardContent className="flex flex-col items-center justify-center p-6">
+            <FolderGit2 className="h-12 w-12 mb-2 opacity-30" />
+            <p className="text-center text-sm mb-4">
+              Add your notable projects to showcase your practical skills and achievements
+            </p>
+            <Button variant="outline" size="sm" onClick={handleAddProject}>
+              Add Project
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <Accordion
+          type="single"
+          collapsible
+          value={expandedItem || undefined}
+          onValueChange={(value) => setExpandedItem(value)}
+          className="space-y-2"
+        >
+          {projects.map((project) => (
+            <AccordionItem
+              key={project.id}
+              value={project.id}
+              className={cn(
+                "border rounded-md overflow-hidden",
+                expandedItem === project.id ? "ring-1 ring-primary/20" : ""
+              )}
+            >
+              <AccordionTrigger className="px-4 py-3 hover:bg-accent/50 data-[state=open]:bg-accent/60">
+                <div className="flex flex-1 justify-between items-center">
+                  <div className="text-left">
+                    <p className="font-medium">
+                      {project.title || "New Project"}
+                    </p>
+                    {project.technologies && project.technologies.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1 max-w-xs">
+                        {project.technologies.slice(0, 3).map((tech, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs px-1.5 py-0">
+                            {tech}
+                          </Badge>
+                        ))}
+                        {project.technologies.length > 3 && (
+                          <Badge variant="outline" className="text-xs px-1.5 py-0">
+                            +{project.technologies.length - 3} more
+                          </Badge>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  {project.link && (
+                    <div className="mr-4 opacity-70">
+                      <LinkIcon className="h-4 w-4" />
+                    </div>
+                  )}
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pb-0">
+                <div className="p-4 space-y-4 bg-card rounded-b-md">
+                  <div className="space-y-2">
+                    <Label htmlFor={`project-title-${project.id}`}>Project Title</Label>
+                    <Input
+                      id={`project-title-${project.id}`}
+                      value={project.title}
+                      onChange={(e) => handleProjectChange(project.id, 'title', e.target.value)}
+                      placeholder="e.g., E-commerce Website, Mobile App, Research Paper"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor={`project-description-${project.id}`}>Description</Label>
+                    <Textarea
+                      id={`project-description-${project.id}`}
+                      value={project.description}
+                      onChange={(e) => handleProjectChange(project.id, 'description', e.target.value)}
+                      placeholder="Describe the project, your role, and key achievements"
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor={`project-link-${project.id}`}>Project Link (Optional)</Label>
+                    <Input
+                      id={`project-link-${project.id}`}
+                      value={project.link || ''}
+                      onChange={(e) => handleProjectChange(project.id, 'link', e.target.value)}
+                      placeholder="e.g., https://github.com/yourusername/project"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor={`project-tech-${project.id}`}>Technologies Used</Label>
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {project.technologies.map((tech, index) => (
+                        <Badge 
+                          key={index} 
+                          className="flex items-center gap-1 px-2 py-1"
+                        >
+                          {tech}
+                          <X
+                            className="h-3 w-3 cursor-pointer ml-1"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveTechnology(project.id, tech);
+                            }}
+                          />
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                      <Input
+                        id={`project-tech-${project.id}`}
+                        value={activeTechProjectId === project.id ? techInput : ''}
+                        onChange={(e) => setTechInput(e.target.value)}
+                        onFocus={() => setActiveTechProjectId(project.id)}
+                        onKeyDown={(e) => handleTechKeyPress(e, project.id)}
+                        placeholder="e.g., React, TypeScript, Node.js"
+                      />
+                      <Button 
+                        type="button" 
+                        size="sm"
+                        onClick={() => handleAddTechnology(project.id)}
+                      >
+                        Add
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Press Enter after each technology to add it, or click the Add button
+                    </p>
+                  </div>
+
+                  <div className="flex justify-end pb-2 pt-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                      onClick={() => handleRemoveProject(project.id)}
+                    >
+                      <Trash className="h-4 w-4 mr-1" />
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      )}
+    </div>
+  );
+}```
+### ResumeComponentShared.tsx
+```tsx
+import React from 'react';
+import { IconType } from 'react-icons';
+import { 
+  PlusIcon, 
+  InfoIcon, 
+  BriefcaseIcon, 
+  GraduationCapIcon, 
+  WrenchIcon, 
+  FolderIcon,
+  Trash2Icon,
+  EditIcon,
+  EyeIcon,
+  SaveIcon,
+  CopyIcon
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { CosmicButton } from '@/components/cosmic-button-refactored';
+import { useTheme } from '@/contexts/ThemeContext';
+
+/**
+ * Common section header component for resume sections
+ */
+export interface SectionHeaderProps {
+  title: string;
+  icon?: React.ReactNode;
+  onAdd?: () => void;
+  addButtonText?: string;
+  className?: string;
+}
+
+export function SectionHeader({ title, icon, onAdd, addButtonText = 'Add', className = '' }: SectionHeaderProps) {
+  const { isDarkMode } = useTheme();
+  
+  return (
+    <div className={`cosmic-section-header ${className}`}>
+      {icon && <span className="icon text-primary text-xl">{icon}</span>}
+      <h3 className="font-semibold text-lg flex-1">{title}</h3>
+      {onAdd && (
+        <CosmicButton
+          size="sm"
+          variant="outline"
+          onClick={onAdd}
+          iconLeft={<PlusIcon className="w-4 h-4" />}
+          withGlow
+        >
+          {addButtonText}
+        </CosmicButton>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Section card component for wrapping resume section items
+ */
+export interface SectionCardProps {
+  children: React.ReactNode;
+  className?: string;
+  isEditing?: boolean;
+  withHoverEffect?: boolean;
+}
+
+export function SectionCard({ 
+  children, 
+  className = '', 
+  isEditing = false, 
+  withHoverEffect = true 
+}: SectionCardProps) {
+  return (
+    <div 
+      className={`cosmic-card p-4 mb-4 border border-white/10 backdrop-blur-sm ${withHoverEffect ? 'cosmic-card-hoverable cosmic-card-gradient' : ''} ${
+        isEditing ? 'border-primary/30 bg-primary/10' : ''
+      } ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+/**
+ * Action buttons for section items (edit/delete)
+ */
+export interface ItemActionsProps {
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onCopy?: () => void;
+  onSave?: () => void;
+  isEditing?: boolean;
+  className?: string;
+}
+
+export function ItemActions({ 
+  onEdit, 
+  onDelete, 
+  onCopy, 
+  onSave, 
+  isEditing = false,
+  className = '' 
+}: ItemActionsProps) {
+  return (
+    <div className={`flex gap-2 ${className}`}>
+      {!isEditing && onEdit && (
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={onEdit} 
+          className="h-8 w-8 p-0 cosmic-action-button border border-white/10 hover:bg-primary/20 hover:text-primary"
+          title="Edit"
+        >
+          <EditIcon className="h-4 w-4 cosmic-section-icon" />
+        </Button>
+      )}
+      
+      {isEditing && onSave && (
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={onSave} 
+          className="h-8 w-8 p-0 cosmic-action-button border border-white/10 hover:bg-primary/20 hover:text-primary"
+          title="Save changes"
+        >
+          <SaveIcon className="h-4 w-4 cosmic-section-icon" />
+        </Button>
+      )}
+      
+      {onCopy && (
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={onCopy} 
+          className="h-8 w-8 p-0 cosmic-action-button border border-white/10 hover:bg-primary/20 hover:text-primary"
+          title="Duplicate"
+        >
+          <CopyIcon className="h-4 w-4 cosmic-section-icon" />
+        </Button>
+      )}
+      
+      {onDelete && (
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={onDelete} 
+          className="h-8 w-8 p-0 cosmic-action-button border border-white/10 hover:bg-destructive/20 hover:text-destructive"
+          title="Delete"
+        >
+          <Trash2Icon className="h-4 w-4 cosmic-section-icon" />
+        </Button>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Get section icon by section type
+ */
+export function getSectionIcon(section: string): React.ReactNode {
+  switch (section.toLowerCase()) {
+    case 'personal':
+    case 'personalinfo':
+      return <InfoIcon />;
+    case 'experience':
+    case 'workexperience':
+      return <BriefcaseIcon />;
+    case 'education':
+      return <GraduationCapIcon />;
+    case 'skills':
+      return <WrenchIcon />;
+    case 'projects':
+      return <FolderIcon />;
+    default:
+      return <InfoIcon />;
+  }
+}
+
+/**
+ * Format date for display in resume
+ */
+export function formatDate(dateString: string | undefined): string {
+  if (!dateString) return '';
+  
+  if (dateString === 'Present') return 'Present';
+  
+  try {
+    // Handle just year-month format (YYYY-MM)
+    if (/^\d{4}-\d{2}$/.test(dateString)) {
+      const [year, month] = dateString.split('-');
+      return `${getMonthName(parseInt(month))} ${year}`;
+    }
+    
+    // Handle full date format (YYYY-MM-DD)
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      const date = new Date(dateString);
+      return `${getMonthName(date.getMonth() + 1)} ${date.getFullYear()}`;
+    }
+    
+    // Return as is if it doesn't match expected patterns
+    return dateString;
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return dateString;
+  }
+}
+
+/**
+ * Get month name from month number
+ */
+function getMonthName(month: number): string {
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  
+  return months[month - 1] || '';
+}```
+### SkillsSection.tsx
+```tsx
+import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { CosmicButton } from '@/components/cosmic-button-refactored';
+import { Trash, Plus, Lightbulb, X } from 'lucide-react';
+import { 
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Slider } from '@/components/ui/slider';
+import { SkillItem } from '@/hooks/use-resume-data';
+import { cn } from '@/lib/utils';
+import { SectionHeader, SectionCard, ItemActions } from './ResumeComponentShared';
+
+interface SkillsSectionProps {
+  skills: SkillItem[];
+  resumeId?: string;
+  onUpdate: (skills: SkillItem[]) => void;
+  onAdd?: (category?: string) => string; // Returns the new ID
+}
+
+const SKILL_CATEGORIES = [
+  'Technical', 'Soft', 'Languages', 'Tools', 'Frameworks', 'Databases', 'Other'
+];
+
+/**
+ * SkillsSection component for managing skills in the resume
+ */
+export function SkillsSection({ 
+  skills,
+  resumeId,
+  onUpdate,
+  onAdd
+}: SkillsSectionProps) {
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
+  const [compactView, setCompactView] = useState(skills.length > 5);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // Get filtered skills based on selected category
+  const filteredSkills = selectedCategory 
+    ? skills.filter(skill => {
+        // You may want to add a category field to your SkillItem type
+        const category = skill.category || 'Other';
+        return category === selectedCategory;
+      })
+    : skills;
+
+  // Handle adding a new skill
+  const handleAddSkill = () => {
+    if (onAdd) {
+      const newId = onAdd(selectedCategory || undefined);
+      setExpandedItem(newId);
+      setCompactView(false);
+    } else {
+      // Fallback if onAdd not provided
+      const newSkill = {
+        id: crypto.randomUUID(),
+        name: '',
+        proficiency: 3,
+        category: selectedCategory || undefined
+      };
+      onUpdate([...skills, newSkill]);
+      setExpandedItem(newSkill.id);
+      setCompactView(false);
+    }
+  };
+
+  // Handle removing a skill
+  const handleRemoveSkill = (id: string) => {
+    const updatedSkills = skills.filter(skill => skill.id !== id);
+    onUpdate(updatedSkills);
+    if (expandedItem === id) {
+      setExpandedItem(null);
+    }
+  };
+
+  // Handle updating a field in a skill
+  const handleSkillChange = (id: string, field: keyof SkillItem, value: any) => {
+    const updatedSkills = skills.map(skill => {
+      if (skill.id === id) {
+        return { ...skill, [field]: value };
+      }
+      return skill;
+    });
+    onUpdate(updatedSkills);
+  };
+
+  // Get proficiency level label
+  const getProficiencyLabel = (level: number): string => {
+    switch (level) {
+      case 1: return 'Beginner';
+      case 2: return 'Intermediate';
+      case 3: return 'Advanced';
+      case 4: return 'Expert';
+      case 5: return 'Master';
+      default: return 'Intermediate';
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <SectionHeader
+        title="Skills"
+        icon={<Lightbulb className="h-5 w-5 cosmic-section-icon" />}
+        onAdd={handleAddSkill}
+        addButtonText="Add Skill"
+        className="cosmic-text-gradient"
+      />
+
+      {/* View Toggle and Category filter */}
+      {skills.length > 0 && (
+        <div className="flex flex-col sm:flex-row sm:justify-between gap-4 mb-4">
+          <div className="flex flex-wrap gap-2">
+            <Badge 
+              variant={selectedCategory === null ? "default" : "outline"}
+              className="cursor-pointer cosmic-badge"
+              onClick={() => setSelectedCategory(null)}
+            >
+              All
+            </Badge>
+            {SKILL_CATEGORIES.map(category => (
+              <Badge
+                key={category}
+                variant={selectedCategory === category ? "default" : "outline"}
+                className="cursor-pointer cosmic-badge"
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category}
+              </Badge>
+            ))}
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setCompactView(!compactView)}
+            className="cosmic-button-secondary self-end"
+          >
+            {compactView ? 'Detailed View' : 'Compact View'}
+          </Button>
+        </div>
+      )}
+
+      {skills.length === 0 ? (
+        <SectionCard withHoverEffect={false} className="border border-dashed border-white/10">
+          <div className="flex flex-col items-center justify-center p-6">
+            <Lightbulb className="h-12 w-12 mb-2 opacity-40 cosmic-section-icon" />
+            <p className="text-center text-sm mb-4 opacity-80">
+              Add your professional skills and rate your proficiency level
+            </p>
+            <CosmicButton 
+              variant="outline" 
+              size="sm" 
+              onClick={handleAddSkill}
+              iconLeft={<Plus className="h-4 w-4" />}
+              withGlow
+            >
+              Add Skill
+            </CosmicButton>
+          </div>
+        </SectionCard>
+      ) : compactView ? (
+        <SectionCard>
+          <div className="p-4">
+            <div className="flex flex-wrap gap-2">
+              {filteredSkills.map((skill) => (
+                <TooltipProvider key={skill.id}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge 
+                        className="cursor-pointer px-3 py-1 flex items-center gap-1 cosmic-badge cosmic-badge-glow"
+                        onClick={() => {
+                          setExpandedItem(skill.id);
+                          setCompactView(false);
+                        }}
+                      >
+                        {skill.name || 'Unnamed Skill'}
+                        <span className="inline-block w-2 h-2 rounded-full ml-1" 
+                          style={{ 
+                            backgroundColor: getProgressColor(skill.proficiency) 
+                          }}
+                        />
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent className="cosmic-tooltip">
+                      <p>{getProficiencyLabel(skill.proficiency)}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ))}
+              <Badge 
+                variant="outline" 
+                className="cursor-pointer cosmic-badge-outline"
+                onClick={handleAddSkill}
+              >
+                <Plus className="h-3 w-3 mr-1" /> Add Skill
+              </Badge>
+            </div>
+          </div>
+        </SectionCard>
+      ) : (
+        <Accordion
+          type="single"
+          collapsible
+          value={expandedItem || undefined}
+          onValueChange={(value) => setExpandedItem(value)}
+          className="cosmic-tabs space-y-2"
+        >
+          {filteredSkills.map((skill) => (
+            <AccordionItem
+              key={skill.id}
+              value={skill.id}
+              className={cn(
+                "cosmic-card overflow-hidden border border-white/10 backdrop-blur-sm",
+                expandedItem === skill.id ? "ring-1 ring-primary/20 cosmic-card-gradient" : ""
+              )}
+            >
+              <AccordionTrigger className="px-4 py-3 hover:bg-primary/5 data-[state=open]:bg-primary/10 border-white/10">
+                <div className="flex flex-1 justify-between items-center">
+                  <div className="text-left">
+                    <p className={cn("font-medium", expandedItem === skill.id ? "cosmic-text-gradient" : "")}>
+                      {skill.name || "New Skill"}
+                    </p>
+                    {skill.category && (
+                      <p className="text-sm opacity-80">{skill.category}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 mr-4">
+                    <div className="flex">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <div 
+                          key={i}
+                          className="w-2 h-4 mx-px rounded-sm" 
+                          style={{ 
+                            backgroundColor: i < skill.proficiency 
+                              ? getProgressColor(skill.proficiency) 
+                              : 'rgba(255, 255, 255, 0.1)'
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-xs opacity-80">
+                      {getProficiencyLabel(skill.proficiency)}
+                    </span>
+                  </div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pb-0">
+                <div className="p-4 space-y-4 bg-card/10 backdrop-blur-sm rounded-b-md border-t border-white/10">
+                  <div className="space-y-2">
+                    <Label htmlFor={`skill-name-${skill.id}`} className="cosmic-label">Skill Name</Label>
+                    <Input
+                      id={`skill-name-${skill.id}`}
+                      value={skill.name}
+                      onChange={(e) => handleSkillChange(skill.id, 'name', e.target.value)}
+                      placeholder="e.g., JavaScript, Leadership, Project Management"
+                      className="cosmic-input border-white/10"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor={`skill-proficiency-${skill.id}`} className="cosmic-label">Proficiency Level</Label>
+                      <span className="text-sm cosmic-text-gradient">{getProficiencyLabel(skill.proficiency)}</span>
+                    </div>
+                    <Slider
+                      id={`skill-proficiency-${skill.id}`}
+                      value={[skill.proficiency]}
+                      min={1}
+                      max={5}
+                      step={1}
+                      onValueChange={(value) => handleSkillChange(skill.id, 'proficiency', value[0])}
+                      className="py-4 cosmic-slider"
+                    />
+                    <div className="flex justify-between text-xs text-muted-foreground opacity-80">
+                      <span>Beginner</span>
+                      <span>Intermediate</span>
+                      <span>Expert</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor={`skill-category-${skill.id}`} className="cosmic-label">Category (Optional)</Label>
+                    <Select
+                      value={skill.category}
+                      onValueChange={(value) => handleSkillChange(skill.id, 'category', value)}
+                    >
+                      <SelectTrigger id={`skill-category-${skill.id}`} className="cosmic-select border-white/10">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent className="cosmic-select-content">
+                        {SKILL_CATEGORIES.map(category => (
+                          <SelectItem key={category} value={category} className="cosmic-select-item">
+                            {category}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex justify-end pb-2 pt-2">
+                    <ItemActions 
+                      onDelete={() => handleRemoveSkill(skill.id)}
+                    />
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      )}
+    </div>
+  );
+}
+
+// Helper function to get progress color based on proficiency level
+function getProgressColor(level: number): string {
+  switch(level) {
+    case 1: return '#94a3b8'; // slate-400
+    case 2: return '#60a5fa'; // blue-400
+    case 3: return '#34d399'; // emerald-400
+    case 4: return '#f59e0b'; // amber-500
+    case 5: return '#ef4444'; // red-500
+    default: return '#60a5fa'; // blue-400
+  }
+}```
+## 6. Resume CSS Styles
+### cosmic-resume.css
+```css
+/**
+ * Cosmic Resume Styles
+ * 
+ * This file contains styles for the resume builder UI components
+ * exactly matching the design shown in the screenshots
+ */
+
+/* Common styles for all resume sections */
+.cosmic-resume-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Tab styles - top navigation */
+.cosmic-tabs {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cosmic-tab-list {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+}
+
+.cosmic-tab-trigger {
+  padding: 8px 16px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  background: transparent;
+  border: none;
+}
+
+.cosmic-tab-trigger[data-state="active"] {
+  background: rgba(59, 130, 246, 0.2);
+  color: white;
+}
+
+.cosmic-tab-trigger[data-state="active"] svg {
+  color: #60a5fa;
+}
+
+/* Personal Information section styling */
+.cosmic-profile-container {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 30px;
+}
+
+.cosmic-profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.cosmic-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  color: white;
+}
+
+.cosmic-profile-header svg {
+  color: #60a5fa;
+}
+
+.cosmic-profile-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.cosmic-profile-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.cosmic-profile-form .cosmic-form-group:last-child {
+  grid-column: span 2;
+}
+
+/* Experience Section Styling */
+.cosmic-experience-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.cosmic-experience-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+}
+
+.cosmic-experience-header h2 svg {
+  color: #60a5fa;
+}
+
+.cosmic-experience-header button.cosmic-add-experience {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.cosmic-experience-header button.cosmic-add-experience:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.cosmic-experience-item {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.cosmic-experience-item:hover {
+  border-color: rgba(96, 165, 250, 0.3);
+}
+
+.cosmic-experience-title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(15, 23, 42, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cosmic-experience-title-text {
+  font-weight: 500;
+  color: white;
+}
+
+.cosmic-experience-delete {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.cosmic-experience-delete:hover {
+  color: #f87171;
+}
+
+.cosmic-experience-content {
+  padding: 16px;
+}
+
+.cosmic-experience-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.cosmic-experience-form .cosmic-experience-form-full {
+  grid-column: span 2;
+}
+
+/* Education Section Styling */
+.cosmic-education-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.cosmic-education-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+}
+
+.cosmic-education-header h2 svg {
+  color: #60a5fa;
+}
+
+.cosmic-education-item {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  transition: all 0.2s ease;
+  margin-bottom: 16px;
+}
+
+.cosmic-education-title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(15, 23, 42, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cosmic-education-title-text {
+  font-weight: 500;
+  color: white;
+}
+
+.cosmic-education-content {
+  padding: 16px;
+}
+
+.cosmic-education-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.cosmic-education-form .cosmic-education-form-full {
+  grid-column: span 2;
+}
+
+/* Skills Section Styling */
+.cosmic-skills-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.cosmic-skills-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+}
+
+.cosmic-skills-header h2 svg {
+  color: #60a5fa;
+}
+
+.cosmic-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.cosmic-skill-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+}
+
+/* Projects Section Styling */
+.cosmic-projects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.cosmic-projects-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+}
+
+.cosmic-projects-header h2 svg {
+  color: #60a5fa;
+}
+
+.cosmic-projects-item {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  transition: all 0.2s ease;
+  margin-bottom: 16px;
+}
+
+.cosmic-projects-title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(15, 23, 42, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cosmic-projects-content {
+  padding: 16px;
+}
+
+.cosmic-projects-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+/* Common form elements */
+.cosmic-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cosmic-form-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.cosmic-form-input {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: white;
+  padding: 8px 12px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.cosmic-form-input:focus {
+  border-color: rgba(59, 130, 246, 0.5);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.cosmic-form-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* AI Assistant Section */
+.cosmic-ai-assistant {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cosmic-ai-assistant h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.cosmic-ai-assistant h2 svg {
+  color: #60a5fa;
+}
+
+.cosmic-ai-suggestions {
+  margin-top: 16px;
+}
+
+.cosmic-suggestion-header {
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.cosmic-suggestion-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.cosmic-suggestion-button {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 6px 12px;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.cosmic-suggestion-button.active {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: white;
+}
+
+.cosmic-suggestion-content {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.cosmic-suggestion-item {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  position: relative;
+}
+
+.cosmic-suggestion-item:hover {
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.cosmic-suggestion-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.cosmic-add-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.cosmic-add-button:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .cosmic-profile-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .cosmic-experience-form,
+  .cosmic-education-form {
+    grid-template-columns: 1fr;
+  }
+  
+  .cosmic-experience-form .cosmic-experience-form-full,
+  .cosmic-education-form .cosmic-education-form-full {
+    grid-column: span 1;
+  }
+  
+  .cosmic-skills-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cosmic-form-input:focus {
+  border-color: rgba(59, 130, 246, 0.5);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.cosmic-form-textarea {
+  min-height: var(--space-20);
+  resize: vertical;
+}
+
+/* Summary tips box styling */
+.text-blue-300 {
+  color: #93c5fd;
+}
+
+.text-blue-100\/60 {
+  color: rgba(219, 234, 254, 0.6);
+}
+
+.bg-blue-500\/5 {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.border-blue-500\/10 {
+  border-color: rgba(59, 130, 246, 0.1);
+}
+
+.list-disc {
+  list-style-type: disc;
+}
+
+/* Welcome Banner & Upload Card */
+.cosmic-card {
+  background: rgba(15, 23, 42, 0.7);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Tab navigation */
+.cosmic-tabs {
+  display: flex;
+  background: rgba(30, 41, 59, 0.7);
+  border-radius: var(--radius-md);
+  padding: var(--space-1);
+  margin-bottom: var(--space-6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow);
+  overflow-x: auto;
+}
+
+.cosmic-tab {
+  padding: var(--space-3) var(--space-4);
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  transition: all var(--transition-fast);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.cosmic-tab svg {
+  width: 18px;
+  height: 18px;
+}
+
+.cosmic-tab:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cosmic-tab[data-state="active"] {
+  background: rgba(59, 130, 246, 0.2);
+  color: white;
+}
+
+.cosmic-tab[data-state="active"] svg {
+  color: #60a5fa;
+}
+
+/* Resume section containers */
+.cosmic-resume-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .cosmic-resume-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.cosmic-section {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.cosmic-section-header {
+  padding: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: white;
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+.cosmic-section-header svg {
+  color: #60a5fa;
+}
+
+.cosmic-section-content {
+  padding: var(--space-4);
+}
+
+/* Form elements */
+.cosmic-form-row {
+  margin-bottom: var(--space-4);
+}
+
+.cosmic-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.cosmic-form-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: var(--space-2);
+  font-size: 0.875rem;
+}
+
+.cosmic-form-input {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+  color: white;
+  padding: var(--space-2) var(--space-3);
+  transition: all var(--transition-fast);
+}
+
+.cosmic-form-input:focus {
+  border-color: rgba(59, 130, 246, 0.5);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.cosmic-form-textarea {
+  min-height: var(--space-20);
+  resize: vertical;
+}
+
+/* Work Experience section styling */
+/* Based on the provided screenshot */
+.cosmic-experience-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.cosmic-experience-header h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: white;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.cosmic-experience-header svg {
+  color: #60a5fa;
+}
+
+/* Experience list item styling */
+.cosmic-experience-item {
+  background: rgba(17, 24, 39, 0.7);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: var(--space-4);
+  transition: all var(--transition-fast);
+  overflow: hidden;
+}
+
+.cosmic-experience-item:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.cosmic-experience-title-bar {
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cosmic-experience-title-text {
+  font-weight: 500;
+  color: white;
+}
+
+.cosmic-experience-company {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.cosmic-experience-delete {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.cosmic-experience-delete:hover {
+  color: white;
+  background: rgba(255, 0, 0, 0.2);
+}
+
+.cosmic-experience-content {
+  padding: var(--space-4);
+}
+
+.cosmic-experience-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+@media (max-width: 640px) {
+  .cosmic-experience-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cosmic-experience-form-full {
+  grid-column: 1 / -1;
+}
+
+/* Add experience button */
+.cosmic-add-experience {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: white;
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-weight: 500;
+}
+
+.cosmic-add-experience:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* AI Assistant panel */
+.cosmic-ai-assistant {
+  background: rgba(15, 23, 42, 0.7);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.cosmic-ai-assistant-header {
+  padding: var(--space-4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.cosmic-ai-assistant-title {
+  font-weight: 600;
+  color: white;
+}
+
+.cosmic-ai-assistant-body {
+  padding: var(--space-4);
+}
+
+.cosmic-ai-section {
+  margin-bottom: var(--space-4);
+}
+
+.cosmic-ai-section-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #60a5fa;
+  margin-bottom: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.cosmic-ai-options {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.cosmic-ai-option {
+  padding: var(--space-2) var(--space-3);
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: var(--radius);
+  color: white;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cosmic-ai-option:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.cosmic-ai-option[data-state="active"] {
+  background: rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.4);
+  font-weight: 500;
+}
+
+.cosmic-suggestion {
+  background: rgba(17, 24, 39, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+  position: relative;
+}
+
+.cosmic-suggestion:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.cosmic-suggestion-actions {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  display: flex;
+  gap: var(--space-1);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.cosmic-suggestion:hover .cosmic-suggestion-actions {
+  opacity: 1;
+}
+
+.cosmic-action-button {
+  width: var(--space-6);
+  height: var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(59, 130, 246, 0.2);
+  border-radius: var(--radius);
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cosmic-action-button:hover {
+  background: rgba(59, 130, 246, 0.4);
+}
+
+.cosmic-refresh-button {
+  background: rgba(17, 24, 39, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+  color: white;
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cosmic-refresh-button:hover {
+  background: rgba(17, 24, 39, 0.9);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Add buttons */
+.cosmic-add-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: var(--radius);
+  color: white;
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cosmic-add-button:hover {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.3);
+}```
+### resume-sections.css
+```css
+/**
+ * Resume Sections Styling
+ * 
+ * Styling for all resume sections (Personal Info, Experience, Education, Skills, Projects)
+ * using cosmic themed styling to create consistent look and feel
+ */
+
+/* Common section styling */
+.cosmic-resume-section {
+  padding-top: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+/* Section headers */
+.cosmic-section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.cosmic-section-icon {
+  color: var(--primary, #60a5fa);
+  opacity: 0.9;
+}
+
+.cosmic-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: var(--space-4);
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Large section title - used in Contact Information */
+.cosmic-section-title-large {
+  font-size: 2rem;
+  font-weight: 600;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.cosmic-section-title-large .cosmic-section-icon {
+  font-size: 1.5rem;
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.cosmic-section-title svg {
+  color: var(--cosmicAccent, #60a5fa);
+}
+
+.cosmic-text-gradient {
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.95),
+    rgba(96, 165, 250, 0.8)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Cosmic input fields */
+.cosmic-label {
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+.cosmic-input {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.cosmic-input:focus {
+  border-color: rgba(96, 165, 250, 0.5);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.cosmic-textarea {
+  min-height: 100px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.cosmic-select {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.cosmic-select-content {
+  background-color: rgba(23, 23, 35, 0.95);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cosmic-select-item {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.cosmic-select-item:hover,
+.cosmic-select-item:focus {
+  background-color: rgba(96, 165, 250, 0.2);
+}
+
+/* Cosmic cards and badges */
+.cosmic-card {
+  background: rgba(23, 23, 35, 0.7);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius, 0.5rem);
+  overflow: hidden;
+}
+
+.cosmic-card-gradient {
+  background: linear-gradient(
+    to bottom right,
+    rgba(23, 23, 35, 0.8),
+    rgba(30, 41, 59, 0.8)
+  );
+}
+
+.cosmic-card-hoverable:hover {
+  border-color: rgba(96, 165, 250, 0.3);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+.cosmic-badge {
+  background-color: rgba(96, 165, 250, 0.15);
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.cosmic-badge:hover {
+  background-color: rgba(96, 165, 250, 0.25);
+}
+
+.cosmic-badge-outline {
+  background-color: transparent;
+  border: 1px dashed rgba(96, 165, 250, 0.3);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.cosmic-badge-outline:hover {
+  background-color: rgba(96, 165, 250, 0.1);
+  border-color: rgba(96, 165, 250, 0.5);
+}
+
+.cosmic-badge-glow {
+  position: relative;
+}
+
+.cosmic-badge-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(96, 165, 250, 0.2);
+  filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.cosmic-badge-glow:hover::after {
+  opacity: 1;
+}
+
+/* Cosmic tooltip styling */
+.cosmic-tooltip {
+  background-color: rgba(23, 23, 35, 0.95);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Cosmic slider styling */
+.cosmic-slider .react-slider-track-1 {
+  background-color: var(--primary, #60a5fa);
+}
+
+.cosmic-slider .react-slider-thumb {
+  background-color: white;
+  border: 2px solid var(--primary, #60a5fa);
+}
+
+/* Common item styling */
+.cosmic-item {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+  padding: var(--space-5);
+  margin-bottom: var(--space-4);
+  transition: all var(--transition-normal) ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.cosmic-item:hover {
+  border-color: rgba(96, 165, 250, 0.3);
+  box-shadow: var(--shadow-glow);
+}
+
+.cosmic-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.cosmic-item-title {
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: white;
+}
+
+.cosmic-item-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  margin-top: var(--space-1);
+}
+
+.cosmic-item-dates {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+}
+
+.cosmic-item-description {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9375rem;
+  margin-top: var(--space-3);
+}
+
+.cosmic-item-actions {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* Form fields within resume sections */
+.cosmic-form-group {
+  margin-bottom: var(--space-4);
+}
+
+.cosmic-form-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  margin-bottom: var(--space-2);
+  font-weight: 500;
+}
+
+/* Contact info form inputs - match the dark navy style */
+.cosmic-navy-input {
+  width: 100%;
+  background: rgba(20, 30, 50, 0.9) !important; /* Darker navy and !important */
+  border: 1px solid rgba(100, 150, 255, 0.5) !important; /* Blue border and !important */
+  border-radius: 0.375rem;
+  color: white !important;
+  padding: 0.625rem 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.cosmic-navy-input:focus {
+  border-color: rgba(100, 200, 255, 0.8) !important; /* Brighter blue and !important */
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(100, 200, 255, 0.4) !important; /* Larger glow and !important */
+}
+
+/* Standard form inputs */
+.cosmic-form-input {
+  width: 100%;
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: all var(--transition-fast) ease;
+}
+
+.cosmic-form-input:focus {
+  outline: none;
+  border-color: rgba(96, 165, 250, 0.5);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.cosmic-form-textarea {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+/* Custom tab styling */
+.cosmic-tabs .cosmic-tablist {
+  display: flex;
+  gap: var(--space-1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: var(--space-4);
+}
+
+.cosmic-tab {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast) ease;
+}
+
+.cosmic-tab:hover {
+  color: white;
+  background-color: rgba(96, 165, 250, 0.1);
+}
+
+.cosmic-tab-active {
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom-color: transparent;
+  background-color: rgba(96, 165, 250, 0.1);
+}
+
+/* Skills specific styling */
+.cosmic-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-4);
+}
+
+.cosmic-skill-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: rgba(96, 165, 250, 0.1);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  color: white;
+}
+
+.cosmic-skill-name {
+  flex-grow: 1;
+}
+
+.cosmic-skill-level {
+  width: 60px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.cosmic-skill-level-bar {
+  position: absolute;
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+
+/* Add Experience/Education/Skills buttons */
+.cosmic-add-button {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px dashed rgba(96, 165, 250, 0.3);
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  transition: all var(--transition-fast) ease;
+}
+
+.cosmic-add-button:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(96, 165, 250, 0.5);
+}
+
+.cosmic-add-button svg {
+  color: rgba(96, 165, 250, 0.8);
+}
+
+/* Action buttons */
+.cosmic-action-button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  transition: all var(--transition-fast) ease;
+}
+
+.cosmic-action-button-primary {
+  background: rgba(96, 165, 250, 0.1);
+  color: rgba(96, 165, 250, 0.9);
+}
+
+.cosmic-action-button-primary:hover {
+  background: rgba(96, 165, 250, 0.2);
+  color: white;
+}
+
+.cosmic-action-button-destructive {
+  background: rgba(239, 68, 68, 0.1);
+  color: rgba(239, 68, 68, 0.9);
+}
+
+.cosmic-action-button-destructive:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: white;
+}
+
+/* AI Assistant card */
+.cosmic-ai-card {
+  background: rgba(15, 23, 42, 0.7);
+  border-radius: var(--radius-lg, 0.75rem);
+  border: 1px solid rgba(75, 85, 99, 0.3);
+  overflow: hidden;
+  padding: var(--space-4, 1rem);
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.cosmic-ai-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(96, 165, 250, 0.7), rgba(129, 140, 248, 0.7));
+  z-index: 1;
+}
+
+/* Background glow effects */
+.cosmic-glow {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.07);
+  filter: blur(20px);
+  z-index: var(--z-negative);
+}
+
+.cosmic-glow-top-right {
+  top: -50px;
+  right: -50px;
+}
+
+.cosmic-glow-bottom-left {
+  bottom: -50px;
+  left: -50px;
+  background: rgba(96, 58, 246, 0.07);
+}```

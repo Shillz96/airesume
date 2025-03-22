@@ -2882,47 +2882,41 @@ export default function ResumeBuilder() {
                       </div>
 
                       <div className="w-full mb-8">
-                        <div className="grid grid-cols-2 gap-y-8">
-                          <div className="flex items-center">
-                            <Label htmlFor="firstName" className="text-gray-300">
+                        <div className="space-y-5">
+                          <div className="flex justify-between items-center">
+                            <Label htmlFor="firstName" className="text-gray-300 w-1/3 text-left">
                               First Name
                             </Label>
-                          </div>
-                          <div>
                             <Input
                               id="firstName"
                               value={resume?.personalInfo?.firstName || ""}
                               onChange={(e) =>
                                 updatePersonalInfo("firstName", e.target.value)
                               }
-                              className="w-full bg-navy-800 border-navy-600 text-white"
+                              className="w-2/3 bg-navy-800 border-navy-600 text-white"
                               placeholder="Dylan"
                             />
                           </div>
                           
-                          <div className="flex items-center">
-                            <Label htmlFor="lastName" className="text-gray-300">
+                          <div className="flex justify-between items-center">
+                            <Label htmlFor="lastName" className="text-gray-300 w-1/3 text-left">
                               Last Name
                             </Label>
-                          </div>
-                          <div>
                             <Input
                               id="lastName"
                               value={resume?.personalInfo?.lastName || ""}
                               onChange={(e) =>
                                 updatePersonalInfo("lastName", e.target.value)
                               }
-                              className="w-full bg-navy-800 border-navy-600 text-white"
+                              className="w-2/3 bg-navy-800 border-navy-600 text-white"
                               placeholder="Spivack"
                             />
                           </div>
                           
-                          <div className="flex items-center">
-                            <Label htmlFor="email" className="text-gray-300">
+                          <div className="flex justify-between items-center">
+                            <Label htmlFor="email" className="text-gray-300 w-1/3 text-left">
                               Email
                             </Label>
-                          </div>
-                          <div>
                             <Input
                               id="email"
                               type="email"
@@ -2930,24 +2924,22 @@ export default function ResumeBuilder() {
                               onChange={(e) =>
                                 updatePersonalInfo("email", e.target.value)
                               }
-                              className="w-full bg-navy-800 border-navy-600 text-white"
+                              className="w-2/3 bg-navy-800 border-navy-600 text-white"
                               placeholder="john.doe@example.com"
                             />
                           </div>
                           
-                          <div className="flex items-center">
-                            <Label htmlFor="phone" className="text-gray-300">
+                          <div className="flex justify-between items-center">
+                            <Label htmlFor="phone" className="text-gray-300 w-1/3 text-left">
                               Phone
                             </Label>
-                          </div>
-                          <div>
                             <Input
                               id="phone"
                               value={resume?.personalInfo?.phone || ""}
                               onChange={(e) =>
                                 updatePersonalInfo("phone", e.target.value)
                               }
-                              className="w-full bg-navy-800 border-navy-600 text-white"
+                              className="w-2/3 bg-navy-800 border-navy-600 text-white"
                               placeholder="(555) 123-4567"
                             />
                           </div>
@@ -2955,13 +2947,11 @@ export default function ResumeBuilder() {
                       </div>
 
                       <div className="mb-8">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="flex items-center">
-                            <Label htmlFor="headline" className="text-gray-300">
-                              Professional Headline
-                            </Label>
-                          </div>
-                          <div>
+                        <div className="flex justify-between items-center">
+                          <Label htmlFor="headline" className="text-gray-300 w-1/3 text-left">
+                            Professional Headline
+                          </Label>
+                          <div className="w-2/3">
                             <Input
                               id="headline"
                               value={resume?.personalInfo?.headline || ""}
@@ -2977,13 +2967,11 @@ export default function ResumeBuilder() {
                       </div>
 
                       <div className="mb-8">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="flex items-start">
-                            <Label htmlFor="summary" className="text-gray-300 mt-2">
-                              Professional Summary
-                            </Label>
-                          </div>
-                          <div>
+                        <div className="flex justify-between items-start">
+                          <Label htmlFor="summary" className="text-gray-300 w-1/3 text-left">
+                            Professional Summary
+                          </Label>
+                          <div className="w-2/3">
                             <Textarea
                               id="summary"
                               value={resume?.personalInfo?.summary || ""}

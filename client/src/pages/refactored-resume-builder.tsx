@@ -28,20 +28,27 @@ export default function ResumeBuilder() {
   const { toast } = useToast();
   const { 
     resume, 
+    setResume,
     isLoading, 
-    updateResume, 
     saveResume, 
-    isSaving, 
     isDirty,
+    updatePersonalInfo,
+    updateExperienceList,
+    updateEducationList,
+    updateSkillsList,
+    updateProjectsList,
+    updateResumeTemplate,
+    updateResumeTitle,
     addExperience,
-    removeExperience,
     addEducation,
-    removeEducation,
     addSkill,
-    removeSkill,
-    addProject,
-    removeProject
+    addProject
   } = useResumeData();
+  
+  // Helper function to update the entire resume at once
+  const updateResume = (newResumeData: Resume) => {
+    setResume(newResumeData);
+  };
 
   // Function to handle download
   const handleDownload = () => {
@@ -79,8 +86,8 @@ export default function ResumeBuilder() {
           actions={
             <div className="flex space-x-3">
               {/* Simple actions */}
-              <Button variant="outline" onClick={handleSaveResume} disabled={isSaving || !isDirty}>
-                {isSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
+              <Button variant="outline" onClick={handleSaveResume} disabled={isLoading || !isDirty}>
+                {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
                 Save
               </Button>
               <Button variant="default" onClick={handleDownload}>
@@ -102,7 +109,7 @@ export default function ResumeBuilder() {
               onSave={handleSaveResume}
               onDownload={handleDownload}
               onOpenAIAssistant={() => setIsDialogOpen(true)}
-              isSaving={isSaving}
+              isSaving={isLoading}
               isDirty={isDirty}
             />
 

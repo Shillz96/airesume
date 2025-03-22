@@ -47,6 +47,16 @@
   transition: box-shadow var(--transition-normal), transform var(--transition-normal);
 }
 
+/* AI Assistant Card */
+.cosmic-ai-card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: var(--space-5);
+  border-radius: var(--card-radius);
+  position: relative;
+  overflow: hidden;
+}
+
 .cosmic-card-hoverable:hover {
   box-shadow: var(--shadow-lg);
   transform: translateY(-2px);

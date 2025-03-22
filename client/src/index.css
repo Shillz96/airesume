@@ -442,16 +442,3 @@
     transform: translateX(100%);
   }
 }
-
-/* Dialog content for cosmic theme */
-.cosmic-dialog-content {
-  @apply bg-[rgba(15,20,50,0.95)] backdrop-blur-lg border border-blue-900/40 text-gray-200 shadow-lg;
-}
-
-/* Input field styling for cosmic theme */
-.cosmic-input {
-  @apply bg-[rgba(30,40,80,0.4)] border-blue-900/30 text-gray-200 rounded-md px-4 py-2;
-  @apply transition-all duration-200;
-  @apply focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-600;
-  @apply hover:border-blue-700;
-}

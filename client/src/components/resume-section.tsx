@@ -98,18 +98,20 @@ export function ResumeExperienceSection({ experiences, onUpdate }: ResumeExperie
   };
 
   return (
-    <div className="pt-4">
+    <div className="pt-6 border-t border-secondary-200">
+      <h3 className="text-lg font-medium text-secondary-900 mb-4">Work Experience</h3>
+      
       {experiences.map((exp) => (
         <Collapsible
           key={exp.id}
           open={openId === exp.id}
           onOpenChange={() => setOpenId(openId === exp.id ? null : exp.id)}
-          className="mb-4 rounded-lg border border-indigo-900/30 bg-[rgba(20,30,60,0.4)] hover:bg-[rgba(25,35,65,0.5)]"
+          className="mb-4 rounded-md border border-secondary-200 hover:shadow-sm"
         >
           <div className="p-4">
             <div className="flex justify-between items-center">
               <CollapsibleTrigger asChild>
-                <Button variant="ghost" className="p-0 hover:bg-transparent justify-start text-left font-medium text-blue-300">
+                <Button variant="ghost" className="p-0 hover:bg-transparent justify-start text-left font-medium text-secondary-700">
                   {exp.title ? exp.title : "New Experience"}
                   {exp.company && ` - ${exp.company}`}
                 </Button>
@@ -122,64 +124,63 @@ export function ResumeExperienceSection({ experiences, onUpdate }: ResumeExperie
                   handleDelete(exp.id);
                 }}
                 aria-label="Delete experience"
-                className="text-blue-400 hover:text-red-400 hover:bg-blue-950/50"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-4 w-4 text-secondary-400 hover:text-destructive" />
               </Button>
             </div>
             
             <CollapsibleContent className="mt-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-6">
                 <div className="sm:col-span-3">
-                  <Label htmlFor={`job-title-${exp.id}`} className="text-blue-200">Job Title</Label>
+                  <Label htmlFor={`job-title-${exp.id}`}>Job Title</Label>
                   <Input
                     id={`job-title-${exp.id}`}
                     value={exp.title}
                     onChange={(e) => handleChange(exp.id, "title", e.target.value)}
-                    className="mt-1 bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                    className="mt-1"
                   />
                 </div>
                 
                 <div className="sm:col-span-3">
-                  <Label htmlFor={`company-${exp.id}`} className="text-blue-200">Company</Label>
+                  <Label htmlFor={`company-${exp.id}`}>Company</Label>
                   <Input
                     id={`company-${exp.id}`}
                     value={exp.company}
                     onChange={(e) => handleChange(exp.id, "company", e.target.value)}
-                    className="mt-1 bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                    className="mt-1"
                   />
                 </div>
 
                 <div className="sm:col-span-3">
-                  <Label htmlFor={`start-date-${exp.id}`} className="text-blue-200">Start Date</Label>
+                  <Label htmlFor={`start-date-${exp.id}`}>Start Date</Label>
                   <Input
                     id={`start-date-${exp.id}`}
                     value={exp.startDate}
                     onChange={(e) => handleChange(exp.id, "startDate", e.target.value)}
                     placeholder="e.g. January 2020"
-                    className="mt-1 bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                    className="mt-1"
                   />
                 </div>
 
                 <div className="sm:col-span-3">
-                  <Label htmlFor={`end-date-${exp.id}`} className="text-blue-200">End Date</Label>
+                  <Label htmlFor={`end-date-${exp.id}`}>End Date</Label>
                   <Input
                     id={`end-date-${exp.id}`}
                     value={exp.endDate}
                     onChange={(e) => handleChange(exp.id, "endDate", e.target.value)}
                     placeholder="e.g. Present"
-                    className="mt-1 bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                    className="mt-1"
                   />
                 </div>
 
                 <div className="sm:col-span-6">
-                  <Label htmlFor={`description-${exp.id}`} className="text-blue-200">Responsibilities & Achievements</Label>
+                  <Label htmlFor={`description-${exp.id}`}>Responsibilities & Achievements</Label>
                   <Textarea
                     id={`description-${exp.id}`}
                     value={exp.description}
                     onChange={(e) => handleChange(exp.id, "description", e.target.value)}
                     placeholder="List your key responsibilities and achievements. Use bullet points starting with • for better formatting."
-                    className="mt-1 bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                    className="mt-1"
                     rows={4}
                   />
                 </div>
@@ -192,7 +193,7 @@ export function ResumeExperienceSection({ experiences, onUpdate }: ResumeExperie
       <Button
         variant="outline"
         onClick={handleAdd}
-        className="flex gap-2 mt-2 border-blue-800/30 text-blue-300 hover:bg-blue-900/30 hover:text-blue-200"
+        className="flex gap-2 mt-2"
       >
         <span className="text-lg">+</span> Add Experience
       </Button>
@@ -232,18 +233,20 @@ export function ResumeEducationSection({ education, onUpdate }: ResumeEducationS
   };
 
   return (
-    <div className="pt-4">
+    <div className="pt-6 border-t border-secondary-200">
+      <h3 className="text-lg font-medium text-secondary-900 mb-4">Education</h3>
+      
       {education.map((edu) => (
         <Collapsible
           key={edu.id}
           open={openId === edu.id}
           onOpenChange={() => setOpenId(openId === edu.id ? null : edu.id)}
-          className="mb-4 rounded-lg border border-indigo-900/30 bg-[rgba(20,30,60,0.4)] hover:bg-[rgba(25,35,65,0.5)]"
+          className="mb-4 rounded-md border border-secondary-200 hover:shadow-sm"
         >
           <div className="p-4">
             <div className="flex justify-between items-center">
               <CollapsibleTrigger asChild>
-                <Button variant="ghost" className="p-0 hover:bg-transparent justify-start text-left font-medium text-blue-300">
+                <Button variant="ghost" className="p-0 hover:bg-transparent justify-start text-left font-medium text-secondary-700">
                   {edu.degree ? edu.degree : "New Education"}
                   {edu.institution && ` - ${edu.institution}`}
                 </Button>
@@ -256,64 +259,63 @@ export function ResumeEducationSection({ education, onUpdate }: ResumeEducationS
                   handleDelete(edu.id);
                 }}
                 aria-label="Delete education"
-                className="text-blue-400 hover:text-red-400 hover:bg-blue-950/50"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-4 w-4 text-secondary-400 hover:text-destructive" />
               </Button>
             </div>
             
             <CollapsibleContent className="mt-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-6">
                 <div className="sm:col-span-3">
-                  <Label htmlFor={`degree-${edu.id}`} className="text-blue-200">Degree</Label>
+                  <Label htmlFor={`degree-${edu.id}`}>Degree</Label>
                   <Input
                     id={`degree-${edu.id}`}
                     value={edu.degree}
                     onChange={(e) => handleChange(edu.id, "degree", e.target.value)}
-                    className="mt-1 bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                    className="mt-1"
                   />
                 </div>
                 
                 <div className="sm:col-span-3">
-                  <Label htmlFor={`institution-${edu.id}`} className="text-blue-200">Institution</Label>
+                  <Label htmlFor={`institution-${edu.id}`}>Institution</Label>
                   <Input
                     id={`institution-${edu.id}`}
                     value={edu.institution}
                     onChange={(e) => handleChange(edu.id, "institution", e.target.value)}
-                    className="mt-1 bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                    className="mt-1"
                   />
                 </div>
 
                 <div className="sm:col-span-3">
-                  <Label htmlFor={`start-date-${edu.id}`} className="text-blue-200">Start Date</Label>
+                  <Label htmlFor={`start-date-${edu.id}`}>Start Date</Label>
                   <Input
                     id={`start-date-${edu.id}`}
                     value={edu.startDate}
                     onChange={(e) => handleChange(edu.id, "startDate", e.target.value)}
                     placeholder="e.g. September 2018"
-                    className="mt-1 bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                    className="mt-1"
                   />
                 </div>
 
                 <div className="sm:col-span-3">
-                  <Label htmlFor={`end-date-${edu.id}`} className="text-blue-200">End Date</Label>
+                  <Label htmlFor={`end-date-${edu.id}`}>End Date</Label>
                   <Input
                     id={`end-date-${edu.id}`}
                     value={edu.endDate}
                     onChange={(e) => handleChange(edu.id, "endDate", e.target.value)}
                     placeholder="e.g. May 2022"
-                    className="mt-1 bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                    className="mt-1"
                   />
                 </div>
 
                 <div className="sm:col-span-6">
-                  <Label htmlFor={`description-${edu.id}`} className="text-blue-200">Description</Label>
+                  <Label htmlFor={`description-${edu.id}`}>Description</Label>
                   <Textarea
                     id={`description-${edu.id}`}
                     value={edu.description}
                     onChange={(e) => handleChange(edu.id, "description", e.target.value)}
                     placeholder="Provide additional information about your studies, achievements, etc."
-                    className="mt-1 bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                    className="mt-1"
                     rows={3}
                   />
                 </div>
@@ -326,7 +328,7 @@ export function ResumeEducationSection({ education, onUpdate }: ResumeEducationS
       <Button
         variant="outline"
         onClick={handleAdd}
-        className="flex gap-2 mt-2 border-blue-800/30 text-blue-300 hover:bg-blue-900/30 hover:text-blue-200"
+        className="flex gap-2 mt-2"
       >
         <span className="text-lg">+</span> Add Education
       </Button>
@@ -357,8 +359,10 @@ export function ResumeSkillsSection({ skills, onUpdate }: ResumeSkillsSectionPro
   };
 
   return (
-    <div className="pt-4">
-      <Card className="bg-[rgba(20,30,60,0.4)] border border-indigo-900/30">
+    <div className="pt-6 border-t border-secondary-200">
+      <h3 className="text-lg font-medium text-secondary-900 mb-4">Skills</h3>
+      
+      <Card>
         <CardContent className="p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {skills.map((skill) => (
@@ -367,12 +371,12 @@ export function ResumeSkillsSection({ skills, onUpdate }: ResumeSkillsSectionPro
                   value={skill.name}
                   onChange={(e) => handleChange(skill.id, "name", e.target.value)}
                   placeholder="Skill name"
-                  className="flex-grow bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                  className="flex-grow"
                 />
                 <select
                   value={skill.proficiency}
                   onChange={(e) => handleChange(skill.id, "proficiency", parseInt(e.target.value))}
-                  className="h-10 rounded-md border border-blue-900/30 bg-[rgba(30,40,80,0.4)] px-3 py-2 text-sm text-gray-200"
+                  className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
                 >
                   <option value={1}>Beginner</option>
                   <option value={2}>Intermediate</option>
@@ -385,22 +389,21 @@ export function ResumeSkillsSection({ skills, onUpdate }: ResumeSkillsSectionPro
                   size="icon" 
                   onClick={() => handleDelete(skill.id)}
                   aria-label="Delete skill"
-                  className="text-blue-400 hover:text-red-400 hover:bg-blue-950/50"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4 text-secondary-400 hover:text-destructive" />
                 </Button>
               </div>
             ))}
           </div>
           
           {skills.length === 0 && (
-            <p className="text-sm text-blue-400 py-2">No skills added yet. Add your first skill below.</p>
+            <p className="text-sm text-secondary-500 py-2">No skills added yet. Add your first skill below.</p>
           )}
           
           <Button
             variant="outline"
             onClick={handleAdd}
-            className="flex gap-2 mt-4 border-blue-800/30 text-blue-300 hover:bg-blue-900/30 hover:text-blue-200"
+            className="flex gap-2 mt-4"
           >
             <span className="text-lg">+</span> Add Skill
           </Button>
@@ -441,18 +444,20 @@ export function ResumeProjectsSection({ projects, onUpdate }: ResumeProjectsSect
   };
 
   return (
-    <div className="pt-4">
+    <div className="pt-6 border-t border-secondary-200">
+      <h3 className="text-lg font-medium text-secondary-900 mb-4">Projects</h3>
+      
       {projects.map((project) => (
         <Collapsible
           key={project.id}
           open={openId === project.id}
           onOpenChange={() => setOpenId(openId === project.id ? null : project.id)}
-          className="mb-4 rounded-lg border border-indigo-900/30 bg-[rgba(20,30,60,0.4)] hover:bg-[rgba(25,35,65,0.5)]"
+          className="mb-4 rounded-md border border-secondary-200 hover:shadow-sm"
         >
           <div className="p-4">
             <div className="flex justify-between items-center">
               <CollapsibleTrigger asChild>
-                <Button variant="ghost" className="p-0 hover:bg-transparent justify-start text-left font-medium text-blue-300">
+                <Button variant="ghost" className="p-0 hover:bg-transparent justify-start text-left font-medium text-secondary-700">
                   {project.title ? project.title : "New Project"}
                 </Button>
               </CollapsibleTrigger>
@@ -464,55 +469,54 @@ export function ResumeProjectsSection({ projects, onUpdate }: ResumeProjectsSect
                   handleDelete(project.id);
                 }}
                 aria-label="Delete project"
-                className="text-blue-400 hover:text-red-400 hover:bg-blue-950/50"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-4 w-4 text-secondary-400 hover:text-destructive" />
               </Button>
             </div>
             
             <CollapsibleContent className="mt-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-6">
                 <div className="sm:col-span-6">
-                  <Label htmlFor={`title-${project.id}`} className="text-blue-200">Project Title</Label>
+                  <Label htmlFor={`title-${project.id}`}>Project Title</Label>
                   <Input
                     id={`title-${project.id}`}
                     value={project.title}
                     onChange={(e) => handleChange(project.id, "title", e.target.value)}
-                    className="mt-1 bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                    className="mt-1"
                   />
                 </div>
                 
                 <div className="sm:col-span-6">
-                  <Label htmlFor={`description-${project.id}`} className="text-blue-200">Description</Label>
+                  <Label htmlFor={`description-${project.id}`}>Description</Label>
                   <Textarea
                     id={`description-${project.id}`}
                     value={project.description}
                     onChange={(e) => handleChange(project.id, "description", e.target.value)}
                     placeholder="Describe the project, your role, and key achievements"
-                    className="mt-1 bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                    className="mt-1"
                     rows={3}
                   />
                 </div>
 
                 <div className="sm:col-span-6">
-                  <Label htmlFor={`technologies-${project.id}`} className="text-blue-200">Technologies</Label>
+                  <Label htmlFor={`technologies-${project.id}`}>Technologies</Label>
                   <Input
                     id={`technologies-${project.id}`}
                     value={project.technologies.join(", ")}
                     onChange={(e) => handleChange(project.id, "technologies", e.target.value.split(",").map(t => t.trim()))}
                     placeholder="e.g. React, Node.js, MongoDB (comma separated)"
-                    className="mt-1 bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                    className="mt-1"
                   />
                 </div>
 
                 <div className="sm:col-span-6">
-                  <Label htmlFor={`link-${project.id}`} className="text-blue-200">Project Link (optional)</Label>
+                  <Label htmlFor={`link-${project.id}`}>Project Link (optional)</Label>
                   <Input
                     id={`link-${project.id}`}
                     value={project.link || ""}
                     onChange={(e) => handleChange(project.id, "link", e.target.value)}
                     placeholder="e.g. https://github.com/username/project"
-                    className="mt-1 bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200"
+                    className="mt-1"
                   />
                 </div>
               </div>
@@ -524,7 +528,7 @@ export function ResumeProjectsSection({ projects, onUpdate }: ResumeProjectsSect
       <Button
         variant="outline"
         onClick={handleAdd}
-        className="flex gap-2 mt-2 border-blue-800/30 text-blue-300 hover:bg-blue-900/30 hover:text-blue-200"
+        className="flex gap-2 mt-2"
       >
         <span className="text-lg">+</span> Add Project
       </Button>

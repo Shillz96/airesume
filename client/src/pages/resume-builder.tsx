@@ -2786,10 +2786,10 @@ export default function ResumeBuilder() {
             </div>
 
             {/* Tab Content */}
-            <div className="p-6">
+            <div className="p-8">
               {/* Profile Section */}
               {activeSection === "profile" && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                   {/* Tailored Resume Banner - show briefly when coming from job details */}
                   {isTailoredResume && (
                     <div className="md:col-span-3 mb-4">
@@ -3022,7 +3022,7 @@ export default function ResumeBuilder() {
 
               {/* Experience Section */}
               {activeSection === "experience" && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                   <div className="md:col-span-2">
                     <div className="cosmic-section-header flex justify-between items-center mb-4">
                       <h2 className="cosmic-section-title flex items-center">
@@ -3124,7 +3124,7 @@ export default function ResumeBuilder() {
 
               {/* Skills Section */}
               {activeSection === "skills" && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                   <div className="md:col-span-2">
                     <div className="cosmic-section-header flex justify-between items-center mb-4">
                       <h2 className="cosmic-section-title flex items-center">

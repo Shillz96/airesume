@@ -2872,16 +2872,16 @@ export default function ResumeBuilder() {
                         </div>
                       </div>
                     )}
-                  <div className="md:col-span-2 space-y-4">
-                    <div className="cosmic-resume-section mb-4">
-                      <div className="mb-4 ml-3">
+                  <div className="md:col-span-2 space-y-6">
+                    <div className="cosmic-resume-section">
+                      <div className="mb-4">
                         <h2 className="text-lg font-semibold text-white flex items-center">
                           <User className="h-5 w-5 text-primary mr-2" />
                           Contact Information
                         </h2>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4 mb-6 p-4 bg-[#1a203c] rounded-lg border border-[#252a47]">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 p-6 bg-[#1a203c] rounded-lg border border-[#252a47]">
                         <div className="space-y-2">
                           <Label htmlFor="firstName" className="text-sm text-gray-300">
                             First Name
@@ -2941,7 +2941,7 @@ export default function ResumeBuilder() {
                         </div>
                       </div>
 
-                      <div className="mt-2 mb-5 p-4 bg-[#1a203c] rounded-lg border border-[#252a47]">
+                      <div className="mt-6 mb-6 p-6 bg-[#1a203c] rounded-lg border border-[#252a47]">
                         <div className="space-y-2">
                           <Label htmlFor="headline" className="text-sm text-gray-300">
                             Professional Headline
@@ -2959,7 +2959,7 @@ export default function ResumeBuilder() {
                         </div>
                       </div>
 
-                      <div className="p-4 bg-[#1a203c] rounded-lg border border-[#252a47]">
+                      <div className="p-6 bg-[#1a203c] rounded-lg border border-[#252a47]">
                         <div className="space-y-2">
                           <Label htmlFor="summary" className="text-sm text-gray-300">
                             Professional Summary
@@ -3358,42 +3358,43 @@ export default function ResumeBuilder() {
                   {/* Projects AI Assistant */}
                   <div className="md:col-span-1">
                     <div className="cosmic-ai-card min-h-[300px]">
-                      <div className="relative z-10 p-space-4">
-                        <div className="flex items-center gap-space-2 mb-space-5">
-                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center">
+                      <div className="relative z-10">
+                        <div className="flex items-center gap-2 mb-5">
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center">
                             <FolderKanban className="h-4 w-4 text-white" />
                           </div>
                           <h3 className="font-medium text-white text-lg">
-                            Projects Assistant
+                            AI Projects Assistant
                           </h3>
                         </div>
 
-                        <div className="space-y-space-4">
+                        <div className="w-full space-y-4">
                           <p className="text-sm text-blue-100">
                             Enhance your projects section with these formatting tips:
                           </p>
 
-                          <div className="space-y-space-2 text-sm">
-                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                          <div className="space-y-2 text-sm">
+                            <div className="p-2 rounded-md bg-[#1a203c] border border-[#252a47] hover:bg-blue-900/20 transition-colors cursor-pointer">
                               Use action verbs to describe your contributions
                             </div>
-                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                            <div className="p-2 rounded-md bg-[#1a203c] border border-[#252a47] hover:bg-blue-900/20 transition-colors cursor-pointer">
                               Quantify achievements with metrics when possible
                             </div>
-                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                            <div className="p-2 rounded-md bg-[#1a203c] border border-[#252a47] hover:bg-blue-900/20 transition-colors cursor-pointer">
                               Showcase problem-solving and technical skills
                             </div>
-                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                            <div className="p-2 rounded-md bg-[#1a203c] border border-[#252a47] hover:bg-blue-900/20 transition-colors cursor-pointer">
                               Include the business impact of your project
                             </div>
                           </div>
 
-                          <button 
-                            className="w-full mt-space-4 py-2 px-3 bg-blue-600/30 hover:bg-blue-600/50 rounded-md text-white text-sm transition-colors"
+                          <Button 
+                            className="w-full mt-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                             onClick={() => setIsDialogOpen(true)}
                           >
+                            <Sparkles className="h-4 w-4 mr-2" />
                             Get AI suggestions
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -3445,46 +3446,47 @@ export default function ResumeBuilder() {
                   {/* Final Preview Tips */}
                   <div className="md:col-span-1">
                     <div className="cosmic-ai-card min-h-[300px]">
-                      <div className="relative z-10 p-space-4">
-                        <div className="flex items-center gap-space-2 mb-space-5">
-                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center">
+                      <div className="relative z-10">
+                        <div className="flex items-center gap-2 mb-5">
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center">
                             <Check className="h-4 w-4 text-white" />
                           </div>
                           <h3 className="font-medium text-white text-lg">
-                            Final Checks
+                            AI Final Review
                           </h3>
                         </div>
 
-                        <div className="space-y-space-4">
+                        <div className="w-full space-y-4">
                           <p className="text-sm text-blue-100">
                             Before downloading, review your resume for these common issues:
                           </p>
 
-                          <div className="space-y-space-2 text-sm">
-                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
+                          <div className="space-y-2 text-sm">
+                            <div className="p-2 rounded-md bg-[#1a203c] border border-[#252a47] flex items-start">
                               <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span>Check for spelling and grammar errors</span>
                             </div>
-                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
+                            <div className="p-2 rounded-md bg-[#1a203c] border border-[#252a47] flex items-start">
                               <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span>Ensure consistent formatting throughout</span>
                             </div>
-                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
+                            <div className="p-2 rounded-md bg-[#1a203c] border border-[#252a47] flex items-start">
                               <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span>Verify all contact information is correct</span>
                             </div>
-                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
+                            <div className="p-2 rounded-md bg-[#1a203c] border border-[#252a47] flex items-start">
                               <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span>Confirm dates are accurate and consistent</span>
                             </div>
                           </div>
 
-                          <button 
-                            className="w-full mt-space-4 py-2 px-3 bg-blue-600/30 hover:bg-blue-600/50 rounded-md text-white text-sm transition-colors"
+                          <Button 
+                            className="w-full mt-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                             onClick={() => setIsDialogOpen(true)}
                           >
+                            <Sparkles className="h-4 w-4 mr-2" />
                             Get final AI review
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </div>

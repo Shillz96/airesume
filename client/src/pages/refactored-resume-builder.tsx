@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Loader2, X, ChevronDown, ChevronUp, Save, Download, PenSquare, Star, Plus, Trash, FilePlus, Bot } from "lucide-react";
+import { Loader2, X, ChevronDown, ChevronUp, Save, Download, PenSquare, Star, Plus, Trash, FilePlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Resume, useResumeData } from "@/hooks/use-resume-data";
 import { useTheme } from "@/contexts/ThemeContext";
-import AIAssistantDialog from "@/components/resume-builder/AIAssistantDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -23,7 +22,6 @@ import ResumePreviewComponent from "@/components/resume-builder/ResumePreviewCom
 export default function ResumeBuilder() {
   // States for resume data and UI controls
   const [activeSection, setActiveSection] = useState<string>("contact");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
   const { 
     resume, 
@@ -216,16 +214,8 @@ export default function ResumeBuilder() {
 
               {/* Summary Tab */}
               <TabsContent value="summary" className="space-y-4 p-6 bg-[#161f36] rounded-md border border-[#2a325a] mt-4 shadow-md">
-                <div className="flex justify-between items-center mb-4">
+                <div className="mb-4">
                   <h3 className="text-lg font-medium">Professional Summary</h3>
-                  <Button 
-                    size="sm"
-                    onClick={() => setIsDialogOpen(true)}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                  >
-                    <Bot className="h-4 w-4 mr-2" />
-                    Get AI Suggestions
-                  </Button>
                 </div>
                 <div className="space-y-4">
                   <textarea
@@ -338,37 +328,9 @@ export default function ResumeBuilder() {
           </div>
         </div>
 
-        {/* Floating AI Assistant Button */}
-        <div className="fixed bottom-6 right-6 z-50 group">
-          <div className="absolute -inset-0.5 rounded-full bg-blue-500 opacity-75 blur-sm group-hover:opacity-100 transition duration-300 animate-pulse"></div>
-          <Button
-            variant="default"
-            onClick={() => setIsDialogOpen(!isDialogOpen)}
-            className="relative h-14 w-14 rounded-full p-0 shadow-lg group-hover:scale-105 transition duration-300"
-            aria-label="Open AI Assistant"
-          >
-            <Bot className="h-6 w-6" />
-          </Button>
-        </div>
 
-        {/* AI Assistant Dialog */}
-        <AIAssistantDialog
-          resumeId={resume.id}
-          isOpen={isDialogOpen}
-          onClose={() => setIsDialogOpen(false)}
-          resume={resume}
-          activeTab={activeSection}
-          onApplySummary={(summary) => {
-            updateResume({
-              ...resume,
-              personalInfo: {
-                ...resume.personalInfo,
-                summary
-              }
-            });
-            setActiveSection("summary");
-          }}
-        />
+
+
       </div>
     </div>
   );

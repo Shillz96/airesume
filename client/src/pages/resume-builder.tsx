@@ -2736,44 +2736,28 @@ export default function ResumeBuilder() {
                   </TabsTrigger>
                   <TabsTrigger
                     value="education"
-                    className={`${
-                      activeSection === "education"
-                        ? "bg-blue-600/50 text-white border-b-2 border-blue-400"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
-                    } font-medium transition-all duration-200`}
+                    className="cosmic-tab-trigger"
                   >
                     <GraduationCap className="h-4 w-4 mr-2" />
                     EDUCATION
                   </TabsTrigger>
                   <TabsTrigger
                     value="skills"
-                    className={`${
-                      activeSection === "skills"
-                        ? "bg-blue-600/50 text-white border-b-2 border-blue-400"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
-                    } font-medium transition-all duration-200`}
+                    className="cosmic-tab-trigger"
                   >
                     <Code className="h-4 w-4 mr-2" />
                     SKILLS
                   </TabsTrigger>
                   <TabsTrigger
                     value="projects"
-                    className={`${
-                      activeSection === "projects"
-                        ? "bg-blue-600/50 text-white border-b-2 border-blue-400"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
-                    } font-medium transition-all duration-200`}
+                    className="cosmic-tab-trigger"
                   >
                     <FolderKanban className="h-4 w-4 mr-2" />
                     PROJECTS
                   </TabsTrigger>
                   <TabsTrigger
                     value="preview"
-                    className={`${
-                      activeSection === "preview"
-                        ? "bg-blue-600/50 text-white border-b-2 border-blue-400"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
-                    } font-medium transition-all duration-200`}
+                    className="cosmic-tab-trigger"
                   >
                     <Maximize2 className="h-4 w-4 mr-2" />
                     PREVIEW

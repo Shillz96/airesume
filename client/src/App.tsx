@@ -12,6 +12,7 @@ import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home-page";
 import ResumeBuilder from "@/pages/resume-builder";
 import RefactoredResumeBuilder from "@/pages/refactored-resume-builder";
+import FixedResumeBuilder from "@/pages/fixed-resume-builder";
 import ResumesPage from "@/pages/resumes-page";
 import JobFinder from "@/pages/job-finder";
 import JobDetails from "@/pages/job-details";
@@ -38,8 +39,10 @@ function Router() {
     <Switch>
       <Route path="/" component={LandingPage} />
       <ProtectedRoute path="/dashboard" component={HomePage} />
-      {/* Use refactored resume builder as the main builder */}
-      <ProtectedRoute path="/resume-builder" component={RefactoredResumeBuilder} />
+      {/* Use fixed resume builder as the main builder */}
+      <ProtectedRoute path="/resume-builder" component={FixedResumeBuilder} />
+      {/* Keep the refactored builder accessible via another path */}
+      <ProtectedRoute path="/refactored-resume-builder" component={RefactoredResumeBuilder} />
       {/* Keep the original builder accessible via legacy path */}
       <ProtectedRoute path="/legacy-resume-builder" component={ResumeBuilder} />
       <ProtectedRoute path="/resumes" component={ResumesPage} />
@@ -72,7 +75,8 @@ function AppContent() {
       "/",
       "/dashboard",
       "/resume-builder",
-      "/legacy-resume-builder", // Add legacy path
+      "/refactored-resume-builder",
+      "/legacy-resume-builder",
       "/resumes",
       "/job-finder",
       "/subscription",

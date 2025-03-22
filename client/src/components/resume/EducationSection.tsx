@@ -4,8 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { CosmicButton } from '@/components/cosmic-button';
-import { Trash, Plus, GraduationCap } from 'lucide-react';
+import { CosmicButton } from '@/components/cosmic-button-refactored';
+import { Trash, Plus, GraduationCap, Calendar } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/accordion';
 import { EducationItem } from '@/hooks/use-resume-data';
 import { cn } from '@/lib/utils';
-import { getCosmicColor, getSpacing } from '@/lib/theme-utils';
+import { SectionHeader, SectionCard, ItemActions, formatDate } from './ResumeComponentShared';
 
 interface EducationSectionProps {
   education: EducationItem[];
@@ -76,132 +76,139 @@ export function EducationSection({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <GraduationCap className="h-5 w-5" style={{ color: getCosmicColor('primary') }} />
-          <h3 className="text-lg font-semibold">Education</h3>
-        </div>
-        <CosmicButton
-          size="sm"
-          variant="outline"
-          iconLeft={<Plus className="h-4 w-4" />}
-          onClick={handleAddEducation}
-        >
-          Add Education
-        </CosmicButton>
-      </div>
+      <SectionHeader
+        title="Education"
+        icon={<GraduationCap className="h-5 w-5 cosmic-section-icon" />}
+        onAdd={handleAddEducation}
+        addButtonText="Add Education"
+        className="cosmic-text-gradient"
+      />
 
       {education.length === 0 ? (
-        <Card className="border border-dashed">
-          <CardContent className="flex flex-col items-center justify-center p-6">
-            <GraduationCap className="h-12 w-12 mb-2 opacity-30" />
-            <p className="text-center text-sm mb-4">
+        <SectionCard withHoverEffect={false} className="border border-dashed border-white/10">
+          <div className="flex flex-col items-center justify-center p-6">
+            <GraduationCap className="h-12 w-12 mb-2 opacity-40 cosmic-section-icon" />
+            <p className="text-center text-sm mb-4 opacity-80">
               Add your educational background, degrees, and certifications
             </p>
-            <Button variant="outline" size="sm" onClick={handleAddEducation}>
+            <CosmicButton 
+              variant="outline" 
+              size="sm" 
+              onClick={handleAddEducation}
+              iconLeft={<Plus className="h-4 w-4" />}
+              withGlow
+            >
               Add Education
-            </Button>
-          </CardContent>
-        </Card>
+            </CosmicButton>
+          </div>
+        </SectionCard>
       ) : (
         <Accordion
           type="single"
           collapsible
           value={expandedItem || undefined}
           onValueChange={(value) => setExpandedItem(value)}
-          className="space-y-2"
+          className="cosmic-tabs space-y-2"
         >
           {education.map((edu) => (
             <AccordionItem
               key={edu.id}
               value={edu.id}
               className={cn(
-                "border rounded-md overflow-hidden",
-                expandedItem === edu.id ? "ring-1 ring-primary/20" : ""
+                "cosmic-card overflow-hidden border border-white/10 backdrop-blur-sm",
+                expandedItem === edu.id ? "ring-1 ring-primary/20 cosmic-card-gradient" : ""
               )}
             >
-              <AccordionTrigger className="px-4 py-3 hover:bg-accent/50 data-[state=open]:bg-accent/60">
+              <AccordionTrigger className="px-4 py-3 hover:bg-primary/5 data-[state=open]:bg-primary/10 border-white/10">
                 <div className="flex flex-1 justify-between items-center">
                   <div className="text-left">
-                    <p className="font-medium">
-                      {edu.degree || "New Education Entry"}
+                    <p className={cn("font-medium", expandedItem === edu.id ? "cosmic-text-gradient" : "")}>
+                      {edu.degree || "New Degree"}
                     </p>
                     {edu.institution && (
-                      <p className="text-sm opacity-70">{edu.institution}</p>
+                      <p className="text-sm opacity-80">{edu.institution}</p>
                     )}
                   </div>
-                  <div className="text-sm opacity-70 mr-4">
+                  <div className="text-sm opacity-80 mr-4">
                     {edu.startDate && edu.endDate
-                      ? `${edu.startDate} - ${edu.endDate}`
+                      ? `${formatDate(edu.startDate)} - ${formatDate(edu.endDate)}`
                       : ""}
                   </div>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pb-0">
-                <div className="p-4 space-y-4 bg-card rounded-b-md">
+                <div className="p-4 space-y-4 bg-card/10 backdrop-blur-sm rounded-b-md border-t border-white/10">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor={`edu-degree-${edu.id}`}>Degree/Certification</Label>
+                      <Label htmlFor={`edu-degree-${edu.id}`} className="cosmic-label">Degree/Certification</Label>
                       <Input
                         id={`edu-degree-${edu.id}`}
                         value={edu.degree}
                         onChange={(e) => handleEducationChange(edu.id, 'degree', e.target.value)}
                         placeholder="e.g., Bachelor of Science in Computer Science"
+                        className="cosmic-input border-white/10"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor={`edu-institution-${edu.id}`}>Institution</Label>
+                      <Label htmlFor={`edu-institution-${edu.id}`} className="cosmic-label">Institution</Label>
                       <Input
                         id={`edu-institution-${edu.id}`}
                         value={edu.institution}
                         onChange={(e) => handleEducationChange(edu.id, 'institution', e.target.value)}
                         placeholder="e.g., University of Technology"
+                        className="cosmic-input border-white/10"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor={`edu-start-${edu.id}`}>Start Date</Label>
-                      <Input
-                        id={`edu-start-${edu.id}`}
-                        value={edu.startDate}
-                        onChange={(e) => handleEducationChange(edu.id, 'startDate', e.target.value)}
-                        placeholder="e.g., Sep 2018"
-                      />
+                      <Label htmlFor={`edu-start-${edu.id}`} className="cosmic-label">Start Date</Label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 cosmic-section-icon" />
+                        <Input
+                          id={`edu-start-${edu.id}`}
+                          value={edu.startDate}
+                          onChange={(e) => handleEducationChange(edu.id, 'startDate', e.target.value)}
+                          className="pl-10 cosmic-input border-white/10"
+                          placeholder="e.g., Sep 2018"
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor={`edu-end-${edu.id}`}>End Date (or "Present")</Label>
-                      <Input
-                        id={`edu-end-${edu.id}`}
-                        value={edu.endDate}
-                        onChange={(e) => handleEducationChange(edu.id, 'endDate', e.target.value)}
-                        placeholder="e.g., May 2022 or Present"
-                      />
+                      <Label htmlFor={`edu-end-${edu.id}`} className="cosmic-label">End Date (or "Present")</Label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 cosmic-section-icon" />
+                        <Input
+                          id={`edu-end-${edu.id}`}
+                          value={edu.endDate}
+                          onChange={(e) => handleEducationChange(edu.id, 'endDate', e.target.value)}
+                          className="pl-10 cosmic-input border-white/10"
+                          placeholder="e.g., May 2022 or Present"
+                        />
+                      </div>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor={`edu-description-${edu.id}`}>Description</Label>
+                    <Label htmlFor={`edu-description-${edu.id}`} className="cosmic-label">Description</Label>
                     <Textarea
                       id={`edu-description-${edu.id}`}
                       value={edu.description}
                       onChange={(e) => handleEducationChange(edu.id, 'description', e.target.value)}
                       placeholder="Describe your academic achievements, relevant coursework, or activities"
                       rows={3}
+                      className="cosmic-input cosmic-textarea border-white/10"
                     />
+                    <p className="text-xs text-muted-foreground opacity-80">
+                      Include relevant coursework, academic achievements, and extracurricular activities.
+                    </p>
                   </div>
 
                   <div className="flex justify-end pb-2 pt-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
-                      onClick={() => handleRemoveEducation(edu.id)}
-                    >
-                      <Trash className="h-4 w-4 mr-1" />
-                      Remove
-                    </Button>
+                    <ItemActions 
+                      onDelete={() => handleRemoveEducation(edu.id)}
+                    />
                   </div>
                 </div>
               </AccordionContent>

@@ -3356,8 +3356,8 @@ export default function ResumeBuilder() {
                 education: [],
                 skills: [],
                 projects: [],
-                template: "professional",
-              }}
+                template: "professional"
+              }
               activeTab={activeSection || 'contact'}
             />
           </div>

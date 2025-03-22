@@ -5,6 +5,111 @@
  * following the actual design shown in the screenshots
  */
 
+/* Personal Information section styling */
+.cosmic-personal-info {
+  padding: var(--space-6);
+  background: rgba(30, 41, 80, 0.4);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-6);
+}
+
+.cosmic-personal-info-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+  color: white;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.cosmic-personal-info-header svg {
+  color: #60a5fa;
+}
+
+.cosmic-personal-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+@media (max-width: 640px) {
+  .cosmic-personal-info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cosmic-form-field {
+  margin-bottom: var(--space-4);
+}
+
+.cosmic-form-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: var(--space-2);
+  font-size: 0.875rem;
+}
+
+.cosmic-form-input {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+  color: white;
+  padding: var(--space-2) var(--space-3);
+  transition: all var(--transition-fast);
+}
+
+.cosmic-form-input:focus {
+  border-color: rgba(59, 130, 246, 0.5);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.cosmic-form-textarea {
+  min-height: var(--space-20);
+  resize: vertical;
+  width: 100%;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+  color: white;
+  padding: var(--space-2) var(--space-3);
+  transition: all var(--transition-fast);
+}
+
+.cosmic-form-textarea:focus {
+  border-color: rgba(59, 130, 246, 0.5);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.cosmic-summary-tips {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.cosmic-summary-tips-header {
+  color: #60a5fa;
+  font-size: 0.875rem;
+  margin-bottom: var(--space-2);
+}
+
+.cosmic-summary-tips-list {
+  padding-left: var(--space-5);
+}
+
+.cosmic-summary-tips-list li {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  margin-bottom: var(--space-1);
+  list-style-type: disc;
+}
+
 /* Tab navigation */
 .cosmic-tabs {
   display: flex;

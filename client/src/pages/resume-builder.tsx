@@ -68,6 +68,7 @@ import {
   Loader2,
   Cpu,
   Check,
+  CheckCircle,
   RefreshCw,
   Sparkles,
   Plus,

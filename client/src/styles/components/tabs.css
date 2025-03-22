@@ -2,7 +2,7 @@
 /* Resume builder tabs styling to match the design in image */
 .cosmic-tabs {
   width: 100%;
-  overflow: auto; /* Allow horizontal scrolling for mobile */
+  /* Removed overflow: auto to prevent unnecessary scrolling */
 }
 
 .cosmic-tabs .cosmic-tabs-list {
@@ -14,8 +14,16 @@
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
   gap: 1rem;
+  /* Ensure horizontal visibility on mobile without scrolling where possible */
   overflow-x: auto;
   flex-wrap: nowrap;
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+}
+
+/* Hide scrollbar for Chrome, Safari, and Opera */
+.cosmic-tabs .cosmic-tabs-list::-webkit-scrollbar {
+  display: none;
 }
 
 .cosmic-tabs .cosmic-tab-trigger {

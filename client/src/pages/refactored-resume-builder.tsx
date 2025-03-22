@@ -2818,17 +2818,17 @@ export default function ResumeBuilder() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                   {/* Tailored Resume Banner - show briefly when coming from job details */}
                   {isTailoredResume && (
-                    <div className="md:col-span-3 mb-4">
+                    <div className="md:col-span-3 mb-space-4">
                       <div className="cosmic-card border border-green-500/30 bg-green-900/20 p-space-4 rounded-lg relative overflow-hidden backdrop-blur-sm">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-3xl"></div>
                         <div className="relative z-10">
-                          <div className="flex items-center mb-2">
-                            <Sparkles className="h-5 w-5 mr-2 text-green-400" />
+                          <div className="flex items-center mb-space-2">
+                            <Sparkles className="h-5 w-5 mr-space-2 text-green-400" />
                             <h3 className="font-medium text-xl text-white">
                               Job-Tailored Resume
                             </h3>
                           </div>
-                          <p className="text-gray-300 mb-2">
+                          <p className="text-gray-300 mb-space-2">
                             Your resume is being updated with tailored content
                             optimized for the job description. Review each
                             section and make any additional adjustments before
@@ -2842,22 +2842,22 @@ export default function ResumeBuilder() {
                   {/* Welcome Banner - only show when resume is empty */}
                   {!resume?.personalInfo?.firstName &&
                     !resume?.personalInfo?.lastName && (
-                      <div className="md:col-span-3 mb-4">
+                      <div className="md:col-span-3 mb-space-4">
                         <div className="cosmic-card border border-blue-500/30 bg-blue-900/20 p-space-6 rounded-lg relative overflow-hidden backdrop-blur-sm">
                           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
                           <div className="relative z-10">
-                            <div className="flex items-center mb-3">
-                              <Upload className="h-5 w-5 mr-2 text-blue-400" />
+                            <div className="flex items-center mb-space-3">
+                              <Upload className="h-5 w-5 mr-space-2 text-blue-400" />
                               <h3 className="font-medium text-xl text-white">
                                 Upload Your Existing Resume
                               </h3>
                             </div>
-                            <p className="text-gray-300 mb-4">
+                            <p className="text-gray-300 mb-space-4">
                               Skip manual entry by uploading your existing
                               resume. Our AI will automatically extract your
                               information and fill out this form for you.
                             </p>
-                            <div className="flex flex-wrap gap-3">
+                            <div className="flex flex-wrap gap-space-3">
                               <CosmicButton
                                 variant="primary"
                                 onClick={handleFileInputClick}
@@ -2866,7 +2866,7 @@ export default function ResumeBuilder() {
                                 Upload PDF, DOCX, or TXT
                               </CosmicButton>
                               <p className="text-sm text-gray-400 flex items-center">
-                                <span className="mr-1">or</span> fill out the
+                                <span className="mr-space-1">or</span> fill out the
                                 form manually below
                               </p>
                             </div>

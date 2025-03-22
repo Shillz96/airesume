@@ -2881,120 +2881,134 @@ export default function ResumeBuilder() {
                         </h2>
                       </div>
 
-                      <div className="flex flex-col md:flex-row w-full mb-8">
-                        <div className="flex flex-col md:w-2/3 space-y-8">
-                          <div className="flex flex-row w-full space-x-4">
-                            <div className="flex-1">
-                              <Label htmlFor="firstName" className="block text-gray-300 mb-2">
-                                First Name
-                              </Label>
-                              <Input
-                                id="firstName"
-                                value={resume?.personalInfo?.firstName || ""}
-                                onChange={(e) =>
-                                  updatePersonalInfo("firstName", e.target.value)
-                                }
-                                className="w-full bg-navy-800 border-navy-600 text-white"
-                                placeholder="Dylan"
-                              />
-                            </div>
-                            <div className="flex-1">
-                              <Label htmlFor="lastName" className="block text-gray-300 mb-2">
-                                Last Name
-                              </Label>
-                              <Input
-                                id="lastName"
-                                value={resume?.personalInfo?.lastName || ""}
-                                onChange={(e) =>
-                                  updatePersonalInfo("lastName", e.target.value)
-                                }
-                                className="w-full bg-navy-800 border-navy-600 text-white"
-                                placeholder="Spivack"
-                              />
-                            </div>
+                      <div className="w-full mb-8">
+                        <div className="grid grid-cols-2 gap-y-8">
+                          <div className="flex items-center">
+                            <Label htmlFor="firstName" className="text-gray-300">
+                              First Name
+                            </Label>
+                          </div>
+                          <div>
+                            <Input
+                              id="firstName"
+                              value={resume?.personalInfo?.firstName || ""}
+                              onChange={(e) =>
+                                updatePersonalInfo("firstName", e.target.value)
+                              }
+                              className="w-full bg-navy-800 border-navy-600 text-white"
+                              placeholder="Dylan"
+                            />
                           </div>
                           
-                          <div className="flex flex-row w-full space-x-4">
-                            <div className="flex-1">
-                              <Label htmlFor="email" className="block text-gray-300 mb-2">
-                                Email
-                              </Label>
-                              <Input
-                                id="email"
-                                type="email"
-                                value={resume?.personalInfo?.email || ""}
-                                onChange={(e) =>
-                                  updatePersonalInfo("email", e.target.value)
-                                }
-                                className="w-full bg-navy-800 border-navy-600 text-white"
-                                placeholder="john.doe@example.com"
-                              />
-                            </div>
-                            <div className="flex-1">
-                              <Label htmlFor="phone" className="block text-gray-300 mb-2">
-                                Phone
-                              </Label>
-                              <Input
-                                id="phone"
-                                value={resume?.personalInfo?.phone || ""}
-                                onChange={(e) =>
-                                  updatePersonalInfo("phone", e.target.value)
-                                }
-                                className="w-full bg-navy-800 border-navy-600 text-white"
-                                placeholder="(555) 123-4567"
-                              />
-                            </div>
+                          <div className="flex items-center">
+                            <Label htmlFor="lastName" className="text-gray-300">
+                              Last Name
+                            </Label>
+                          </div>
+                          <div>
+                            <Input
+                              id="lastName"
+                              value={resume?.personalInfo?.lastName || ""}
+                              onChange={(e) =>
+                                updatePersonalInfo("lastName", e.target.value)
+                              }
+                              className="w-full bg-navy-800 border-navy-600 text-white"
+                              placeholder="Spivack"
+                            />
+                          </div>
+                          
+                          <div className="flex items-center">
+                            <Label htmlFor="email" className="text-gray-300">
+                              Email
+                            </Label>
+                          </div>
+                          <div>
+                            <Input
+                              id="email"
+                              type="email"
+                              value={resume?.personalInfo?.email || ""}
+                              onChange={(e) =>
+                                updatePersonalInfo("email", e.target.value)
+                              }
+                              className="w-full bg-navy-800 border-navy-600 text-white"
+                              placeholder="john.doe@example.com"
+                            />
+                          </div>
+                          
+                          <div className="flex items-center">
+                            <Label htmlFor="phone" className="text-gray-300">
+                              Phone
+                            </Label>
+                          </div>
+                          <div>
+                            <Input
+                              id="phone"
+                              value={resume?.personalInfo?.phone || ""}
+                              onChange={(e) =>
+                                updatePersonalInfo("phone", e.target.value)
+                              }
+                              className="w-full bg-navy-800 border-navy-600 text-white"
+                              placeholder="(555) 123-4567"
+                            />
                           </div>
                         </div>
                       </div>
 
                       <div className="mb-8">
-                        <div className="flex flex-col w-full">
-                          <Label htmlFor="headline" className="block text-gray-300 mb-2">
-                            Professional Headline
-                          </Label>
-                          <Input
-                            id="headline"
-                            value={resume?.personalInfo?.headline || ""}
-                            onChange={(e) =>
-                              updatePersonalInfo("headline", e.target.value)
-                            }
-                            className="w-full bg-navy-800 border-navy-600 text-white"
-                            placeholder="Frontend Developer | React & TypeScript Specialist"
-                          />
-                          <p className="mt-2 text-xs text-blue-300/70">A brief title that describes your professional identity</p>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="flex items-center">
+                            <Label htmlFor="headline" className="text-gray-300">
+                              Professional Headline
+                            </Label>
+                          </div>
+                          <div>
+                            <Input
+                              id="headline"
+                              value={resume?.personalInfo?.headline || ""}
+                              onChange={(e) =>
+                                updatePersonalInfo("headline", e.target.value)
+                              }
+                              className="w-full bg-navy-800 border-navy-600 text-white"
+                              placeholder="Frontend Developer | React & TypeScript Specialist"
+                            />
+                            <p className="mt-2 text-xs text-blue-300/70">A brief title that describes your professional identity</p>
+                          </div>
                         </div>
                       </div>
 
                       <div className="mb-8">
-                        <div className="flex flex-col w-full">
-                          <Label htmlFor="summary" className="block text-gray-300 mb-2">
-                            Professional Summary
-                          </Label>
-                          <Textarea
-                            id="summary"
-                            value={resume?.personalInfo?.summary || ""}
-                            onChange={(e) =>
-                              updatePersonalInfo("summary", e.target.value)
-                            }
-                            className="w-full bg-navy-800 border-navy-600 text-white min-h-[120px]"
-                            rows={5}
-                            placeholder="Experienced Staff Development RN with a proven track record in long-term care, adept at enhancing staff competencies through targeted training and compassionate leadership. Holds an RN license with a commitment to high-quality healthcare and improving patient outcomes."
-                          />
-                          <div className="mt-space-4 text-xs text-blue-100/80 bg-blue-500/5 p-space-4 rounded-lg border border-blue-500/20">
-                            <p className="mb-space-2 text-blue-300 font-medium">
-                              Tips for a great summary:
-                            </p>
-                            <ul className="list-disc pl-space-4 space-y-space-1">
-                              <li>Keep it concise (3-5 sentences)</li>
-                              <li>Highlight your most relevant experience</li>
-                              <li>
-                                Focus on achievements rather than responsibilities
-                              </li>
-                              <li>
-                                Include keywords relevant to your target position
-                              </li>
-                            </ul>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="flex items-start">
+                            <Label htmlFor="summary" className="text-gray-300 mt-2">
+                              Professional Summary
+                            </Label>
+                          </div>
+                          <div>
+                            <Textarea
+                              id="summary"
+                              value={resume?.personalInfo?.summary || ""}
+                              onChange={(e) =>
+                                updatePersonalInfo("summary", e.target.value)
+                              }
+                              className="w-full bg-navy-800 border-navy-600 text-white min-h-[120px]"
+                              rows={5}
+                              placeholder="Experienced Staff Development RN with a proven track record in long-term care, adept at enhancing staff competencies through targeted training and compassionate leadership. Holds an RN license with a commitment to high-quality healthcare and improving patient outcomes."
+                            />
+                            <div className="mt-space-4 text-xs text-blue-100/80 bg-blue-500/5 p-space-4 rounded-lg border border-blue-500/20">
+                              <p className="mb-space-2 text-blue-300 font-medium">
+                                Tips for a great summary:
+                              </p>
+                              <ul className="list-disc pl-space-4 space-y-space-1">
+                                <li>Keep it concise (3-5 sentences)</li>
+                                <li>Highlight your most relevant experience</li>
+                                <li>
+                                  Focus on achievements rather than responsibilities
+                                </li>
+                                <li>
+                                  Include keywords relevant to your target position
+                                </li>
+                              </ul>
+                            </div>
                           </div>
                         </div>
                       </div>

@@ -68,7 +68,7 @@ export function PersonalInfoSection({
                 value={personalInfo.firstName}
                 onChange={(e) => onUpdate('firstName', e.target.value)}
                 placeholder="Your first name"
-                className="cosmic-form-input"
+                className="cosmic-navy-input"
               />
             </div>
 
@@ -79,7 +79,7 @@ export function PersonalInfoSection({
                 value={personalInfo.lastName}
                 onChange={(e) => onUpdate('lastName', e.target.value)}
                 placeholder="Your last name"
-                className="cosmic-form-input"
+                className="cosmic-navy-input"
               />
             </div>
 

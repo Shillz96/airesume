@@ -146,7 +146,7 @@ export function EducationSection({
                         value={edu.degree}
                         onChange={(e) => handleEducationChange(edu.id, 'degree', e.target.value)}
                         placeholder="e.g., Bachelor of Science in Computer Science"
-                        className="cosmic-input border-white/10"
+                        className="cosmic-navy-input"
                       />
                     </div>
                     <div className="space-y-2">
@@ -156,7 +156,7 @@ export function EducationSection({
                         value={edu.institution}
                         onChange={(e) => handleEducationChange(edu.id, 'institution', e.target.value)}
                         placeholder="e.g., University of Technology"
-                        className="cosmic-input border-white/10"
+                        className="cosmic-navy-input"
                       />
                     </div>
                   </div>
@@ -170,7 +170,7 @@ export function EducationSection({
                           id={`edu-start-${edu.id}`}
                           value={edu.startDate}
                           onChange={(e) => handleEducationChange(edu.id, 'startDate', e.target.value)}
-                          className="pl-10 cosmic-input border-white/10"
+                          className="pl-10 cosmic-navy-input"
                           placeholder="e.g., Sep 2018"
                         />
                       </div>
@@ -183,7 +183,7 @@ export function EducationSection({
                           id={`edu-end-${edu.id}`}
                           value={edu.endDate}
                           onChange={(e) => handleEducationChange(edu.id, 'endDate', e.target.value)}
-                          className="pl-10 cosmic-input border-white/10"
+                          className="pl-10 cosmic-navy-input"
                           placeholder="e.g., May 2022 or Present"
                         />
                       </div>
@@ -198,7 +198,7 @@ export function EducationSection({
                       onChange={(e) => handleEducationChange(edu.id, 'description', e.target.value)}
                       placeholder="Describe your academic achievements, relevant coursework, or activities"
                       rows={3}
-                      className="cosmic-input cosmic-textarea border-white/10"
+                      className="cosmic-navy-input cosmic-form-textarea"
                     />
                     <p className="text-xs text-muted-foreground opacity-80">
                       Include relevant coursework, academic achievements, and extracurricular activities.

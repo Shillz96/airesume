@@ -12,6 +12,7 @@
 
 /* Import master cosmic theme */
 @import './styles/cosmic-theme.css'; /* Master cosmic theme styling */
+@import './styles/cosmic-config.css'; /* Central configuration for cosmic styling */
 
 /* Import component styles */
 @import './styles/components/cosmic-components.css'; /* Added unified cosmic component styles */

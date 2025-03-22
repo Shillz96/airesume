@@ -1,0 +1,124 @@
+/**
+ * Cosmic Resume Builder Configuration
+ *
+ * This file provides a single source of truth for styling variables
+ * used throughout the resume builder to ensure consistency.
+ * 
+ * INSTRUCTIONS: Import this file at the top of any component
+ * that needs access to cosmic styling variables.
+ */
+
+:root {
+  /* === RESUME BUILDER SPECIFIC VARIABLES === */
+  
+  /* Panel styling - dark navy background with blue borders */
+  --resume-panel-bg: rgba(15, 23, 42, 0.8);
+  --resume-panel-border: rgba(59, 130, 246, 0.3);
+  --resume-panel-border-width: 1px;
+  --resume-panel-radius: 0.5rem;
+  
+  /* Typography colors */
+  --resume-text-primary: rgba(255, 255, 255, 0.95);
+  --resume-text-secondary: rgba(255, 255, 255, 0.7);
+  --resume-text-muted: rgba(255, 255, 255, 0.5);
+  --resume-text-accent: rgb(96, 165, 250);
+  
+  /* Form input styling */
+  --resume-input-bg: rgba(20, 30, 50, 0.9);
+  --resume-input-border: rgba(100, 150, 255, 0.5);
+  --resume-input-focus-border: rgba(100, 200, 255, 0.8);
+  --resume-input-focus-shadow: 0 0 0 3px rgba(100, 200, 255, 0.4);
+  
+  /* Assistant card styling */
+  --assistant-card-bg: rgba(0, 0, 0, 0.4);
+  --assistant-card-glow: rgba(59, 130, 246, 0.2);
+  --assistant-card-border: rgba(255, 255, 255, 0.1);
+
+  /* Consistent spacing across all resume sections */
+  /* Use these exact classes in all resume builder components */
+  --resume-space-1: 0.25rem;  /* 4px */
+  --resume-space-2: 0.5rem;   /* 8px */
+  --resume-space-3: 0.75rem;  /* 12px */
+  --resume-space-4: 1rem;     /* 16px */
+  --resume-space-5: 1.25rem;  /* 20px */
+  --resume-space-6: 1.5rem;   /* 24px */
+  --resume-space-8: 2rem;     /* 32px */
+  --resume-space-10: 2.5rem;  /* 40px */
+  --resume-space-12: 3rem;    /* 48px */
+}
+
+/* === UTILITY CLASSES TO USE DIRECTLY IN COMPONENTS === */
+
+/* Panel styling */
+.cosmic-panel {
+  background-color: var(--resume-panel-bg);
+  border: var(--resume-panel-border-width) solid var(--resume-panel-border);
+  border-radius: var(--resume-panel-radius);
+  color: var(--resume-text-primary);
+}
+
+/* Form input styling */
+.cosmic-input {
+  background-color: var(--resume-input-bg);
+  border: 1px solid var(--resume-input-border);
+  color: var(--resume-text-primary);
+  border-radius: 0.375rem;
+  padding: 0.625rem 0.75rem;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.cosmic-input:focus {
+  border-color: var(--resume-input-focus-border);
+  box-shadow: var(--resume-input-focus-shadow);
+  outline: none;
+}
+
+/* Spacing utilities */
+.resume-p-1 { padding: var(--resume-space-1); }
+.resume-p-2 { padding: var(--resume-space-2); }
+.resume-p-3 { padding: var(--resume-space-3); }
+.resume-p-4 { padding: var(--resume-space-4); }
+.resume-p-5 { padding: var(--resume-space-5); }
+.resume-p-6 { padding: var(--resume-space-6); }
+.resume-p-8 { padding: var(--resume-space-8); }
+
+.resume-m-1 { margin: var(--resume-space-1); }
+.resume-m-2 { margin: var(--resume-space-2); }
+.resume-m-3 { margin: var(--resume-space-3); }
+.resume-m-4 { margin: var(--resume-space-4); }
+.resume-m-5 { margin: var(--resume-space-5); }
+.resume-m-6 { margin: var(--resume-space-6); }
+.resume-m-8 { margin: var(--resume-space-8); }
+
+.resume-mb-1 { margin-bottom: var(--resume-space-1); }
+.resume-mb-2 { margin-bottom: var(--resume-space-2); }
+.resume-mb-3 { margin-bottom: var(--resume-space-3); }
+.resume-mb-4 { margin-bottom: var(--resume-space-4); }
+.resume-mb-5 { margin-bottom: var(--resume-space-5); }
+.resume-mb-6 { margin-bottom: var(--resume-space-6); }
+.resume-mb-8 { margin-bottom: var(--resume-space-8); }
+
+.resume-mr-1 { margin-right: var(--resume-space-1); }
+.resume-mr-2 { margin-right: var(--resume-space-2); }
+.resume-mr-3 { margin-right: var(--resume-space-3); }
+.resume-mr-4 { margin-right: var(--resume-space-4); }
+
+.resume-mt-1 { margin-top: var(--resume-space-1); }
+.resume-mt-2 { margin-top: var(--resume-space-2); }
+.resume-mt-3 { margin-top: var(--resume-space-3); }
+.resume-mt-4 { margin-top: var(--resume-space-4); }
+.resume-mt-5 { margin-top: var(--resume-space-5); }
+.resume-mt-6 { margin-top: var(--resume-space-6); }
+.resume-mt-8 { margin-top: var(--resume-space-8); }
+
+.resume-gap-1 { gap: var(--resume-space-1); }
+.resume-gap-2 { gap: var(--resume-space-2); }
+.resume-gap-3 { gap: var(--resume-space-3); }
+.resume-gap-4 { gap: var(--resume-space-4); }
+.resume-gap-5 { gap: var(--resume-space-5); }
+
+.resume-space-y-1 > * + * { margin-top: var(--resume-space-1); }
+.resume-space-y-2 > * + * { margin-top: var(--resume-space-2); }
+.resume-space-y-3 > * + * { margin-top: var(--resume-space-3); }
+.resume-space-y-4 > * + * { margin-top: var(--resume-space-4); }

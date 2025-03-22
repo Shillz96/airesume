@@ -121,66 +121,70 @@ export function ProjectsSection({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <FolderGit2 className="h-5 w-5" style={{ color: getCosmicColor('primary') }} />
-          <h3 className="text-lg font-semibold">Projects</h3>
+    <div className="resume-space-y-4">
+      <div className="flex justify-between items-center resume-mb-4">
+        <div className="flex items-center resume-gap-2">
+          <FolderGit2 className="h-5 w-5 text-resume-text-accent" />
+          <h3 className="text-lg font-semibold text-resume-text-primary">Projects</h3>
         </div>
         <CosmicButton
           size="sm"
           variant="outline"
           iconLeft={<Plus className="h-4 w-4" />}
           onClick={handleAddProject}
+          withGlow
         >
           Add Project
         </CosmicButton>
       </div>
 
       {projects.length === 0 ? (
-        <Card className="border border-dashed">
-          <CardContent className="flex flex-col items-center justify-center p-6">
-            <FolderGit2 className="h-12 w-12 mb-2 opacity-30" />
-            <p className="text-center text-sm mb-4">
-              Add your notable projects to showcase your practical skills and achievements
-            </p>
-            <Button variant="outline" size="sm" onClick={handleAddProject}>
-              Add Project
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="cosmic-panel resume-p-6 flex flex-col items-center justify-center">
+          <FolderGit2 className="h-12 w-12 resume-mb-2 text-resume-text-accent opacity-30" />
+          <p className="text-center text-sm resume-mb-4 text-resume-text-secondary">
+            Add your notable projects to showcase your practical skills and achievements
+          </p>
+          <CosmicButton 
+            variant="outline" 
+            size="sm" 
+            onClick={handleAddProject}
+            withGlow
+          >
+            Add Project
+          </CosmicButton>
+        </div>
       ) : (
         <Accordion
           type="single"
           collapsible
           value={expandedItem || undefined}
           onValueChange={(value) => setExpandedItem(value)}
-          className="space-y-2"
+          className="resume-space-y-2"
         >
           {projects.map((project) => (
             <AccordionItem
               key={project.id}
               value={project.id}
               className={cn(
-                "border rounded-md overflow-hidden",
-                expandedItem === project.id ? "ring-1 ring-primary/20" : ""
+                "cosmic-panel overflow-hidden",
+                expandedItem === project.id ? "ring-1 ring-resume-panel-border" : ""
               )}
             >
-              <AccordionTrigger className="px-4 py-3 hover:bg-accent/50 data-[state=open]:bg-accent/60">
+              <AccordionTrigger className="resume-p-4 hover:bg-primary/10 data-[state=open]:bg-primary/20">
                 <div className="flex flex-1 justify-between items-center">
                   <div className="text-left">
-                    <p className="font-medium">
+                    <p className="font-medium text-resume-text-primary">
                       {project.title || "New Project"}
                     </p>
                     {project.technologies && project.technologies.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-1 max-w-xs">
+                      <div className="flex flex-wrap resume-gap-1 resume-mt-1 max-w-xs">
                         {project.technologies.slice(0, 3).map((tech, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs px-1.5 py-0">
+                          <Badge key={index} variant="secondary" className="text-xs px-1.5 py-0 bg-primary/20 text-resume-text-accent">
                             {tech}
                           </Badge>
                         ))}
                         {project.technologies.length > 3 && (
-                          <Badge variant="outline" className="text-xs px-1.5 py-0">
+                          <Badge variant="outline" className="text-xs px-1.5 py-0 text-resume-text-muted border-resume-panel-border">
                             +{project.technologies.length - 3} more
                           </Badge>
                         )}
@@ -188,52 +192,55 @@ export function ProjectsSection({
                     )}
                   </div>
                   {project.link && (
-                    <div className="mr-4 opacity-70">
+                    <div className="resume-mr-4 text-resume-text-accent">
                       <LinkIcon className="h-4 w-4" />
                     </div>
                   )}
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pb-0">
-                <div className="p-4 space-y-4 bg-card rounded-b-md">
-                  <div className="space-y-2">
-                    <Label htmlFor={`project-title-${project.id}`}>Project Title</Label>
+                <div className="resume-p-4 resume-space-y-4 bg-resume-panel-bg rounded-b-md">
+                  <div className="resume-space-y-2">
+                    <Label htmlFor={`project-title-${project.id}`} className="text-resume-text-secondary">Project Title</Label>
                     <Input
                       id={`project-title-${project.id}`}
                       value={project.title}
                       onChange={(e) => handleProjectChange(project.id, 'title', e.target.value)}
                       placeholder="e.g., E-commerce Website, Mobile App, Research Paper"
+                      className="cosmic-input"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor={`project-description-${project.id}`}>Description</Label>
+                  <div className="resume-space-y-2">
+                    <Label htmlFor={`project-description-${project.id}`} className="text-resume-text-secondary">Description</Label>
                     <Textarea
                       id={`project-description-${project.id}`}
                       value={project.description}
                       onChange={(e) => handleProjectChange(project.id, 'description', e.target.value)}
                       placeholder="Describe the project, your role, and key achievements"
                       rows={3}
+                      className="cosmic-input"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor={`project-link-${project.id}`}>Project Link (Optional)</Label>
+                  <div className="resume-space-y-2">
+                    <Label htmlFor={`project-link-${project.id}`} className="text-resume-text-secondary">Project Link (Optional)</Label>
                     <Input
                       id={`project-link-${project.id}`}
                       value={project.link || ''}
                       onChange={(e) => handleProjectChange(project.id, 'link', e.target.value)}
                       placeholder="e.g., https://github.com/yourusername/project"
+                      className="cosmic-input"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor={`project-tech-${project.id}`}>Technologies Used</Label>
-                    <div className="flex flex-wrap gap-2 mb-2">
+                  <div className="resume-space-y-2">
+                    <Label htmlFor={`project-tech-${project.id}`} className="text-resume-text-secondary">Technologies Used</Label>
+                    <div className="flex flex-wrap resume-gap-2 resume-mb-2">
                       {project.technologies.map((tech, index) => (
                         <Badge 
                           key={index} 
-                          className="flex items-center gap-1 px-2 py-1"
+                          className="flex items-center resume-gap-1 px-2 py-1 bg-primary/20 text-resume-text-accent"
                         >
                           {tech}
                           <X
@@ -246,7 +253,7 @@ export function ProjectsSection({
                         </Badge>
                       ))}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex resume-gap-2">
                       <Input
                         id={`project-tech-${project.id}`}
                         value={activeTechProjectId === project.id ? techInput : ''}
@@ -254,28 +261,30 @@ export function ProjectsSection({
                         onFocus={() => setActiveTechProjectId(project.id)}
                         onKeyDown={(e) => handleTechKeyPress(e, project.id)}
                         placeholder="e.g., React, TypeScript, Node.js"
+                        className="cosmic-input"
                       />
                       <Button 
                         type="button" 
                         size="sm"
                         onClick={() => handleAddTechnology(project.id)}
+                        className="bg-primary/20 text-resume-text-accent hover:bg-primary/30 hover:text-resume-text-primary"
                       >
                         Add
                       </Button>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-xs text-resume-text-muted resume-mt-1">
                       Press Enter after each technology to add it, or click the Add button
                     </p>
                   </div>
 
-                  <div className="flex justify-end pb-2 pt-2">
+                  <div className="flex justify-end resume-pt-2 resume-pb-2">
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                      className="text-destructive hover:text-destructive/90 hover:bg-destructive/10 border border-resume-panel-border"
                       onClick={() => handleRemoveProject(project.id)}
                     >
-                      <Trash className="h-4 w-4 mr-1" />
+                      <Trash className="h-4 w-4 resume-mr-1" />
                       Remove
                     </Button>
                   </div>

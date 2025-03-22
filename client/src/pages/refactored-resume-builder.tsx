@@ -2872,16 +2872,16 @@ export default function ResumeBuilder() {
                         </div>
                       </div>
                     )}
-                  <div className="md:col-span-2 space-y-8">
-                    <div className="cosmic-resume-section mb-8">
-                      <div className="mb-10 ml-3">
+                  <div className="md:col-span-2 space-y-4">
+                    <div className="cosmic-resume-section mb-4">
+                      <div className="mb-4 ml-3">
                         <h2 className="cosmic-section-title-large">
                           <User className="cosmic-section-icon h-6 w-6 text-blue-400" />
                           Contact Information
                         </h2>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4 mb-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-3 mb-4">
                         <div className="cosmic-form-group">
                           <Label htmlFor="firstName" className="cosmic-form-label">
                             First Name
@@ -2941,7 +2941,7 @@ export default function ResumeBuilder() {
                         </div>
                       </div>
 
-                      <div className="mb-6 border-b border-gray-700 pb-6">
+                      <div className="mb-4 border-b border-gray-700 pb-4">
                         <div className="cosmic-form-group">
                           <Label htmlFor="headline" className="cosmic-form-label">
                             Professional Headline

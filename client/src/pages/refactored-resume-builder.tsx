@@ -3059,7 +3059,7 @@ export default function ResumeBuilder() {
                       </h2>
                     </div>
 
-                    <ResumeExperienceSection
+                    <ExperienceSection
                       experiences={resume?.experience || []}
                       onUpdate={(experiences) => {
                         setResume({
@@ -3140,7 +3140,7 @@ export default function ResumeBuilder() {
                       </h2>
                     </div>
 
-                    <ResumeEducationSection
+                    <EducationSection
                       education={resume?.education || []}
                       onUpdate={(education) => {
                         setResume({
@@ -3220,7 +3220,7 @@ export default function ResumeBuilder() {
                       </h2>
                     </div>
 
-                    <ResumeSkillsSection
+                    <SkillsSection
                       skills={resume?.skills || []}
                       onUpdate={(skills) => {
                         setResume({
@@ -3331,7 +3331,7 @@ export default function ResumeBuilder() {
                       </Button>
                     </div>
 
-                    <ResumeProjectsSection
+                    <ProjectsSection
                       projects={resume?.projects || []}
                       onUpdate={(projects) => {
                         setResume({

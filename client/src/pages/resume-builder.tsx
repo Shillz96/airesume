@@ -3350,55 +3350,10 @@ export default function ResumeBuilder() {
         </div>
       </main>
 
-      {/* Floating AI Assistant Button */}
-      <div className="fixed bottom-6 right-6 z-50 group">
-        <div className="absolute -inset-0.5 rounded-full bg-blue-500 opacity-75 blur-sm group-hover:opacity-100 transition duration-300 animate-pulse"></div>
-        <CosmicButton
-          variant="primary"
-          onClick={() => setIsDialogOpen(!isDialogOpen)}
-          className="relative h-14 w-14 rounded-full p-0 shadow-lg group-hover:scale-105 transition duration-300"
-          aria-label="Open AI Assistant"
-        >
-          <div className="absolute inset-0 rounded-full border border-white/20 animate-ping opacity-40"></div>
-          <Sparkles className="h-5 w-5 text-white" />
-        </CosmicButton>
-        <span className="absolute top-0 right-16 bg-black/80 text-white text-sm py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-          AI Assistant
-        </span>
+      {/* AI features are now integrated into each section */}
       </div>
 
-      {/* AI Assistant Chat Box */}
-      {isDialogOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-96 max-w-full shadow-xl rounded-lg overflow-hidden transition-all duration-300 ease-in-out">
-          <div className="bg-gradient-to-r from-blue-900 to-purple-900 p-3 flex justify-between items-center border-b border-blue-500/30">
-            <div className="flex items-center">
-              <Cpu className="h-5 w-5 text-blue-300 mr-2" />
-              <h3 className="text-white font-medium">AI Resume Assistant</h3>
-            </div>
-            <CosmicButton
-              variant="ghost"
-              onClick={() => setIsDialogOpen(false)}
-              className="h-8 w-8 rounded-full p-0"
-              aria-label="Close"
-            >
-              <X className="h-4 w-4 text-white" />
-            </CosmicButton>
-          </div>
-          <div className="bg-black/90 border-x border-blue-500/30 border-b p-4 h-96 overflow-y-auto">
-            <AIAssistant
-              resumeId={resumeId?.toString()}
-              onApplySummary={handleApplySummary}
-              onApplyBulletPoint={handleApplyBulletPoint}
-              onApplySkill={handleApplySkill}
-              resume={resume || {
-                title: "My Professional Resume",
-                personalInfo: {
-                  firstName: "",
-                  lastName: "",
-                  email: "",
-                  phone: "",
-                  headline: "",
-                  summary: "",
+      {/* AI Assistants are now integrated directly into each section */}
                 },
                 experience: [],
                 education: [],

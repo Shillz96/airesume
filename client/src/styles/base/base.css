@@ -1,257 +1,170 @@
 /**
  * Base Styles
  * 
- * This file contains base styles that apply to the entire application.
- * These are foundational styles for elements like html, body, headings, etc.
+ * This file defines base styling and resets for the application
  */
 
-/* Base element styles */
-html {
-  @apply scroll-smooth;
-  font-family: var(--font-sans);
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html, body, #root {
+    @apply h-full m-0 p-0;
+  }
+  
+  body {
+    @apply antialiased min-h-screen;
+    font-family: var(--font-sans);
+    color: var(--foreground);
+    background-color: var(--background);
+    position: relative;
+  }
+  
+  a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color var(--transition-fast) ease;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: var(--line-height-tight);
+    margin-top: 0;
+    margin-bottom: var(--space-4);
+  }
+  
+  h1 {
+    font-size: 2.25rem;
+  }
+  
+  h2 {
+    font-size: 1.875rem;
+  }
+  
+  h3 {
+    font-size: 1.5rem;
+  }
+  
+  h4 {
+    font-size: 1.25rem;
+  }
+  
+  h5 {
+    font-size: 1.125rem;
+  }
+  
+  h6 {
+    font-size: 1rem;
+  }
+  
+  p {
+    margin-top: 0;
+    margin-bottom: var(--space-4);
+    line-height: var(--line-height-normal);
+  }
+  
+  button, input, optgroup, select, textarea {
+    font-family: inherit;
+    font-size: 100%;
+    line-height: var(--line-height-normal);
+    margin: 0;
+  }
+  
+  /* Dark mode styles */
+  .dark-theme {
+    --foreground: hsl(0, 0%, 100%);
+    --background: #050A18;
+    --card: rgba(255, 255, 255, 0.05);
+    --card-foreground: hsl(0, 0%, 100%);
+    --popover: rgba(0, 0, 0, 0.7);
+    --popover-foreground: hsl(0, 0%, 100%);
+    --border: rgba(255, 255, 255, 0.1);
+    --input: rgba(255, 255, 255, 0.1);
+    --ring: rgba(59, 130, 246, 0.5);
+    color-scheme: dark;
+  }
+  
+  /* Light mode styles */
+  .light-theme {
+    --foreground: hsl(222.2, 84%, 4.9%);
+    --background: hsl(210, 40%, 96.1%);
+    --card: hsl(0, 0%, 100%);
+    --card-foreground: hsl(222.2, 84%, 4.9%);
+    --popover: hsl(0, 0%, 100%);
+    --popover-foreground: hsl(222.2, 84%, 4.9%);
+    --border: hsl(214.3, 31.8%, 91.4%);
+    --input: hsl(214.3, 31.8%, 91.4%);
+    --ring: hsl(221.2, 83.2%, 53.3%);
+    color-scheme: light;
+  }
 }
 
-body {
-  @apply bg-background text-foreground;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Reset margin on some elements */
+blockquote, dl, dd, h1, h2, h3, h4, h5, h6, hr, figure, p, pre {
+  margin: 0;
 }
 
-/* Smooth scrolling for the whole page */
-html.smooth-scroll {
-  scroll-behavior: smooth;
-}
-
-/* Headings */
-h1, h2, h3, h4, h5, h6 {
-  @apply font-semibold tracking-tight;
-}
-
-h1 {
-  @apply text-3xl md:text-4xl;
-}
-
-h2 {
-  @apply text-2xl md:text-3xl;
-}
-
-h3 {
-  @apply text-xl md:text-2xl;
-}
-
-h4 {
-  @apply text-lg md:text-xl;
-}
-
-h5 {
-  @apply text-base md:text-lg;
-}
-
-h6 {
-  @apply text-sm md:text-base;
-}
-
-/* Links */
-a {
-  @apply text-primary hover:text-primary/80 transition-colors duration-200;
-}
-
-/* Focus styles */
-:focus-visible {
-  @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
-}
-
-/* Selection */
-::selection {
-  @apply bg-primary/20 text-foreground;
-}
-
-/* Scrollbar */
-::-webkit-scrollbar {
-  @apply w-2 h-2;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-black/20;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-primary/50 rounded-full;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-primary/70;
-}
-
-/* Disable tap highlight on mobile */
-* {
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Truncate text with ellipsis */
-.truncate {
-  @apply overflow-hidden text-ellipsis whitespace-nowrap;
-}
-
-/* Paragraph styles */
-p {
-  @apply leading-relaxed;
-}
-
-p + p {
-  @apply mt-4;
-}
-
-/* Code blocks */
-pre, code {
-  @apply font-mono;
-}
-
-code {
-  @apply bg-muted px-1 py-0.5 rounded text-sm;
-}
-
-pre {
-  @apply bg-black/30 p-4 rounded-md text-sm overflow-x-auto;
-}
-
-pre code {
-  @apply bg-transparent p-0;
+/* Style blockquotes */
+blockquote {
+  border-left: 4px solid var(--primary);
+  padding-left: var(--space-4);
+  margin-left: 0;
+  margin-right: 0;
+  font-style: italic;
 }
 
 /* Lists */
-ul, ol {
-  @apply pl-5;
-}
-
-ul {
-  @apply list-disc;
-}
-
-ol {
-  @apply list-decimal;
-}
-
-li {
-  @apply mb-1;
-}
-
-/* Table styles */
-table {
-  @apply w-full border-collapse;
-}
-
-th {
-  @apply text-left font-semibold p-2 border-b border-muted;
-}
-
-td {
-  @apply p-2 border-b border-muted;
-}
-
-/* Form elements */
-input, textarea, select {
-  @apply bg-background border border-input rounded-md px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
-}
-
-/* Button reset */
-button {
-  @apply font-medium rounded-md transition-colors duration-200;
-}
-
-/* Hidden content but accessible to screen readers */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
+ol, ul {
+  list-style: none;
+  margin: 0;
   padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
 }
 
-/* Container width limits */
-.container {
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
+/* Default code style */
+code, pre {
+  font-family: var(--font-mono);
 }
 
-@media (min-width: 640px) {
-  .container {
-    max-width: 640px;
-  }
+/* Basic container layout */
+.page-wrapper {
+  @apply flex flex-col min-h-screen;
 }
 
-@media (min-width: 768px) {
-  .container {
-    max-width: 768px;
-  }
+.page-wrapper main {
+  @apply flex-1;
+  padding-top: var(--space-16);
+  padding-bottom: var(--space-10); 
 }
 
-@media (min-width: 1024px) {
-  .container {
-    max-width: 1024px;
-  }
+/* Cosmic Page Layout */
+.cosmic-page {
+  @apply min-h-screen;
+  padding-top: 0;
+  position: relative;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-@media (min-width: 1280px) {
-  .container {
-    max-width: 1280px;
-  }
+/* Content container with consistent padding */
+.content-container {
+  @apply max-w-7xl mx-auto;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
 }
 
-@media (min-width: 1536px) {
-  .container {
-    max-width: 1536px;
-  }
-}
-
-/* Cosmic-specific base styles */
-.cosmic-bg {
-  background-image: var(--cosmic-gradient-bg);
-  background-attachment: fixed;
-}
-
-/* Glass morphism effect base */
-.cosmic-glass {
-  @apply backdrop-blur-md bg-black/40 border border-white/10;
-}
-
-/* Improved legibility for text on cosmic backgrounds */
-.cosmic-text {
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-/* Page section spacing */
-.cosmic-section {
-  @apply py-12 md:py-16 lg:py-20;
-}
-
-/* Page transition styling */
-.page-transition-enter {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.page-transition-enter-active {
-  opacity: 1;
-  transform: translateY(0px);
-  transition: opacity 300ms, transform 300ms;
-}
-
-.page-transition-exit {
-  opacity: 1;
-  transform: translateY(0px);
-}
-
-.page-transition-exit-active {
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: opacity 300ms, transform 300ms;
+/* Section layouts */
+.section {
+  @apply rounded-lg mb-6;
+  padding: var(--space-6);
 }

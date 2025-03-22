@@ -1,222 +1,49 @@
 /**
  * Navigation Styles
  * 
- * This file defines styles for navigation components, including navbar, sidebar,
- * breadcrumbs, and other navigational elements.
+ * This file defines styles for navigation elements like navbar, sidebar, and tabs
  */
 
-/* Main navbar */
+/* Navbar styles */
 .cosmic-navbar {
-  @apply fixed top-0 inset-x-0 z-50 border-b border-white/10 bg-black/60 backdrop-blur-lg;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: var(--z-sticky);
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.cosmic-navbar-container {
-  @apply container mx-auto flex items-center justify-between px-4 h-16;
+/* Active nav link indicator */
+.nav-link-indicator {
+  @apply absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500 transform origin-left;
+  transition: transform var(--transition-normal) ease;
 }
 
-.cosmic-navbar-logo {
-  @apply flex items-center space-x-2;
-}
-
-.cosmic-navbar-nav {
-  @apply hidden md:flex items-center space-x-6;
-}
-
-.cosmic-navbar-link {
-  @apply text-gray-300 hover:text-white transition-colors duration-200;
-}
-
-.cosmic-navbar-link-active {
-  @apply text-white font-medium;
-}
-
-.cosmic-navbar-actions {
-  @apply flex items-center space-x-2;
+/* Style overrides for tabs in cosmic theme */
+.cosmic-tabs button[data-state='active'] {
+  @apply bg-blue-600/50 text-white border-b-2 border-blue-400;
 }
 
 /* Mobile navigation */
-.cosmic-mobile-nav-toggle {
-  @apply md:hidden p-2 text-gray-300 hover:text-white;
+.mobile-nav-overlay {
+  @apply fixed inset-0 z-40 bg-black/50 backdrop-blur-sm;
 }
 
-.cosmic-mobile-nav {
-  @apply fixed inset-0 z-50 md:hidden;
-}
-
-.cosmic-mobile-nav-backdrop {
-  @apply absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity;
-}
-
-.cosmic-mobile-nav-container {
-  @apply absolute top-0 right-0 h-full w-3/4 max-w-sm bg-gray-900 flex flex-col overflow-y-auto shadow-xl transition-transform;
-}
-
-.cosmic-mobile-nav-header {
-  @apply flex items-center justify-between border-b border-white/10 px-4 py-3;
-}
-
-.cosmic-mobile-nav-items {
-  @apply flex flex-col py-4 px-4 space-y-1;
-}
-
-.cosmic-mobile-nav-item {
-  @apply py-2 px-3 rounded-md hover:bg-white/10 transition-colors duration-200 flex items-center space-x-3 text-gray-300 hover:text-white;
-}
-
-.cosmic-mobile-nav-item-active {
-  @apply bg-blue-600/30 text-white;
-}
-
-/* Sidebar */
-.cosmic-sidebar {
-  @apply hidden md:flex flex-col fixed inset-y-0 left-0 z-40 w-64 border-r border-white/10 bg-black/60 backdrop-blur-lg transition-all duration-300;
-}
-
-.cosmic-sidebar-collapsed {
-  @apply w-20;
-}
-
-.cosmic-sidebar-header {
-  @apply h-16 flex items-center px-6 border-b border-white/10;
-}
-
-.cosmic-sidebar-logo {
-  @apply flex-shrink-0;
-}
-
-.cosmic-sidebar-nav {
-  @apply flex-1 overflow-y-auto py-6 px-4;
-}
-
-.cosmic-sidebar-nav-group {
-  @apply mb-6 last:mb-0;
-}
-
-.cosmic-sidebar-nav-header {
-  @apply text-xs uppercase tracking-wider text-gray-400 mb-3 px-2;
-}
-
-.cosmic-sidebar-nav-items {
-  @apply space-y-1;
-}
-
-.cosmic-sidebar-nav-item {
-  @apply flex items-center space-x-3 text-gray-300 hover:text-white py-2 px-3 rounded-md hover:bg-white/10 transition-colors duration-200;
-}
-
-.cosmic-sidebar-nav-item-active {
-  @apply bg-blue-600/30 text-white;
-}
-
-.cosmic-sidebar-icon {
-  @apply h-5 w-5 flex-shrink-0;
-}
-
-.cosmic-sidebar-collapse-btn {
-  @apply absolute right-0 top-1/2 -translate-y-1/2 -translate-x-1/2 h-6 w-6 bg-primary text-white rounded-full flex items-center justify-center;
+.mobile-nav-content {
+  @apply fixed top-0 right-0 bottom-0 w-3/4 max-w-xs bg-black/80 backdrop-blur-md
+         border-l border-white/10 z-50 shadow-xl transition-transform duration-300;
 }
 
 /* Breadcrumbs */
 .cosmic-breadcrumbs {
-  @apply flex items-center space-x-2 text-sm;
-}
-
-.cosmic-breadcrumbs-item {
-  @apply text-gray-400 hover:text-white transition-colors duration-200;
-}
-
-.cosmic-breadcrumbs-item-active {
-  @apply text-white font-medium;
+  @apply flex items-center text-sm text-blue-300/70 mb-4;
 }
 
 .cosmic-breadcrumbs-separator {
-  @apply text-gray-500;
-}
-
-/* Page header with navigation */
-.cosmic-page-header {
-  @apply mb-8 pt-6 pb-4 border-b border-white/10;
-}
-
-.cosmic-page-header-inner {
-  @apply flex flex-col space-y-2 md:space-y-0 md:flex-row md:items-center md:justify-between;
-}
-
-.cosmic-page-header-title {
-  @apply text-2xl font-semibold flex items-center;
-}
-
-.cosmic-page-header-title-icon {
-  @apply mr-2 h-6 w-6 text-primary;
-}
-
-.cosmic-page-header-description {
-  @apply text-muted-foreground mt-1;
-}
-
-.cosmic-page-header-actions {
-  @apply flex items-center space-x-2;
-}
-
-/* Tabs */
-.cosmic-tabs {
-  @apply relative;
-}
-
-.cosmic-tabs-list {
-  @apply flex space-x-1 overflow-x-auto pb-px;
-}
-
-.cosmic-tab {
-  @apply px-4 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-colors;
-}
-
-.cosmic-tab-active {
-  @apply bg-primary/10 text-primary;
-}
-
-.cosmic-tab-panels {
-  @apply mt-4;
-}
-
-/* Pills */
-.cosmic-pills {
-  @apply flex flex-wrap gap-2;
-}
-
-.cosmic-pill {
-  @apply px-3 py-1.5 rounded-full text-xs font-medium text-gray-300 bg-white/5 hover:bg-white/10 transition-colors;
-}
-
-.cosmic-pill-active {
-  @apply bg-primary text-white;
-}
-
-/* Steps */
-.cosmic-steps {
-  @apply flex items-center;
-}
-
-.cosmic-step {
-  @apply flex-1 relative;
-}
-
-.cosmic-step-circle {
-  @apply h-8 w-8 rounded-full bg-white/10 text-gray-400 flex items-center justify-center relative z-10;
-}
-
-.cosmic-step-circle-active {
-  @apply bg-primary text-white;
-}
-
-.cosmic-step-circle-complete {
-  @apply bg-green-600 text-white;
-}
-
-.cosmic-step-line {
-  @apply absolute top-4 h-px w-full -translate-y-1/2 bg-white/10;
-}
-
-.cosmic-step-line-complete {
-  @apply bg-green-600;
+  @apply mx-2 text-blue-300/40;
 }

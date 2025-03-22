@@ -1,784 +1,140 @@
 /**
- * Utility Classes
+ * Utility Styles
  * 
- * This file contains utility classes that can be applied directly to elements
- * for quick styling and layout adjustments.
+ * This file defines general utility classes that can be used across the application
  */
 
-/* Visibility */
-.cosmic-visible {
-  @apply visible;
-}
-
-.cosmic-invisible {
-  @apply invisible;
-}
-
-.cosmic-hidden {
-  @apply hidden;
-}
-
-.cosmic-block {
-  @apply block;
-}
-
-.cosmic-inline {
-  @apply inline;
-}
-
-.cosmic-inline-block {
-  @apply inline-block;
-}
-
-.cosmic-flex {
-  @apply flex;
-}
-
-.cosmic-inline-flex {
-  @apply inline-flex;
-}
-
-.cosmic-grid {
-  @apply grid;
-}
-
-.cosmic-inline-grid {
-  @apply inline-grid;
-}
-
-/* Flex utilities */
-.cosmic-flex-row {
-  @apply flex-row;
-}
-
-.cosmic-flex-col {
-  @apply flex-col;
-}
-
-.cosmic-flex-wrap {
-  @apply flex-wrap;
-}
-
-.cosmic-flex-nowrap {
-  @apply flex-nowrap;
-}
-
-.cosmic-flex-grow {
-  @apply flex-grow;
-}
-
-.cosmic-flex-shrink {
-  @apply flex-shrink;
-}
-
-.cosmic-flex-no-grow {
-  @apply flex-grow-0;
-}
-
-.cosmic-flex-no-shrink {
-  @apply flex-shrink-0;
-}
-
-/* Alignments */
-.cosmic-justify-start {
-  @apply justify-start;
-}
-
-.cosmic-justify-end {
-  @apply justify-end;
-}
-
-.cosmic-justify-center {
-  @apply justify-center;
-}
-
-.cosmic-justify-between {
-  @apply justify-between;
-}
-
-.cosmic-justify-around {
-  @apply justify-around;
-}
-
-.cosmic-justify-evenly {
-  @apply justify-evenly;
-}
-
-.cosmic-items-start {
-  @apply items-start;
-}
-
-.cosmic-items-end {
-  @apply items-end;
-}
-
-.cosmic-items-center {
-  @apply items-center;
-}
-
-.cosmic-items-baseline {
-  @apply items-baseline;
-}
-
-.cosmic-items-stretch {
-  @apply items-stretch;
-}
-
-.cosmic-self-start {
-  @apply self-start;
-}
-
-.cosmic-self-end {
-  @apply self-end;
-}
-
-.cosmic-self-center {
-  @apply self-center;
-}
-
-.cosmic-self-stretch {
-  @apply self-stretch;
-}
-
-/* Text alignment */
-.cosmic-text-left {
-  @apply text-left;
-}
-
-.cosmic-text-center {
-  @apply text-center;
-}
-
-.cosmic-text-right {
-  @apply text-right;
-}
-
-.cosmic-text-justify {
-  @apply text-justify;
-}
-
-/* Text transformation */
-.cosmic-uppercase {
-  @apply uppercase;
-}
-
-.cosmic-lowercase {
-  @apply lowercase;
-}
-
-.cosmic-capitalize {
-  @apply capitalize;
-}
-
-.cosmic-normal-case {
-  @apply normal-case;
-}
-
-/* Font weights */
-.cosmic-font-thin {
-  @apply font-thin;
-}
-
-.cosmic-font-extralight {
-  @apply font-extralight;
-}
-
-.cosmic-font-light {
-  @apply font-light;
-}
-
-.cosmic-font-normal {
-  @apply font-normal;
-}
-
-.cosmic-font-medium {
-  @apply font-medium;
-}
-
-.cosmic-font-semibold {
-  @apply font-semibold;
-}
-
-.cosmic-font-bold {
-  @apply font-bold;
-}
-
-.cosmic-font-extrabold {
-  @apply font-extrabold;
-}
-
-.cosmic-font-black {
-  @apply font-black;
-}
-
-/* Color utilities */
-.cosmic-text-primary {
-  @apply text-primary;
-}
-
-.cosmic-text-muted {
-  @apply text-muted-foreground;
-}
-
-.cosmic-bg-primary {
-  @apply bg-primary;
-}
-
-.cosmic-bg-muted {
-  @apply bg-muted;
-}
-
-.cosmic-border-primary {
-  @apply border-primary;
-}
-
-/* Spacing */
-.cosmic-m-0 {
-  @apply m-0;
-}
-
-.cosmic-m-1 {
-  @apply m-1;
-}
-
-.cosmic-m-2 {
-  @apply m-2;
-}
-
-.cosmic-m-3 {
-  @apply m-3;
-}
-
-.cosmic-m-4 {
-  @apply m-4;
-}
-
-.cosmic-m-5 {
-  @apply m-5;
-}
-
-.cosmic-m-6 {
-  @apply m-6;
-}
-
-.cosmic-m-8 {
-  @apply m-8;
-}
-
-.cosmic-m-10 {
-  @apply m-10;
-}
-
-.cosmic-m-12 {
-  @apply m-12;
-}
-
-/* Paddings */
-.cosmic-p-0 {
-  @apply p-0;
-}
-
-.cosmic-p-1 {
-  @apply p-1;
-}
-
-.cosmic-p-2 {
-  @apply p-2;
-}
-
-.cosmic-p-3 {
-  @apply p-3;
-}
-
-.cosmic-p-4 {
-  @apply p-4;
-}
-
-.cosmic-p-5 {
-  @apply p-5;
-}
-
-.cosmic-p-6 {
-  @apply p-6;
-}
-
-.cosmic-p-8 {
-  @apply p-8;
-}
-
-.cosmic-p-10 {
-  @apply p-10;
-}
-
-.cosmic-p-12 {
-  @apply p-12;
-}
-
-/* Borders */
-.cosmic-border {
-  @apply border;
-}
-
-.cosmic-border-none {
-  @apply border-none;
-}
-
-.cosmic-border-t {
-  @apply border-t;
-}
-
-.cosmic-border-r {
-  @apply border-r;
-}
-
-.cosmic-border-b {
-  @apply border-b;
-}
-
-.cosmic-border-l {
-  @apply border-l;
-}
-
-/* Rounded corners */
-.cosmic-rounded-none {
-  @apply rounded-none;
-}
-
-.cosmic-rounded-sm {
-  @apply rounded-sm;
-}
-
-.cosmic-rounded {
-  @apply rounded;
-}
-
-.cosmic-rounded-md {
-  @apply rounded-md;
-}
-
-.cosmic-rounded-lg {
-  @apply rounded-lg;
-}
-
-.cosmic-rounded-xl {
-  @apply rounded-xl;
-}
-
-.cosmic-rounded-2xl {
-  @apply rounded-2xl;
-}
-
-.cosmic-rounded-3xl {
-  @apply rounded-3xl;
-}
-
-.cosmic-rounded-full {
-  @apply rounded-full;
-}
-
-/* Shadows */
-.cosmic-shadow-none {
-  @apply shadow-none;
-}
-
-.cosmic-shadow-sm {
-  @apply shadow-sm;
-}
-
-.cosmic-shadow {
-  @apply shadow;
-}
-
-.cosmic-shadow-md {
-  @apply shadow-md;
-}
-
-.cosmic-shadow-lg {
-  @apply shadow-lg;
-}
-
-.cosmic-shadow-xl {
-  @apply shadow-xl;
-}
-
-.cosmic-shadow-2xl {
-  @apply shadow-2xl;
-}
-
-.cosmic-shadow-inner {
-  @apply shadow-inner;
-}
-
-/* Position */
-.cosmic-static {
-  @apply static;
-}
-
-.cosmic-fixed {
-  @apply fixed;
-}
-
-.cosmic-absolute {
-  @apply absolute;
-}
-
-.cosmic-relative {
-  @apply relative;
-}
-
-.cosmic-sticky {
-  @apply sticky;
-}
-
-/* Positioning */
-.cosmic-top-0 {
-  @apply top-0;
-}
-
-.cosmic-right-0 {
-  @apply right-0;
-}
-
-.cosmic-bottom-0 {
-  @apply bottom-0;
-}
-
-.cosmic-left-0 {
-  @apply left-0;
-}
-
-.cosmic-inset-0 {
-  @apply inset-0;
-}
-
-/* Z-index */
-.cosmic-z-0 {
-  @apply z-0;
-}
-
-.cosmic-z-10 {
-  @apply z-10;
-}
-
-.cosmic-z-20 {
-  @apply z-20;
-}
-
-.cosmic-z-30 {
-  @apply z-30;
-}
-
-.cosmic-z-40 {
-  @apply z-40;
-}
-
-.cosmic-z-50 {
-  @apply z-50;
-}
-
-/* Width/Height */
-.cosmic-w-full {
-  @apply w-full;
-}
-
-.cosmic-w-screen {
-  @apply w-screen;
-}
-
-.cosmic-w-auto {
-  @apply w-auto;
-}
-
-.cosmic-h-full {
-  @apply h-full;
-}
-
-.cosmic-h-screen {
-  @apply h-screen;
-}
-
-.cosmic-h-auto {
-  @apply h-auto;
-}
-
-.cosmic-min-h-screen {
-  @apply min-h-screen;
-}
-
-/* Overflow */
-.cosmic-overflow-auto {
-  @apply overflow-auto;
-}
-
-.cosmic-overflow-hidden {
-  @apply overflow-hidden;
-}
-
-.cosmic-overflow-visible {
-  @apply overflow-visible;
-}
-
-.cosmic-overflow-scroll {
-  @apply overflow-scroll;
-}
-
-.cosmic-overflow-x-auto {
-  @apply overflow-x-auto;
-}
-
-.cosmic-overflow-y-auto {
-  @apply overflow-y-auto;
-}
-
-.cosmic-overflow-x-hidden {
-  @apply overflow-x-hidden;
-}
-
-.cosmic-overflow-y-hidden {
-  @apply overflow-y-hidden;
-}
-
-/* Object fit */
-.cosmic-object-cover {
-  @apply object-cover;
-}
-
-.cosmic-object-contain {
-  @apply object-contain;
-}
-
-.cosmic-object-fill {
-  @apply object-fill;
-}
-
-.cosmic-object-none {
-  @apply object-none;
-}
-
-.cosmic-object-scale-down {
-  @apply object-scale-down;
-}
-
-/* Opacity */
-.cosmic-opacity-0 {
-  @apply opacity-0;
-}
-
-.cosmic-opacity-25 {
-  @apply opacity-25;
-}
-
-.cosmic-opacity-50 {
-  @apply opacity-50;
-}
-
-.cosmic-opacity-75 {
-  @apply opacity-75;
-}
-
-.cosmic-opacity-100 {
-  @apply opacity-100;
-}
-
-/* Cursor */
-.cosmic-cursor-auto {
-  @apply cursor-auto;
-}
-
-.cosmic-cursor-default {
-  @apply cursor-default;
-}
-
-.cosmic-cursor-pointer {
-  @apply cursor-pointer;
-}
-
-.cosmic-cursor-wait {
-  @apply cursor-wait;
-}
-
-.cosmic-cursor-text {
-  @apply cursor-text;
-}
-
-.cosmic-cursor-move {
-  @apply cursor-move;
-}
-
-.cosmic-cursor-not-allowed {
-  @apply cursor-not-allowed;
-}
-
-/* Transition */
-.cosmic-transition {
-  @apply transition-all;
-}
-
-.cosmic-transition-fast {
-  @apply transition-all duration-150;
-}
-
-.cosmic-transition-normal {
-  @apply transition-all duration-300;
-}
-
-.cosmic-transition-slow {
-  @apply transition-all duration-500;
-}
-
-/* User select */
-.cosmic-select-none {
-  @apply select-none;
-}
-
-.cosmic-select-text {
-  @apply select-text;
-}
-
-.cosmic-select-all {
-  @apply select-all;
-}
-
-.cosmic-select-auto {
-  @apply select-auto;
-}
-
-/* Pointer events */
-.cosmic-pointer-events-none {
-  @apply pointer-events-none;
-}
-
-.cosmic-pointer-events-auto {
-  @apply pointer-events-auto;
-}
-
-/* Special utility classes for the application */
-.cosmic-glass {
-  @apply backdrop-blur-lg bg-background/30 border border-white/10;
-}
-
-.cosmic-glass-dark {
-  @apply backdrop-blur-lg bg-black/40 border border-white/10;
-}
-
-.cosmic-glass-light {
-  @apply backdrop-blur-lg bg-white/30 border border-black/10;
-}
-
-.cosmic-gradient {
-  @apply bg-gradient-to-r from-primary/80 to-blue-500/80;
-}
-
-.cosmic-gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-500;
-}
-
-.cosmic-gradient-border {
-  @apply border border-transparent;
-  background-origin: border-box;
-  background-clip: content-box, border-box;
-  background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), 
-    linear-gradient(to right, var(--primary), #3b82f6);
-}
-
-.cosmic-divider {
-  @apply border-t border-border w-full my-6;
-}
-
-.cosmic-divider-vertical {
-  @apply border-l border-border h-full mx-6;
-}
-
-.cosmic-highlight {
-  @apply bg-primary/10 text-primary px-1 py-0.5 rounded;
-}
-
-.cosmic-card {
-  @apply bg-card text-card-foreground rounded-lg border border-border shadow-sm p-6;
-}
-
-.cosmic-card-hover {
-  @apply hover:shadow-md hover:border-primary/20 transition-all;
-}
-
-.cosmic-hover-transform {
-  @apply transition-transform hover:-translate-y-1;
-}
-
-.cosmic-hover-glow {
-  @apply transition-shadow hover:shadow-primary/30 hover:shadow-lg;
-}
-
-/* Layouts */
-.cosmic-page-container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-}
-
-.cosmic-content-area {
-  @apply max-w-5xl mx-auto px-4 sm:px-6 lg:px-8;
-}
-
-.cosmic-main-area {
-  @apply flex-1 p-4 sm:p-6 lg:p-8;
-}
-
-/* Status indicators */
-.cosmic-status-success {
-  @apply text-green-500 bg-green-500/10 border border-green-500/20 rounded px-2 py-0.5 inline-flex items-center text-xs;
-}
-
-.cosmic-status-warning {
-  @apply text-yellow-500 bg-yellow-500/10 border border-yellow-500/20 rounded px-2 py-0.5 inline-flex items-center text-xs;
-}
-
-.cosmic-status-error {
-  @apply text-red-500 bg-red-500/10 border border-red-500/20 rounded px-2 py-0.5 inline-flex items-center text-xs;
-}
-
-.cosmic-status-info {
-  @apply text-blue-500 bg-blue-500/10 border border-blue-500/20 rounded px-2 py-0.5 inline-flex items-center text-xs;
-}
-
-.cosmic-badge-primary {
-  @apply bg-primary/10 text-primary rounded-full px-2 py-0.5 text-xs font-medium;
-}
-
-.cosmic-badge-secondary {
-  @apply bg-secondary text-secondary-foreground rounded-full px-2 py-0.5 text-xs font-medium;
-}
-
-.cosmic-badge-outline {
-  @apply border border-input bg-background text-foreground rounded-full px-2 py-0.5 text-xs font-medium;
-}
-
-/* Accessibility */
-.cosmic-focus-outline {
-  @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background;
-}
-
-.cosmic-sr-only {
-  @apply sr-only;
-}
-
-/* Print styles */
-@media print {
-  .cosmic-print-hidden {
-    display: none !important;
+@tailwind components;
+@tailwind utilities;
+
+/* Page titles and headings */
+.cosmic-page-title {
+  @apply text-3xl font-bold cosmic-text-gradient;
+  margin-bottom: var(--space-6);
+}
+
+/* Nebula background effect */
+.cosmic-nebula {
+  background: 
+    radial-gradient(circle at 20% 35%, rgba(76, 29, 149, 0.15) 0%, rgba(76, 29, 149, 0) 50%),
+    radial-gradient(circle at 75% 44%, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0) 50%),
+    radial-gradient(circle at 50% 80%, rgba(6, 182, 212, 0.1) 0%, rgba(6, 182, 212, 0) 50%);
+}
+
+/* Error page styles */
+.cosmic-error-page {
+  @apply flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)] text-white p-4 text-center cosmic-nebula;
+  position: relative;
+  overflow: hidden;
+}
+
+.cosmic-error-code {
+  @apply text-9xl font-bold mb-6 cosmic-text-gradient;
+  text-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+}
+
+/* Spacing helpers */
+.mt-space-1 { margin-top: var(--space-1); }
+.mt-space-2 { margin-top: var(--space-2); }
+.mt-space-3 { margin-top: var(--space-3); }
+.mt-space-4 { margin-top: var(--space-4); }
+.mt-space-6 { margin-top: var(--space-6); }
+.mt-space-8 { margin-top: var(--space-8); }
+
+.mb-space-1 { margin-bottom: var(--space-1); }
+.mb-space-2 { margin-bottom: var(--space-2); }
+.mb-space-3 { margin-bottom: var(--space-3); }
+.mb-space-4 { margin-bottom: var(--space-4); }
+.mb-space-6 { margin-bottom: var(--space-6); }
+.mb-space-8 { margin-bottom: var(--space-8); }
+
+.p-space-1 { padding: var(--space-1); }
+.p-space-2 { padding: var(--space-2); }
+.p-space-3 { padding: var(--space-3); }
+.p-space-4 { padding: var(--space-4); }
+.p-space-6 { padding: var(--space-6); }
+.p-space-8 { padding: var(--space-8); }
+
+/* Responsive padding helpers */
+.p-responsive {
+  padding: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .p-responsive {
+    padding: var(--space-6);
   }
-  
-  .cosmic-print-visible {
-    display: block !important;
+}
+
+@media (min-width: 1024px) {
+  .p-responsive {
+    padding: var(--space-8);
   }
-  
-  .cosmic-print-break-before {
-    page-break-before: always;
-  }
-  
-  .cosmic-print-break-after {
-    page-break-after: always;
-  }
-  
-  .cosmic-print-break-inside-avoid {
-    page-break-inside: avoid;
-  }
+}
+
+/* Display helpers */
+.hidden-mobile {
+  @apply hidden sm:block;
+}
+
+.visible-mobile {
+  @apply block sm:hidden;
+}
+
+/* Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus outline for accessibility */
+.focus-outline {
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500/70;
+}
+
+/* Aspect ratios */
+.aspect-square {
+  aspect-ratio: 1 / 1;
+}
+
+.aspect-video {
+  aspect-ratio: 16 / 9;
+}
+
+.aspect-portrait {
+  aspect-ratio: 3 / 4;
+}
+
+/* Text truncation */
+.text-truncate {
+  @apply overflow-hidden whitespace-nowrap text-ellipsis;
+}
+
+/* Line clamping */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;  
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;  
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;  
+  overflow: hidden;
 }

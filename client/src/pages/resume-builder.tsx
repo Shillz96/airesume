@@ -2506,18 +2506,18 @@ export default function ResumeBuilder() {
   };
 
   return (
-    <div className="cosmic-page">
+    <div className="min-h-screen">
       <CosmicBackground />
       <Navbar />
 
-      <main className="content-container pt-12 pb-20">
+      <main className="container mx-auto pt-12 pb-20 px-4">
         {/* Page Header */}
         <div className="mb-8 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold cosmic-text-gradient mb-2">
               Resume Builder
             </h1>
-            <p className="text-foreground/80">
+            <p className="text-gray-300">
               Create a professional resume that passes ATS systems and gets you
               hired.
             </p>
@@ -2529,15 +2529,15 @@ export default function ResumeBuilder() {
               <DropdownMenuTrigger asChild>
                 <Button 
                   variant="outline" 
-                  className="cosmic-button-secondary"
+                  className="border-white/10 bg-blue-600/40 text-white hover:bg-blue-600/60"
                 >
                   <FolderOpen className="h-4 w-4 mr-2" />
                   <span>Load Resume</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 bg-popover border-border">
-                <DropdownMenuLabel className="text-popover-foreground">Your Saved Resumes</DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-border" />
+              <DropdownMenuContent className="w-56 bg-gray-900/95 border border-gray-800">
+                <DropdownMenuLabel className="text-gray-300">Your Saved Resumes</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-gray-700" />
                 {Array.isArray(userResumes) && userResumes.length > 0 ? (
                   userResumes.map((savedResume: any) => (
                     <DropdownMenuItem
@@ -2704,7 +2704,7 @@ export default function ResumeBuilder() {
         </div>
 
         {/* Main content area */}
-        <div className="cosmic-card-glass rounded-xl overflow-hidden">
+        <div className="cosmic-card border border-white/10 rounded-xl shadow-lg backdrop-blur-md overflow-hidden">
           {/* Horizontal Tab Navigation */}
           <div className="relative">
             <div className="bg-gradient-to-r from-blue-900/80 to-purple-900/80 rounded-t-xl px-6 py-4 border-b border-white/10">

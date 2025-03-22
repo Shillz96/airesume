@@ -48,17 +48,13 @@ export const CosmicButton = forwardRef<HTMLButtonElement, CosmicButtonProps>(
       <Button
         ref={ref}
         variant={shadcnVariant}
-        className={cn(
-          variantStyles[variant], 
-          isLoading ? 'cosmic-button-loading' : '',
-          className
-        )}
+        className={cn(variantStyles[variant], className)}
         disabled={isLoading || disabled}
         {...props}
       >
         {isLoading && (
           <svg 
-            className="cosmic-button-loading-spinner cosmic-spin h-4 w-4" 
+            className="animate-spin -ml-1 mr-2 h-4 w-4" 
             xmlns="http://www.w3.org/2000/svg" 
             fill="none" 
             viewBox="0 0 24 24"
@@ -78,9 +74,9 @@ export const CosmicButton = forwardRef<HTMLButtonElement, CosmicButtonProps>(
             ></path>
           </svg>
         )}
-        {iconLeft && !isLoading && <span className="cosmic-button-icon-left">{iconLeft}</span>}
+        {iconLeft && !isLoading && <span className="mr-1">{iconLeft}</span>}
         {isLoading && loadingText ? loadingText : children}
-        {iconRight && <span className="cosmic-button-icon-right">{iconRight}</span>}
+        {iconRight && <span className="ml-1">{iconRight}</span>}
       </Button>
     );
   }

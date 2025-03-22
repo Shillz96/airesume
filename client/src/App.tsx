@@ -20,7 +20,7 @@ import AdminAccess from "@/pages/admin-access";
 import { ProtectedRoute } from "./lib/protected-route";
 import { useEffect, useRef } from "react";
 
-import Navbar from "@/components/navbar";
+import SimpleNavbar from "@/components/SimpleNavbar";
 import GoAdminLink from "@/components/go-admin-link";
 import QuickLogin from "@/components/quick-login";
 import AuthDialog from "@/components/auth-dialog";
@@ -90,7 +90,7 @@ function AppContent() {
       
       {/* Content */}
       <div className="relative z-10">
-        {showNavbar && <Navbar />}
+        {showNavbar && <SimpleNavbar />}
         <div className={showNavbar ? "pt-16" : ""}>
           <Router />
         </div>

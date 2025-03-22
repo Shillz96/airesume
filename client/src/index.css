@@ -58,3 +58,15 @@
   --transition-normal: 0.3s;
   --z-negative: -1;
 }
+
+/* Utility to hide scrollbars but keep scrolling functionality */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}

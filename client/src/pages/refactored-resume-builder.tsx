@@ -18,7 +18,6 @@ import {
   ResumeProjectsSection 
 } from "@/components/resume-section";
 import ResumePreviewComponent from "@/components/resume-builder/ResumePreviewComponent";
-import ResumeBuilderHeader from "@/components/resume-builder/ResumeBuilderHeader";
 
 // Function component
 export default function ResumeBuilder() {
@@ -102,16 +101,6 @@ export default function ResumeBuilder() {
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Resume Editor Section */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Resume Builder Header */}
-            <ResumeBuilderHeader
-              resumeTitle={resume.title}
-              onTitleChange={(value) => updateResume({...resume, title: value})}
-              onSave={handleSaveResume}
-              onDownload={handleDownload}
-              onOpenAIAssistant={() => setIsDialogOpen(true)}
-              isSaving={isLoading}
-              isDirty={isDirty}
-            />
 
             {/* Tabs Navigation */}
             <Tabs 
@@ -120,7 +109,7 @@ export default function ResumeBuilder() {
               onValueChange={setActiveSection}
               className="space-y-4"
             >
-              <TabsList className="w-full bg-[#0f1729] border-b border-gray-800 flex overflow-x-auto no-scrollbar">
+              <TabsList className="w-full max-w-full flex-nowrap bg-[#0f1729] border-b border-gray-800 flex justify-between overflow-hidden">
                 <TabsTrigger className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none bg-transparent hover:bg-[#1a2032] text-gray-400 data-[state=active]:text-white data-[state=active]:bg-transparent" value="contact">Contact</TabsTrigger>
                 <TabsTrigger className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none bg-transparent hover:bg-[#1a2032] text-gray-400 data-[state=active]:text-white data-[state=active]:bg-transparent" value="summary">Summary</TabsTrigger>
                 <TabsTrigger className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none bg-transparent hover:bg-[#1a2032] text-gray-400 data-[state=active]:text-white data-[state=active]:bg-transparent" value="experience">Experience</TabsTrigger>

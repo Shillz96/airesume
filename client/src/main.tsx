@@ -1,13 +1,6 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
-import "./index.css";
-// Import the new master cosmic theme
-import "./styles/cosmic-theme.css";
-// Import animations
-import "./styles/animations/animations.css";
-import "./styles/animations/cosmic-animations.css";
-// Import the global cosmic background
-import "./styles/global-cosmic-bg.css";
+import "./index.css"; // This now includes all styles (base, components, layout, animations)
 import { initializeTheme } from "./lib/theme-loader";
 
 // Initialize theme before rendering the app

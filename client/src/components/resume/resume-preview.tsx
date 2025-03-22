@@ -129,6 +129,7 @@ export default function ResumePreviewComponent({
             width: `${595 * previewScale}px`,
             height: `${841 * previewScale}px`,
             overflow: "hidden",
+            margin: "0 auto", // Center the preview
           }}
         >
           <div
@@ -186,7 +187,7 @@ export default function ResumePreviewComponent({
   }, [viewMode, previewScale, currentPage, totalPages, resume]);
 
   return (
-    <div className="flex flex-col space-y-4">
+    <div className="flex flex-col space-y-6 p-4">
       {/* Hidden div to measure content height */}
       <div
         ref={contentRef}
@@ -196,38 +197,42 @@ export default function ResumePreviewComponent({
       </div>
 
       {/* Control Panel: Template Selection and Formatting Options */}
-      <div className="bg-[rgba(10,15,25,0.5)] p-3 rounded-lg backdrop-blur-lg border border-indigo-800/30">
+      <div className="bg-[rgba(10,15,25,0.5)] p-4 rounded-lg backdrop-blur-lg border border-indigo-800/30 shadow-lg">
         <Tabs
           defaultValue={resume.template}
           onValueChange={onTemplateChange}
-          className="w-full mb-3"
+          className="w-full mb-4"
         >
-          <TabsList className="w-full grid grid-cols-4 md:grid-cols-7 h-auto p-1 bg-[rgba(30,40,80,0.3)] overflow-x-auto">
-            {[
-              "professional",
-              "modern",
-              "minimal",
-              "creative",
-              "executive",
-              "industry",
-              "bold",
-            ].map((template) => (
-              <TabsTrigger
-                key={template}
-                value={template}
-                className={cn(
-                  "py-1 px-2 text-xs capitalize hover:text-blue-300 data-[state=active]:bg-blue-900/50",
-                  "data-[state=active]:text-blue-50 data-[state=active]:shadow-none"
-                )}
-              >
-                {template}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          <div className="mb-3">
+            <h3 className="text-blue-100 font-medium mb-2 text-center">Choose Template</h3>
+            <TabsList className="w-full grid grid-cols-4 md:grid-cols-7 h-auto p-2 bg-gradient-to-r from-blue-900/30 to-indigo-900/30 rounded-md border border-blue-800/30 overflow-x-auto">
+              {[
+                "professional",
+                "modern",
+                "minimal",
+                "creative",
+                "executive",
+                "industry",
+                "bold",
+              ].map((template) => (
+                <TabsTrigger
+                  key={template}
+                  value={template}
+                  className={cn(
+                    "py-2 px-3 text-sm capitalize hover:text-blue-300 transition-all duration-200",
+                    "data-[state=active]:bg-gradient-to-b from-blue-700/80 to-blue-900/80 border-t border-t-blue-600/50",
+                    "data-[state=active]:text-blue-50 data-[state=active]:shadow-md rounded-md mx-1"
+                  )}
+                >
+                  {template}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
         </Tabs>
 
         {/* Formatting Options */}
-        <div className="flex flex-wrap gap-4 p-2 bg-[rgba(20,30,60,0.5)] rounded-md">
+        <div className="flex flex-wrap gap-4 p-3 bg-[rgba(20,30,60,0.5)] rounded-md">
           {/* Skills Display Mode Toggle */}
           <TooltipProvider>
             <Tooltip>
@@ -241,16 +246,16 @@ export default function ResumePreviewComponent({
                   />
                   <Label
                     htmlFor="skills-display-mode"
-                    className="cursor-pointer text-xs text-blue-300"
+                    className="cursor-pointer text-sm text-blue-300"
                   >
                     {resume.skillsDisplayMode === "bubbles" ? (
                       <div className="flex items-center gap-1">
-                        <CircleDot className="w-3 h-3" />
+                        <CircleDot className="w-4 h-4" />
                         <span>Bubbles</span>
                       </div>
                     ) : (
                       <div className="flex items-center gap-1">
-                        <ListFilter className="w-3 h-3" />
+                        <ListFilter className="w-4 h-4" />
                         <span>Bullets</span>
                       </div>
                     )}
@@ -269,16 +274,15 @@ export default function ResumePreviewComponent({
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
-                  size="sm"
                   onClick={onSmartAdjust}
-                  className="h-7 px-2 text-xs gap-1 bg-[rgba(30,40,80,0.5)] hover:bg-blue-800/50 border-blue-800/30 text-blue-300"
+                  className="h-9 px-4 text-sm gap-2 bg-gradient-to-r from-blue-700/80 to-indigo-700/80 hover:from-blue-600/80 hover:to-indigo-600/80 border-blue-500/50 text-blue-100 font-medium shadow-md transition-all duration-200 transform hover:scale-105"
                 >
-                  <Sparkles className="w-3 h-3" />
+                  <Sparkles className="w-4 h-4 text-yellow-300" />
                   Smart Adjust
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>
-                <p>Automatically adjust content for optimal fit</p>
+              <TooltipContent className="bg-gray-900/90 border-blue-500/50 text-blue-100">
+                <p>Automatically adjust content to fit on one page</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -286,62 +290,60 @@ export default function ResumePreviewComponent({
       </div>
 
       {/* Preview Controls: Pagination, Zoom, View Mode */}
-      <div className="flex justify-between items-center w-full mb-3 px-2">
+      <div className="flex justify-between items-center w-full mb-4 px-4">
         {/* Pagination Controls (single mode only) */}
         {viewMode === "single" && totalPages > 1 && (
-          <div className="flex items-center gap-2 bg-blue-900/70 p-1 rounded-md">
+          <div className="flex items-center gap-3 bg-blue-900/70 p-2 rounded-md">
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 bg-transparent hover:bg-blue-800/50 text-gray-300"
+              className="h-8 w-8 bg-transparent hover:bg-blue-800/50 text-gray-300"
               onClick={goToPrevPage}
               disabled={currentPage === 1}
               aria-label="Previous page"
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-5 w-5" />
             </Button>
-            <span className="text-xs text-gray-300">
+            <span className="text-sm text-gray-300">
               {currentPage} / {totalPages}
             </span>
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 bg-transparent hover:bg-blue-800/50 text-gray-300"
+              className="h-8 w-8 bg-transparent hover:bg-blue-800/50 text-gray-300"
               onClick={goToNextPage}
               disabled={currentPage === totalPages}
               aria-label="Next page"
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-5 w-5" />
             </Button>
           </div>
         )}
 
         {/* Zoom and View Mode Controls */}
-        <div className="flex items-center gap-2 bg-blue-900/70 p-1 rounded-md">
+        <div className="flex items-center gap-3 bg-blue-900/70 p-2 rounded-md">
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6 bg-transparent hover:bg-blue-800/50 text-gray-300"
+            className="h-8 w-8 bg-transparent hover:bg-blue-800/50 text-gray-300"
             onClick={zoomOut}
             aria-label="Zoom out"
           >
-            <ZoomOut className="h-4 w-4" />
+            <ZoomOut className="h-5 w-5" />
           </Button>
-          <span className="text-xs text-gray-300">
-            {Math.round(previewScale * 100)}%
-          </span>
+          <span className="text-sm text-gray-300">{Math.round(previewScale * 100)}%</span>
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6 bg-transparent hover:bg-blue-800/50 text-gray-300"
+            className="h-8 w-8 bg-transparent hover:bg-blue-800/50 text-gray-300"
             onClick={zoomIn}
             aria-label="Zoom in"
           >
-            <ZoomIn className="h-4 w-4" />
+            <ZoomIn className="h-5 w-5" />
           </Button>
           <Button
             variant="ghost"
-            className="text-xs text-gray-300 hover:bg-blue-800/50"
+            className="text-sm text-gray-300 hover:bg-blue-800/50 px-3 py-1"
             onClick={() =>
               setViewMode(viewMode === "single" ? "sideBySide" : "single")
             }
@@ -352,44 +354,46 @@ export default function ResumePreviewComponent({
       </div>
 
       {/* Preview Container */}
-      <div className="relative flex flex-col items-center">
+      <div className="relative flex flex-col items-center space-y-6">
         {/* Resume Preview */}
-        <div className="mb-2">{renderPages()}</div>
+        <div className="p-4 mb-4 bg-[rgba(10,20,40,0.3)] border border-blue-900/40 rounded-lg shadow-xl">
+          {renderPages()}
+        </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2 mt-2">
+        <div className="flex flex-wrap justify-center gap-3 mt-4">
           <Button
             variant="outline"
-            className="bg-[rgba(30,40,70,0.6)] text-blue-300 hover:text-blue-200 hover:bg-blue-800/50 border-blue-700/30"
+            className="bg-[rgba(30,40,70,0.6)] text-blue-300 hover:text-blue-200 hover:bg-blue-800/50 border-blue-700/30 px-4 py-2"
             onClick={handlePrint}
           >
-            <Printer className="h-4 w-4 mr-2" />
+            <Printer className="h-5 w-5 mr-2" />
             Print / Save PDF
           </Button>
           <Button
             variant="outline"
-            className="bg-[rgba(30,40,70,0.6)] text-blue-300 hover:text-blue-200 hover:bg-blue-800/50 border-blue-700/30"
+            className="bg-[rgba(30,40,70,0.6)] text-blue-300 hover:text-blue-200 hover:bg-blue-800/50 border-blue-700/30 px-4 py-2"
             onClick={onDownload}
             disabled={!onDownload}
           >
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="h-5 w-5 mr-2" />
             Download
           </Button>
           <Button
             variant="outline"
-            className="bg-[rgba(30,40,70,0.6)] text-blue-300 hover:text-blue-200 hover:bg-blue-800/50 border-blue-700/30"
+            className="bg-[rgba(30,40,70,0.6)] text-blue-300 hover:text-blue-200 hover:bg-blue-800/50 border-blue-700/30 px-4 py-2"
             onClick={() => window.open("/preview", "_blank")}
           >
-            <Eye className="h-4 w-4 mr-2" />
+            <Eye className="h-5 w-5 mr-2" />
             Full Preview
           </Button>
           {onEdit && (
             <Button
               variant="outline"
-              className="bg-[rgba(30,40,70,0.6)] text-blue-300 hover:text-blue-200 hover:bg-blue-800/50 border-blue-700/30"
+              className="bg-[rgba(30,40,70,0.6)] text-blue-300 hover:text-blue-200 hover:bg-blue-800/50 border-blue-700/30 px-4 py-2"
               onClick={onEdit}
             >
-              <Edit className="h-4 w-4 mr-2" />
+              <Edit className="h-5 w-5 mr-2" />
               Edit Resume
             </Button>
           )}

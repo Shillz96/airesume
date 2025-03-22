@@ -25,7 +25,7 @@ import Navbar from "@/components/navbar";
 import GoAdminLink from "@/components/go-admin-link";
 import QuickLogin from "@/components/quick-login";
 import AuthDialog from "@/components/auth-dialog";
-import CosmicStarfield from "@/components/cosmic-starfield";
+import CosmicBackground from "@/components/cosmic-background";
 
 function Router() {
   // Manual check for admin-access path to handle direct navigation
@@ -87,12 +87,8 @@ function AppContent() {
   
   return (
     <div className="min-h-screen bg-black cosmic-background relative">
-      {/* Enhanced Cosmic Starfield Background */}
-      <CosmicStarfield 
-        starsCount={180}
-        nebulasCount={4}
-        shootingStarsEnabled={true}
-      />
+      {/* Enhanced Cosmic Background */}
+      <CosmicBackground />
       
       {/* Content */}
       <div className="relative z-10">

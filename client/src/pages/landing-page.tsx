@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import CosmicBackground from "@/components/cosmic-background";
 import Navbar from "@/components/navbar";
 import { 
   FileText, 
@@ -233,7 +232,6 @@ export default function LandingPage() {
 
   return (
     <>
-      <CosmicBackground />
       <Navbar />
 
       {/* Login Dialog */}

@@ -3054,9 +3054,9 @@ export default function ResumeBuilder() {
               {activeSection === "experience" && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                   <div className="md:col-span-2">
-                    <div className="cosmic-section-header flex justify-between items-center mb-4">
+                    <div className="cosmic-section-header flex justify-between items-center mb-space-4">
                       <h2 className="cosmic-section-title flex items-center">
-                        <Briefcase className="cosmic-section-icon h-5 w-5 mr-2" />
+                        <Briefcase className="cosmic-section-icon h-5 w-5 mr-space-2" />
                         Work Experience
                       </h2>
                     </div>
@@ -3232,8 +3232,8 @@ export default function ResumeBuilder() {
                       }}
                     />
 
-                    <div className="mt-4 text-xs text-gray-300 bg-gray-900/50 p-4 rounded-lg border border-blue-500/30">
-                      <p className="mb-2 text-blue-300 font-medium">
+                    <div className="mt-space-4 text-xs text-gray-300 bg-gray-900/50 p-space-4 rounded-lg border border-blue-500/30">
+                      <p className="mb-space-2 text-blue-300 font-medium">
                         Tips for showcasing skills:
                       </p>
                       <ul className="list-disc pl-4 space-y-1">
@@ -3343,8 +3343,8 @@ export default function ResumeBuilder() {
                       }}
                     />
 
-                    <div className="mt-4 text-xs text-gray-300 bg-gray-900/50 p-4 rounded-lg border border-blue-500/30">
-                      <p className="mb-2 text-blue-300 font-medium">
+                    <div className="mt-space-4 text-xs text-gray-300 bg-gray-900/50 p-space-4 rounded-lg border border-blue-500/30">
+                      <p className="mb-space-2 text-blue-300 font-medium">
                         Tips for adding projects:
                       </p>
                       <ul className="list-disc pl-4 space-y-1">
@@ -3374,17 +3374,17 @@ export default function ResumeBuilder() {
                             Enhance your projects section with these formatting tips:
                           </p>
 
-                          <div className="space-y-2 text-sm">
-                            <div className="p-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                          <div className="space-y-space-2 text-sm">
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
                               Use action verbs to describe your contributions
                             </div>
-                            <div className="p-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
                               Quantify achievements with metrics when possible
                             </div>
-                            <div className="p-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
                               Showcase problem-solving and technical skills
                             </div>
-                            <div className="p-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
                               Include the business impact of your project
                             </div>
                           </div>
@@ -3461,20 +3461,20 @@ export default function ResumeBuilder() {
                             Before downloading, review your resume for these common issues:
                           </p>
 
-                          <div className="space-y-2 text-sm">
-                            <div className="p-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
+                          <div className="space-y-space-2 text-sm">
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
                               <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span>Check for spelling and grammar errors</span>
                             </div>
-                            <div className="p-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
                               <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span>Ensure consistent formatting throughout</span>
                             </div>
-                            <div className="p-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
                               <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span>Verify all contact information is correct</span>
                             </div>
-                            <div className="p-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
                               <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span>Confirm dates are accurate and consistent</span>
                             </div>

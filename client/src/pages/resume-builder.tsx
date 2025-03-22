@@ -2787,10 +2787,10 @@ export default function ResumeBuilder() {
 
             {/* Tab Content */}
             <div 
-              className="p-space-8"
+              className="cosmic-content-container p-6 md:p-8"
               style={{
-                lineHeight: "1.5", // Default line height
-                padding: "2rem", // Default padding
+                lineHeight: "1.6", // Improved line height for readability
+                minHeight: "calc(100vh - 200px)", // Ensure content area fills viewport
               }}
             >
               {/* Profile Section */}

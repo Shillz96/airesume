@@ -180,7 +180,7 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
         Interview Practice AI
       </h2>
 
-      <Card className="cosmic-card mt-4 flex-1 flex flex-col" ref={cardRef}>
+      <Card className="cosmic-card border border-white/10 bg-black/30 mt-4 flex-1 flex flex-col hover:border-blue-500/50 transition-all duration-300" ref={cardRef}>
         <CardHeader className="pb-2 flex-shrink-0">
           <div className="flex justify-between items-center">
             <CardTitle className="text-lg text-white font-medium">Practice Session</CardTitle>
@@ -192,7 +192,7 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
                     Customize
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80 cosmic-card border-white/10">
+                <PopoverContent className="w-80 cosmic-card border-white/10 bg-black/30">
                   <div className="space-y-4">
                     <h3 className="font-medium text-white">Interview Settings</h3>
                     <div className="space-y-2">

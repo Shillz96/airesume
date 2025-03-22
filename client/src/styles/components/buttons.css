@@ -1,0 +1,50 @@
+/**
+ * Button Styles
+ * 
+ * This file defines the consistent button styles used throughout the application
+ */
+
+/* Base button class */
+.btn {
+  @apply inline-flex items-center justify-center rounded-md;
+  padding: var(--space-2) var(--space-4);
+  height: var(--space-10);
+}
+
+/* Standardized Button Styles for Cosmic Theme */
+.cosmic-button-primary {
+  @apply bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 
+    text-white font-medium py-2 px-4 rounded-md transition-all duration-300 
+    shadow-[0_0_10px_rgba(59,130,246,0.5)] hover:shadow-[0_0_15px_rgba(59,130,246,0.7)]
+    border-0 inline-flex items-center justify-center gap-2;
+}
+
+.cosmic-button-secondary {
+  @apply border border-white/10 bg-blue-600/40 text-white hover:bg-blue-600/60
+    font-medium py-2 px-4 rounded-md transition-all duration-300
+    inline-flex items-center justify-center gap-2;
+}
+
+.cosmic-button-outline {
+  @apply border border-blue-500/30 bg-transparent text-blue-200 hover:bg-blue-900/30 hover:text-blue-100
+    font-medium py-2 px-4 rounded-md transition-all duration-300
+    inline-flex items-center justify-center gap-2;
+}
+
+.cosmic-button-ghost {
+  @apply bg-transparent text-blue-400 hover:text-blue-300 hover:bg-blue-900/30
+    font-medium py-2 px-4 rounded-md transition-all duration-300
+    inline-flex items-center justify-center gap-2;
+}
+
+.cosmic-button-destructive {
+  @apply bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700
+    text-white font-medium py-2 px-4 rounded-md transition-all duration-300
+    shadow-[0_0_10px_rgba(220,38,38,0.5)] hover:shadow-[0_0_15px_rgba(220,38,38,0.7)]
+    border-0 inline-flex items-center justify-center gap-2;
+}
+
+/* Legacy cosmic-button class for backward compatibility */
+.cosmic-button {
+  @apply cosmic-button-primary;
+}

@@ -1,0 +1,78 @@
+/**
+ * Card and Container Styles
+ * 
+ * This file defines consistent styles for cards, sections and containers
+ */
+
+/* Cosmic Navigator Page Layout */
+.cosmic-page {
+  @apply min-h-screen bg-[var(--background)] text-white;
+  padding-top: 0;
+  background-image: 
+    radial-gradient(circle at 20% 35%, rgba(76, 29, 149, 0.2) 0%, rgba(76, 29, 149, 0) 50%),
+    radial-gradient(circle at 75% 44%, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0) 50%),
+    radial-gradient(circle at 50% 80%, rgba(6, 182, 212, 0.15) 0%, rgba(6, 182, 212, 0) 50%);
+  position: relative;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Card with cosmic styling */
+.cosmic-card {
+  @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300;
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.cosmic-card::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+  filter: blur(10px);
+  z-index: -1;
+}
+
+/* Section containers */
+.cosmic-section {
+  @apply rounded-lg bg-white/5 backdrop-blur-md border border-white/10;
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+/* Standard section */
+.section {
+  @apply bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-lg mb-6;
+  padding: var(--space-6);
+}
+
+/* Content container with consistent padding */
+.content-container {
+  @apply max-w-7xl mx-auto;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
+/* Grid spacing */
+.grid-container {
+  @apply grid;
+  gap: var(--space-4);
+}
+
+/* Design System - Consistent Layouts */
+.page-wrapper {
+  @apply flex flex-col min-h-screen;
+}
+
+.page-wrapper main {
+  @apply flex-1 py-6;
+  padding-top: var(--space-12);
+  padding-bottom: var(--space-10); 
+}

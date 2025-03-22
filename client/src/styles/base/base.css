@@ -1,0 +1,48 @@
+/**
+ * Base styles for the application
+ * 
+ * These styles establish the foundation for all elements, 
+ * including reset styles and basic typography.
+ */
+
+@tailwind base;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html, body, #root {
+    @apply h-full m-0 p-0;
+  }
+  
+  body {
+    @apply font-sans antialiased bg-[var(--background)] text-foreground min-h-screen;
+    position: relative;
+  }
+  
+  /* Default typography styles */
+  h1 {
+    @apply text-3xl font-bold mb-4;
+  }
+  
+  h2 {
+    @apply text-2xl font-bold mb-3;
+  }
+  
+  h3 {
+    @apply text-xl font-bold mb-2;
+  }
+  
+  h4 {
+    @apply text-lg font-bold mb-2;
+  }
+  
+  p {
+    @apply mb-4;
+  }
+  
+  a {
+    @apply text-primary hover:text-primary/80 transition-colors;
+  }
+}

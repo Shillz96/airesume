@@ -16,6 +16,7 @@
 
 /* Import layout styles */
 @import './styles/layout/navigation.css';
+@import './styles/layout/layout.css';
 
 /* Import animations */
 @import './styles/animations/animations.css';

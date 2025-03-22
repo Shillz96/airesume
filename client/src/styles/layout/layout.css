@@ -1,0 +1,403 @@
+/**
+ * Layout
+ * 
+ * This file contains reusable layout classes and patterns
+ */
+
+/* Grid Container */
+.cosmic-grid {
+  @apply grid gap-4;
+}
+
+/* Common grid patterns */
+.cosmic-grid-2 {
+  @apply cosmic-grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.cosmic-grid-3 {
+  @apply cosmic-grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.cosmic-grid-4 {
+  @apply cosmic-grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+/* Responsive adjustments for grids */
+@media (min-width: 640px) {
+  .cosmic-grid {
+    @apply gap-6;
+  }
+  
+  .cosmic-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .cosmic-grid-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  .cosmic-grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .cosmic-grid {
+    @apply gap-8;
+  }
+  
+  .cosmic-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  
+  .cosmic-grid-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Flexbox layouts */
+.cosmic-flex-row {
+  @apply flex flex-row items-center;
+}
+
+.cosmic-flex-col {
+  @apply flex flex-col;
+}
+
+.cosmic-flex-between {
+  @apply flex items-center justify-between;
+}
+
+.cosmic-flex-center {
+  @apply flex items-center justify-center;
+}
+
+.cosmic-flex-start {
+  @apply flex items-start justify-start;
+}
+
+.cosmic-flex-end {
+  @apply flex items-end justify-end;
+}
+
+.cosmic-flex-wrap {
+  @apply flex-wrap;
+}
+
+/* Container */
+.cosmic-container {
+  @apply mx-auto px-4 w-full;
+  max-width: 1280px;
+}
+
+.cosmic-container-sm {
+  @apply cosmic-container;
+  max-width: 640px;
+}
+
+.cosmic-container-md {
+  @apply cosmic-container;
+  max-width: 768px;
+}
+
+.cosmic-container-lg {
+  @apply cosmic-container;
+  max-width: 1024px;
+}
+
+.cosmic-container-xl {
+  @apply cosmic-container;
+  max-width: 1280px;
+}
+
+.cosmic-container-full {
+  @apply cosmic-container;
+  max-width: 100%;
+}
+
+/* Spacing */
+.cosmic-spacing-1 {
+  @apply p-1;
+}
+
+.cosmic-spacing-2 {
+  @apply p-2;
+}
+
+.cosmic-spacing-3 {
+  @apply p-3;
+}
+
+.cosmic-spacing-4 {
+  @apply p-4;
+}
+
+.cosmic-spacing-6 {
+  @apply p-6;
+}
+
+.cosmic-spacing-8 {
+  @apply p-8;
+}
+
+/* Consistent sections */
+.cosmic-section {
+  @apply py-8 md:py-12 lg:py-16;
+}
+
+.cosmic-section-sm {
+  @apply py-4 md:py-6 lg:py-8;
+}
+
+.cosmic-section-lg {
+  @apply py-12 md:py-16 lg:py-24;
+}
+
+/* Page layout */
+.cosmic-page {
+  @apply min-h-screen flex flex-col;
+}
+
+.cosmic-page-content {
+  @apply flex-grow;
+}
+
+/* Sidebar layouts */
+.cosmic-with-sidebar {
+  @apply grid gap-6;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .cosmic-with-sidebar {
+    grid-template-columns: 240px 1fr;
+  }
+  
+  .cosmic-with-sidebar-wide {
+    grid-template-columns: 320px 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cosmic-with-sidebar {
+    grid-template-columns: 280px 1fr;
+  }
+  
+  .cosmic-with-sidebar-wide {
+    grid-template-columns: 360px 1fr;
+  }
+}
+
+/* Standard page header */
+.cosmic-page-header {
+  @apply mb-6 md:mb-8 lg:mb-10;
+}
+
+.cosmic-page-title {
+  @apply text-2xl md:text-3xl font-bold;
+}
+
+.cosmic-page-subtitle {
+  @apply text-muted-foreground mt-2;
+}
+
+/* Two column layout */
+.cosmic-two-column {
+  @apply grid gap-8;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .cosmic-two-column {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .cosmic-two-column-asymmetric {
+    grid-template-columns: 1fr 2fr;
+  }
+  
+  .cosmic-two-column-reversed {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+/* Card grid layouts */
+.cosmic-card-grid {
+  @apply grid gap-4 md:gap-6;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.cosmic-card-grid-compact {
+  @apply grid gap-3 md:gap-4;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.cosmic-card-grid-wide {
+  @apply grid gap-6 md:gap-8;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+/* Stack spacing */
+.cosmic-stack {
+  @apply flex flex-col gap-4;
+}
+
+.cosmic-stack-sm {
+  @apply flex flex-col gap-2;
+}
+
+.cosmic-stack-lg {
+  @apply flex flex-col gap-6;
+}
+
+.cosmic-stack-xl {
+  @apply flex flex-col gap-8;
+}
+
+/* Row spacing */
+.cosmic-row {
+  @apply flex flex-row gap-4;
+}
+
+.cosmic-row-sm {
+  @apply flex flex-row gap-2;
+}
+
+.cosmic-row-lg {
+  @apply flex flex-row gap-6;
+}
+
+.cosmic-row-xl {
+  @apply flex flex-row gap-8;
+}
+
+/* Responsive hide/show */
+.cosmic-hide-sm {
+  @apply hidden sm:block;
+}
+
+.cosmic-hide-md {
+  @apply hidden md:block;
+}
+
+.cosmic-hide-lg {
+  @apply hidden lg:block;
+}
+
+.cosmic-show-sm {
+  @apply sm:hidden;
+}
+
+.cosmic-show-md {
+  @apply md:hidden;
+}
+
+.cosmic-show-lg {
+  @apply lg:hidden;
+}
+
+/* Responsive padding adjustment */
+.cosmic-responsive-p {
+  @apply p-4 md:p-6 lg:p-8;
+}
+
+.cosmic-responsive-px {
+  @apply px-4 md:px-6 lg:px-8;
+}
+
+.cosmic-responsive-py {
+  @apply py-4 md:py-6 lg:py-8;
+}
+
+/* Aspect ratio container */
+.cosmic-aspect-video {
+  @apply relative;
+  padding-bottom: 56.25%; /* 16:9 */
+}
+
+.cosmic-aspect-square {
+  @apply relative;
+  padding-bottom: 100%; /* 1:1 */
+}
+
+.cosmic-aspect-portrait {
+  @apply relative;
+  padding-bottom: 125%; /* 4:5 */
+}
+
+.cosmic-aspect-content {
+  @apply absolute top-0 left-0 w-full h-full;
+}
+
+/* Resume specific layouts */
+.cosmic-resume-layout {
+  @apply grid gap-6 md:gap-8;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+  .cosmic-resume-layout {
+    grid-template-columns: 3fr 2fr;
+  }
+}
+
+.cosmic-resume-section {
+  @apply border-b border-border pb-6 mb-6;
+}
+
+.cosmic-resume-section-title {
+  @apply text-lg font-semibold mb-4;
+}
+
+/* Dashboard layout */
+.cosmic-dashboard-grid {
+  @apply grid gap-4 md:gap-6;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .cosmic-dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .cosmic-dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.cosmic-dashboard-wide {
+  @apply col-span-1 md:col-span-2 lg:col-span-3;
+}
+
+.cosmic-dashboard-half {
+  @apply col-span-1 lg:col-span-2;
+}
+
+/* Fixed and sticky positioning */
+.cosmic-sticky-top {
+  @apply sticky top-0 z-10;
+}
+
+.cosmic-sticky-sidebar {
+  @apply sticky top-20;
+}
+
+.cosmic-fixed-bottom {
+  @apply fixed bottom-0 left-0 right-0 z-10;
+}
+
+/* Consistent padding for sections */
+.cosmic-section-padding {
+  @apply py-6 md:py-8 lg:py-12;
+}
+
+.cosmic-section-margin {
+  @apply my-6 md:my-8 lg:my-12;
+}

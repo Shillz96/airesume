@@ -8,49 +8,51 @@
 import { getThemeConfig, isDarkMode, ThemeAppearance, ThemeVariant } from './theme-utils';
 
 /**
- * Initialize theme by setting CSS variables from theme.json
- * This should be called early in the application lifecycle
+ * Apply dark theme CSS variables
  */
-export function initializeTheme(): void {
-  // Get theme configuration
-  const config = getThemeConfig();
-  const { primary, appearance, variant, radius, colors } = config;
-  
-  // Get root element
+function applyDarkThemeVariables(): void {
   const root = document.documentElement;
   
-  // Apply theme class based on appearance
-  if (appearance === 'dark') {
-    root.classList.add('dark-theme');
-    root.classList.remove('light-theme');
-  } else if (appearance === 'light') {
-    root.classList.add('light-theme');
-    root.classList.remove('dark-theme');
-  } else {
-    // Handle 'system' preference by checking user's system preference
-    // For simplicity, defaulting to dark mode
-    root.classList.add('dark-theme');
-    root.classList.remove('light-theme');
-    
-    // In a real implementation, we would check the system preference:
-    // const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    // root.classList.toggle('dark-theme', prefersDark);
-    // root.classList.toggle('light-theme', !prefersDark);
-  }
+  // Base colors for dark mode
+  root.style.setProperty('--background', '#050A18');
+  root.style.setProperty('--foreground', '#ffffff');
+  root.style.setProperty('--card', 'rgba(255, 255, 255, 0.05)');
+  root.style.setProperty('--card-foreground', '#ffffff');
+  root.style.setProperty('--popover', 'rgba(0, 0, 0, 0.7)');
+  root.style.setProperty('--popover-foreground', '#ffffff');
+  root.style.setProperty('--secondary', 'rgba(255, 255, 255, 0.1)');
+  root.style.setProperty('--secondary-foreground', '#ffffff');
+  root.style.setProperty('--muted', 'rgba(255, 255, 255, 0.2)');
+  root.style.setProperty('--muted-foreground', 'rgba(255, 255, 255, 0.65)');
+  root.style.setProperty('--accent', 'rgba(59, 130, 246, 0.2)');
+  root.style.setProperty('--accent-foreground', '#ffffff');
+  root.style.setProperty('--border', 'rgba(255, 255, 255, 0.1)');
+  root.style.setProperty('--input', 'rgba(255, 255, 255, 0.1)');
+  root.style.setProperty('--ring', 'rgba(59, 130, 246, 0.5)');
+}
+
+/**
+ * Apply light theme CSS variables
+ */
+function applyLightThemeVariables(): void {
+  const root = document.documentElement;
   
-  // Set primary color
-  root.style.setProperty('--primary', primary);
-  
-  // Set border radius from theme
-  root.style.setProperty('--radius', `${radius}rem`);
-  
-  // Set variant-specific properties
-  setVariantProperties(variant);
-  
-  // Set colors from theme.json
-  Object.entries(colors).forEach(([name, value]) => {
-    root.style.setProperty(`--${name}`, value);
-  });
+  // Base colors for light mode
+  root.style.setProperty('--background', '#f8f9fc');
+  root.style.setProperty('--foreground', '#1a202c');
+  root.style.setProperty('--card', '#ffffff');
+  root.style.setProperty('--card-foreground', '#1a202c');
+  root.style.setProperty('--popover', '#ffffff');
+  root.style.setProperty('--popover-foreground', '#1a202c');
+  root.style.setProperty('--secondary', 'rgba(0, 0, 0, 0.05)');
+  root.style.setProperty('--secondary-foreground', '#1a202c');
+  root.style.setProperty('--muted', 'rgba(0, 0, 0, 0.1)');
+  root.style.setProperty('--muted-foreground', 'rgba(0, 0, 0, 0.6)');
+  root.style.setProperty('--accent', 'rgba(59, 130, 246, 0.1)');
+  root.style.setProperty('--accent-foreground', '#1a202c');
+  root.style.setProperty('--border', 'rgba(0, 0, 0, 0.1)');
+  root.style.setProperty('--input', 'rgba(0, 0, 0, 0.1)');
+  root.style.setProperty('--ring', 'rgba(59, 130, 246, 0.5)');
 }
 
 /**
@@ -69,6 +71,55 @@ function setVariantProperties(variant: ThemeVariant): void {
     // Tint variant has muted colors, slower animations
     root.style.setProperty('--animation-speed', '0.8');
   }
+}
+
+/**
+ * Initialize theme by setting CSS variables from theme.json
+ * This should be called early in the application lifecycle
+ */
+export function initializeTheme(): void {
+  // Get theme configuration
+  const config = getThemeConfig();
+  const { primary, appearance, variant, radius, colors } = config;
+  
+  // Get root element
+  const root = document.documentElement;
+  
+  // Apply theme class based on appearance
+  if (appearance === 'dark') {
+    root.classList.add('dark-theme');
+    root.classList.remove('light-theme');
+    applyDarkThemeVariables();
+  } else if (appearance === 'light') {
+    root.classList.add('light-theme');
+    root.classList.remove('dark-theme');
+    applyLightThemeVariables();
+  } else {
+    // Handle 'system' preference by checking user's system preference
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    root.classList.toggle('dark-theme', prefersDark);
+    root.classList.toggle('light-theme', !prefersDark);
+    
+    if (prefersDark) {
+      applyDarkThemeVariables();
+    } else {
+      applyLightThemeVariables();
+    }
+  }
+  
+  // Set primary color
+  root.style.setProperty('--primary', primary);
+  
+  // Set border radius from theme
+  root.style.setProperty('--radius', `${radius}rem`);
+  
+  // Set variant-specific properties
+  setVariantProperties(variant);
+  
+  // Set colors from theme.json
+  Object.entries(colors).forEach(([name, value]) => {
+    root.style.setProperty(`--${name}`, value);
+  });
 }
 
 /**
@@ -95,9 +146,11 @@ export function updateTheme(updates: {
     if (updates.appearance === 'dark') {
       root.classList.add('dark-theme');
       root.classList.remove('light-theme');
+      applyDarkThemeVariables();
     } else if (updates.appearance === 'light') {
       root.classList.add('light-theme');
       root.classList.remove('dark-theme');
+      applyLightThemeVariables();
     }
     // Handle 'system' case
   }
@@ -127,9 +180,11 @@ export function toggleDarkMode(): void {
   if (isDark) {
     root.classList.remove('dark-theme');
     root.classList.add('light-theme');
+    applyLightThemeVariables();
   } else {
     root.classList.add('dark-theme');
     root.classList.remove('light-theme');
+    applyDarkThemeVariables();
   }
   
   // In a production app, we would update the theme.json file or localStorage

@@ -5,25 +5,22 @@
  * Base styles are applied first, followed by components, layout, animations and utilities.
  */
 
-/* Import base styles first */
-@import './styles/base/theme-variables.css'; /* Added new theme variables */
+/* Import unified theme - single source of truth for styling */
+@import './styles/cosmic-theme-unified.css'; /* Unified theme styling */
 @import './styles/base/variables.css';
 @import './styles/base/base.css';
 
-/* Import master cosmic theme */
-@import './styles/cosmic-theme.css'; /* Master cosmic theme styling */
-@import './styles/cosmic-config.css'; /* Central configuration for cosmic styling */
-
-/* Import component styles */
-@import './styles/components/cosmic-components.css'; /* Added unified cosmic component styles */
-@import './styles/cosmic-resume.css'; /* Cosmic resume component styling */
+/* Legacy imports - these will eventually be phased out in favor of the unified theme */
+/* Only keeping for backwards compatibility during transition */
+@import './styles/components/cosmic-components.css';
+@import './styles/cosmic-resume.css';
 @import './styles/components/buttons.css';
 @import './styles/components/cards.css';
 @import './styles/components/forms.css';
 @import './styles/components/tabs.css';
-@import './styles/components/cosmic-tabs.css'; /* Added new cosmic tabs styling */
-@import './styles/components/cosmic-dialog.css'; /* Added new cosmic dialog styling */
-@import './styles/components/resume-sections.css'; /* Added resume section styling */
+@import './styles/components/cosmic-tabs.css';
+@import './styles/components/cosmic-dialog.css';
+@import './styles/components/resume-sections.css';
 
 /* Import layout styles */
 @import './styles/layout/navigation.css';

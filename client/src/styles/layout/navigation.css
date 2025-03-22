@@ -11,7 +11,7 @@
   left: 0;
   right: 0;
   width: 100%;
-  z-index: 50;
+  z-index: 50; /* Keep this lower than the dropdown z-index */
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -52,16 +52,28 @@
 .cosmic-navbar .Avatar {
   display: block;
   position: relative;
-  z-index: 52;
+  z-index: 9000;
+}
+
+.cosmic-navbar .profile-avatar {
+  z-index: 9000;
+  position: relative;
 }
 
 .cosmic-navbar [data-radix-popper-content-wrapper] {
-  z-index: 100;
-  position: absolute;
+  z-index: 9999 !important;
+  position: absolute !important;
+}
+
+.cosmic-navbar .profile-dropdown-content,
+.cosmic-navbar .dropdown-menu-content {
+  z-index: 9999 !important;
+  position: absolute !important;
 }
 
 /* Dropdown menu styling overrides */
 [role="menu"] {
+  z-index: 9999 !important;
   background-color: rgba(17, 24, 39, 0.95);
   backdrop-filter: blur(8px);
   border-radius: 8px;
@@ -72,13 +84,17 @@
 /* Fix for scroll bars appearing when dropdowns are toggled */
 html {
   overflow-x: hidden;
+  max-width: 100vw;
 }
 
 body {
   overflow-x: hidden;
   width: 100%;
+  max-width: 100vw;
+  position: relative;
 }
 
 .cosmic-app-container {
   overflow-x: hidden;
+  position: relative;
 }

@@ -245,7 +245,7 @@ export default function Navbar() {
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="cosmic-card border-white/10 py-2 profile-dropdown-content">
+              <DropdownMenuContent align="end" className="cosmic-card border-white/10 py-2 profile-dropdown-content" style={{ zIndex: 9999, position: 'absolute' }}>
                 {user ? (
                   <>
                     <div className="px-4 py-2 text-sm text-gray-300 font-medium border-b border-white/10 mb-1">

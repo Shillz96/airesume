@@ -120,13 +120,14 @@ export default function ResumeBuilder() {
               onValueChange={setActiveSection}
               className="space-y-4"
             >
-              <TabsList className="grid grid-cols-2 md:grid-cols-6 gap-2">
+              <TabsList className="grid grid-cols-2 md:grid-cols-7 gap-2">
                 <TabsTrigger value="contact">Contact</TabsTrigger>
                 <TabsTrigger value="summary">Summary</TabsTrigger>
                 <TabsTrigger value="experience">Experience</TabsTrigger>
                 <TabsTrigger value="education">Education</TabsTrigger>
                 <TabsTrigger value="skills">Skills</TabsTrigger>
                 <TabsTrigger value="projects">Projects</TabsTrigger>
+                <TabsTrigger value="preview">Preview</TabsTrigger>
               </TabsList>
 
               {/* Contact/Personal Info Tab */}
@@ -288,13 +289,31 @@ export default function ResumeBuilder() {
                   onUpdate={(projects) => updateResume({...resume, projects: projects})}
                 />
               </TabsContent>
+              
+              {/* Preview Tab */}
+              <TabsContent value="preview" className="space-y-4 p-4 bg-card rounded-lg border">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-medium">Resume Preview</h3>
+                  <Button onClick={handleDownload} variant="outline" size="sm">
+                    <Download className="h-4 w-4 mr-2" />
+                    Download PDF
+                  </Button>
+                </div>
+                <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                  <ResumePreviewComponent
+                    resume={resume}
+                    onTemplateChange={(template) => updateResume({...resume, template})}
+                    onDownload={handleDownload}
+                  />
+                </div>
+              </TabsContent>
             </Tabs>
           </div>
 
-          {/* Resume Preview Section */}
-          <div className="lg:col-span-1">
+          {/* Right Sidebar - Only visible on large screens */}
+          <div className="hidden lg:block lg:col-span-1">
             <div className="sticky top-4">
-              <h3 className="text-lg font-medium mb-4">Resume Preview</h3>
+              <h3 className="text-lg font-medium mb-4">Quick Preview</h3>
               <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                 <ResumePreviewComponent
                   resume={resume}

@@ -59,6 +59,7 @@
   overflow: hidden;
   transition: box-shadow var(--transition-normal), transform var(--transition-normal);
   box-shadow: 0 0 20px rgba(var(--color-primary), 0.05);
+  line-height: calc(var(--space-4) * 1.5);
 }
 
 .cosmic-ai-card::before {

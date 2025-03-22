@@ -85,11 +85,19 @@ export default function ResumeBuilder() {
           actions={
             <div className="flex space-x-3">
               {/* Simple actions */}
-              <Button variant="outline" onClick={handleSaveResume} disabled={isLoading || !isDirty}>
+              <Button 
+                variant="outline" 
+                onClick={handleSaveResume} 
+                disabled={isLoading || !isDirty}
+                className="border-white/10 text-gray-200 hover:bg-white/10 hover:text-white"
+              >
                 {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
                 Save
               </Button>
-              <Button variant="default" onClick={handleDownload}>
+              <Button 
+                onClick={handleDownload}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              >
                 <Download className="h-4 w-4 mr-2" />
                 Download
               </Button>
@@ -211,10 +219,9 @@ export default function ResumeBuilder() {
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-medium">Professional Summary</h3>
                   <Button 
-                    variant="outline" 
                     size="sm"
                     onClick={() => setIsDialogOpen(true)}
-                    className="bg-[#212b52] text-white border-[#2a325a] hover:bg-[#2a3a6e] transition-colors"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                   >
                     <Bot className="h-4 w-4 mr-2" />
                     Get AI Suggestions
@@ -298,9 +305,8 @@ export default function ResumeBuilder() {
                   <h3 className="text-lg font-medium">Resume Preview</h3>
                   <Button 
                     onClick={handleDownload} 
-                    variant="outline" 
                     size="sm"
-                    className="bg-[#212b52] text-white border-[#2a325a] hover:bg-[#2a3a6e] transition-colors"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                   >
                     <Download className="h-4 w-4 mr-2" />
                     Download PDF

@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/contexts/ThemeContext";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/navbar";
-import CosmicStarfield from "@/components/cosmic-starfield";
+// Using global cosmic-theme.css instead of CosmicStarfield
 import { CosmicButton } from "@/components/cosmic-button-refactored";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
@@ -198,14 +198,7 @@ export default function ResumeBuilder() {
     <div className="min-h-screen flex flex-col cosmic-page">
       <Navbar />
       <div className="container px-4 py-8 mx-auto max-w-7xl flex-grow relative z-10">
-        {/* Background cosmic effect */}
-        <div className="fixed inset-0 z-0">
-          <CosmicStarfield 
-            starsCount={150}
-            nebulasCount={3}
-            shootingStarsEnabled={true}
-          />
-        </div>
+        {/* Using global cosmic-theme.css background instead of local component */}
         
         {/* Page Title */}
         <div className="cosmic-page-header mb-6 flex justify-between items-center relative z-10">

@@ -114,7 +114,7 @@ import {
 
 // AI and Background Components
 import AIAssistant from "@/components/ai-assistant";
-import CosmicStarfield from "@/components/cosmic-starfield";
+// Using global theme from cosmic-theme.css instead of custom starfield
 
 // Component for professional summary AI suggestions
 interface SummarySuggestionsProps {
@@ -2528,11 +2528,7 @@ export default function ResumeBuilder() {
   
   return (
     <div className="min-h-screen cosmic-page">
-      <CosmicStarfield 
-        starsCount={160}
-        nebulasCount={3}
-        shootingStarsEnabled={true} 
-      />
+      {/* Using global cosmic-theme.css background instead of CosmicStarfield */}
       <Navbar />
 
       <main className="container mx-auto pt-12 pb-20 px-4 cosmic-container">

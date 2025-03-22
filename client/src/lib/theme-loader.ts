@@ -28,6 +28,9 @@ export function initializeTheme(): void {
   // Set data-theme-variant attribute for CSS selectors
   root.setAttribute('data-theme-variant', variant);
   
+  // Add cosmic-theme class to ensure theme styles are applied
+  root.classList.add('cosmic-theme');
+  
   // Apply theme class based on appearance
   if (appearance === 'dark') {
     root.classList.add('dark');
@@ -61,6 +64,9 @@ export function initializeTheme(): void {
     root.style.setProperty('--color-primary', `${rgbPrimary.r} ${rgbPrimary.g} ${rgbPrimary.b}`);
   }
   
+  // Set primary color for legacy components
+  root.style.setProperty('--primary', primary);
+  
   // Set border radius from theme
   root.style.setProperty('--border-radius', `${radius}rem`);
   root.style.setProperty('--radius', `${radius}rem`); // Legacy support
@@ -80,6 +86,13 @@ export function initializeTheme(): void {
     // Legacy support
     root.style.setProperty(`--${name}`, value);
   });
+  
+  // Force a refresh of cosmic theme components
+  document.querySelectorAll('.cosmic-card, .cosmic-button, .cosmic-section')
+    .forEach(el => {
+      // Trigger a reflow to ensure styles are applied
+      el.classList.add('cosmic-theme-applied');
+    });
 }
 
 /**

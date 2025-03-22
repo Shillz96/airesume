@@ -2070,16 +2070,12 @@ export default function ResumeBuilder() {
       
       try {
         // The API returns resume data with a nested 'content' object
-        const content = fetchedResume.content ? 
-          (typeof fetchedResume.content === 'string' 
-            ? JSON.parse(fetchedResume.content) 
-            : fetchedResume.content) 
-          : {};
+        const content = fetchedResume.content || {};
         console.log("Resume content extracted:", content);
         
         // Ensure we have complete data structure for all fields
         const completeResume = {
-          id: fetchedResume.id || "",
+          id: fetchedResume.id,
           title: fetchedResume.title || "Untitled Resume",
           personalInfo: {
             firstName: content.personalInfo?.firstName || "",
@@ -2867,14 +2863,12 @@ export default function ResumeBuilder() {
                     )}
                   <div className="md:col-span-2 space-y-6">
                     <div>
-                      <div className="cosmic-section-header flex justify-between items-center mb-5">
-                        <h2 className="cosmic-section-title flex items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="cosmic-section-icon mr-2">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                          </svg>
-                          Personal Information
-                        </h2>
+                      <div className="cosmic-section-header flex items-center mb-5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="cosmic-section-icon mr-2">
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                          <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <h2 className="cosmic-section-title">Personal Information</h2>
                       </div>
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -2990,19 +2984,18 @@ export default function ResumeBuilder() {
                   </div>
 
                   {/* AI Tips Section */}
-                  <div className="md:col-span-1 flex flex-col h-full">
-                    <div className="cosmic-card border border-blue-500/30 bg-gradient-to-br from-blue-950/40 to-indigo-950/40 p-6 rounded-lg relative overflow-hidden shadow-lg flex-grow h-full">
-                      <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl"></div>
-                      <div className="absolute bottom-0 left-0 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl"></div>
-                      <div className="relative z-10 h-full flex flex-col">
-                        <div className="flex items-center mb-5">
-                          <Cpu className="h-7 w-7 mr-3 text-blue-400 animate-pulse" />
-                          <h3 className="font-medium text-blue-100 text-xl">
+                  <div className="md:col-span-1">
+                    <div className="cosmic-card border border-white/10 bg-black/40 p-5 rounded-lg relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+                      <div className="relative z-10">
+                        <div className="flex items-center mb-4">
+                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
+                          <h3 className="font-medium text-white">
                             AI Resume Assistant
                           </h3>
                         </div>
 
-                        <div className="w-full flex-grow">
+                        <div className="w-full">
                           <ResumeTips
                             resumeId={resumeId}
                             onApplySuggestion={(suggestion) => {
@@ -3063,19 +3056,18 @@ export default function ResumeBuilder() {
                   </div>
 
                   {/* Tips for Experience */}
-                  <div className="md:col-span-1 flex flex-col h-full">
-                    <div className="cosmic-card border border-blue-500/30 bg-gradient-to-br from-blue-950/40 to-indigo-950/40 p-6 rounded-lg relative overflow-hidden shadow-lg flex-grow h-full">
-                      <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl"></div>
-                      <div className="absolute bottom-0 left-0 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl"></div>
-                      <div className="relative z-10 h-full flex flex-col">
-                        <div className="flex items-center mb-5">
-                          <Cpu className="h-7 w-7 mr-3 text-blue-400 animate-pulse" />
-                          <h3 className="font-medium text-blue-100 text-xl">
+                  <div className="md:col-span-1">
+                    <div className="cosmic-card border border-white/10 bg-black/40 p-5 rounded-lg relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+                      <div className="relative z-10">
+                        <div className="flex items-center mb-4">
+                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
+                          <h3 className="font-medium text-white">
                             AI Experience Assistant
                           </h3>
                         </div>
 
-                        <div className="w-full flex-grow">
+                        <div className="w-full">
                           <ResumeTips
                             resumeId={resumeId}
                             onApplySuggestion={(bulletPoint) => {
@@ -3178,19 +3170,18 @@ export default function ResumeBuilder() {
                   </div>
 
                   {/* Tips for Skills */}
-                  <div className="md:col-span-1 flex flex-col h-full">
-                    <div className="cosmic-card border border-blue-500/30 bg-gradient-to-br from-blue-950/40 to-indigo-950/40 p-6 rounded-lg relative overflow-hidden shadow-lg flex-grow h-full">
-                      <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl"></div>
-                      <div className="absolute bottom-0 left-0 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl"></div>
-                      <div className="relative z-10 h-full flex flex-col">
-                        <div className="flex items-center mb-5">
-                          <Cpu className="h-7 w-7 mr-3 text-blue-400 animate-pulse" />
-                          <h3 className="font-medium text-blue-100 text-xl">
+                  <div className="md:col-span-1">
+                    <div className="cosmic-card border border-white/10 bg-black/40 p-5 rounded-lg relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+                      <div className="relative z-10">
+                        <div className="flex items-center mb-4">
+                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
+                          <h3 className="font-medium text-white">
                             AI Skills Assistant
                           </h3>
                         </div>
 
-                        <div className="w-full flex-grow">
+                        <div className="w-full">
                           <ResumeTips
                             resumeId={resumeId}
                             onApplySuggestion={(skill) => {

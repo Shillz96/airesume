@@ -4,6 +4,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/contexts/ThemeContext";
+import PageHeader from "@/components/page-header";
 
 // Resume components
 import ResumeTips from "@/components/resume-tips";
@@ -2529,21 +2530,14 @@ export default function ResumeBuilder() {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <div className="container pt-12 pb-10 px-4 md:px-6 max-w-7xl mx-auto flex-grow relative z-10">
+      <div className="container pt-12 pb-10 px-4 md:px-6 max-w-7xl mx-auto relative z-10">
         {/* Page Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight cosmic-text-gradient">
-              Resume Builder
-            </h1>
-            <p className="text-muted-foreground">
-              Create a professional resume that passes ATS systems and gets you
-              hired.
-            </p>
-          </div>
-
-          <div className="flex space-x-3">
-            {/* Load Saved Resume Dropdown */}
+        <PageHeader 
+          title={<span className="cosmic-text-gradient">Resume Builder</span>}
+          subtitle="Create a professional resume that passes ATS systems and gets you hired."
+          actions={
+            <div className="flex space-x-3">
+              {/* Load Saved Resume Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <CosmicButton 
@@ -2731,7 +2725,8 @@ export default function ResumeBuilder() {
               className="hidden"
             />
           </div>
-        </div>
+          }
+        />
 
         {/* Main content area */}
         <div className="cosmic-card border border-white/10 rounded-xl shadow-lg backdrop-blur-md overflow-hidden">

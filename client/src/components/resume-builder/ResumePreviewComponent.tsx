@@ -103,11 +103,11 @@ export default function ResumePreviewComponent({
 
       {/* Full Screen Preview Dialog */}
       <Dialog open={isFullScreenPreview} onOpenChange={setIsFullScreenPreview}>
-        <DialogContent className="max-w-[900px] h-[90vh] p-0 bg-white">
-          <div className="h-full overflow-auto p-6">
+        <DialogContent className="max-w-[900px] h-[90vh] p-0 bg-white overflow-hidden">
+          <div className="h-full overflow-auto p-6 cosmic-scroll-area">
             {renderSelectedTemplate()}
           </div>
-          <DialogClose className="absolute top-4 right-4" />
+          <DialogClose className="absolute top-4 right-4 rounded-full hover:bg-blue-500/10 transition-colors" />
         </DialogContent>
       </Dialog>
     </div>

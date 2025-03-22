@@ -30,7 +30,7 @@ export default function ResumeBuilderHeader({
   isDirty
 }: ResumeBuilderHeaderProps) {
   return (
-    <div className="border-b border-white/10 backdrop-blur-md p-4 flex justify-between items-center sticky top-0 z-10">
+    <div className="cosmic-header border-b border-white/10 backdrop-blur-md p-4 flex justify-between items-center sticky top-0 z-10">
       <div className="flex items-center space-x-4">
         <div className="flex items-center">
           <FileText className="cosmic-section-icon h-5 w-5 mr-2" />

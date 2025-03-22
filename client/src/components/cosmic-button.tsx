@@ -88,8 +88,7 @@ export const CosmicButton = forwardRef<HTMLButtonElement, CosmicButtonProps>(
           fullWidthClass,
           glowClass,
           loadingClass,
-          // Use our CSS variables for consistent styling
-          `transition-all duration-[var(--transition-normal)]`,
+          "transition-all duration-300", // Use fixed duration instead of CSS variable
           className
         )}
         disabled={isLoading || disabled}

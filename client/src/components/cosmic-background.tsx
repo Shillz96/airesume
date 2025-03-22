@@ -98,13 +98,15 @@ export default function CosmicBackground() {
   if (!isClient) return null;
 
   return (
-    <div className="cosmic-background relative w-full h-full overflow-hidden">
-      {/* Starfield Background */}
+    <div className="cosmic-background absolute inset-0 w-full h-full overflow-hidden z-0">
+      {/* Starfield is handled via CSS ::before in animations.css */}
+      
+      {/* Dynamic stars with JavaScript */}
       <div className="starfield absolute inset-0 pointer-events-none">
         {generateStars()}
       </div>
 
-      {/* Enhanced Nebula Layers - Using our CSS animations */}
+      {/* Enhanced Nebula Layers - Using CSS animations */}
       <div className="absolute inset-0 pointer-events-none">
         <div 
           className="absolute top-[10%] left-[15%] w-[35%] h-[35%] rounded-full filter blur-3xl opacity-25"

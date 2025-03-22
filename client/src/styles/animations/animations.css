@@ -161,6 +161,17 @@
   animation: starTwinkle 10s ease infinite;
 }
 
+/* Individual star in the cosmic background */
+.cosmic-star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.8);
+  animation: twinkle 3s infinite ease-in-out;
+  z-index: 10;
+}
+
 @keyframes starTwinkle {
   0%, 100% { 
     background-size: 150% 150%;

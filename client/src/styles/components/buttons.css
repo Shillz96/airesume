@@ -92,6 +92,14 @@
   @apply cosmic-button-primary;
 }
 
+/* Cosmic button glow effect */
+.cosmic-btn-glow {
+  @apply bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 
+    text-white font-medium rounded-md transition-all duration-300 
+    shadow-[0_0_10px_rgba(59,130,246,0.5)] hover:shadow-[0_0_15px_rgba(59,130,246,0.7)]
+    border-0;
+}
+
 /* Icon button */
 .cosmic-icon-button {
   @apply rounded-full p-2 flex items-center justify-center transition-all duration-300;

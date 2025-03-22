@@ -234,7 +234,7 @@ export default function ResumeBuilder() {
   };
   
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-cosmic-background">
       {/* Header with controls */}
       <ResumeBuilderHeader
         resumeTitle={resume.title}
@@ -246,14 +246,14 @@ export default function ResumeBuilder() {
         isDirty={isDirty}
       />
       
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6 cosmic-container" style={{ padding: 'var(--space-6) var(--space-4)' }}>
         {/* Navigation Tabs */}
         <Tabs
           className="cosmic-tabs"
           value={activeSection}
           onValueChange={handleSectionChange}
         >
-          <TabsList className="cosmic-tab-list mb-6">
+          <TabsList className="cosmic-tab-list mb-6" style={{ marginBottom: 'var(--space-6)' }}>
             <TabsTrigger value="profile" className="cosmic-tab-trigger">
               <User className="h-4 w-4 mr-1" />
               Contact

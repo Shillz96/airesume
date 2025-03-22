@@ -23,26 +23,27 @@ function TemplateOption({ name, description, preview, selected, onClick }: Templ
     <div 
       className={`rounded-lg border transition-all cursor-pointer overflow-hidden ${
         selected 
-          ? "border-blue-500 ring-2 ring-blue-500/30" 
-          : "border-gray-700 hover:border-blue-500/50"
+          ? "border-cosmic-accent ring-2 ring-cosmic-accent/30" 
+          : "border-cosmic-border hover:border-cosmic-accent/50"
       }`}
       onClick={onClick}
+      style={{ transition: 'var(--transition-standard)' }}
     >
-      <div className="aspect-[8.5/11] bg-gray-800 relative">
-        <div className="absolute inset-0 p-2">
+      <div className="aspect-[8.5/11] bg-cosmic-card-secondary relative">
+        <div className="absolute inset-0 p-2" style={{ padding: 'var(--space-2)' }}>
           {preview}
         </div>
         
         {selected && (
-          <div className="absolute top-2 right-2 bg-blue-500 text-white rounded-full p-1">
+          <div className="absolute top-2 right-2 bg-cosmic-accent text-white rounded-full p-1" style={{ padding: 'var(--space-1)', top: 'var(--space-2)', right: 'var(--space-2)' }}>
             <Check className="h-3 w-3" />
           </div>
         )}
       </div>
       
-      <div className="p-3 bg-gray-800 border-t border-gray-700">
-        <h4 className="font-medium text-white text-sm">{name}</h4>
-        <p className="text-gray-400 text-xs mt-1">{description}</p>
+      <div className="p-3 bg-cosmic-card-secondary border-t border-cosmic-border" style={{ padding: 'var(--space-3)' }}>
+        <h4 className="font-medium text-cosmic-text text-sm">{name}</h4>
+        <p className="text-cosmic-text-secondary text-xs mt-1" style={{ marginTop: 'var(--space-1)' }}>{description}</p>
       </div>
     </div>
   );

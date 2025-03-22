@@ -59,13 +59,13 @@ export default function ResumePreviewComponent({
   return (
     <div className="cosmic-preview-container h-full flex flex-col">
       {/* Preview Header */}
-      <div className="bg-gray-800 border-b border-gray-700 p-3 flex items-center justify-between">
-        <h3 className="text-sm font-medium text-white">Preview</h3>
-        <div className="flex items-center gap-2">
+      <div className="bg-cosmic-card-secondary border-b border-cosmic-border p-3 flex items-center justify-between" style={{ padding: 'var(--space-3)' }}>
+        <h3 className="text-sm font-medium text-cosmic-text">Preview</h3>
+        <div className="flex items-center gap-2" style={{ gap: 'var(--space-2)' }}>
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 w-7 p-0 text-gray-300 hover:text-white"
+            className="cosmic-button-ghost h-7 w-7 p-0 text-cosmic-text-secondary hover:text-cosmic-text"
             onClick={() => window.print()}
             title="Print Resume"
           >
@@ -75,7 +75,7 @@ export default function ResumePreviewComponent({
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 w-7 p-0 text-gray-300 hover:text-white"
+            className="cosmic-button-ghost h-7 w-7 p-0 text-cosmic-text-secondary hover:text-cosmic-text"
             onClick={() => onDownload && onDownload()}
             title="Download Resume"
           >
@@ -85,7 +85,7 @@ export default function ResumePreviewComponent({
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 w-7 p-0 text-gray-300 hover:text-white"
+            className="cosmic-button-ghost h-7 w-7 p-0 text-cosmic-text-secondary hover:text-cosmic-text"
             onClick={() => setIsFullScreenPreview(true)}
             title="Fullscreen Preview"
           >
@@ -95,7 +95,7 @@ export default function ResumePreviewComponent({
       </div>
       
       {/* Resume Preview */}
-      <div className="flex-1 overflow-auto bg-gray-200">
+      <div className="flex-1 overflow-auto bg-cosmic-background-alt">
         <div className="mx-auto w-full h-full max-w-[612px] shadow-lg">
           {renderSelectedTemplate()}
         </div>
@@ -106,14 +106,14 @@ export default function ResumePreviewComponent({
         open={isFullScreenPreview} 
         onOpenChange={setIsFullScreenPreview}
       >
-        <DialogContent className="max-w-[90vw] w-[850px] max-h-[90vh] p-0 overflow-hidden">
-          <div className="bg-gray-800 p-3 flex items-center justify-between">
-            <h3 className="text-sm font-medium text-white">Resume Preview</h3>
-            <div className="flex items-center gap-2">
+        <DialogContent className="max-w-[90vw] w-[850px] max-h-[90vh] p-0 overflow-hidden cosmic-dialog">
+          <div className="bg-cosmic-card-secondary p-3 flex items-center justify-between border-b border-cosmic-border" style={{ padding: 'var(--space-3)' }}>
+            <h3 className="text-sm font-medium text-cosmic-text">Resume Preview</h3>
+            <div className="flex items-center gap-2" style={{ gap: 'var(--space-2)' }}>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 w-7 p-0 text-gray-300 hover:text-white"
+                className="cosmic-button-ghost h-7 w-7 p-0 text-cosmic-text-secondary hover:text-cosmic-text"
                 onClick={() => window.print()}
                 title="Print Resume"
               >
@@ -123,7 +123,7 @@ export default function ResumePreviewComponent({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 w-7 p-0 text-gray-300 hover:text-white"
+                className="cosmic-button-ghost h-7 w-7 p-0 text-cosmic-text-secondary hover:text-cosmic-text"
                 onClick={() => onDownload && onDownload()}
                 title="Download Resume"
               >
@@ -134,7 +134,7 @@ export default function ResumePreviewComponent({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 p-1 text-gray-300 hover:text-white"
+                  className="cosmic-button-ghost h-7 p-1 text-cosmic-text-secondary hover:text-cosmic-text"
                 >
                   Close
                 </Button>
@@ -142,8 +142,8 @@ export default function ResumePreviewComponent({
             </div>
           </div>
           
-          <div className="overflow-auto bg-gray-200 h-[calc(90vh-52px)]">
-            <div className="mx-auto my-8 w-full max-w-[850px] bg-white shadow-xl">
+          <div className="overflow-auto bg-cosmic-background-alt h-[calc(90vh-52px)]">
+            <div className="mx-auto my-8 w-full max-w-[850px] bg-white shadow-xl" style={{ margin: 'var(--space-8) auto' }}>
               {renderSelectedTemplate()}
             </div>
           </div>

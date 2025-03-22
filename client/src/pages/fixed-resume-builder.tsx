@@ -414,7 +414,6 @@ const EducationSection = ({ education, onUpdate }) => {
 
 const SkillsSection = ({ skills, onUpdate }) => {
   const [newSkill, setNewSkill] = useState("");
-  const [newProficiency, setNewProficiency] = useState(3);
   
   const addSkill = () => {
     if (!newSkill.trim()) return;
@@ -422,33 +421,15 @@ const SkillsSection = ({ skills, onUpdate }) => {
     const skill = {
       id: `skill-${Date.now()}`,
       name: newSkill,
-      proficiency: newProficiency
+      proficiency: 3 // Default value, not shown in UI
     };
     
     onUpdate([...skills, skill]);
     setNewSkill("");
-    setNewProficiency(3);
   };
   
   const deleteSkill = (id) => {
     onUpdate(skills.filter(skill => skill.id !== id));
-  };
-  
-  const renderProficiencyBars = (proficiency) => {
-    return (
-      <div className="flex space-x-1">
-        {[1, 2, 3, 4, 5].map(level => (
-          <div 
-            key={level} 
-            className={`h-2 w-4 rounded-sm ${
-              level <= proficiency 
-                ? "bg-blue-500" 
-                : "bg-gray-700"
-            }`}
-          />
-        ))}
-      </div>
-    );
   };
 
   return (
@@ -461,12 +442,9 @@ const SkillsSection = ({ skills, onUpdate }) => {
           {skills.map(skill => (
             <div 
               key={skill.id} 
-              className="group flex items-center gap-2 bg-black/30 border border-white/10 rounded-lg px-3 py-2"
+              className="group flex items-center gap-2 bg-black/30 border border-blue-500/20 rounded-lg px-3 py-2"
             >
-              <div>
-                <div className="text-white font-medium">{skill.name}</div>
-                {renderProficiencyBars(skill.proficiency)}
-              </div>
+              <div className="text-white font-medium">{skill.name}</div>
               <button 
                 onClick={() => deleteSkill(skill.id)}
                 className="ml-2 text-gray-400 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -479,29 +457,14 @@ const SkillsSection = ({ skills, onUpdate }) => {
         
         <div className="border border-white/10 rounded-lg p-4 bg-black/20">
           <h3 className="font-medium text-white mb-3">Add New Skill</h3>
-          <div className="flex flex-col md:flex-row gap-3">
+          <div className="flex gap-3">
             <FormField
               label="Skill Name"
               value={newSkill}
               onChange={setNewSkill}
               placeholder="e.g., React, Project Management, etc."
-              className="mb-0"
+              className="flex-1 mb-0"
             />
-            <div className="md:w-1/3">
-              <label className="block text-sm font-medium text-gray-300 mb-1">Proficiency (1-5)</label>
-              <input
-                type="range"
-                min="1"
-                max="5"
-                value={newProficiency}
-                onChange={(e) => setNewProficiency(parseInt(e.target.value))}
-                className="w-full"
-              />
-              <div className="flex justify-between text-xs text-gray-400">
-                <span>Beginner</span>
-                <span>Expert</span>
-              </div>
-            </div>
             <div className="flex items-end">
               <Button 
                 variant="default" 

@@ -3035,9 +3035,9 @@ export default function ResumeBuilder() {
               {activeSection === "experience" && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="md:col-span-2">
-                    <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-xl font-semibold text-white flex items-center">
-                        <Briefcase className="h-5 w-5 mr-2 text-blue-400" />
+                    <div className="cosmic-section-header flex justify-between items-center mb-4">
+                      <h2 className="cosmic-section-title flex items-center">
+                        <Briefcase className="cosmic-section-icon h-5 w-5 mr-2" />
                         Work Experience
                       </h2>
                     </div>
@@ -3114,9 +3114,9 @@ export default function ResumeBuilder() {
               {/* Education Section */}
               {activeSection === "education" && (
                 <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold text-white flex items-center">
-                      <GraduationCap className="h-5 w-5 mr-2 text-blue-400" />
+                  <div className="cosmic-section-header flex justify-between items-center mb-4">
+                    <h2 className="cosmic-section-title flex items-center">
+                      <GraduationCap className="cosmic-section-icon h-5 w-5 mr-2" />
                       Education
                     </h2>
                   </div>
@@ -3137,9 +3137,9 @@ export default function ResumeBuilder() {
               {activeSection === "skills" && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="md:col-span-2">
-                    <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-xl font-semibold text-white flex items-center">
-                        <Code className="h-5 w-5 mr-2 text-blue-400" />
+                    <div className="cosmic-section-header flex justify-between items-center mb-4">
+                      <h2 className="cosmic-section-title flex items-center">
+                        <Code className="cosmic-section-icon h-5 w-5 mr-2" />
                         Skills
                       </h2>
                     </div>
@@ -3226,9 +3226,9 @@ export default function ResumeBuilder() {
               {/* Projects Section */}
               {activeSection === "projects" && (
                 <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold text-white flex items-center">
-                      <FolderKanban className="h-5 w-5 mr-2 text-blue-400" />
+                  <div className="cosmic-section-header flex justify-between items-center mb-4">
+                    <h2 className="cosmic-section-title flex items-center">
+                      <FolderKanban className="cosmic-section-icon h-5 w-5 mr-2" />
                       Projects
                     </h2>
                   </div>
@@ -3248,9 +3248,9 @@ export default function ResumeBuilder() {
               {/* Preview Section */}
               {activeSection === "preview" && (
                 <div className="text-white">
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-semibold text-white flex items-center">
-                      <Maximize2 className="h-5 w-5 mr-2 text-blue-400" />
+                  <div className="cosmic-section-header flex justify-between items-center mb-6">
+                    <h2 className="cosmic-section-title flex items-center">
+                      <Maximize2 className="cosmic-section-icon h-5 w-5 mr-2" />
                       Resume Preview
                     </h2>
                     <CosmicButton

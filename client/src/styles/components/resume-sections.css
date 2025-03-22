@@ -11,6 +11,18 @@
   margin-bottom: var(--space-8);
 }
 
+.cosmic-section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.cosmic-section-icon {
+  color: var(--primary, #60a5fa);
+  opacity: 0.9;
+}
+
 .cosmic-section-title {
   font-size: 1.25rem;
   font-weight: 600;
@@ -23,6 +35,138 @@
 
 .cosmic-section-title svg {
   color: var(--cosmicAccent, #60a5fa);
+}
+
+.cosmic-text-gradient {
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.95),
+    rgba(96, 165, 250, 0.8)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Cosmic input fields */
+.cosmic-label {
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+.cosmic-input {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.cosmic-input:focus {
+  border-color: rgba(96, 165, 250, 0.5);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.cosmic-textarea {
+  min-height: 100px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.cosmic-select {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.cosmic-select-content {
+  background-color: rgba(23, 23, 35, 0.95);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cosmic-select-item {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.cosmic-select-item:hover,
+.cosmic-select-item:focus {
+  background-color: rgba(96, 165, 250, 0.2);
+}
+
+/* Cosmic cards and badges */
+.cosmic-card {
+  background: rgba(23, 23, 35, 0.7);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius, 0.5rem);
+  overflow: hidden;
+}
+
+.cosmic-card-gradient {
+  background: linear-gradient(
+    to bottom right,
+    rgba(23, 23, 35, 0.8),
+    rgba(30, 41, 59, 0.8)
+  );
+}
+
+.cosmic-card-hoverable:hover {
+  border-color: rgba(96, 165, 250, 0.3);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+.cosmic-badge {
+  background-color: rgba(96, 165, 250, 0.15);
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.cosmic-badge:hover {
+  background-color: rgba(96, 165, 250, 0.25);
+}
+
+.cosmic-badge-outline {
+  background-color: transparent;
+  border: 1px dashed rgba(96, 165, 250, 0.3);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.cosmic-badge-outline:hover {
+  background-color: rgba(96, 165, 250, 0.1);
+  border-color: rgba(96, 165, 250, 0.5);
+}
+
+.cosmic-badge-glow {
+  position: relative;
+}
+
+.cosmic-badge-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(96, 165, 250, 0.2);
+  filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.cosmic-badge-glow:hover::after {
+  opacity: 1;
+}
+
+/* Cosmic tooltip styling */
+.cosmic-tooltip {
+  background-color: rgba(23, 23, 35, 0.95);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Cosmic slider styling */
+.cosmic-slider .react-slider-track-1 {
+  background-color: var(--primary, #60a5fa);
+}
+
+.cosmic-slider .react-slider-thumb {
+  background-color: white;
+  border: 2px solid var(--primary, #60a5fa);
 }
 
 /* Common item styling */
@@ -113,6 +257,35 @@
   resize: vertical;
 }
 
+/* Custom tab styling */
+.cosmic-tabs .cosmic-tablist {
+  display: flex;
+  gap: var(--space-1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: var(--space-4);
+}
+
+.cosmic-tab {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast) ease;
+}
+
+.cosmic-tab:hover {
+  color: white;
+  background-color: rgba(96, 165, 250, 0.1);
+}
+
+.cosmic-tab-active {
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom-color: transparent;
+  background-color: rgba(96, 165, 250, 0.1);
+}
+
 /* Skills specific styling */
 .cosmic-skills-grid {
   display: grid;
@@ -172,6 +345,38 @@
 
 .cosmic-add-button svg {
   color: rgba(96, 165, 250, 0.8);
+}
+
+/* Action buttons */
+.cosmic-action-button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  transition: all var(--transition-fast) ease;
+}
+
+.cosmic-action-button-primary {
+  background: rgba(96, 165, 250, 0.1);
+  color: rgba(96, 165, 250, 0.9);
+}
+
+.cosmic-action-button-primary:hover {
+  background: rgba(96, 165, 250, 0.2);
+  color: white;
+}
+
+.cosmic-action-button-destructive {
+  background: rgba(239, 68, 68, 0.1);
+  color: rgba(239, 68, 68, 0.9);
+}
+
+.cosmic-action-button-destructive:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: white;
 }
 
 /* Background glow effects */

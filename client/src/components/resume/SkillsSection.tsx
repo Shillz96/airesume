@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { CosmicButton } from '@/components/cosmic-button';
+import { CosmicButton } from '@/components/cosmic-button-refactored';
 import { Trash, Plus, Lightbulb, X } from 'lucide-react';
 import { 
   Accordion,
@@ -28,13 +28,13 @@ import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { SkillItem } from '@/hooks/use-resume-data';
 import { cn } from '@/lib/utils';
-import { getCosmicColor, getSpacing } from '@/lib/theme-utils';
+import { SectionHeader, SectionCard, ItemActions } from './ResumeComponentShared';
 
 interface SkillsSectionProps {
   skills: SkillItem[];
   resumeId?: string;
   onUpdate: (skills: SkillItem[]) => void;
-  onAdd?: () => string; // Returns the new ID
+  onAdd?: (category?: string) => string; // Returns the new ID
 }
 
 const SKILL_CATEGORIES = [
@@ -117,75 +117,75 @@ export function SkillsSection({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <Lightbulb className="h-5 w-5" style={{ color: getCosmicColor('primary') }} />
-          <h3 className="text-lg font-semibold">Skills</h3>
-        </div>
-        <div className="flex gap-2">
+      <SectionHeader
+        title="Skills"
+        icon={<Lightbulb className="h-5 w-5 cosmic-section-icon" />}
+        onAdd={handleAddSkill}
+        addButtonText="Add Skill"
+        className="cosmic-text-gradient"
+      />
+
+      {/* View Toggle and Category filter */}
+      {skills.length > 0 && (
+        <div className="flex flex-col sm:flex-row sm:justify-between gap-4 mb-4">
+          <div className="flex flex-wrap gap-2">
+            <Badge 
+              variant={selectedCategory === null ? "default" : "outline"}
+              className="cursor-pointer cosmic-badge"
+              onClick={() => setSelectedCategory(null)}
+            >
+              All
+            </Badge>
+            {SKILL_CATEGORIES.map(category => (
+              <Badge
+                key={category}
+                variant={selectedCategory === category ? "default" : "outline"}
+                className="cursor-pointer cosmic-badge"
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category}
+              </Badge>
+            ))}
+          </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setCompactView(!compactView)}
+            className="cosmic-button-secondary self-end"
           >
             {compactView ? 'Detailed View' : 'Compact View'}
           </Button>
-          <CosmicButton
-            size="sm"
-            variant="outline"
-            iconLeft={<Plus className="h-4 w-4" />}
-            onClick={handleAddSkill}
-          >
-            Add Skill
-          </CosmicButton>
-        </div>
-      </div>
-
-      {/* Category filter */}
-      {skills.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-4">
-          <Badge 
-            variant={selectedCategory === null ? "default" : "outline"}
-            className="cursor-pointer"
-            onClick={() => setSelectedCategory(null)}
-          >
-            All
-          </Badge>
-          {SKILL_CATEGORIES.map(category => (
-            <Badge
-              key={category}
-              variant={selectedCategory === category ? "default" : "outline"}
-              className="cursor-pointer"
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category}
-            </Badge>
-          ))}
         </div>
       )}
 
       {skills.length === 0 ? (
-        <Card className="border border-dashed">
-          <CardContent className="flex flex-col items-center justify-center p-6">
-            <Lightbulb className="h-12 w-12 mb-2 opacity-30" />
-            <p className="text-center text-sm mb-4">
+        <SectionCard withHoverEffect={false} className="border border-dashed border-white/10">
+          <div className="flex flex-col items-center justify-center p-6">
+            <Lightbulb className="h-12 w-12 mb-2 opacity-40 cosmic-section-icon" />
+            <p className="text-center text-sm mb-4 opacity-80">
               Add your professional skills and rate your proficiency level
             </p>
-            <Button variant="outline" size="sm" onClick={handleAddSkill}>
+            <CosmicButton 
+              variant="outline" 
+              size="sm" 
+              onClick={handleAddSkill}
+              iconLeft={<Plus className="h-4 w-4" />}
+              withGlow
+            >
               Add Skill
-            </Button>
-          </CardContent>
-        </Card>
+            </CosmicButton>
+          </div>
+        </SectionCard>
       ) : compactView ? (
-        <Card>
-          <CardContent className="p-4">
+        <SectionCard>
+          <div className="p-4">
             <div className="flex flex-wrap gap-2">
               {filteredSkills.map((skill) => (
                 <TooltipProvider key={skill.id}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Badge 
-                        className="cursor-pointer px-3 py-1 flex items-center gap-1"
+                        className="cursor-pointer px-3 py-1 flex items-center gap-1 cosmic-badge cosmic-badge-glow"
                         onClick={() => {
                           setExpandedItem(skill.id);
                           setCompactView(false);
@@ -199,7 +199,7 @@ export function SkillsSection({
                         />
                       </Badge>
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent className="cosmic-tooltip">
                       <p>{getProficiencyLabel(skill.proficiency)}</p>
                     </TooltipContent>
                   </Tooltip>
@@ -207,35 +207,40 @@ export function SkillsSection({
               ))}
               <Badge 
                 variant="outline" 
-                className="cursor-pointer"
+                className="cursor-pointer cosmic-badge-outline"
                 onClick={handleAddSkill}
               >
                 <Plus className="h-3 w-3 mr-1" /> Add Skill
               </Badge>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </SectionCard>
       ) : (
         <Accordion
           type="single"
           collapsible
           value={expandedItem || undefined}
           onValueChange={(value) => setExpandedItem(value)}
-          className="space-y-2"
+          className="cosmic-tabs space-y-2"
         >
           {filteredSkills.map((skill) => (
             <AccordionItem
               key={skill.id}
               value={skill.id}
               className={cn(
-                "border rounded-md overflow-hidden",
-                expandedItem === skill.id ? "ring-1 ring-primary/20" : ""
+                "cosmic-card overflow-hidden border border-white/10 backdrop-blur-sm",
+                expandedItem === skill.id ? "ring-1 ring-primary/20 cosmic-card-gradient" : ""
               )}
             >
-              <AccordionTrigger className="px-4 py-3 hover:bg-accent/50 data-[state=open]:bg-accent/60">
+              <AccordionTrigger className="px-4 py-3 hover:bg-primary/5 data-[state=open]:bg-primary/10 border-white/10">
                 <div className="flex flex-1 justify-between items-center">
-                  <div className="text-left font-medium">
-                    {skill.name || "New Skill"}
+                  <div className="text-left">
+                    <p className={cn("font-medium", expandedItem === skill.id ? "cosmic-text-gradient" : "")}>
+                      {skill.name || "New Skill"}
+                    </p>
+                    {skill.category && (
+                      <p className="text-sm opacity-80">{skill.category}</p>
+                    )}
                   </div>
                   <div className="flex items-center gap-2 mr-4">
                     <div className="flex">
@@ -246,33 +251,34 @@ export function SkillsSection({
                           style={{ 
                             backgroundColor: i < skill.proficiency 
                               ? getProgressColor(skill.proficiency) 
-                              : 'rgba(0,0,0,0.1)'
+                              : 'rgba(255, 255, 255, 0.1)'
                           }}
                         />
                       ))}
                     </div>
-                    <span className="text-xs opacity-70">
+                    <span className="text-xs opacity-80">
                       {getProficiencyLabel(skill.proficiency)}
                     </span>
                   </div>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pb-0">
-                <div className="p-4 space-y-4 bg-card rounded-b-md">
+                <div className="p-4 space-y-4 bg-card/10 backdrop-blur-sm rounded-b-md border-t border-white/10">
                   <div className="space-y-2">
-                    <Label htmlFor={`skill-name-${skill.id}`}>Skill Name</Label>
+                    <Label htmlFor={`skill-name-${skill.id}`} className="cosmic-label">Skill Name</Label>
                     <Input
                       id={`skill-name-${skill.id}`}
                       value={skill.name}
                       onChange={(e) => handleSkillChange(skill.id, 'name', e.target.value)}
                       placeholder="e.g., JavaScript, Leadership, Project Management"
+                      className="cosmic-input border-white/10"
                     />
                   </div>
 
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <Label htmlFor={`skill-proficiency-${skill.id}`}>Proficiency Level</Label>
-                      <span className="text-sm">{getProficiencyLabel(skill.proficiency)}</span>
+                      <Label htmlFor={`skill-proficiency-${skill.id}`} className="cosmic-label">Proficiency Level</Label>
+                      <span className="text-sm cosmic-text-gradient">{getProficiencyLabel(skill.proficiency)}</span>
                     </div>
                     <Slider
                       id={`skill-proficiency-${skill.id}`}
@@ -281,9 +287,9 @@ export function SkillsSection({
                       max={5}
                       step={1}
                       onValueChange={(value) => handleSkillChange(skill.id, 'proficiency', value[0])}
-                      className="py-4"
+                      className="py-4 cosmic-slider"
                     />
-                    <div className="flex justify-between text-xs text-muted-foreground">
+                    <div className="flex justify-between text-xs text-muted-foreground opacity-80">
                       <span>Beginner</span>
                       <span>Intermediate</span>
                       <span>Expert</span>
@@ -291,17 +297,17 @@ export function SkillsSection({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor={`skill-category-${skill.id}`}>Category (Optional)</Label>
+                    <Label htmlFor={`skill-category-${skill.id}`} className="cosmic-label">Category (Optional)</Label>
                     <Select
                       value={skill.category}
                       onValueChange={(value) => handleSkillChange(skill.id, 'category', value)}
                     >
-                      <SelectTrigger id={`skill-category-${skill.id}`}>
+                      <SelectTrigger id={`skill-category-${skill.id}`} className="cosmic-select border-white/10">
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="cosmic-select-content">
                         {SKILL_CATEGORIES.map(category => (
-                          <SelectItem key={category} value={category}>
+                          <SelectItem key={category} value={category} className="cosmic-select-item">
                             {category}
                           </SelectItem>
                         ))}
@@ -310,15 +316,9 @@ export function SkillsSection({
                   </div>
 
                   <div className="flex justify-end pb-2 pt-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
-                      onClick={() => handleRemoveSkill(skill.id)}
-                    >
-                      <Trash className="h-4 w-4 mr-1" />
-                      Remove
-                    </Button>
+                    <ItemActions 
+                      onDelete={() => handleRemoveSkill(skill.id)}
+                    />
                   </div>
                 </div>
               </AccordionContent>

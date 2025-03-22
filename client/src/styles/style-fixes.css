@@ -1,0 +1,122 @@
+/**
+ * Emergency style fixes to ensure consistent styling across all resume sections
+ * These styles should override the existing problematic styles
+ */
+
+/* Resume Panel Consistency */
+.cosmic-resume-panel {
+  background-color: rgba(17, 25, 40, 0.75) !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  border-radius: 0.5rem !important;
+  padding: 1.25rem !important;
+  margin-bottom: 1rem !important;
+  color: #ffffff !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Input form styling consistency */
+.cosmic-input, input[type="text"], input[type="email"], input[type="number"], .cosmic-textarea, textarea {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  color: #ffffff !important;
+  border-radius: 0.375rem !important;
+  transition: all 0.2s ease !important;
+  padding: 0.5rem 0.75rem !important;
+  width: 100% !important;
+  outline: none !important;
+}
+
+.cosmic-input:focus, input:focus, .cosmic-textarea:focus, textarea:focus {
+  border-color: rgba(59, 130, 246, 0.5) !important;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Label styling */
+label, .cosmic-label {
+  color: #93c5fd !important; /* blue-300 */
+  font-size: 0.875rem !important;
+  margin-bottom: 0.25rem !important;
+  display: block !important;
+}
+
+/* AI Assistant card consistency */
+.cosmic-ai-card {
+  background: linear-gradient(to bottom, rgba(30, 41, 59, 0.95), rgba(17, 24, 39, 0.98)) !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  border-radius: 0.5rem !important;
+  overflow: hidden !important;
+  position: relative !important;
+  height: 100% !important;
+}
+
+/* AI Suggestion items */
+.cosmic-ai-card .p-space-2 {
+  padding: 0.5rem !important;
+  border-radius: 0.375rem !important;
+  background-color: rgba(17, 25, 40, 0.75) !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  margin-bottom: 0.5rem !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.cosmic-ai-card .p-space-2:hover {
+  background-color: rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Tip section consistency */
+.cosmic-tip-section, .mt-space-4.text-xs.text-gray-300 {
+  background-color: rgba(17, 25, 40, 0.75) !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  border-radius: 0.375rem !important;
+  padding: 1rem !important;
+  color: #d1d5db !important; /* gray-300 */
+  font-size: 0.75rem !important;
+  margin-top: 1rem !important;
+}
+
+.cosmic-tip-section p, .mt-space-4.text-xs.text-gray-300 p {
+  color: #93c5fd !important; /* blue-300 */
+  font-weight: 500 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* Remove box-like appearance from input fields */
+input, textarea {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+/* Section spacing */
+.space-y-space-4 > * + * {
+  margin-top: 1rem !important;
+}
+
+.space-y-space-5 > * + * {
+  margin-top: 1.25rem !important;
+}
+
+.gap-10 {
+  gap: 2.5rem !important;
+}
+
+/* Ensure rich text editor doesn't look like a box */
+.rich-text-content,
+[dangerouslySetInnerHTML] {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Consistent button styling */
+button.cosmic-btn, button.w-full.mt-space-4.py-2.px-3 {
+  background-color: rgba(59, 130, 246, 0.3) !important;
+  color: #ffffff !important;
+  border-radius: 0.375rem !important;
+  padding: 0.5rem 0.75rem !important;
+  transition: all 0.2s ease !important;
+  border: none !important;
+}
+
+button.cosmic-btn:hover, button.w-full.mt-space-4.py-2.px-3:hover {
+  background-color: rgba(59, 130, 246, 0.5) !important;
+}

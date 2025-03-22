@@ -50,6 +50,15 @@
  * Legacy theme variables - these will be phased out in favor of theme-variables.css
  * Keeping them for backwards compatibility during the transition
  */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  position: relative;
+}
+
 :root {
   /* These variables will be set dynamically at runtime based on theme.json */
   --primary: hsl(221.2 83.2% 53.3%);

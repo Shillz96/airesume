@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Check, Plus } from "lucide-react";
+import { Sparkles, Check, Plus, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -412,17 +412,27 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
       </CardContent>
       
       <CardFooter style={{ 
-        padding: "var(--space-3)",
+        padding: "var(--space-4)",
         paddingTop: "var(--space-2)"
       }}>
         <Button 
           variant="outline" 
-          style={{ height: "var(--space-8)" }}
-          className="w-full text-xs text-blue-300 border-blue-500/30 hover:bg-blue-800/50 hover:text-blue-100"
+          style={{ height: "var(--space-10)" }}
+          className="w-full text-sm font-medium text-blue-300 border-blue-500/30 hover:bg-blue-800/50 hover:text-blue-100"
           onClick={() => generateSuggestions(activeTab)}
           disabled={isGenerating}
         >
-          {isGenerating ? "Generating..." : "Refresh Suggestions"}
+          {isGenerating ? (
+            <div className="flex items-center justify-center">
+              <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-t-transparent border-blue-500"></div>
+              <span>Generating...</span>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center">
+              <RefreshCw className="mr-2 h-4 w-4" />
+              <span>Refresh Suggestions</span>
+            </div>
+          )}
         </Button>
       </CardFooter>
     </Card>

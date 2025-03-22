@@ -30,6 +30,7 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 
 export default function FixedResumeBuilder() {
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("contact");
   const [resumeId, setResumeId] = useState<string | null>(null);
   const [resume, setResume] = useState({
     title: "My Professional Resume",
@@ -118,6 +119,10 @@ export default function FixedResumeBuilder() {
     });
   };
 
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+  };
+
   return (
     <div className="min-h-screen pb-20 bg-background text-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
@@ -135,267 +140,293 @@ export default function FixedResumeBuilder() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Sidebar */}
           <div className="lg:w-64 flex-shrink-0">
-            <Tabs
-              defaultValue="contact"
-              orientation="vertical"
-              className="w-full"
-            >
-              <TabsList className="flex flex-col h-auto bg-gray-900/50 p-1 rounded-lg border border-gray-800">
-                <TabsTrigger
-                  value="contact"
-                  className="justify-start data-[state=active]:bg-blue-600/20 data-[state=active]:text-white text-gray-400 hover:text-white"
+            {/* Resume Title Card */}
+            <div className="mb-8 bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+              <h3 className="text-sm font-medium text-white mb-2">Resume Title</h3>
+              <input
+                type="text"
+                value={resume.title}
+                onChange={(e) => setResume({ ...resume, title: e.target.value })}
+                className="w-full bg-black/30 border border-blue-500/30 rounded-md p-2 text-white text-sm"
+              />
+              
+              <div className="mt-4">
+                <Button
+                  variant="default"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={() => {
+                    toast({
+                      title: "Resume Saved",
+                      description: "Your resume has been saved successfully.",
+                    });
+                  }}
                 >
-                  <User className="h-4 w-4 mr-2" />
-                  Personal Info
-                </TabsTrigger>
-                <TabsTrigger
-                  value="experience"
-                  className="justify-start data-[state=active]:bg-blue-600/20 data-[state=active]:text-white text-gray-400 hover:text-white"
-                >
-                  <BriefcaseIcon className="h-4 w-4 mr-2" />
-                  Experience
-                </TabsTrigger>
-                <TabsTrigger
-                  value="education"
-                  className="justify-start data-[state=active]:bg-blue-600/20 data-[state=active]:text-white text-gray-400 hover:text-white"
-                >
-                  <GraduationCap className="h-4 w-4 mr-2" />
-                  Education
-                </TabsTrigger>
-                <TabsTrigger
-                  value="skills"
-                  className="justify-start data-[state=active]:bg-blue-600/20 data-[state=active]:text-white text-gray-400 hover:text-white"
-                >
-                  <Code className="h-4 w-4 mr-2" />
-                  Skills
-                </TabsTrigger>
-                <TabsTrigger
-                  value="projects"
-                  className="justify-start data-[state=active]:bg-blue-600/20 data-[state=active]:text-white text-gray-400 hover:text-white"
-                >
-                  <FolderKanban className="h-4 w-4 mr-2" />
-                  Projects
-                </TabsTrigger>
-                <TabsTrigger
-                  value="preview"
-                  className="justify-start data-[state=active]:bg-blue-600/20 data-[state=active]:text-white text-gray-400 hover:text-white"
-                >
-                  <Maximize2 className="h-4 w-4 mr-2" />
-                  Preview
-                </TabsTrigger>
-              </TabsList>
-
-              <div className="mt-8 bg-gray-900/50 p-4 rounded-lg border border-gray-800">
-                <h3 className="text-sm font-medium text-white mb-2">Resume Title</h3>
-                <input
-                  type="text"
-                  value={resume.title}
-                  onChange={(e) => setResume({ ...resume, title: e.target.value })}
-                  className="w-full bg-black/30 border border-blue-500/30 rounded-md p-2 text-white text-sm"
-                />
-                
-                <div className="mt-4">
-                  <Button
-                    variant="default"
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    onClick={() => {
-                      toast({
-                        title: "Resume Saved",
-                        description: "Your resume has been saved successfully.",
-                      });
-                    }}
-                  >
-                    Save Resume
-                  </Button>
-                </div>
+                  Save Resume
+                </Button>
               </div>
-            </Tabs>
+            </div>
+            
+            {/* Navigation Tabs */}
+            <div className="flex flex-col h-auto w-full bg-gray-900/50 p-1 rounded-lg border border-gray-800">
+              <button
+                className={`flex items-center justify-start px-3 py-2.5 text-left w-full ${
+                  activeTab === "contact" 
+                    ? "bg-blue-600/20 text-white" 
+                    : "text-gray-400 hover:text-white"
+                }`}
+                onClick={() => handleTabChange("contact")}
+              >
+                <User className="h-4 w-4 mr-2" />
+                Personal Info
+              </button>
+              <button
+                className={`flex items-center justify-start px-3 py-2.5 text-left w-full ${
+                  activeTab === "experience" 
+                    ? "bg-blue-600/20 text-white" 
+                    : "text-gray-400 hover:text-white"
+                }`}
+                onClick={() => handleTabChange("experience")}
+              >
+                <BriefcaseIcon className="h-4 w-4 mr-2" />
+                Experience
+              </button>
+              <button
+                className={`flex items-center justify-start px-3 py-2.5 text-left w-full ${
+                  activeTab === "education" 
+                    ? "bg-blue-600/20 text-white" 
+                    : "text-gray-400 hover:text-white"
+                }`}
+                onClick={() => handleTabChange("education")}
+              >
+                <GraduationCap className="h-4 w-4 mr-2" />
+                Education
+              </button>
+              <button
+                className={`flex items-center justify-start px-3 py-2.5 text-left w-full ${
+                  activeTab === "skills" 
+                    ? "bg-blue-600/20 text-white" 
+                    : "text-gray-400 hover:text-white"
+                }`}
+                onClick={() => handleTabChange("skills")}
+              >
+                <Code className="h-4 w-4 mr-2" />
+                Skills
+              </button>
+              <button
+                className={`flex items-center justify-start px-3 py-2.5 text-left w-full ${
+                  activeTab === "projects" 
+                    ? "bg-blue-600/20 text-white" 
+                    : "text-gray-400 hover:text-white"
+                }`}
+                onClick={() => handleTabChange("projects")}
+              >
+                <FolderKanban className="h-4 w-4 mr-2" />
+                Projects
+              </button>
+              <button
+                className={`flex items-center justify-start px-3 py-2.5 text-left w-full ${
+                  activeTab === "preview" 
+                    ? "bg-blue-600/20 text-white" 
+                    : "text-gray-400 hover:text-white"
+                }`}
+                onClick={() => handleTabChange("preview")}
+              >
+                <Maximize2 className="h-4 w-4 mr-2" />
+                Preview
+              </button>
+            </div>
           </div>
 
           {/* Main Content Area */}
           <div className="flex-1">
-            <Tabs defaultValue="contact">
-              <TabsContent value="contact" className="mt-0">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  <div className="md:col-span-2">
-                    <ContactSection 
-                      personalInfo={resume.personalInfo}
-                      onUpdate={(personalInfo) => {
-                        setResume({
-                          ...resume,
-                          personalInfo,
-                        });
-                      }}
-                    />
-                  </div>
-                  
-                  <div className="md:col-span-1">
-                    <AIAssistantPanel
-                      title="AI Resume Assistant"
-                      description="Get AI-powered suggestions to enhance your professional summary:"
-                      suggestions={[
-                        "Craft a concise overview of your career achievements",
-                        "Highlight your industry-specific expertise",
-                        "Showcase your leadership and communication skills",
-                        "Tailor your summary for your target role"
-                      ]}
-                      icon={<Cpu className="h-4 w-4 text-white" />}
-                      onGetSuggestions={() => {
-                        toast({
-                          title: "Generating suggestions",
-                          description: "AI is analyzing your profile to provide personalized suggestions.",
-                        });
-                      }}
-                    />
-                  </div>
+            {/* Contact Section */}
+            {activeTab === "contact" && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="md:col-span-2">
+                  <ContactSection 
+                    personalInfo={resume.personalInfo}
+                    onUpdate={(personalInfo) => {
+                      setResume({
+                        ...resume,
+                        personalInfo,
+                      });
+                    }}
+                  />
                 </div>
-              </TabsContent>
-              
-              <TabsContent value="experience" className="mt-0">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  <div className="md:col-span-2">
-                    <ExperienceSection
-                      experiences={resume.experience}
-                      onUpdate={(experience) => {
-                        setResume({
-                          ...resume,
-                          experience,
-                        });
-                      }}
-                    />
-                  </div>
-                  
-                  <div className="md:col-span-1">
-                    <AIAssistantPanel
-                      title="Experience Assistant"
-                      description="Enhance your work experience with these AI suggestions:"
-                      suggestions={[
-                        "Use action verbs to begin each bullet point",
-                        "Include measurable achievements and results",
-                        "Highlight skills relevant to your target job",
-                        "Focus on your unique contributions"
-                      ]}
-                      icon={<BriefcaseIcon className="h-4 w-4 text-white" />}
-                      onGetSuggestions={() => {
-                        toast({
-                          title: "Generating suggestions",
-                          description: "AI is analyzing your experience to provide personalized suggestions.",
-                        });
-                      }}
-                    />
-                  </div>
+                
+                <div className="md:col-span-1">
+                  <AIAssistantPanel
+                    title="AI Resume Assistant"
+                    description="Get AI-powered suggestions to enhance your professional summary:"
+                    suggestions={[
+                      "Craft a concise overview of your career achievements",
+                      "Highlight your industry-specific expertise",
+                      "Showcase your leadership and communication skills",
+                      "Tailor your summary for your target role"
+                    ]}
+                    icon={<Cpu className="h-4 w-4 text-white" />}
+                    onGetSuggestions={() => {
+                      toast({
+                        title: "Generating suggestions",
+                        description: "AI is analyzing your profile to provide personalized suggestions.",
+                      });
+                    }}
+                  />
                 </div>
-              </TabsContent>
-              
-              <TabsContent value="education" className="mt-0">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  <div className="md:col-span-2">
-                    <EducationSection
-                      education={resume.education}
-                      onUpdate={(education) => {
-                        setResume({
-                          ...resume,
-                          education,
-                        });
-                      }}
-                    />
-                  </div>
-                  
-                  <div className="md:col-span-1">
-                    <AIAssistantPanel
-                      title="Education Assistant"
-                      description="Enhance your education section with these tips:"
-                      suggestions={[
-                        "Focus on relevant coursework that aligns with your target job",
-                        "Highlight leadership roles in student organizations",
-                        "Include special projects, research, or thesis work",
-                        "List certifications or specialized training programs"
-                      ]}
-                      icon={<GraduationCap className="h-4 w-4 text-white" />}
-                      onGetSuggestions={() => {
-                        toast({
-                          title: "Generating suggestions",
-                          description: "AI is analyzing your education to provide personalized suggestions.",
-                        });
-                      }}
-                    />
-                  </div>
+              </div>
+            )}
+            
+            {/* Experience Section */}
+            {activeTab === "experience" && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="md:col-span-2">
+                  <ExperienceSection
+                    experiences={resume.experience}
+                    onUpdate={(experience) => {
+                      setResume({
+                        ...resume,
+                        experience,
+                      });
+                    }}
+                  />
                 </div>
-              </TabsContent>
-              
-              <TabsContent value="skills" className="mt-0">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  <div className="md:col-span-2">
-                    <SkillsSection
-                      skills={resume.skills}
-                      onUpdate={(skills) => {
-                        setResume({
-                          ...resume,
-                          skills,
-                        });
-                      }}
-                    />
-                  </div>
-                  
-                  <div className="md:col-span-1">
-                    <AIAssistantPanel
-                      title="Skills Assistant"
-                      description="Add relevant skills to make your resume stand out:"
-                      suggestions={[
-                        "Technical: Redux, Next.js, GraphQL, Webpack",
-                        "Soft: Project Management, Team Leadership",
-                        "Domain: UX/UI Design, Responsive Layouts",
-                        "Tools: Git, Jest, Docker, CI/CD Pipelines"
-                      ]}
-                      icon={<Code className="h-4 w-4 text-white" />}
-                      onGetSuggestions={() => {
-                        toast({
-                          title: "Generating suggestions",
-                          description: "AI is analyzing job market trends to suggest relevant skills.",
-                        });
-                      }}
-                    />
-                  </div>
+                
+                <div className="md:col-span-1">
+                  <AIAssistantPanel
+                    title="Experience Assistant"
+                    description="Enhance your work experience with these AI suggestions:"
+                    suggestions={[
+                      "Use action verbs to begin each bullet point",
+                      "Include measurable achievements and results",
+                      "Highlight skills relevant to your target job",
+                      "Focus on your unique contributions"
+                    ]}
+                    icon={<BriefcaseIcon className="h-4 w-4 text-white" />}
+                    onGetSuggestions={() => {
+                      toast({
+                        title: "Generating suggestions",
+                        description: "AI is analyzing your experience to provide personalized suggestions.",
+                      });
+                    }}
+                  />
                 </div>
-              </TabsContent>
-              
-              <TabsContent value="projects" className="mt-0">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  <div className="md:col-span-2">
-                    <ProjectsSection
-                      projects={resume.projects}
-                      onUpdate={(projects) => {
-                        setResume({
-                          ...resume,
-                          projects,
-                        });
-                      }}
-                    />
-                  </div>
-                  
-                  <div className="md:col-span-1">
-                    <AIAssistantPanel
-                      title="Projects Assistant"
-                      description="Enhance your projects section with these formatting tips:"
-                      suggestions={[
-                        "Use action verbs to describe your contributions",
-                        "Quantify achievements with metrics when possible",
-                        "Showcase problem-solving and technical skills",
-                        "Include the business impact of your project"
-                      ]}
-                      icon={<FolderKanban className="h-4 w-4 text-white" />}
-                      onGetSuggestions={() => {
-                        toast({
-                          title: "Generating suggestions",
-                          description: "AI is analyzing your projects to provide improvement suggestions.",
-                        });
-                      }}
-                    />
-                  </div>
+              </div>
+            )}
+            
+            {/* Education Section */}
+            {activeTab === "education" && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="md:col-span-2">
+                  <EducationSection
+                    education={resume.education}
+                    onUpdate={(education) => {
+                      setResume({
+                        ...resume,
+                        education,
+                      });
+                    }}
+                  />
                 </div>
-              </TabsContent>
-              
-              <TabsContent value="preview" className="mt-0">
+                
+                <div className="md:col-span-1">
+                  <AIAssistantPanel
+                    title="Education Assistant"
+                    description="Enhance your education section with these tips:"
+                    suggestions={[
+                      "Focus on relevant coursework that aligns with your target job",
+                      "Highlight leadership roles in student organizations",
+                      "Include special projects, research, or thesis work",
+                      "List certifications or specialized training programs"
+                    ]}
+                    icon={<GraduationCap className="h-4 w-4 text-white" />}
+                    onGetSuggestions={() => {
+                      toast({
+                        title: "Generating suggestions",
+                        description: "AI is analyzing your education to provide personalized suggestions.",
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+            
+            {/* Skills Section */}
+            {activeTab === "skills" && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="md:col-span-2">
+                  <SkillsSection
+                    skills={resume.skills}
+                    onUpdate={(skills) => {
+                      setResume({
+                        ...resume,
+                        skills,
+                      });
+                    }}
+                  />
+                </div>
+                
+                <div className="md:col-span-1">
+                  <AIAssistantPanel
+                    title="Skills Assistant"
+                    description="Add relevant skills to make your resume stand out:"
+                    suggestions={[
+                      "Technical: Redux, Next.js, GraphQL, Webpack",
+                      "Soft: Project Management, Team Leadership",
+                      "Domain: UX/UI Design, Responsive Layouts",
+                      "Tools: Git, Jest, Docker, CI/CD Pipelines"
+                    ]}
+                    icon={<Code className="h-4 w-4 text-white" />}
+                    onGetSuggestions={() => {
+                      toast({
+                        title: "Generating suggestions",
+                        description: "AI is analyzing job market trends to suggest relevant skills.",
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+            
+            {/* Projects Section */}
+            {activeTab === "projects" && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="md:col-span-2">
+                  <ProjectsSection
+                    projects={resume.projects}
+                    onUpdate={(projects) => {
+                      setResume({
+                        ...resume,
+                        projects,
+                      });
+                    }}
+                  />
+                </div>
+                
+                <div className="md:col-span-1">
+                  <AIAssistantPanel
+                    title="Projects Assistant"
+                    description="Enhance your projects section with these formatting tips:"
+                    suggestions={[
+                      "Use action verbs to describe your contributions",
+                      "Quantify achievements with metrics when possible",
+                      "Showcase problem-solving and technical skills",
+                      "Include the business impact of your project"
+                    ]}
+                    icon={<FolderKanban className="h-4 w-4 text-white" />}
+                    onGetSuggestions={() => {
+                      toast({
+                        title: "Generating suggestions",
+                        description: "AI is analyzing your projects to provide improvement suggestions.",
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+            
+            {/* Preview Section */}
+            {activeTab === "preview" && (
+              <div>
                 <div className="flex justify-end mb-4">
                   <Button
                     variant="default"
@@ -468,8 +499,8 @@ export default function FixedResumeBuilder() {
                       <div key={project.id} className="mb-4">
                         <h3 className="font-bold text-gray-800">{project.title}</h3>
                         <div className="flex flex-wrap gap-1 my-1">
-                          {project.technologies.map((tech, i) => (
-                            <span key={i} className="bg-gray-200 text-gray-700 px-1.5 py-0.5 rounded-sm text-xs">
+                          {project.technologies.map((tech, index) => (
+                            <span key={index} className="bg-gray-200 text-gray-700 px-1.5 py-0.5 rounded-sm text-xs">
                               {tech}
                             </span>
                           ))}
@@ -518,8 +549,8 @@ export default function FixedResumeBuilder() {
                     ))}
                   </div>
                 </div>
-              </TabsContent>
-            </Tabs>
+              </div>
+            )}
           </div>
         </div>
       </div>

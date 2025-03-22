@@ -73,23 +73,15 @@ export default function ResumeBuilder() {
   // Import resume data hook functions
   const {
     resume,
-    isLoading,
-    error,
     setResume,
-    createResumeMutation,
-    updateResumeMutation,
+    resumeId: hookResumeId,
+    isLoading,
+    isDirty: resumeIsDirty,
     addExperience,
-    updateExperience,
-    removeExperience,
     addEducation,
-    updateEducation,
-    removeEducation,
     addSkill,
-    updateSkill,
-    removeSkill,
     addProject,
-    updateProject,
-    removeProject,
+    saveResume
   } = useResumeData();
 
   // Fetch resume data if editing existing resume
@@ -159,33 +151,15 @@ export default function ResumeBuilder() {
   // Handle saving the resume
   const handleSaveResume = async () => {
     try {
-      if (resumeId && resumeId !== "new") {
-        // Update existing resume
-        await updateResumeMutation.mutateAsync({
-          id: resumeId,
-          resumeData: resume,
-        });
-        toast({
-          title: "Resume updated",
-          description: "Your resume has been updated successfully.",
-          variant: "default",
-        });
-      } else {
-        // Create new resume
-        const result = await createResumeMutation.mutateAsync(resume);
-        if (result?.id) {
-          toast({
-            title: "Resume created",
-            description: "Your new resume has been created successfully.",
-            variant: "default",
-          });
-          // Redirect to the edit page for the new resume
-          setLocation(`/resumes/${result.id}`);
-        }
-      }
+      await saveResume();
+      toast({
+        title: "Resume saved",
+        description: "Your resume has been saved successfully.",
+        variant: "default",
+      });
       setIsDirty(false);
-    } catch (error) {
-      console.error("Error saving resume:", error);
+    } catch (err) {
+      console.error("Error saving resume:", err);
       toast({
         title: "Error saving resume",
         description: "There was a problem saving your resume. Please try again.",
@@ -273,16 +247,7 @@ export default function ResumeBuilder() {
     );
   }
 
-  // If there's an error, show an error message
-  if (error) {
-    return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="text-red-500">
-          <p>Error loading resume. Please try again.</p>
-        </div>
-      </div>
-    );
-  }
+  // Error handling is integrated into loading state
 
   return (
     <div className="min-h-screen bg-slate-900">

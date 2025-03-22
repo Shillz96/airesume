@@ -38,8 +38,10 @@ function Router() {
     <Switch>
       <Route path="/" component={LandingPage} />
       <ProtectedRoute path="/dashboard" component={HomePage} />
-      <ProtectedRoute path="/resume-builder" component={ResumeBuilder} />
-      <ProtectedRoute path="/refactored-resume-builder" component={RefactoredResumeBuilder} />
+      {/* Use refactored resume builder as the main builder */}
+      <ProtectedRoute path="/resume-builder" component={RefactoredResumeBuilder} />
+      {/* Keep the original builder accessible via legacy path */}
+      <ProtectedRoute path="/legacy-resume-builder" component={ResumeBuilder} />
       <ProtectedRoute path="/resumes" component={ResumesPage} />
       <ProtectedRoute path="/job-finder" component={JobFinder} />
       <ProtectedRoute path="/job/:id" component={JobDetails} />
@@ -70,6 +72,7 @@ function AppContent() {
       "/",
       "/dashboard",
       "/resume-builder",
+      "/legacy-resume-builder", // Add legacy path
       "/resumes",
       "/job-finder",
       "/subscription",

@@ -7,24 +7,24 @@ import { Loader2 } from 'lucide-react';
 // Define button variants using class-variance-authority
 const buttonVariants = cva(
   // Base styles applied to all buttons
-  'cosmic-button inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       // Visual variants
       variant: {
-        primary: 'cosmic-button-primary bg-primary text-primary-foreground hover:bg-primary/90',
-        secondary: 'cosmic-button-secondary bg-secondary text-secondary-foreground hover:bg-secondary/90',
-        outline: 'cosmic-button-outline border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
-        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+        primary: 'bg-primary text-white hover:bg-primary/90 shadow-sm',
+        secondary: 'bg-secondary text-white hover:bg-secondary/90 shadow-sm',
+        outline: 'border border-white/20 bg-card/30 text-white hover:bg-white/10',
+        ghost: 'text-white hover:bg-white/10',
+        destructive: 'bg-red-500 text-white hover:bg-red-600 shadow-sm',
       },
       // Size variants
       size: {
-        xs: 'cosmic-button-xs h-6 px-2 text-xs',
-        sm: 'cosmic-button-sm h-8 px-3 text-sm',
-        md: 'cosmic-button-md h-10 px-4 py-2',
-        lg: 'cosmic-button-lg h-12 px-6 py-3 text-lg',
-        xl: 'cosmic-button-xl h-14 px-8 py-4 text-xl',
+        xs: 'h-6 px-2 text-xs rounded',
+        sm: 'h-8 px-3 text-sm rounded',
+        md: 'h-10 px-4 py-2 rounded-md',
+        lg: 'h-12 px-6 py-3 text-lg rounded-md',
+        xl: 'h-14 px-8 py-4 text-xl rounded-lg',
       },
       // Full width variant
       fullWidth: {
@@ -32,7 +32,7 @@ const buttonVariants = cva(
       },
       // Glow effect variant
       withGlow: {
-        true: 'cosmic-button-glow relative overflow-hidden',
+        true: 'relative overflow-hidden after:absolute after:inset-0 after:content-[""] after:bg-gradient-to-r after:from-primary/0 after:via-primary/30 after:to-primary/0 after:animate-glow-slow after:opacity-30',
       },
     },
     defaultVariants: {

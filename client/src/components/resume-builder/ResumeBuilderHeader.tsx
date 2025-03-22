@@ -1,6 +1,5 @@
 import React from "react";
 import { CosmicButton } from "@/components/cosmic-button-refactored";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Save,
@@ -9,6 +8,7 @@ import {
   Download,
   Cpu
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ResumeBuilderHeaderProps {
   resumeTitle: string;
@@ -33,55 +33,48 @@ export default function ResumeBuilderHeader({
     <div className="border-b border-white/10 backdrop-blur-md p-4 flex justify-between items-center sticky top-0 z-10">
       <div className="flex items-center space-x-4">
         <div className="flex items-center">
-          <FileText className="cosmic-section-icon h-5 w-5 mr-2" />
+          <FileText className="text-primary h-5 w-5 mr-2" />
           <Input
             value={resumeTitle}
             onChange={(e) => onTitleChange(e.target.value)}
-            className="max-w-xs cosmic-input border-white/10 focus:border-blue-400 placeholder:text-blue-300/50"
+            className={cn(
+              "max-w-xs bg-card/30 border-white/10",
+              "focus:border-primary/50 focus:ring-primary/25",
+              "placeholder:text-muted"
+            )}
             placeholder="Resume Title"
           />
         </div>
       </div>
       
       <div className="flex items-center space-x-2">
-        <Button
+        <CosmicButton
           variant="outline"
           size="sm"
-          className="cosmic-button cosmic-button-outline border-white/10 hover:bg-blue-900/30 hover:text-blue-100"
           onClick={onOpenAIAssistant}
+          iconLeft={<Cpu className="h-4 w-4" />}
         >
-          <Cpu className="h-4 w-4 mr-1" />
           AI Assistant
-        </Button>
+        </CosmicButton>
         
-        <Button
+        <CosmicButton
           variant="outline"
           size="sm"
-          className="cosmic-button cosmic-button-outline border-white/10 hover:bg-blue-900/30 hover:text-blue-100"
           onClick={onDownload}
+          iconLeft={<Download className="h-4 w-4" />}
         >
-          <Download className="h-4 w-4 mr-1" />
           Download PDF
-        </Button>
+        </CosmicButton>
         
         <CosmicButton
           variant="primary"
           size="sm"
+          withGlow
           disabled={isSaving || !isDirty}
           onClick={onSave}
-          className="cosmic-button cosmic-button-primary cosmic-button-glow"
+          iconLeft={isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
         >
-          {isSaving ? (
-            <>
-              <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              <Save className="h-4 w-4 mr-1" />
-              Save Resume
-            </>
-          )}
+          {isSaving ? "Saving..." : "Save Resume"}
         </CosmicButton>
       </div>
     </div>

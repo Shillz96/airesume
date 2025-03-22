@@ -3351,9 +3351,7 @@ export default function ResumeBuilder() {
       </main>
 
       {/* AI features are now integrated into each section */}
-      </div>
-                },
-                // AI Assistants are now integrated directly into each section
+      </div>,
                 experience: [],
                 education: [],
                 skills: [],

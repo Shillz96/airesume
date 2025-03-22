@@ -2761,7 +2761,7 @@ export default function ResumeBuilder() {
                     value="profile"
                     className="cosmic-tab-trigger"
                   >
-                    <FileText className="h-4 w-4 mr-2" />
+                    <User className="h-4 w-4 mr-2" />
                     PROFILE
                   </TabsTrigger>
                   <TabsTrigger

@@ -87,6 +87,9 @@ function AppContent() {
 
   return (
     <div className={`min-h-screen cosmic-app-container ${isDarkMode ? '' : 'light-mode'}`}>
+      {/* Global Cosmic Background */}
+      <CosmicBackground />
+      
       {/* Content */}
       <div className="relative z-10">
         {showNavbar && <Navbar />}

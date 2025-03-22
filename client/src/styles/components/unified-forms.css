@@ -1,0 +1,498 @@
+/**
+ * Unified Form Styles
+ * 
+ * This file provides standardized styling for all form elements
+ * and components throughout the application.
+ */
+
+/* ======== Form Layout ======== */
+.cosmic-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.cosmic-form-row {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.cosmic-form-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.cosmic-form-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.cosmic-form-grid-col-6 {
+  grid-column: span 6;
+}
+
+.cosmic-form-grid-col-4 {
+  grid-column: span 4;
+}
+
+.cosmic-form-grid-col-3 {
+  grid-column: span 3;
+}
+
+/* ======== Form Groups ======== */
+.cosmic-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.cosmic-form-group-inline {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.cosmic-form-group-space-between {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* ======== Form Labels ======== */
+.cosmic-form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(var(--color-text));
+  margin-bottom: var(--space-1);
+}
+
+.cosmic-form-label-required::after {
+  content: "*";
+  color: rgb(var(--color-error));
+  margin-left: var(--space-1);
+}
+
+.cosmic-form-label-optional {
+  color: rgb(var(--color-muted));
+  font-weight: normal;
+  font-size: 0.75rem;
+  margin-left: var(--space-1);
+}
+
+.cosmic-form-label-tooltip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.cosmic-form-label-tooltip-icon {
+  color: rgb(var(--color-muted));
+  cursor: help;
+}
+
+/* ======== Form Controls ======== */
+
+/* Input base styles */
+.cosmic-input {
+  --input-height: var(--input-height, 2.5rem);
+  --input-padding-x: var(--space-3);
+  --input-padding-y: var(--space-2);
+  --input-radius: var(--radius-md, 0.5rem);
+  --input-border-color: rgba(var(--color-border), 0.3);
+  --input-bg: rgba(var(--color-card), 0.7);
+  --input-transition: var(--duration-normal);
+  
+  display: block;
+  width: 100%;
+  height: var(--input-height);
+  padding: 0 var(--input-padding-x);
+  font-size: 0.875rem;
+  line-height: var(--input-height);
+  color: rgb(var(--color-text));
+  background-color: var(--input-bg);
+  background-clip: padding-box;
+  border: 1px solid var(--input-border-color);
+  border-radius: var(--input-radius);
+  transition: border-color var(--input-transition) ease,
+              box-shadow var(--input-transition) ease;
+}
+
+.cosmic-input:focus {
+  border-color: rgb(var(--color-primary) / 0.5);
+  outline: 0;
+  box-shadow: 0 0 0 2px rgb(var(--color-primary) / 0.25);
+}
+
+.cosmic-input::placeholder {
+  color: rgb(var(--color-muted) / 0.6);
+}
+
+/* Textarea */
+.cosmic-textarea {
+  --input-min-height: 6rem;
+  
+  height: auto;
+  min-height: var(--input-min-height);
+  padding: var(--input-padding-y) var(--input-padding-x);
+  line-height: 1.5;
+  resize: vertical;
+}
+
+/* Select */
+.cosmic-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235C6780' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--input-padding-x) center;
+  background-size: 16px;
+  padding-right: calc(var(--input-padding-x) * 2.5);
+}
+
+/* Checkbox and Radio base styles */
+.cosmic-checkbox-container,
+.cosmic-radio-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.cosmic-checkbox,
+.cosmic-radio {
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid var(--input-border-color);
+  background-color: var(--input-bg);
+  transition: background-color var(--input-transition) ease,
+              border-color var(--input-transition) ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.cosmic-checkbox {
+  border-radius: var(--radius-sm);
+}
+
+.cosmic-radio {
+  border-radius: 50%;
+}
+
+.cosmic-checkbox:checked,
+.cosmic-radio:checked {
+  border-color: rgb(var(--color-primary));
+  background-color: rgb(var(--color-primary));
+}
+
+.cosmic-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.cosmic-radio:checked::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: white;
+}
+
+.cosmic-checkbox:focus,
+.cosmic-radio:focus {
+  outline: 0;
+  box-shadow: 0 0 0 2px rgb(var(--color-primary) / 0.25);
+}
+
+/* Switch */
+.cosmic-switch-container {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+}
+
+.cosmic-switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+}
+
+.cosmic-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.cosmic-switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(var(--color-border), 0.5);
+  transition: .3s;
+  border-radius: 20px;
+}
+
+.cosmic-switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+
+.cosmic-switch input:checked + .cosmic-switch-slider {
+  background-color: rgb(var(--color-primary));
+}
+
+.cosmic-switch input:focus + .cosmic-switch-slider {
+  box-shadow: 0 0 1px rgb(var(--color-primary));
+}
+
+.cosmic-switch input:checked + .cosmic-switch-slider:before {
+  transform: translateX(16px);
+}
+
+/* Range Slider */
+.cosmic-range {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(var(--color-border), 0.3);
+  outline: none;
+  transition: background var(--input-transition) ease;
+}
+
+.cosmic-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgb(var(--color-primary));
+  cursor: pointer;
+  transition: all var(--input-transition) ease;
+}
+
+.cosmic-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgb(var(--color-primary));
+  cursor: pointer;
+  transition: all var(--input-transition) ease;
+}
+
+.cosmic-range::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgb(var(--color-primary) / 0.3);
+}
+
+.cosmic-range::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgb(var(--color-primary) / 0.3);
+}
+
+/* ======== Form States ======== */
+
+/* Validation states */
+.cosmic-input-error {
+  border-color: rgb(var(--color-error) / 0.5);
+  background-color: rgb(var(--color-error) / 0.05);
+}
+
+.cosmic-input-error:focus {
+  border-color: rgb(var(--color-error) / 0.7);
+  box-shadow: 0 0 0 2px rgb(var(--color-error) / 0.25);
+}
+
+.cosmic-input-success {
+  border-color: rgb(var(--color-success) / 0.5);
+  background-color: rgb(var(--color-success) / 0.05);
+}
+
+.cosmic-input-success:focus {
+  border-color: rgb(var(--color-success) / 0.7);
+  box-shadow: 0 0 0 2px rgb(var(--color-success) / 0.25);
+}
+
+/* Disabled state */
+.cosmic-input:disabled,
+.cosmic-textarea:disabled,
+.cosmic-select:disabled,
+.cosmic-checkbox:disabled,
+.cosmic-radio:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: rgb(var(--color-card) / 0.5);
+}
+
+/* Form feedback messages */
+.cosmic-form-error {
+  color: rgb(var(--color-error));
+  font-size: 0.75rem;
+  margin-top: var(--space-1);
+}
+
+.cosmic-form-help {
+  color: rgb(var(--color-muted));
+  font-size: 0.75rem;
+  margin-top: var(--space-1);
+}
+
+/* Form actions */
+.cosmic-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+/* ======== Professional Theme Variant ======== */
+:root[data-theme-variant="professional"] .cosmic-input,
+:root[data-theme-variant="professional"] .cosmic-textarea,
+:root[data-theme-variant="professional"] .cosmic-select {
+  border-width: 1px;
+  background-color: rgb(var(--color-card) / 0.6);
+}
+
+:root[data-theme-variant="professional"] .cosmic-form-label {
+  font-weight: 500;
+}
+
+/* ======== Vibrant Theme Variant ======== */
+:root[data-theme-variant="vibrant"] .cosmic-input,
+:root[data-theme-variant="vibrant"] .cosmic-textarea,
+:root[data-theme-variant="vibrant"] .cosmic-select {
+  background: rgba(var(--color-card), 0.3);
+  border: 1px solid rgba(var(--color-border), 0.1);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius-md);
+}
+
+:root[data-theme-variant="vibrant"] .cosmic-input:focus,
+:root[data-theme-variant="vibrant"] .cosmic-textarea:focus,
+:root[data-theme-variant="vibrant"] .cosmic-select:focus {
+  border-color: rgb(var(--color-primary) / 0.7);
+  box-shadow: 0 0 15px rgb(var(--color-primary) / 0.3);
+}
+
+:root[data-theme-variant="vibrant"] .cosmic-checkbox:checked,
+:root[data-theme-variant="vibrant"] .cosmic-radio:checked {
+  box-shadow: 0 0 10px rgb(var(--color-primary) / 0.5);
+}
+
+/* ======== Tint Theme Variant ======== */
+:root[data-theme-variant="tint"] .cosmic-input,
+:root[data-theme-variant="tint"] .cosmic-textarea,
+:root[data-theme-variant="tint"] .cosmic-select {
+  border-radius: 0;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 2px solid rgba(var(--color-border), 0.3);
+  background-color: transparent;
+}
+
+:root[data-theme-variant="tint"] .cosmic-input:focus,
+:root[data-theme-variant="tint"] .cosmic-textarea:focus,
+:root[data-theme-variant="tint"] .cosmic-select:focus {
+  border-bottom-color: rgb(var(--color-primary));
+  box-shadow: none;
+}
+
+:root[data-theme-variant="tint"] .cosmic-checkbox,
+:root[data-theme-variant="tint"] .cosmic-radio {
+  border-width: 2px;
+}
+
+/* ======== Accessibility Improvements ======== */
+@media (prefers-reduced-motion: reduce) {
+  .cosmic-input,
+  .cosmic-textarea,
+  .cosmic-select,
+  .cosmic-checkbox,
+  .cosmic-radio,
+  .cosmic-switch-slider,
+  .cosmic-switch-slider:before,
+  .cosmic-range,
+  .cosmic-range::-webkit-slider-thumb,
+  .cosmic-range::-moz-range-thumb {
+    transition: none !important;
+  }
+  
+  .cosmic-range::-webkit-slider-thumb:hover,
+  .cosmic-range::-moz-range-thumb:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ======== Mobile Responsiveness ======== */
+@media (max-width: 640px) {
+  .cosmic-form-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+  
+  .cosmic-form-grid-col-6,
+  .cosmic-form-grid-col-4,
+  .cosmic-form-grid-col-3 {
+    grid-column: 1 / -1;
+  }
+  
+  .cosmic-form-row {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  
+  .cosmic-input {
+    --input-height: 2.25rem;
+    font-size: 0.8125rem;
+  }
+  
+  .cosmic-form-label {
+    font-size: 0.8125rem;
+  }
+  
+  .cosmic-form-actions {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  
+  .cosmic-form-actions .cosmic-button {
+    width: 100%;
+  }
+}

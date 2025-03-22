@@ -59,14 +59,14 @@
   --cosmic-input-bg: rgba(15, 23, 42, 0.6);
   
   /* Z-index layers */
-  --z-dropdown: 10;
+  --z-dropdown: 100;  /* Increased to ensure dropdowns appear above navbars */
   --z-sticky: 20;
   --z-fixed: 30;
   --z-modal-backdrop: 40;
   --z-modal: 50;
-  --z-popover: 60;
-  --z-tooltip: 70;
-  --z-toast: 80;
+  --z-popover: 110;  /* Increased to ensure popover content appears above everything */
+  --z-tooltip: 120;  /* Increased to be above popovers */
+  --z-toast: 130;    /* Increased to be the top-most layer */
   
   /* ======== Effects & Gradients ======== */
   --cosmic-gradient: linear-gradient(

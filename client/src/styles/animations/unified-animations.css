@@ -1,0 +1,387 @@
+/**
+ * Unified Animation System
+ * 
+ * This file consolidates all animation styles from animations.css and cosmic-animations.css
+ * into a single, organized system of reusable animations.
+ */
+
+/* ======== Basic Transitions ======== */
+.cosmic-transition {
+  transition: all var(--duration-normal) ease;
+}
+
+.cosmic-transition-fast {
+  transition: all var(--duration-fast) ease;
+}
+
+.cosmic-transition-slow {
+  transition: all var(--duration-slow) ease;
+}
+
+/* ======== Fade Animations ======== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.cosmic-fade-in {
+  animation: fadeIn var(--duration-normal) ease forwards;
+}
+
+.cosmic-fade-out {
+  animation: fadeOut var(--duration-normal) ease forwards;
+}
+
+.cosmic-fade-in-fast {
+  animation: fadeIn var(--duration-fast) ease forwards;
+}
+
+.cosmic-fade-out-fast {
+  animation: fadeOut var(--duration-fast) ease forwards;
+}
+
+/* ======== Slide Animations ======== */
+@keyframes slideInFromTop {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.cosmic-slide-in-top {
+  animation: slideInFromTop var(--duration-normal) ease forwards;
+}
+
+.cosmic-slide-in-bottom {
+  animation: slideInFromBottom var(--duration-normal) ease forwards;
+}
+
+.cosmic-slide-in-left {
+  animation: slideInFromLeft var(--duration-normal) ease forwards;
+}
+
+.cosmic-slide-in-right {
+  animation: slideInFromRight var(--duration-normal) ease forwards;
+}
+
+/* ======== Cosmic Specific Animations ======== */
+@keyframes pulse {
+  0% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+  100% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+@keyframes fadeInStagger {
+  from { 
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cosmic-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.cosmic-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.cosmic-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(var(--color-card), 0.1) 25%, 
+    rgba(var(--color-primary), 0.15) 50%, 
+    rgba(var(--color-card), 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.cosmic-gradient-animate {
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease infinite;
+}
+
+.cosmic-spin {
+  animation: spin 2s linear infinite;
+}
+
+.cosmic-twinkle {
+  animation: twinkle 2s ease-in-out infinite;
+}
+
+/* ======== Loading Animations ======== */
+.cosmic-loading-dots {
+  position: relative;
+  min-height: 24px;
+}
+
+.cosmic-loading-dots::after {
+  content: ".";
+  position: absolute;
+  animation: loadingDots 1.5s infinite;
+  font-weight: bold;
+}
+
+@keyframes loadingDots {
+  0% { content: "."; }
+  33% { content: ".."; }
+  66% { content: "..."; }
+  100% { content: "."; }
+}
+
+.cosmic-loading-spinner {
+  border: 3px solid rgba(var(--color-card), 0.3);
+  border-radius: 50%;
+  border-top: 3px solid rgb(var(--color-primary));
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+}
+
+.cosmic-loading-shimmer {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(var(--color-card), 0.1) 25%, 
+    rgba(var(--color-primary), 0.15) 50%, 
+    rgba(var(--color-card), 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+  border-radius: var(--radius-md);
+}
+
+/* ======== Text Animations ======== */
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blinkCursor {
+  from, to { border-color: transparent; }
+  50% { border-color: rgb(var(--color-text)); }
+}
+
+.cosmic-typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  margin: 0 auto;
+  border-right: 2px solid rgb(var(--color-text));
+  animation: 
+    typewriter 2s steps(40, end),
+    blinkCursor 0.75s step-end infinite;
+}
+
+/* ======== Star/Twinkle Animations ======== */
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.8; }
+}
+
+.cosmic-star {
+  position: absolute;
+  background-color: white;
+  border-radius: 50%;
+  animation: starTwinkle var(--duration-slow) ease-in-out infinite;
+}
+
+/* Different animation delays for stars */
+.cosmic-star:nth-child(2n) {
+  animation-delay: 0.5s;
+}
+
+.cosmic-star:nth-child(3n) {
+  animation-delay: 1s;
+}
+
+.cosmic-star:nth-child(5n) {
+  animation-delay: 1.5s;
+}
+
+/* ======== Appear Animations with Staggered Effect ======== */
+.cosmic-stagger-parent > * {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.cosmic-stagger-parent.animate > * {
+  animation: fadeInStagger 0.5s ease forwards;
+}
+
+.cosmic-stagger-parent.animate > *:nth-child(1) { animation-delay: 0.1s; }
+.cosmic-stagger-parent.animate > *:nth-child(2) { animation-delay: 0.2s; }
+.cosmic-stagger-parent.animate > *:nth-child(3) { animation-delay: 0.3s; }
+.cosmic-stagger-parent.animate > *:nth-child(4) { animation-delay: 0.4s; }
+.cosmic-stagger-parent.animate > *:nth-child(5) { animation-delay: 0.5s; }
+.cosmic-stagger-parent.animate > *:nth-child(6) { animation-delay: 0.6s; }
+.cosmic-stagger-parent.animate > *:nth-child(7) { animation-delay: 0.7s; }
+.cosmic-stagger-parent.animate > *:nth-child(8) { animation-delay: 0.8s; }
+.cosmic-stagger-parent.animate > *:nth-child(9) { animation-delay: 0.9s; }
+.cosmic-stagger-parent.animate > *:nth-child(10) { animation-delay: 1s; }
+
+/* ======== Professional Theme Variant ======== */
+:root[data-theme-variant="professional"] .cosmic-pulse {
+  animation-duration: 3s;
+}
+
+:root[data-theme-variant="professional"] .cosmic-shimmer {
+  animation-duration: 3s;
+}
+
+/* ======== Vibrant Theme Variant ======== */
+:root[data-theme-variant="vibrant"] .cosmic-pulse {
+  animation-duration: 1.5s;
+}
+
+:root[data-theme-variant="vibrant"] .cosmic-float {
+  animation-duration: 3s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root[data-theme-variant="vibrant"] .cosmic-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(var(--color-card), 0.1) 25%, 
+    rgba(var(--color-primary), 0.3) 50%, 
+    rgba(var(--color-card), 0.1) 75%
+  );
+  animation-duration: 1.5s;
+}
+
+/* ======== Tint Theme Variant ======== */
+:root[data-theme-variant="tint"] .cosmic-pulse,
+:root[data-theme-variant="tint"] .cosmic-float,
+:root[data-theme-variant="tint"] .cosmic-shimmer,
+:root[data-theme-variant="tint"] .cosmic-gradient-animate {
+  animation-duration: 4s;
+  animation-timing-function: ease-in-out;
+}
+
+/* ======== Accessibility - Reduced Motion ======== */
+@media (prefers-reduced-motion: reduce) {
+  .cosmic-transition,
+  .cosmic-transition-fast,
+  .cosmic-transition-slow {
+    transition: none !important;
+  }
+  
+  .cosmic-fade-in,
+  .cosmic-fade-out,
+  .cosmic-fade-in-fast,
+  .cosmic-fade-out-fast,
+  .cosmic-slide-in-top,
+  .cosmic-slide-in-bottom,
+  .cosmic-slide-in-left,
+  .cosmic-slide-in-right,
+  .cosmic-pulse,
+  .cosmic-float,
+  .cosmic-shimmer,
+  .cosmic-gradient-animate,
+  .cosmic-spin,
+  .cosmic-twinkle,
+  .cosmic-loading-dots::after,
+  .cosmic-loading-spinner,
+  .cosmic-loading-shimmer,
+  .cosmic-typewriter,
+  .cosmic-star {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  
+  .cosmic-stagger-parent > * {
+    opacity: 1;
+    transform: none;
+  }
+  
+  .cosmic-loading-dots::after {
+    content: "...";
+  }
+}

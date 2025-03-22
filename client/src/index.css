@@ -11,16 +11,19 @@
 @import './styles/base/base.css';
 
 /* Unified component styles (new system) */
-@import './styles/components/unified-tabs.css';  /* Combined tab styles */
-@import './styles/components/unified-cards.css'; /* Combined card styles */
+@import './styles/components/unified-tabs.css';      /* Combined tab styles */
+@import './styles/components/unified-cards.css';     /* Combined card styles */
+@import './styles/components/unified-buttons.css';   /* Combined button styles */
+@import './styles/components/unified-forms.css';     /* Combined form styles */
+@import './styles/components/unified-dropdowns.css'; /* Combined dropdown styles */
 
 /* Legacy imports - these will eventually be phased out in favor of the unified theme */
 /* Only keeping for backwards compatibility during transition */
 @import './styles/components/cosmic-components.css';
 @import './styles/cosmic-resume.css';
-@import './styles/components/buttons.css';
-@import './styles/components/forms.css';
-/* Original tab and card styles commented out as we're using the unified versions */
+/* Original component styles commented out as we're using the unified versions */
+/* @import './styles/components/buttons.css'; */
+/* @import './styles/components/forms.css'; */
 /* @import './styles/components/tabs.css'; */
 /* @import './styles/components/cosmic-tabs.css'; */
 /* @import './styles/components/cards.css'; */
@@ -31,11 +34,14 @@
 @import './styles/layout/navigation.css';
 
 /* Import animations */
-@import './styles/animations/animations.css';
-@import './styles/animations/cosmic-animations.css';
+@import './styles/animations/unified-animations.css'; /* Combined animations */
+/* Original animation files commented out as we're using the unified version */
+/* @import './styles/animations/animations.css'; */
+/* @import './styles/animations/cosmic-animations.css'; */
 
 /* Import utilities last to ensure they have highest specificity */
 @import './styles/utilities/utilities.css';
+@import './styles/utilities/accessibility.css';
 
 /**
  * Legacy theme variables - these will be phased out in favor of theme-variables.css

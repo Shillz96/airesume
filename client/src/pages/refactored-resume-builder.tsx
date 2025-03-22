@@ -2881,9 +2881,9 @@ export default function ResumeBuilder() {
                         </h2>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-3 mb-4">
-                        <div className="cosmic-form-group">
-                          <Label htmlFor="firstName" className="cosmic-form-label">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-2 mb-3">
+                        <div className="cosmic-form-group mb-2">
+                          <Label htmlFor="firstName" className="cosmic-form-label mb-1">
                             First Name
                           </Label>
                           <Input
@@ -2896,8 +2896,8 @@ export default function ResumeBuilder() {
                             placeholder="Dylan"
                           />
                         </div>
-                        <div className="cosmic-form-group">
-                          <Label htmlFor="lastName" className="cosmic-form-label">
+                        <div className="cosmic-form-group mb-2">
+                          <Label htmlFor="lastName" className="cosmic-form-label mb-1">
                             Last Name
                           </Label>
                           <Input
@@ -2910,8 +2910,8 @@ export default function ResumeBuilder() {
                             placeholder="Spivack"
                           />
                         </div>
-                        <div className="cosmic-form-group">
-                          <Label htmlFor="email" className="cosmic-form-label">
+                        <div className="cosmic-form-group mb-2">
+                          <Label htmlFor="email" className="cosmic-form-label mb-1">
                             Email
                           </Label>
                           <Input
@@ -2925,8 +2925,8 @@ export default function ResumeBuilder() {
                             placeholder="john.doe@example.com"
                           />
                         </div>
-                        <div className="cosmic-form-group">
-                          <Label htmlFor="phone" className="cosmic-form-label">
+                        <div className="cosmic-form-group mb-2">
+                          <Label htmlFor="phone" className="cosmic-form-label mb-1">
                             Phone
                           </Label>
                           <Input
@@ -2941,9 +2941,9 @@ export default function ResumeBuilder() {
                         </div>
                       </div>
 
-                      <div className="mb-4 border-b border-gray-700 pb-4">
-                        <div className="cosmic-form-group">
-                          <Label htmlFor="headline" className="cosmic-form-label">
+                      <div className="mb-3 border-b border-gray-700 pb-3">
+                        <div className="cosmic-form-group mb-2">
+                          <Label htmlFor="headline" className="cosmic-form-label mb-1">
                             Professional Headline
                           </Label>
                           <Input
@@ -2960,8 +2960,8 @@ export default function ResumeBuilder() {
                       </div>
 
                       <div>
-                        <div className="cosmic-form-group">
-                          <Label htmlFor="summary" className="cosmic-form-label">
+                        <div className="cosmic-form-group mb-2">
+                          <Label htmlFor="summary" className="cosmic-form-label mb-1">
                             Professional Summary
                           </Label>
                           <Textarea

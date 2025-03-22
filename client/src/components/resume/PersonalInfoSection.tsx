@@ -1,11 +1,13 @@
-import React from 'react';
-import { PersonalInfo } from '@/hooks/use-resume-data';
-import { Label } from '@/components/ui/label';
+import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { User, Upload } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { CosmicButton } from '@/components/cosmic-button';
-import AIAssistant from '@/components/ai-assistant';
+import { Upload, User, Mail, Phone, Briefcase } from 'lucide-react';
+import { PersonalInfo } from '@/hooks/use-resume-data';
+import { getCosmicColor, getSpacing } from '@/lib/theme-utils';
 
 interface PersonalInfoSectionProps {
   personalInfo: PersonalInfo;
@@ -25,160 +27,158 @@ export function PersonalInfoSection({
   onFileUpload,
   showUploadCard = false
 }: PersonalInfoSectionProps) {
-  // Handler for applying summary from AI suggestions
-  const handleApplySummary = (summary: string) => {
-    onUpdate('summary', summary);
-  };
-
   return (
-    <div className="cosmic-resume-section">
-      <div className="main-content">
-        {/* Optional resume upload card */}
-        {showUploadCard && (
-          <div className="md:col-span-3 mb-4">
-            <div className="cosmic-card border border-blue-500/30 bg-blue-900/20 p-6 rounded-lg relative overflow-hidden backdrop-blur-sm">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
-              <div className="relative z-10">
-                <div className="flex items-center mb-3">
-                  <Upload className="h-5 w-5 mr-2 text-blue-400" />
-                  <h3 className="font-medium text-xl text-white">
-                    Upload Your Existing Resume
-                  </h3>
-                </div>
-                <p className="text-gray-300 mb-4">
-                  Skip manual entry by uploading your existing
-                  resume. Our AI will automatically extract your
-                  information and fill out this form for you.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <CosmicButton
-                    variant="primary"
-                    onClick={onFileUpload}
-                    iconLeft={<Upload />}
-                  >
-                    Upload PDF, DOCX, or TXT
-                  </CosmicButton>
-                  <p className="text-sm text-gray-400 flex items-center">
-                    <span className="mr-1">or</span> fill out the
-                    form manually below
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+    <div className="space-y-6">
+      <div className="flex items-center gap-2">
+        <User className="h-5 w-5" style={{ color: getCosmicColor('primary') }} />
+        <h3 className="text-lg font-semibold">Personal Information</h3>
+      </div>
 
-        <div>
-          <div className="flex items-center mb-5">
-            <User className="h-5 w-5 mr-2 text-blue-400" />
-            <h2 className="text-white text-xl font-semibold">Personal Information</h2>
+      {showUploadCard && onFileUpload && (
+        <Card className="bg-gradient-to-r from-indigo-900/40 to-purple-900/40 border-indigo-500/30 mb-6">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div>
+              <h4 className="font-medium text-lg">Import from Existing Resume</h4>
+              <p className="text-sm opacity-70 mt-1">
+                Upload your existing resume to extract your information automatically
+              </p>
+            </div>
+            <CosmicButton
+              variant="outline"
+              onClick={onFileUpload}
+              iconLeft={<Upload className="h-4 w-4 mr-2" />}
+            >
+              Upload Resume
+            </CosmicButton>
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* First column */}
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="firstName">First Name</Label>
+            <Input
+              id="firstName"
+              value={personalInfo.firstName}
+              onChange={(e) => onUpdate('firstName', e.target.value)}
+              placeholder="Your first name"
+            />
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div className="cosmic-form-group">
-              <Label htmlFor="firstName" className="cosmic-form-label">
-                First Name
-              </Label>
-              <Input
-                id="firstName"
-                value={personalInfo.firstName}
-                onChange={(e) => onUpdate("firstName", e.target.value)}
-                className="cosmic-form-input"
-                placeholder="Dylan"
-              />
-            </div>
-            <div className="cosmic-form-group">
-              <Label htmlFor="lastName" className="cosmic-form-label">
-                Last Name
-              </Label>
-              <Input
-                id="lastName"
-                value={personalInfo.lastName}
-                onChange={(e) => onUpdate("lastName", e.target.value)}
-                className="cosmic-form-input"
-                placeholder="Spivack"
-              />
-            </div>
-            <div className="cosmic-form-group">
-              <Label htmlFor="email" className="cosmic-form-label">
-                Email
-              </Label>
+
+          <div className="space-y-2">
+            <Label htmlFor="lastName">Last Name</Label>
+            <Input
+              id="lastName"
+              value={personalInfo.lastName}
+              onChange={(e) => onUpdate('lastName', e.target.value)}
+              placeholder="Your last name"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 id="email"
                 type="email"
                 value={personalInfo.email}
-                onChange={(e) => onUpdate("email", e.target.value)}
-                className="cosmic-form-input"
-                placeholder="dylan.spivack@example.com"
+                onChange={(e) => onUpdate('email', e.target.value)}
+                className="pl-10"
+                placeholder="your.email@example.com"
               />
             </div>
-            <div className="cosmic-form-group">
-              <Label htmlFor="phone" className="cosmic-form-label">
-                Phone
-              </Label>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone</Label>
+            <div className="relative">
+              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 id="phone"
                 value={personalInfo.phone}
-                onChange={(e) => onUpdate("phone", e.target.value)}
-                className="cosmic-form-input"
-                placeholder="(303) 555-9307"
+                onChange={(e) => onUpdate('phone', e.target.value)}
+                className="pl-10"
+                placeholder="(555) 123-4567"
               />
             </div>
           </div>
+        </div>
 
-          <div className="cosmic-form-group mb-6">
-            <Label htmlFor="headline" className="cosmic-form-label">
-              Professional Headline
-            </Label>
-            <Input
-              id="headline"
-              value={personalInfo.headline}
-              onChange={(e) => onUpdate("headline", e.target.value)}
-              className="cosmic-form-input"
-              placeholder="Senior Software Engineer specializing in React and Node.js"
-            />
+        {/* Second column */}
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="headline">Professional Headline</Label>
+            <div className="relative">
+              <Briefcase className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="headline"
+                value={personalInfo.headline}
+                onChange={(e) => onUpdate('headline', e.target.value)}
+                className="pl-10"
+                placeholder="e.g., Senior Software Engineer | React Specialist"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              A short headline that appears below your name
+            </p>
           </div>
 
-          <div className="cosmic-form-group">
-            <Label htmlFor="summary" className="cosmic-form-label">
-              Professional Summary
-            </Label>
+          <div className="space-y-2">
+            <Label htmlFor="summary">Professional Summary</Label>
             <Textarea
               id="summary"
               value={personalInfo.summary}
-              onChange={(e) => onUpdate("summary", e.target.value)}
-              className="cosmic-form-input cosmic-form-textarea"
-              placeholder="Dedicated and efficient software engineer with 8+ years of experience in application development. Highly skilled in React, Node.js, and API design. Improved application performance by 40% and reduced load times by 30% in my previous role."
-              rows={6}
+              onChange={(e) => onUpdate('summary', e.target.value)}
+              rows={8}
+              placeholder="Briefly introduce yourself, highlighting your expertise, experience, and unique value proposition..."
             />
+            <p className="text-xs text-muted-foreground">
+              Aim for 3-5 sentences that highlight your professional strengths and career goals
+            </p>
           </div>
         </div>
       </div>
 
-      {/* AI Assistant sidebar */}
-      <div className="assistant-content">
-        <div className="cosmic-assistant-card">
-          <div className="cosmic-glow"></div>
-          <div className="content">
-            <div className="cosmic-assistant-header">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+      <div className="space-y-2 mt-4">
+        <h4 className="text-sm font-medium text-muted-foreground">Recommendations:</h4>
+        <ul className="space-y-1 text-sm">
+          <li className="flex items-start gap-2">
+            <div className="rounded-full bg-green-500/20 text-green-500 p-0.5 mt-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
-              <h3>AI Summary Assistant</h3>
             </div>
-            
-            <AIAssistant 
-              resumeId={resumeId}
-              onApplySummary={handleApplySummary}
-              activeTab="contact"
-            />
-          </div>
-        </div>
+            Keep your summary concise and impactful - aim for 3-5 sentences
+          </li>
+          <li className="flex items-start gap-2">
+            <div className="rounded-full bg-green-500/20 text-green-500 p-0.5 mt-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            Include relevant keywords from job descriptions you're targeting
+          </li>
+          <li className="flex items-start gap-2">
+            <div className="rounded-full bg-green-500/20 text-green-500 p-0.5 mt-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            Your professional headline should be specific and include your specialty
+          </li>
+          <li className="flex items-start gap-2">
+            <div className="rounded-full bg-green-500/20 text-green-500 p-0.5 mt-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            Use a professional email address, ideally with your name
+          </li>
+        </ul>
       </div>
     </div>
   );
 }
-
-export default PersonalInfoSection;

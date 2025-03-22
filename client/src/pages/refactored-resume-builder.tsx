@@ -21,6 +21,9 @@ import ResumePreviewComponent from '@/components/resume-builder/ResumePreviewCom
 import AIAssistantDialog from '@/components/resume-builder/AIAssistantDialog';
 import TemplateSelector from '@/components/resume-builder/TemplateSelector';
 
+// AI Resume Assistant
+import AIResumeAssistant from '@/components/resume/AIResumeAssistant';
+
 // Icons
 import {
   User,

@@ -2552,22 +2552,22 @@ export default function ResumeBuilder() {
             {/* Load Saved Resume Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
+                <CosmicButton 
                   variant="outline" 
-                  className="border-white/10 bg-blue-600/40 text-white hover:bg-blue-600/60"
+                  className="cosmic-dropdown-trigger"
+                  iconLeft={<FolderOpen className="h-4 w-4" />}
                 >
-                  <FolderOpen className="h-4 w-4 mr-2" />
-                  <span>Load Resume</span>
-                </Button>
+                  Load Resume
+                </CosmicButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 bg-gray-900/95 border border-gray-800">
-                <DropdownMenuLabel className="text-gray-300">Your Saved Resumes</DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-gray-700" />
+              <DropdownMenuContent className="cosmic-dropdown-content w-56">
+                <DropdownMenuLabel className="cosmic-dropdown-label">Your Saved Resumes</DropdownMenuLabel>
+                <DropdownMenuSeparator className="cosmic-dropdown-separator" />
                 {Array.isArray(userResumes) && userResumes.length > 0 ? (
                   userResumes.map((savedResume: any) => (
                     <DropdownMenuItem
                       key={savedResume.id}
-                      className="text-gray-300 hover:text-white cursor-pointer focus:text-white focus:bg-blue-700"
+                      className="cosmic-dropdown-item"
                       onClick={async () => {
                         try {
                           // Ensure we have a valid resume ID before using it
@@ -2588,7 +2588,18 @@ export default function ResumeBuilder() {
                                 throw new Error(`Error fetching resume: ${response.status}`);
                               }
                               
-                              const resumeData = await response.json();
+                              const resumeData = await response.json() as {
+                                id?: number;
+                                title?: string;
+                                content?: {
+                                  personalInfo?: any;
+                                  experience?: any[];
+                                  education?: any[];
+                                  skills?: any[];
+                                  projects?: any[];
+                                };
+                                template?: string;
+                              };
                               console.log("Direct fetch resume data:", JSON.stringify(resumeData, null, 2));
                               
                               // The API returns resume data with a nested 'content' object
@@ -2689,7 +2700,7 @@ export default function ResumeBuilder() {
                     </DropdownMenuItem>
                   ))
                 ) : (
-                  <DropdownMenuItem disabled className="text-gray-500">
+                  <DropdownMenuItem disabled className="cosmic-dropdown-item-disabled">
                     No saved resumes found
                   </DropdownMenuItem>
                 )}
@@ -2850,12 +2861,12 @@ export default function ResumeBuilder() {
                     )}
                   <div className="md:col-span-2 space-y-6">
                     <div>
-                      <div className="flex items-center mb-5">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-400 mr-2">
+                      <div className="cosmic-section-header flex items-center mb-5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="cosmic-section-icon mr-2">
                           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                           <circle cx="12" cy="7" r="4"></circle>
                         </svg>
-                        <h2 className="text-white text-xl font-semibold">Personal Information</h2>
+                        <h2 className="cosmic-section-title">Personal Information</h2>
                       </div>
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">

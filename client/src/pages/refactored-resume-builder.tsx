@@ -120,18 +120,18 @@ export default function ResumeBuilder() {
               onValueChange={setActiveSection}
               className="space-y-4"
             >
-              <TabsList className="grid grid-cols-2 md:grid-cols-7 gap-2">
-                <TabsTrigger value="contact">Contact</TabsTrigger>
-                <TabsTrigger value="summary">Summary</TabsTrigger>
-                <TabsTrigger value="experience">Experience</TabsTrigger>
-                <TabsTrigger value="education">Education</TabsTrigger>
-                <TabsTrigger value="skills">Skills</TabsTrigger>
-                <TabsTrigger value="projects">Projects</TabsTrigger>
-                <TabsTrigger value="preview">Preview</TabsTrigger>
+              <TabsList className="w-full bg-[#0f1729] border-b border-gray-800 flex overflow-x-auto no-scrollbar">
+                <TabsTrigger className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none bg-transparent hover:bg-[#1a2032] text-gray-400 data-[state=active]:text-white data-[state=active]:bg-transparent" value="contact">Contact</TabsTrigger>
+                <TabsTrigger className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none bg-transparent hover:bg-[#1a2032] text-gray-400 data-[state=active]:text-white data-[state=active]:bg-transparent" value="summary">Summary</TabsTrigger>
+                <TabsTrigger className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none bg-transparent hover:bg-[#1a2032] text-gray-400 data-[state=active]:text-white data-[state=active]:bg-transparent" value="experience">Experience</TabsTrigger>
+                <TabsTrigger className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none bg-transparent hover:bg-[#1a2032] text-gray-400 data-[state=active]:text-white data-[state=active]:bg-transparent" value="education">Education</TabsTrigger>
+                <TabsTrigger className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none bg-transparent hover:bg-[#1a2032] text-gray-400 data-[state=active]:text-white data-[state=active]:bg-transparent" value="skills">Skills</TabsTrigger>
+                <TabsTrigger className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none bg-transparent hover:bg-[#1a2032] text-gray-400 data-[state=active]:text-white data-[state=active]:bg-transparent" value="projects">Projects</TabsTrigger>
+                <TabsTrigger className="py-3 px-4 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none bg-transparent hover:bg-[#1a2032] text-gray-400 data-[state=active]:text-white data-[state=active]:bg-transparent" value="preview">Preview</TabsTrigger>
               </TabsList>
 
               {/* Contact/Personal Info Tab */}
-              <TabsContent value="contact" className="space-y-4 p-4 bg-card rounded-lg border">
+              <TabsContent value="contact" className="space-y-4 p-6 bg-[#0f1729] rounded-md border border-[#252a47] mt-4">
                 <h3 className="text-lg font-medium">Personal Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -218,13 +218,14 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               {/* Summary Tab */}
-              <TabsContent value="summary" className="space-y-4 p-4 bg-card rounded-lg border">
+              <TabsContent value="summary" className="space-y-4 p-6 bg-[#0f1729] rounded-md border border-[#252a47] mt-4">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-medium">Professional Summary</h3>
                   <Button 
                     variant="outline" 
                     size="sm"
                     onClick={() => setIsDialogOpen(true)}
+                    className="bg-[#1a2032] text-white border-[#252a47] hover:bg-[#252a47]"
                   >
                     <Bot className="h-4 w-4 mr-2" />
                     Get AI Suggestions
@@ -243,23 +244,35 @@ export default function ResumeBuilder() {
                     })}
                     placeholder="Write a compelling professional summary that highlights your expertise, experience, and key strengths."
                   />
-                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-md border border-blue-200 dark:border-blue-800">
-                    <h4 className="text-sm font-medium mb-2 flex items-center">
-                      <Star className="h-4 w-4 mr-2 text-blue-500" />
+                  <div className="bg-[#14192b] border border-[#252a47] p-5 rounded-md">
+                    <h4 className="text-sm font-medium mb-3 flex items-center text-white">
+                      <Star className="h-4 w-4 mr-2 text-blue-400" />
                       Pro Tips for a Great Summary
                     </h4>
-                    <ul className="text-xs space-y-1 text-gray-600 dark:text-gray-300">
-                      <li>• Keep it between 3-5 sentences for optimal ATS scanning</li>
-                      <li>• Mention years of experience and key specializations</li>
-                      <li>• Include notable achievements with measurable results</li>
-                      <li>• Tailor it to match the job descriptions you're targeting</li>
+                    <ul className="text-xs space-y-2 text-gray-300">
+                      <li className="flex items-start">
+                        <span className="text-blue-400 mr-2">•</span>
+                        <span>Keep it between 3-5 sentences for optimal ATS scanning</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-blue-400 mr-2">•</span>
+                        <span>Mention years of experience and key specializations</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-blue-400 mr-2">•</span>
+                        <span>Include notable achievements with measurable results</span>
+                      </li>
+                      <li className="flex items-start">
+                        <span className="text-blue-400 mr-2">•</span>
+                        <span>Tailor it to match the job descriptions you're targeting</span>
+                      </li>
                     </ul>
                   </div>
                 </div>
               </TabsContent>
 
               {/* Experience Tab */}
-              <TabsContent value="experience" className="space-y-4 p-4 bg-card rounded-lg border">
+              <TabsContent value="experience" className="space-y-4 p-6 bg-[#0f1729] rounded-md border border-[#252a47] mt-4">
                 <ResumeExperienceSection
                   experiences={resume.experience}
                   onUpdate={(experiences) => updateResume({...resume, experience: experiences})}
@@ -267,7 +280,7 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               {/* Education Tab */}
-              <TabsContent value="education" className="space-y-4 p-4 bg-card rounded-lg border">
+              <TabsContent value="education" className="space-y-4 p-6 bg-[#0f1729] rounded-md border border-[#252a47] mt-4">
                 <ResumeEducationSection
                   education={resume.education}
                   onUpdate={(education) => updateResume({...resume, education: education})}
@@ -275,7 +288,7 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               {/* Skills Tab */}
-              <TabsContent value="skills" className="space-y-4 p-4 bg-card rounded-lg border">
+              <TabsContent value="skills" className="space-y-4 p-6 bg-[#0f1729] rounded-md border border-[#252a47] mt-4">
                 <ResumeSkillsSection
                   skills={resume.skills}
                   onUpdate={(skills) => updateResume({...resume, skills: skills})}
@@ -283,7 +296,7 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               {/* Projects Tab */}
-              <TabsContent value="projects" className="space-y-4 p-4 bg-card rounded-lg border">
+              <TabsContent value="projects" className="space-y-4 p-6 bg-[#0f1729] rounded-md border border-[#252a47] mt-4">
                 <ResumeProjectsSection
                   projects={resume.projects}
                   onUpdate={(projects) => updateResume({...resume, projects: projects})}
@@ -291,10 +304,15 @@ export default function ResumeBuilder() {
               </TabsContent>
               
               {/* Preview Tab */}
-              <TabsContent value="preview" className="space-y-4 p-4 bg-card rounded-lg border">
+              <TabsContent value="preview" className="space-y-4 p-6 bg-[#0f1729] rounded-md border border-[#252a47] mt-4">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-medium">Resume Preview</h3>
-                  <Button onClick={handleDownload} variant="outline" size="sm">
+                  <Button 
+                    onClick={handleDownload} 
+                    variant="outline" 
+                    size="sm"
+                    className="bg-[#1a2032] text-white border-[#252a47] hover:bg-[#252a47]"
+                  >
                     <Download className="h-4 w-4 mr-2" />
                     Download PDF
                   </Button>

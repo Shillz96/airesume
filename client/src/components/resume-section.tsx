@@ -120,7 +120,7 @@ export function ResumeExperienceSection({ experiences, onUpdate }: ResumeExperie
           key={exp.id}
           open={openId === exp.id}
           onOpenChange={() => setOpenId(openId === exp.id ? null : exp.id)}
-          className="cosmic-experience-item mb-4 border border-blue-400/30 rounded-lg overflow-hidden backdrop-blur-sm bg-slate-900/40"
+          className="cosmic-experience-item mb-4"
         >
           <div className="cosmic-experience-title-bar">
             <CollapsibleTrigger asChild>
@@ -282,7 +282,7 @@ export function ResumeEducationSection({ education, onUpdate }: ResumeEducationS
           key={edu.id}
           open={openId === edu.id}
           onOpenChange={() => setOpenId(openId === edu.id ? null : edu.id)}
-          className="cosmic-education-item mb-4 border border-blue-400/30 rounded-lg overflow-hidden backdrop-blur-sm bg-slate-900/40"
+          className="cosmic-education-item mb-4"
         >
           <div className="cosmic-education-title-bar">
             <CollapsibleTrigger asChild>
@@ -430,9 +430,9 @@ export function ResumeSkillsSection({ skills, onUpdate }: ResumeSkillsSectionPro
         </div>
       )}
       
-      <div className="cosmic-skills-grid gap-3 grid grid-cols-1 md:grid-cols-2 mb-2">
+      <div className="cosmic-skills-grid">
         {skills.map((skill) => (
-          <div key={skill.id} className="cosmic-skill-item flex items-center p-2 border border-blue-400/20 rounded-md backdrop-blur-sm bg-slate-900/40">
+          <div key={skill.id} className="cosmic-skill-item">
             <Input
               value={skill.name}
               onChange={(e) => handleChange(skill.id, "name", e.target.value)}
@@ -538,7 +538,7 @@ export function ResumeProjectsSection({ projects, onUpdate }: ResumeProjectsSect
           key={project.id}
           open={openId === project.id}
           onOpenChange={() => setOpenId(openId === project.id ? null : project.id)}
-          className="cosmic-projects-item mb-4 border border-blue-400/30 rounded-lg overflow-hidden backdrop-blur-sm bg-slate-900/40"
+          className="cosmic-projects-item mb-4"
         >
           <div className="cosmic-projects-title-bar">
             <CollapsibleTrigger asChild>

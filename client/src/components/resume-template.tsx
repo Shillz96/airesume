@@ -46,14 +46,13 @@ function TemplateOption({ name, description, preview, selected, onClick }: Templ
     <div
       onClick={onClick}
       className={`cursor-pointer relative rounded-lg border ${
-        selected ? "ring-2 ring-blue-400/70 border-blue-500/50 shadow-blue-500/20 shadow-lg" : "border-blue-500/20"
-      } cosmic-card backdrop-blur-sm bg-slate-900/40 px-6 py-5 shadow-md flex flex-col items-center space-y-3 hover:border-blue-500/40 hover:shadow-blue-500/20 hover:shadow-lg focus-within:ring-2 focus-within:ring-blue-400/50 transition-all duration-200`}
+        selected ? "ring-2 ring-offset-2 ring-primary-500 border-primary-400" : "border-secondary-300"
+      } bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-primary-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500`}
     >
       <div className="flex-shrink-0 h-40 w-full">{preview}</div>
-      <div className="flex-1 min-w-0 text-center">
-        <p className="text-base font-medium cosmic-text-gradient">{name}</p>
-        <p className="text-sm text-blue-200/80 mt-1 truncate">{description}</p>
-        {selected && <div className="absolute top-2 right-2 h-2 w-2 rounded-full bg-blue-400 animate-pulse"></div>}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-secondary-900">{name}</p>
+        <p className="text-sm text-secondary-500 truncate">{description}</p>
       </div>
     </div>
   );
@@ -727,14 +726,14 @@ export default function ResumeTemplate({ resume, onTemplateChange }: ResumeTempl
   };
 
   return (
-    <Card className="cosmic-card border border-blue-500/30 bg-slate-900/40 backdrop-blur-sm shadow-lg">
-      <CardHeader className="border-b border-blue-500/20 px-4 py-4 sm:px-6 flex justify-between items-center">
-        <h2 className="text-lg font-medium cosmic-text-gradient">{resume.title || "Untitled Resume"}</h2>
+    <Card>
+      <CardHeader className="border-b border-secondary-200 px-4 py-4 sm:px-6 flex justify-between items-center">
+        <h2 className="text-lg font-medium text-secondary-900">{resume.title || "Untitled Resume"}</h2>
         <div className="flex space-x-2">
           <Button 
             variant="outline" 
             size="sm" 
-            className="text-xs cosmic-button border-blue-500/30 bg-blue-950/20 hover:bg-blue-900/30"
+            className="text-xs"
             onClick={async () => {
               try {
                 // Create a form for PDF generation
@@ -801,16 +800,16 @@ export default function ResumeTemplate({ resume, onTemplateChange }: ResumeTempl
           
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="text-xs cosmic-button border-blue-500/30 bg-blue-950/20 hover:bg-blue-900/30">
+              <Button variant="outline" size="sm" className="text-xs">
                 <Download className="h-3 w-3 mr-1" /> DOCX
               </Button>
             </DialogTrigger>
-            <DialogContent className="cosmic-dialog-content border-blue-500/30 bg-slate-900/90 backdrop-blur-lg">
+            <DialogContent>
               <DialogHeader>
-                <DialogTitle className="cosmic-text-gradient text-xl">Export as DOCX</DialogTitle>
+                <DialogTitle>Export as DOCX</DialogTitle>
               </DialogHeader>
               <div className="py-4">
-                <p className="text-slate-300">
+                <p className="text-secondary-600">
                   This would export your resume as a DOCX file in a real implementation.
                 </p>
               </div>
@@ -819,13 +818,13 @@ export default function ResumeTemplate({ resume, onTemplateChange }: ResumeTempl
           
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="text-xs cosmic-button border-blue-500/30 bg-blue-950/20 hover:bg-blue-900/30">
+              <Button variant="outline" size="sm" className="text-xs">
                 Templates
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl cosmic-dialog-content border-blue-500/30 bg-slate-900/90 backdrop-blur-lg">
+            <DialogContent className="max-w-4xl">
               <DialogHeader>
-                <DialogTitle className="cosmic-text-gradient text-xl">Choose a Resume Template</DialogTitle>
+                <DialogTitle>Choose a Resume Template</DialogTitle>
               </DialogHeader>
               <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <TemplateOption

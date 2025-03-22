@@ -11,7 +11,7 @@
 @import './styles/base/base.css';
 
 /* Import component styles */
-@import './styles/cosmic-components.css'; /* Added unified cosmic component styles */
+@import './styles/components/cosmic-components.css'; /* Added unified cosmic component styles */
 @import './styles/components/buttons.css';
 @import './styles/components/cards.css';
 @import './styles/components/forms.css';

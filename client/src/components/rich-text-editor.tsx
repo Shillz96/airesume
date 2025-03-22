@@ -200,8 +200,8 @@ export default function RichTextEditor({
         <label className="text-xs text-gray-500 block mb-1">{label}</label>
       )}
       
-      <div className="cosmic-card bg-slate-800/60 border border-blue-500/20 backdrop-blur-sm rounded-lg">
-        <div className="flex p-1 border-b border-blue-500/20">
+      <div className="border rounded-md bg-white">
+        <div className="flex p-1 border-b">
           <div className="flex gap-0.5">
             <Button
               type="button"

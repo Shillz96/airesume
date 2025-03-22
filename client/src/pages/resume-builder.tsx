@@ -2787,7 +2787,13 @@ export default function ResumeBuilder() {
             </div>
 
             {/* Tab Content */}
-            <div className="p-space-8">
+            <div 
+              className="p-space-8"
+              style={{
+                lineHeight: `${spacingScale * 1.5}`, // Dynamic line height scaling
+                padding: spacingScale < 1 ? "0.75rem" : "2rem", // Dynamic padding based on scale
+              }}
+            >
               {/* Profile Section */}
               {activeSection === "profile" && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -3419,7 +3425,7 @@ export default function ResumeBuilder() {
                       <div className="relative z-10 p-space-4">
                         <div className="flex items-center gap-space-2 mb-space-5">
                           <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center">
-                            <CheckCircle className="h-4 w-4 text-white" />
+                            <Check className="h-4 w-4 text-white" />
                           </div>
                           <h3 className="font-medium text-white text-lg">
                             Final Checks

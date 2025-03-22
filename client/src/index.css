@@ -13,6 +13,7 @@
 @import './styles/components/buttons.css';
 @import './styles/components/cards.css';
 @import './styles/components/forms.css';
+@import './styles/components/cosmic-resume.css';
 
 /* Import layout styles */
 @import './styles/layout/navigation.css';

@@ -10,15 +10,20 @@
 @import './styles/base/variables.css';
 @import './styles/base/base.css';
 
+/* Unified component styles (new system) */
+@import './styles/components/unified-tabs.css';  /* Combined tab styles */
+@import './styles/components/unified-cards.css'; /* Combined card styles */
+
 /* Legacy imports - these will eventually be phased out in favor of the unified theme */
 /* Only keeping for backwards compatibility during transition */
 @import './styles/components/cosmic-components.css';
 @import './styles/cosmic-resume.css';
 @import './styles/components/buttons.css';
-@import './styles/components/cards.css';
 @import './styles/components/forms.css';
-@import './styles/components/tabs.css';
-@import './styles/components/cosmic-tabs.css';
+/* Original tab and card styles commented out as we're using the unified versions */
+/* @import './styles/components/tabs.css'; */
+/* @import './styles/components/cosmic-tabs.css'; */
+/* @import './styles/components/cards.css'; */
 @import './styles/components/cosmic-dialog.css';
 @import './styles/components/resume-sections.css';
 

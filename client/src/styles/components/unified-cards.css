@@ -1,0 +1,295 @@
+/**
+ * Unified Card Components
+ * 
+ * This file combines and standardizes card styles from cosmic-components.css and cards.css
+ * to provide consistent card styling across the application.
+ */
+
+/* ======== Base Card ======== */
+.cosmic-card {
+  --card-padding: var(--space-4);
+  --card-radius: var(--radius-md, 0.5rem);
+  --card-border-color: rgba(var(--color-border), 0.2);
+  --card-bg: rgba(var(--color-card), 0.7);
+  --card-shadow: var(--shadow-md);
+  --card-transition: var(--transition-normal);
+  
+  background-color: var(--card-bg);
+  border-radius: var(--card-radius);
+  border: 1px solid var(--card-border-color);
+  overflow: hidden;
+  position: relative;
+  transition: 
+    box-shadow var(--card-transition),
+    transform var(--card-transition),
+    background-color var(--card-transition);
+  padding: var(--card-padding);
+  margin-bottom: var(--space-4);
+  box-shadow: var(--card-shadow);
+}
+
+/* ======== Card With Hover Effect ======== */
+.cosmic-card-hoverable {
+  cursor: pointer;
+}
+
+.cosmic-card-hoverable:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(var(--color-border), 0.3);
+  background-color: rgba(var(--color-card), 0.8);
+}
+
+/* ======== Card With Glow Effect ======== */
+.cosmic-card-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.cosmic-card-glow::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: linear-gradient(
+    45deg, 
+    rgba(var(--color-primary), 0.1), 
+    rgba(var(--color-secondary), 0.1)
+  );
+  filter: blur(10px);
+  z-index: -1;
+  opacity: 0.5;
+  transition: opacity var(--card-transition);
+}
+
+.cosmic-card-glow:hover::before {
+  opacity: 0.7;
+}
+
+/* ======== Card With Gradient Border ======== */
+.cosmic-card-gradient-border {
+  padding: 0;
+  position: relative;
+  background-color: var(--card-bg);
+}
+
+.cosmic-card-gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    45deg, 
+    rgb(var(--color-primary)), 
+    rgb(var(--color-secondary)), 
+    rgb(6, 182, 212)
+  );
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.cosmic-card-gradient-border-content {
+  padding: var(--card-padding);
+}
+
+/* ======== Card With Gradient Background ======== */
+.cosmic-card-gradient {
+  background: linear-gradient(
+    135deg, 
+    rgba(var(--color-primary), 0.15) 0%, 
+    rgba(var(--color-secondary), 0.15) 100%
+  );
+  border: none;
+}
+
+/* ======== Glass Card ======== */
+.cosmic-card-glass {
+  background: rgba(var(--color-card), 0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-color: rgba(var(--color-border), 0.15);
+}
+
+/* ======== Card With Header & Footer ======== */
+.cosmic-card-header {
+  margin: calc(-1 * var(--card-padding));
+  margin-bottom: var(--card-padding);
+  padding: var(--card-padding);
+  border-bottom: 1px solid var(--card-border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cosmic-card-footer {
+  margin: calc(-1 * var(--card-padding));
+  margin-top: var(--card-padding);
+  padding: var(--card-padding);
+  border-top: 1px solid var(--card-border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ======== AI Assistant Card ======== */
+.cosmic-ai-card {
+  position: relative;
+  border: 1px solid rgba(var(--color-primary), 0.2);
+  background: linear-gradient(
+    135deg, 
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(var(--color-primary), 0.05) 100%
+  );
+  padding: var(--space-5);
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  transition: box-shadow var(--card-transition);
+  box-shadow: 0 0 20px rgba(var(--color-primary), 0.05);
+  line-height: calc(var(--space-4) * 1.5);
+}
+
+.cosmic-ai-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg, 
+    transparent 0%,
+    rgba(var(--color-primary), 0.3) 50%,
+    transparent 100%
+  );
+}
+
+.cosmic-ai-card:hover {
+  box-shadow: 0 0 25px rgba(var(--color-primary), 0.15);
+}
+
+/* AI Assistant Card Glow Effect */
+.cosmic-ai-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 15px rgba(var(--color-primary), 0.1);
+  opacity: 0;
+  animation: pulse-glow 3s infinite;
+  pointer-events: none;
+}
+
+@keyframes pulse-glow {
+  0% { opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0; }
+}
+
+/* ======== Resume Card ======== */
+.cosmic-resume-card {
+  background: rgba(17, 25, 40, 0.75);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: var(--card-radius);
+  padding: var(--card-padding);
+  margin-bottom: var(--space-4);
+  backdrop-filter: blur(10px);
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.cosmic-resume-card:hover {
+  box-shadow: 0 0 15px 0 rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+/* ======== Card States ======== */
+.cosmic-card-active {
+  border-color: rgba(var(--color-primary), 0.5);
+  background-color: rgba(var(--color-primary), 0.1);
+}
+
+.cosmic-card-success {
+  border-color: rgba(var(--color-success), 0.5);
+  background-color: rgba(var(--color-success), 0.1);
+}
+
+.cosmic-card-warning {
+  border-color: rgba(var(--color-warning), 0.5);
+  background-color: rgba(var(--color-warning), 0.1);
+}
+
+.cosmic-card-error {
+  border-color: rgba(var(--color-error), 0.5);
+  background-color: rgba(var(--color-error), 0.1);
+}
+
+/* ======== Professional Theme Variant ======== */
+:root[data-theme-variant="professional"] .cosmic-card {
+  border-width: 1px;
+  box-shadow: var(--shadow-md);
+  background-color: rgba(var(--color-card), 0.9);
+}
+
+:root[data-theme-variant="professional"] .cosmic-card-glass {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ======== Vibrant Theme Variant ======== */
+:root[data-theme-variant="vibrant"] .cosmic-card {
+  background: linear-gradient(
+    to bottom,
+    rgba(var(--color-card), 1) 0%,
+    rgba(var(--color-card), 0.95) 100%
+  );
+  border-width: 1px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 
+              0 0 20px rgba(var(--color-primary), 0.1);
+}
+
+:root[data-theme-variant="vibrant"] .cosmic-card-glass {
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+}
+
+:root[data-theme-variant="vibrant"] .cosmic-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg, 
+    transparent 0%,
+    rgba(var(--color-primary), 0.3) 50%,
+    transparent 100%
+  );
+}
+
+/* ======== Tint Theme Variant ======== */
+:root[data-theme-variant="tint"] .cosmic-card {
+  border-radius: 0;
+  border-top: 2px solid rgb(var(--color-primary));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme-variant="tint"] .cosmic-card-glass {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ======== Mobile Responsiveness ======== */
+@media (max-width: 640px) {
+  .cosmic-card {
+    --card-padding: var(--space-3);
+  }
+}

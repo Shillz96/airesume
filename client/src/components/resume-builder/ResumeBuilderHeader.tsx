@@ -30,7 +30,7 @@ export default function ResumeBuilderHeader({
   isDirty
 }: ResumeBuilderHeaderProps) {
   return (
-    <div className="border-b border-white/10 backdrop-blur-md p-4 flex justify-between items-center sticky top-0 z-10">
+    <div className="border-b border-[#252a47] bg-[#1a203c] p-4 flex justify-between items-center sticky top-0 z-10">
       <div className="flex items-center space-x-4">
         <div className="flex items-center">
           <FileText className="text-primary h-5 w-5 mr-2" />
@@ -38,9 +38,9 @@ export default function ResumeBuilderHeader({
             value={resumeTitle}
             onChange={(e) => onTitleChange(e.target.value)}
             className={cn(
-              "max-w-xs bg-card/30 border-white/10",
+              "max-w-xs bg-[#0c101b] border-[#252a47] text-white",
               "focus:border-primary/50 focus:ring-primary/25",
-              "placeholder:text-muted"
+              "placeholder:text-gray-400"
             )}
             placeholder="Resume Title"
           />

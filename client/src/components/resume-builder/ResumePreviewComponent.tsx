@@ -57,15 +57,15 @@ export default function ResumePreviewComponent({
   };
 
   return (
-    <div className="cosmic-card border border-white/10 backdrop-blur-sm rounded-lg overflow-hidden h-full flex flex-col">
-      <div className="cosmic-card-header p-3 border-b border-white/10 flex justify-between items-center">
-        <h3 className="cosmic-text-gradient font-medium text-sm">Resume Preview</h3>
+    <div className="bg-[#0c101b] border border-[#252a47] rounded-lg overflow-hidden h-full flex flex-col">
+      <div className="p-3 border-b border-[#252a47] flex justify-between items-center bg-[#1a203c]">
+        <h3 className="font-medium text-sm text-white">Resume Preview</h3>
         <div className="flex space-x-1">
           {onDownload && (
             <Button
               size="sm"
               variant="ghost"
-              className="h-7 w-7 p-0 text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
+              className="h-7 w-7 p-0 text-gray-300 hover:text-white hover:bg-[#252a47]"
               onClick={onDownload}
               title="Download as PDF"
             >
@@ -75,7 +75,7 @@ export default function ResumePreviewComponent({
           <Button
             size="sm"
             variant="ghost"
-            className="h-7 w-7 p-0 text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
+            className="h-7 w-7 p-0 text-gray-300 hover:text-white hover:bg-[#252a47]"
             onClick={() => {
               if (onDownload) onDownload(); // Print
             }}
@@ -86,7 +86,7 @@ export default function ResumePreviewComponent({
           <Button
             size="sm"
             variant="ghost"
-            className="h-7 w-7 p-0 text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
+            className="h-7 w-7 p-0 text-gray-300 hover:text-white hover:bg-[#252a47]"
             onClick={() => setIsFullScreenPreview(true)}
             title="View in full screen"
           >
@@ -95,7 +95,7 @@ export default function ResumePreviewComponent({
         </div>
       </div>
       
-      <div className="cosmic-card-body flex-grow overflow-auto bg-white p-4">
+      <div className="flex-grow overflow-auto bg-white p-4">
         <div className="max-w-[800px] mx-auto shadow-md">
           {renderSelectedTemplate()}
         </div>
@@ -103,11 +103,11 @@ export default function ResumePreviewComponent({
 
       {/* Full Screen Preview Dialog */}
       <Dialog open={isFullScreenPreview} onOpenChange={setIsFullScreenPreview}>
-        <DialogContent className="max-w-[900px] h-[90vh] p-0 bg-white">
+        <DialogContent className="max-w-[900px] h-[90vh] p-0 bg-white border-[#252a47]">
           <div className="h-full overflow-auto p-6">
             {renderSelectedTemplate()}
           </div>
-          <DialogClose className="absolute top-4 right-4" />
+          <DialogClose className="absolute top-4 right-4 text-gray-600 hover:text-gray-900" />
         </DialogContent>
       </Dialog>
     </div>

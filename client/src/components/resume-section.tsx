@@ -98,22 +98,33 @@ export function ResumeExperienceSection({ experiences, onUpdate }: ResumeExperie
   };
 
   return (
-    <div className="pt-6 border-t border-secondary-200">
-      <h3 className="text-lg font-medium text-secondary-900 mb-4">Work Experience</h3>
+    <div className="cosmic-resume-section">
+      <h3 className="cosmic-section-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="7.5 4.21 12 6.81 16.5 4.21"></polyline>
+          <polyline points="7.5 19.79 7.5 14.6 3 12"></polyline>
+          <polyline points="21 12 16.5 14.6 16.5 19.79"></polyline>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+        Work Experience
+      </h3>
       
       {experiences.map((exp) => (
         <Collapsible
           key={exp.id}
           open={openId === exp.id}
           onOpenChange={() => setOpenId(openId === exp.id ? null : exp.id)}
-          className="mb-4 rounded-md border border-secondary-200 hover:shadow-sm"
+          className="cosmic-item relative"
         >
-          <div className="p-4">
-            <div className="flex justify-between items-center">
+          <div className="cosmic-glow cosmic-glow-top-right"></div>
+          <div className="relative z-10">
+            <div className="cosmic-item-header">
               <CollapsibleTrigger asChild>
-                <Button variant="ghost" className="p-0 hover:bg-transparent justify-start text-left font-medium text-secondary-700">
+                <Button variant="ghost" className="p-0 hover:bg-transparent justify-start text-left cosmic-item-title w-auto">
                   {exp.title ? exp.title : "New Experience"}
-                  {exp.company && ` - ${exp.company}`}
+                  {exp.company && <span className="cosmic-item-subtitle ml-2">at {exp.company}</span>}
                 </Button>
               </CollapsibleTrigger>
               <Button
@@ -124,63 +135,64 @@ export function ResumeExperienceSection({ experiences, onUpdate }: ResumeExperie
                   handleDelete(exp.id);
                 }}
                 aria-label="Delete experience"
+                className="opacity-70 hover:opacity-100"
               >
-                <Trash2 className="h-4 w-4 text-secondary-400 hover:text-destructive" />
+                <Trash2 className="h-4 w-4 text-white/60 hover:text-red-400" />
               </Button>
             </div>
             
             <CollapsibleContent className="mt-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-6">
-                <div className="sm:col-span-3">
-                  <Label htmlFor={`job-title-${exp.id}`}>Job Title</Label>
+                <div className="sm:col-span-3 cosmic-form-group">
+                  <Label htmlFor={`job-title-${exp.id}`} className="cosmic-form-label">Job Title</Label>
                   <Input
                     id={`job-title-${exp.id}`}
                     value={exp.title}
                     onChange={(e) => handleChange(exp.id, "title", e.target.value)}
-                    className="mt-1"
+                    className="cosmic-form-input"
                   />
                 </div>
                 
-                <div className="sm:col-span-3">
-                  <Label htmlFor={`company-${exp.id}`}>Company</Label>
+                <div className="sm:col-span-3 cosmic-form-group">
+                  <Label htmlFor={`company-${exp.id}`} className="cosmic-form-label">Company</Label>
                   <Input
                     id={`company-${exp.id}`}
                     value={exp.company}
                     onChange={(e) => handleChange(exp.id, "company", e.target.value)}
-                    className="mt-1"
+                    className="cosmic-form-input"
                   />
                 </div>
 
-                <div className="sm:col-span-3">
-                  <Label htmlFor={`start-date-${exp.id}`}>Start Date</Label>
+                <div className="sm:col-span-3 cosmic-form-group">
+                  <Label htmlFor={`start-date-${exp.id}`} className="cosmic-form-label">Start Date</Label>
                   <Input
                     id={`start-date-${exp.id}`}
                     value={exp.startDate}
                     onChange={(e) => handleChange(exp.id, "startDate", e.target.value)}
                     placeholder="e.g. January 2020"
-                    className="mt-1"
+                    className="cosmic-form-input"
                   />
                 </div>
 
-                <div className="sm:col-span-3">
-                  <Label htmlFor={`end-date-${exp.id}`}>End Date</Label>
+                <div className="sm:col-span-3 cosmic-form-group">
+                  <Label htmlFor={`end-date-${exp.id}`} className="cosmic-form-label">End Date</Label>
                   <Input
                     id={`end-date-${exp.id}`}
                     value={exp.endDate}
                     onChange={(e) => handleChange(exp.id, "endDate", e.target.value)}
                     placeholder="e.g. Present"
-                    className="mt-1"
+                    className="cosmic-form-input"
                   />
                 </div>
 
-                <div className="sm:col-span-6">
-                  <Label htmlFor={`description-${exp.id}`}>Responsibilities & Achievements</Label>
+                <div className="sm:col-span-6 cosmic-form-group">
+                  <Label htmlFor={`description-${exp.id}`} className="cosmic-form-label">Responsibilities & Achievements</Label>
                   <Textarea
                     id={`description-${exp.id}`}
                     value={exp.description}
                     onChange={(e) => handleChange(exp.id, "description", e.target.value)}
                     placeholder="List your key responsibilities and achievements. Use bullet points starting with • for better formatting."
-                    className="mt-1"
+                    className="cosmic-form-input cosmic-form-textarea"
                     rows={4}
                   />
                 </div>
@@ -190,13 +202,17 @@ export function ResumeExperienceSection({ experiences, onUpdate }: ResumeExperie
         </Collapsible>
       ))}
       
-      <Button
-        variant="outline"
+      <button
         onClick={handleAdd}
-        className="flex gap-2 mt-2"
+        className="cosmic-add-button mt-4"
       >
-        <span className="text-lg">+</span> Add Experience
-      </Button>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="16"></line>
+          <line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+        Add Experience
+      </button>
     </div>
   );
 }
@@ -233,22 +249,29 @@ export function ResumeEducationSection({ education, onUpdate }: ResumeEducationS
   };
 
   return (
-    <div className="pt-6 border-t border-secondary-200">
-      <h3 className="text-lg font-medium text-secondary-900 mb-4">Education</h3>
+    <div className="cosmic-resume-section">
+      <h3 className="cosmic-section-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+          <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+        </svg>
+        Education
+      </h3>
       
       {education.map((edu) => (
         <Collapsible
           key={edu.id}
           open={openId === edu.id}
           onOpenChange={() => setOpenId(openId === edu.id ? null : edu.id)}
-          className="mb-4 rounded-md border border-secondary-200 hover:shadow-sm"
+          className="cosmic-item relative"
         >
-          <div className="p-4">
-            <div className="flex justify-between items-center">
+          <div className="cosmic-glow cosmic-glow-bottom-left"></div>
+          <div className="relative z-10">
+            <div className="cosmic-item-header">
               <CollapsibleTrigger asChild>
-                <Button variant="ghost" className="p-0 hover:bg-transparent justify-start text-left font-medium text-secondary-700">
+                <Button variant="ghost" className="p-0 hover:bg-transparent justify-start text-left cosmic-item-title w-auto">
                   {edu.degree ? edu.degree : "New Education"}
-                  {edu.institution && ` - ${edu.institution}`}
+                  {edu.institution && <span className="cosmic-item-subtitle ml-2">at {edu.institution}</span>}
                 </Button>
               </CollapsibleTrigger>
               <Button
@@ -259,63 +282,64 @@ export function ResumeEducationSection({ education, onUpdate }: ResumeEducationS
                   handleDelete(edu.id);
                 }}
                 aria-label="Delete education"
+                className="opacity-70 hover:opacity-100"
               >
-                <Trash2 className="h-4 w-4 text-secondary-400 hover:text-destructive" />
+                <Trash2 className="h-4 w-4 text-white/60 hover:text-red-400" />
               </Button>
             </div>
             
             <CollapsibleContent className="mt-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-6">
-                <div className="sm:col-span-3">
-                  <Label htmlFor={`degree-${edu.id}`}>Degree</Label>
+                <div className="sm:col-span-3 cosmic-form-group">
+                  <Label htmlFor={`degree-${edu.id}`} className="cosmic-form-label">Degree</Label>
                   <Input
                     id={`degree-${edu.id}`}
                     value={edu.degree}
                     onChange={(e) => handleChange(edu.id, "degree", e.target.value)}
-                    className="mt-1"
+                    className="cosmic-form-input"
                   />
                 </div>
                 
-                <div className="sm:col-span-3">
-                  <Label htmlFor={`institution-${edu.id}`}>Institution</Label>
+                <div className="sm:col-span-3 cosmic-form-group">
+                  <Label htmlFor={`institution-${edu.id}`} className="cosmic-form-label">Institution</Label>
                   <Input
                     id={`institution-${edu.id}`}
                     value={edu.institution}
                     onChange={(e) => handleChange(edu.id, "institution", e.target.value)}
-                    className="mt-1"
+                    className="cosmic-form-input"
                   />
                 </div>
 
-                <div className="sm:col-span-3">
-                  <Label htmlFor={`start-date-${edu.id}`}>Start Date</Label>
+                <div className="sm:col-span-3 cosmic-form-group">
+                  <Label htmlFor={`start-date-${edu.id}`} className="cosmic-form-label">Start Date</Label>
                   <Input
                     id={`start-date-${edu.id}`}
                     value={edu.startDate}
                     onChange={(e) => handleChange(edu.id, "startDate", e.target.value)}
                     placeholder="e.g. September 2018"
-                    className="mt-1"
+                    className="cosmic-form-input"
                   />
                 </div>
 
-                <div className="sm:col-span-3">
-                  <Label htmlFor={`end-date-${edu.id}`}>End Date</Label>
+                <div className="sm:col-span-3 cosmic-form-group">
+                  <Label htmlFor={`end-date-${edu.id}`} className="cosmic-form-label">End Date</Label>
                   <Input
                     id={`end-date-${edu.id}`}
                     value={edu.endDate}
                     onChange={(e) => handleChange(edu.id, "endDate", e.target.value)}
                     placeholder="e.g. May 2022"
-                    className="mt-1"
+                    className="cosmic-form-input"
                   />
                 </div>
 
-                <div className="sm:col-span-6">
-                  <Label htmlFor={`description-${edu.id}`}>Description</Label>
+                <div className="sm:col-span-6 cosmic-form-group">
+                  <Label htmlFor={`description-${edu.id}`} className="cosmic-form-label">Description</Label>
                   <Textarea
                     id={`description-${edu.id}`}
                     value={edu.description}
                     onChange={(e) => handleChange(edu.id, "description", e.target.value)}
                     placeholder="Provide additional information about your studies, achievements, etc."
-                    className="mt-1"
+                    className="cosmic-form-input cosmic-form-textarea"
                     rows={3}
                   />
                 </div>
@@ -325,13 +349,17 @@ export function ResumeEducationSection({ education, onUpdate }: ResumeEducationS
         </Collapsible>
       ))}
       
-      <Button
-        variant="outline"
+      <button
         onClick={handleAdd}
-        className="flex gap-2 mt-2"
+        className="cosmic-add-button mt-4"
       >
-        <span className="text-lg">+</span> Add Education
-      </Button>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="16"></line>
+          <line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+        Add Education
+      </button>
     </div>
   );
 }
@@ -359,56 +387,72 @@ export function ResumeSkillsSection({ skills, onUpdate }: ResumeSkillsSectionPro
   };
 
   return (
-    <div className="pt-6 border-t border-secondary-200">
-      <h3 className="text-lg font-medium text-secondary-900 mb-4">Skills</h3>
+    <div className="cosmic-resume-section">
+      <h3 className="cosmic-section-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 2v4M6 12H2M12 22v-4M22 12h-4M18 6l-3 3M6 18l3-3M6 6l3 3M18 18l-3-3"></path>
+        </svg>
+        Skills
+      </h3>
       
-      <Card>
-        <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="cosmic-item relative">
+        <div className="cosmic-glow cosmic-glow-top-right"></div>
+        <div className="relative z-10 p-4">
+          <div className="cosmic-skills-grid">
             {skills.map((skill) => (
-              <div key={skill.id} className="flex items-center space-x-2">
+              <div key={skill.id} className="flex items-center gap-2 relative group">
                 <Input
                   value={skill.name}
                   onChange={(e) => handleChange(skill.id, "name", e.target.value)}
                   placeholder="Skill name"
-                  className="flex-grow"
+                  className="cosmic-form-input flex-grow"
                 />
-                <select
-                  value={skill.proficiency}
-                  onChange={(e) => handleChange(skill.id, "proficiency", parseInt(e.target.value))}
-                  className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-                >
-                  <option value={1}>Beginner</option>
-                  <option value={2}>Intermediate</option>
-                  <option value={3}>Advanced</option>
-                  <option value={4}>Expert</option>
-                  <option value={5}>Master</option>
-                </select>
+                <div className="relative">
+                  <select
+                    value={skill.proficiency}
+                    onChange={(e) => handleChange(skill.id, "proficiency", parseInt(e.target.value))}
+                    className="cosmic-form-input w-32 appearance-none pr-8"
+                  >
+                    <option value={1}>Beginner</option>
+                    <option value={2}>Intermediate</option>
+                    <option value={3}>Advanced</option>
+                    <option value={4}>Expert</option>
+                    <option value={5}>Master</option>
+                  </select>
+                  <svg className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </div>
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   onClick={() => handleDelete(skill.id)}
                   aria-label="Delete skill"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  <Trash2 className="h-4 w-4 text-secondary-400 hover:text-destructive" />
+                  <Trash2 className="h-4 w-4 text-white/60 hover:text-red-400" />
                 </Button>
               </div>
             ))}
           </div>
           
           {skills.length === 0 && (
-            <p className="text-sm text-secondary-500 py-2">No skills added yet. Add your first skill below.</p>
+            <p className="text-white/60 py-4 text-center">No skills added yet. Add your first skill below.</p>
           )}
           
-          <Button
-            variant="outline"
+          <button
             onClick={handleAdd}
-            className="flex gap-2 mt-4"
+            className="cosmic-add-button mt-4"
           >
-            <span className="text-lg">+</span> Add Skill
-          </Button>
-        </CardContent>
-      </Card>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="16"></line>
+              <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+            Add Skill
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -444,21 +488,40 @@ export function ResumeProjectsSection({ projects, onUpdate }: ResumeProjectsSect
   };
 
   return (
-    <div className="pt-6 border-t border-secondary-200">
-      <h3 className="text-lg font-medium text-secondary-900 mb-4">Projects</h3>
+    <div className="cosmic-resume-section">
+      <h3 className="cosmic-section-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="12" y1="2" x2="12" y2="6"></line>
+          <line x1="12" y1="18" x2="12" y2="22"></line>
+          <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+          <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+          <line x1="2" y1="12" x2="6" y2="12"></line>
+          <line x1="18" y1="12" x2="22" y2="12"></line>
+          <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+          <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+        </svg>
+        Projects
+      </h3>
       
       {projects.map((project) => (
         <Collapsible
           key={project.id}
           open={openId === project.id}
           onOpenChange={() => setOpenId(openId === project.id ? null : project.id)}
-          className="mb-4 rounded-md border border-secondary-200 hover:shadow-sm"
+          className="cosmic-item relative mb-4"
         >
-          <div className="p-4">
-            <div className="flex justify-between items-center">
+          <div className="cosmic-glow cosmic-glow-bottom-left"></div>
+          <div className="relative z-10">
+            <div className="cosmic-item-header">
               <CollapsibleTrigger asChild>
-                <Button variant="ghost" className="p-0 hover:bg-transparent justify-start text-left font-medium text-secondary-700">
+                <Button variant="ghost" className="p-0 hover:bg-transparent justify-start text-left cosmic-item-title w-auto">
                   {project.title ? project.title : "New Project"}
+                  {project.technologies.length > 0 && (
+                    <span className="cosmic-item-subtitle ml-2 text-sm">
+                      ({project.technologies.slice(0, 3).join(", ")}
+                      {project.technologies.length > 3 && "..."})
+                    </span>
+                  )}
                 </Button>
               </CollapsibleTrigger>
               <Button
@@ -469,55 +532,62 @@ export function ResumeProjectsSection({ projects, onUpdate }: ResumeProjectsSect
                   handleDelete(project.id);
                 }}
                 aria-label="Delete project"
+                className="opacity-70 hover:opacity-100"
               >
-                <Trash2 className="h-4 w-4 text-secondary-400 hover:text-destructive" />
+                <Trash2 className="h-4 w-4 text-white/60 hover:text-red-400" />
               </Button>
             </div>
             
             <CollapsibleContent className="mt-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-6">
-                <div className="sm:col-span-6">
-                  <Label htmlFor={`title-${project.id}`}>Project Title</Label>
+                <div className="sm:col-span-6 cosmic-form-group">
+                  <Label htmlFor={`title-${project.id}`} className="cosmic-form-label">Project Title</Label>
                   <Input
                     id={`title-${project.id}`}
                     value={project.title}
                     onChange={(e) => handleChange(project.id, "title", e.target.value)}
-                    className="mt-1"
+                    className="cosmic-form-input"
                   />
                 </div>
                 
-                <div className="sm:col-span-6">
-                  <Label htmlFor={`description-${project.id}`}>Description</Label>
+                <div className="sm:col-span-6 cosmic-form-group">
+                  <Label htmlFor={`description-${project.id}`} className="cosmic-form-label">Description</Label>
                   <Textarea
                     id={`description-${project.id}`}
                     value={project.description}
                     onChange={(e) => handleChange(project.id, "description", e.target.value)}
                     placeholder="Describe the project, your role, and key achievements"
-                    className="mt-1"
+                    className="cosmic-form-input cosmic-form-textarea"
                     rows={3}
                   />
                 </div>
 
-                <div className="sm:col-span-6">
-                  <Label htmlFor={`technologies-${project.id}`}>Technologies</Label>
+                <div className="sm:col-span-6 cosmic-form-group">
+                  <Label htmlFor={`technologies-${project.id}`} className="cosmic-form-label">Technologies</Label>
                   <Input
                     id={`technologies-${project.id}`}
                     value={project.technologies.join(", ")}
                     onChange={(e) => handleChange(project.id, "technologies", e.target.value.split(",").map(t => t.trim()))}
                     placeholder="e.g. React, Node.js, MongoDB (comma separated)"
-                    className="mt-1"
+                    className="cosmic-form-input"
                   />
                 </div>
 
-                <div className="sm:col-span-6">
-                  <Label htmlFor={`link-${project.id}`}>Project Link (optional)</Label>
-                  <Input
-                    id={`link-${project.id}`}
-                    value={project.link || ""}
-                    onChange={(e) => handleChange(project.id, "link", e.target.value)}
-                    placeholder="e.g. https://github.com/username/project"
-                    className="mt-1"
-                  />
+                <div className="sm:col-span-6 cosmic-form-group">
+                  <Label htmlFor={`link-${project.id}`} className="cosmic-form-label">Project Link (optional)</Label>
+                  <div className="relative">
+                    <Input
+                      id={`link-${project.id}`}
+                      value={project.link || ""}
+                      onChange={(e) => handleChange(project.id, "link", e.target.value)}
+                      placeholder="e.g. https://github.com/username/project"
+                      className="cosmic-form-input pl-8"
+                    />
+                    <svg className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 opacity-70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                    </svg>
+                  </div>
                 </div>
               </div>
             </CollapsibleContent>
@@ -525,13 +595,17 @@ export function ResumeProjectsSection({ projects, onUpdate }: ResumeProjectsSect
         </Collapsible>
       ))}
       
-      <Button
-        variant="outline"
+      <button
         onClick={handleAdd}
-        className="flex gap-2 mt-2"
+        className="cosmic-add-button mt-4"
       >
-        <span className="text-lg">+</span> Add Project
-      </Button>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="16"></line>
+          <line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+        Add Project
+      </button>
     </div>
   );
 }

@@ -1,0 +1,197 @@
+/**
+ * Resume Sections Styling
+ * 
+ * Styling for all resume sections (Personal Info, Experience, Education, Skills, Projects)
+ * using cosmic themed styling to create consistent look and feel
+ */
+
+/* Common section styling */
+.cosmic-resume-section {
+  padding-top: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.cosmic-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cosmic-section-title svg {
+  color: var(--cosmicAccent, #60a5fa);
+}
+
+/* Common item styling */
+.cosmic-item {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.cosmic-item:hover {
+  border-color: rgba(96, 165, 250, 0.3);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
+}
+
+.cosmic-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.cosmic-item-title {
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: white;
+}
+
+.cosmic-item-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  margin-top: 0.25rem;
+}
+
+.cosmic-item-dates {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+}
+
+.cosmic-item-description {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9375rem;
+  margin-top: 0.75rem;
+}
+
+.cosmic-item-actions {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Form fields within resume sections */
+.cosmic-form-group {
+  margin-bottom: 1rem;
+}
+
+.cosmic-form-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  margin-bottom: 0.375rem;
+}
+
+.cosmic-form-input {
+  width: 100%;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.cosmic-form-input:focus {
+  outline: none;
+  border-color: rgba(96, 165, 250, 0.5);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.cosmic-form-textarea {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+/* Skills specific styling */
+.cosmic-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.cosmic-skill-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(96, 165, 250, 0.1);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  color: white;
+}
+
+.cosmic-skill-name {
+  flex-grow: 1;
+}
+
+.cosmic-skill-level {
+  width: 60px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.cosmic-skill-level-bar {
+  position: absolute;
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+
+/* Add Experience/Education/Skills buttons */
+.cosmic-add-button {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px dashed rgba(96, 165, 250, 0.3);
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.cosmic-add-button:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(96, 165, 250, 0.5);
+}
+
+.cosmic-add-button svg {
+  color: rgba(96, 165, 250, 0.8);
+}
+
+/* Background glow effects */
+.cosmic-glow {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.07);
+  filter: blur(20px);
+  z-index: -1;
+}
+
+.cosmic-glow-top-right {
+  top: -50px;
+  right: -50px;
+}
+
+.cosmic-glow-bottom-left {
+  bottom: -50px;
+  left: -50px;
+  background: rgba(96, 58, 246, 0.07);
+}

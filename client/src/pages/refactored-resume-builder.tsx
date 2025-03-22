@@ -178,49 +178,49 @@ export default function ResumeBuilder() {
   // Handle suggestion click
   const handleSuggestionClick = (suggestion: string) => {
     // Add user selection to chat
-    setChatMessages(prev => [
-      ...prev,
-      {
-        id: `user-${Date.now()}`,
-        sender: "User",
-        message: suggestion,
-      },
-      {
-        id: `ai-thinking-${Date.now()}`,
-        sender: "AI",
-        message: "Generating suggestions...",
-        isLoading: true
-      }
-    ]);
+    const userMessage: ChatMessage = {
+      id: `user-${Date.now()}`,
+      sender: "User",
+      message: suggestion,
+    };
+    
+    const thinkingMessage: ChatMessage = {
+      id: `ai-thinking-${Date.now()}`,
+      sender: "AI",
+      message: "Generating suggestions...",
+      isLoading: true
+    };
+    
+    setChatMessages(prev => [...prev, userMessage, thinkingMessage]);
     
     // Simulate AI response for different types of suggestions
     setTimeout(() => {
-      let response = {
+      let responseMessage: ChatMessage = {
         id: `ai-${Date.now()}`,
         sender: "AI",
         message: "",
         type: "content",
-        suggestions: [] as string[]
+        suggestions: []
       };
       
       if (suggestion.includes("summary")) {
-        response.message = "Here are some professional summary suggestions:";
-        response.type = "summary";
-        response.suggestions = [
+        responseMessage.message = "Here are some professional summary suggestions:";
+        responseMessage.type = "summary";
+        responseMessage.suggestions = [
           "Accomplished professional with a proven track record of delivering innovative solutions. Adept at leveraging expertise to drive business outcomes and optimize processes.",
           "Detail-oriented professional with a talent for analyzing complex situations and developing practical approaches. Consistently delivers results that drive business growth and operational excellence."
         ];
       } else if (suggestion.includes("experience") || suggestion.includes("bullet")) {
-        response.message = "Here are some bullet point suggestions for your experience:";
-        response.type = "bullet";
-        response.suggestions = [
+        responseMessage.message = "Here are some bullet point suggestions for your experience:";
+        responseMessage.type = "bullet";
+        responseMessage.suggestions = [
           "Increased website conversion rate by 25% through implementation of A/B testing and UX improvements",
           "Led a team of 5 developers to successfully deliver a mission-critical application, reducing processing time by 40%"
         ];
       } else if (suggestion.includes("skills")) {
-        response.message = "Here are some skill suggestions based on your experience:";
-        response.type = "skill";
-        response.suggestions = [
+        responseMessage.message = "Here are some skill suggestions based on your experience:";
+        responseMessage.type = "skill";
+        responseMessage.suggestions = [
           "Project Management",
           "Data Analysis",
           "React.js",
@@ -229,10 +229,7 @@ export default function ResumeBuilder() {
         ];
       }
       
-      setChatMessages(prev => [
-        ...prev.filter(msg => !msg.isLoading),
-        response
-      ]);
+      setChatMessages(prev => [...prev.filter(msg => !msg.isLoading), responseMessage]);
     }, 1000);
   };
   

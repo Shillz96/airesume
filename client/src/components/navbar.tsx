@@ -1,437 +1,309 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Link, useLocation } from "wouter";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { useGuestMode } from "@/hooks/use-guest-mode";
 import { useAuthDialog } from "@/hooks/use-auth-dialog";
-import { Menu, X, Moon, Sun, User, LogOut, Rocket, FileText, Briefcase, Home, LogIn, CreditCard, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useTheme } from "@/contexts/ThemeContext";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import gsap from "gsap";
+  Menu,
+  X,
+  Moon,
+  Sun,
+  User,
+  LogOut,
+  Rocket,
+  FileText,
+  LayoutTemplate,
+  Home,
+  LogIn,
+  CreditCard,
+  Search,
+  Briefcase
+} from "lucide-react";
 
+// Simple Navbar with minimal styling and vanilla JavaScript for dropdown
 export default function Navbar() {
+  console.log("USING SIMPLIFIED NAVBAR FROM navbar.tsx!");
+  
+  // Added to alert that component is loaded for debugging
+  useEffect(() => {
+    console.log("SimpleNavbar mounted from navbar.tsx");
+    alert("Using simplified navbar.tsx - Fixed!");
+  }, []);
+  
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
-  const { isGuestMode } = useGuestMode();
   const { openLogin, openRegister } = useAuthDialog();
+  const { isDarkMode, toggleDarkMode } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(() => {
-    // Load dark mode preference from local storage
-    const savedMode = localStorage.getItem("darkMode");
-    return savedMode ? JSON.parse(savedMode) : true;
-  });
 
-  const navbarRef = useRef<HTMLDivElement>(null);
-  const logoRef = useRef<HTMLDivElement>(null);
-  const navItemsRef = useRef<(HTMLAnchorElement | null)[]>([]);
-  const userMenuRef = useRef<HTMLDivElement>(null);
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
-  const particleCountRef = useRef(0);
-
-  // Persist dark mode preference
-  useEffect(() => {
-    localStorage.setItem("darkMode", JSON.stringify(darkMode));
-    document.documentElement.classList.toggle("dark", darkMode);
-  }, [darkMode]);
-
-  // Animations and mouse trail effect
-  useEffect(() => {
-    // Logo animation
-    if (logoRef.current) {
-      gsap.fromTo(
-        logoRef.current,
-        { opacity: 0, y: -10 },
-        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
-      );
-    }
-
-    // Nav items staggered animation
-    if (navItemsRef.current.length > 0) {
-      gsap.fromTo(
-        navItemsRef.current,
-        { opacity: 0, y: -15 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.4,
-          stagger: 0.1,
-          ease: "power2.out",
-          delay: 0.2,
-        }
-      );
-    }
-
-    // User menu animation
-    if (userMenuRef.current) {
-      gsap.fromTo(
-        userMenuRef.current,
-        { opacity: 0, scale: 0.9 },
-        { opacity: 1, scale: 1, duration: 0.5, delay: 0.4, ease: "back.out(1.7)" }
-      );
-    }
-
-    // Mobile menu animation
-    if (mobileMenuRef.current) {
-      gsap.fromTo(
-        mobileMenuRef.current,
-        { x: "100%", opacity: 0 },
-        {
-          x: "0%",
-          opacity: 1,
-          duration: 0.5,
-          ease: "power3.out",
-          when: mobileMenuOpen ? "enter" : "exit",
-        }
-      );
-    }
-
-    // Mouse trail effect with optimization
-    const createTrailParticle = (e: MouseEvent) => {
-      if (!navbarRef.current || particleCountRef.current >= 20) return;
-      particleCountRef.current += 1;
-
-      const particle = document.createElement("div");
-      particle.className = "trail-particle";
-      particle.style.left = `${e.clientX}px`;
-      particle.style.top = `${e.clientY}px`;
-      particle.style.background = `hsl(${Math.random() * 360}, 70%, 70%)`;
-      particle.style.width = `${Math.random() * 4 + 2}px`;
-      particle.style.height = particle.style.width;
-
-      document.body.appendChild(particle);
-
-      gsap.to(particle, {
-        opacity: 0,
-        scale: 0,
-        duration: 0.8,
-        ease: "power2.out",
-        onComplete: () => {
-          if (particle.parentNode) {
-            particle.parentNode.removeChild(particle);
-            particleCountRef.current -= 1;
-          }
-        },
-      });
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (Math.random() > 0.8) {
-        requestAnimationFrame(() => createTrailParticle(e));
-      }
-    };
-
-    const navbar = navbarRef.current;
-    if (navbar) {
-      navbar.addEventListener("mousemove", handleMouseMove);
-    }
-
-    return () => {
-      if (navbar) {
-        navbar.removeEventListener("mousemove", handleMouseMove);
-      }
-    };
-  }, [mobileMenuOpen]);
-
-  // Show dashboard items for both logged-in and guest users
-  const navItems = [
-    { path: "/dashboard", label: "Dashboard", icon: <Home className="h-4 w-4 mr-1" /> },
-    { path: "/resumes", label: "Resumes", icon: <FileText className="h-4 w-4 mr-1" /> },
-    { path: "/resume-builder", label: "Resume Builder", icon: <Briefcase className="h-4 w-4 mr-1" /> },
-    { path: "/job-finder", label: "Job Finder", icon: <Search className="h-4 w-4 mr-1" /> },
-    { path: "/subscription", label: "Subscription", icon: <CreditCard className="h-4 w-4 mr-1" /> },
-  ];
-
-  // Get user initials
-  let initials = "GU"; // Default Guest User
-  if (user) {
-    initials = user.username
+  // Calculate user initials for avatar
+  const initials = user
+    ? user.username
       .split(" ")
-      .map((name) => name[0])
+      .map((n) => n[0])
       .join("")
       .toUpperCase()
-      .substring(0, 2);
-  }
+      .substring(0, 2)
+    : "G";
 
-  const toggleDarkMode = () => {
-    setDarkMode((prev) => !prev);
-  };
+  // Navigation items
+  const navItems = [
+    { label: "Dashboard", path: "/dashboard", icon: <Home size={20} /> },
+    { label: "Resumes", path: "/resumes", icon: <FileText size={20} /> },
+    { label: "Resume Builder", path: "/resume-builder", icon: <LayoutTemplate size={20} /> },
+    { label: "Job Finder", path: "/job-finder", icon: <Search size={20} /> },
+    { label: "Subscription", path: "/subscription", icon: <CreditCard size={20} /> },
+  ];
 
+  // Simple function to handle logout
   const handleLogout = () => {
     logoutMutation.mutate();
-    setMobileMenuOpen(false);
   };
 
-  const getIconColor = (isActive: boolean) => {
-    return isActive ? "text-blue-400" : "text-gray-400";
+  // Toggle profile dropdown manually with vanilla JavaScript
+  const toggleProfileDropdown = () => {
+    const dropdown = document.getElementById('profile-dropdown');
+    if (dropdown) {
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
   };
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Element;
+      if (!target.closest('#profile-dropdown') && !target.closest('#profile-button')) {
+        const dropdown = document.getElementById('profile-dropdown');
+        if (dropdown) dropdown.style.display = 'none';
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
-    <nav
-      className="cosmic-navbar fixed top-0 left-0 right-0 z-40 bg-black/50 backdrop-blur-lg shadow-lg border-b border-white/10"
-      ref={navbarRef}
-      role="navigation"
-      aria-label="Main navigation"
-    >
-      <div className="content-container max-w-7xl mx-auto" style={{ 
-        paddingLeft: "var(--space-4)",
-        paddingRight: "var(--space-4)"
-      }}>
-        <div className="flex justify-between" style={{ height: "var(--space-16)" }}>
-          {/* Left side - logo */}
-          <div 
-            className="flex-shrink-0 flex items-center"
-            ref={logoRef}
-          >
-            <Link 
-              href={user ? "/dashboard" : "/"} 
-              className="flex items-center cosmic-text-gradient font-bold text-xl cursor-pointer"
-              aria-label="AIreHire Home"
-            >
-              <Rocket className="mr-2 h-5 w-5" />
-              AIreHire
-            </Link>
-          </div>
-          
-          {/* Center - main navigation */}
-          <div className="hidden sm:flex flex-1 justify-center">
-            <div className="flex items-center space-x-8">
-              {navItems.map((item, index) => (
-                <a 
-                  key={item.path} 
-                  href={item.path}
-                  ref={(el) => (navItemsRef.current[index] = el)}
-                  className={`${
-                    location === item.path
-                      ? "border-blue-500 text-blue-400"
-                      : "border-transparent text-gray-300 hover:border-gray-500 hover:text-gray-100"
-                  } inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium cursor-pointer transition-colors duration-200`}
-                  aria-current={location === item.path ? "page" : undefined}
-                >
-                  <span className={getIconColor(location === item.path)}>{item.icon}</span>
-                  {item.label}
-                </a>
-              ))}
-            </div>
-          </div>
+    <nav className="bg-gray-900 text-white py-2 px-4">
+      <div className="container mx-auto flex justify-between items-center">
+        {/* Logo */}
+        <div className="flex items-center">
+          <a href="/" className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+            AIreHire
+          </a>
+        </div>
 
-          {/* Right side - user menu */}
-          <div 
-            className="hidden sm:ml-6 sm:flex sm:items-center"
-            ref={userMenuRef}
-          >
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleDarkMode}
-              className="ml-3 text-gray-300 hover:text-white hover:bg-white/10"
-              aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+        {/* Desktop Menu */}
+        <div className="hidden md:flex space-x-6">
+          {navItems.map((item) => (
+            <a
+              key={item.path}
+              href={item.path}
+              className={`flex items-center space-x-1 px-3 py-2 rounded ${
+                location === item.path
+                  ? "text-blue-400 bg-blue-500/10"
+                  : "text-gray-300 hover:text-white hover:bg-white/5"
+              }`}
             >
-              {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
+              <span className={location === item.path ? "text-blue-400" : "text-gray-400"}>
+                {item.icon}
+              </span>
+              <span>{item.label}</span>
+            </a>
+          ))}
+        </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="ml-3 relative profile-dropdown-trigger" 
-                  aria-label="User menu"
-                  style={{ position: 'relative', zIndex: 100 }}
-                >
-                  <Avatar 
-                    className="h-8 w-8 cosmic-glow profile-avatar"
-                    style={{ position: 'relative', zIndex: 100 }}
+        {/* Right side actions */}
+        <div className="hidden md:flex items-center space-x-4">
+          {/* Dark mode toggle */}
+          <button 
+            onClick={toggleDarkMode}
+            className="p-2 rounded-full hover:bg-white/10"
+            aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </button>
+
+          {/* Profile Button */}
+          <div className="relative">
+            <button
+              id="profile-button"
+              onClick={toggleProfileDropdown}
+              className="flex items-center space-x-2 p-2 rounded-full hover:bg-white/10"
+            >
+              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
+                {initials}
+              </div>
+            </button>
+
+            {/* Profile Dropdown */}
+            <div 
+              id="profile-dropdown"
+              className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 py-1"
+              style={{ display: 'none', zIndex: 50 }}
+            >
+              {user ? (
+                <>
+                  <div className="px-4 py-2 text-sm text-gray-300 font-medium border-b border-gray-700">
+                    {user.username}
+                  </div>
+                  <a href="/profile" className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 flex items-center">
+                    <User className="mr-2 h-4 w-4 text-blue-400" /> 
+                    Profile
+                  </a>
+                  <a href="/subscription" className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 flex items-center">
+                    <CreditCard className="mr-2 h-4 w-4 text-purple-400" /> 
+                    Subscription
+                  </a>
+                  <div className="border-t border-gray-700 my-1"></div>
+                  <button 
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-900/20"
                   >
-                    <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold">
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="cosmic-card border-white/10 py-2 profile-dropdown-content" style={{ zIndex: 9999, position: 'absolute' }}>
-                {user ? (
-                  <>
-                    <div className="px-4 py-2 text-sm text-gray-300 font-medium border-b border-white/10 mb-1">
-                      {user.username}
-                    </div>
-                    <DropdownMenuItem className="cursor-pointer text-gray-200 hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white">
-                      <User className="mr-2 h-4 w-4 text-blue-400" /> 
-                      Profile
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <a 
-                        href="/subscription"
-                        className="cursor-pointer text-gray-200 hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white w-full flex items-center"
-                      >
-                        <CreditCard className="mr-2 h-4 w-4 text-purple-400" /> 
-                        Subscription
-                      </a>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator className="bg-white/10" />
-                    <DropdownMenuItem 
-                      onClick={handleLogout} 
-                      className="cursor-pointer text-red-400 hover:bg-red-900/20 hover:text-red-300 focus:bg-red-900/20 focus:text-red-300"
-                    >
+                    <span className="flex items-center">
                       <LogOut className="mr-2 h-4 w-4" /> 
                       Logout
-                    </DropdownMenuItem>
-                  </>
-                ) : (
-                  <>
-                    <div className="px-4 py-2 text-sm text-gray-300 font-medium border-b border-white/10 mb-1">
-                      Guest Mode
-                    </div>
-                    <DropdownMenuItem asChild>
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start cursor-pointer text-blue-400 hover:bg-blue-900/20 hover:text-blue-300 focus:bg-blue-900/20 focus:text-blue-300"
-                        onClick={openLogin}
-                      >
-                        <LogIn className="mr-2 h-4 w-4" /> 
-                        Log In
-                      </Button>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start cursor-pointer text-green-400 hover:bg-green-900/20 hover:text-green-300 focus:bg-green-900/20 focus:text-green-300"
-                        onClick={openRegister}
-                      >
-                        <User className="mr-2 h-4 w-4" /> 
-                        Sign Up
-                      </Button>
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          {/* Mobile menu toggle */}
-          <div className="-mr-2 flex items-center sm:hidden">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="inline-flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/10 mobile-menu-button"
-              aria-label={mobileMenuOpen ? "Close main menu" : "Open main menu"}
-              aria-expanded={mobileMenuOpen}
-            >
-              {mobileMenuOpen ? (
-                <X className="block h-6 w-6" aria-hidden="true" />
+                    </span>
+                  </button>
+                </>
               ) : (
-                <Menu className="block h-6 w-6" aria-hidden="true" />
+                <>
+                  <div className="px-4 py-2 text-sm text-gray-300 font-medium border-b border-gray-700">
+                    Guest Mode
+                  </div>
+                  <button 
+                    onClick={openLogin}
+                    className="block w-full text-left px-4 py-2 text-sm text-blue-400 hover:bg-blue-900/20"
+                  >
+                    <span className="flex items-center">
+                      <LogIn className="mr-2 h-4 w-4" /> 
+                      Log In
+                    </span>
+                  </button>
+                  <button
+                    onClick={openRegister}
+                    className="block w-full text-left px-4 py-2 text-sm text-green-400 hover:bg-green-900/20"
+                  >
+                    <span className="flex items-center">
+                      <User className="mr-2 h-4 w-4" /> 
+                      Sign Up
+                    </span>
+                  </button>
+                </>
               )}
-            </Button>
+            </div>
           </div>
+        </div>
+
+        {/* Mobile menu button */}
+        <div className="md:hidden">
+          <button 
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 rounded-md text-gray-300 hover:text-white hover:bg-white/10"
+          >
+            {mobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </button>
         </div>
       </div>
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div
-          className="sm:hidden bg-gradient-to-b from-blue-900/80 to-purple-900/80 backdrop-blur-lg shadow-lg border-t border-white/10 mobile-menu-container"
-          ref={mobileMenuRef}
-        >
-          <div style={{ 
-            paddingTop: "var(--space-2)", 
-            paddingBottom: "var(--space-3)", 
-            display: "flex", 
-            flexDirection: "column", 
-            gap: "var(--space-1)" 
-          }}>
+        <div className="md:hidden mt-2 pt-2 pb-4 bg-gray-800">
+          <div className="space-y-1 px-2">
             {navItems.map((item) => (
-              <a 
-                key={item.path} 
+              <a
+                key={item.path}
                 href={item.path}
-                className={`${
+                className={`block px-3 py-2 rounded-md text-base font-medium ${
                   location === item.path
-                    ? "bg-blue-900/30 border-blue-500 text-blue-300"
-                    : "border-transparent text-gray-300 hover:bg-white/10 hover:border-gray-400 hover:text-gray-100"
-                } flex items-center pl-3 pr-4 py-3 border-l-4 text-base font-medium cursor-pointer transition-colors duration-200`}
+                    ? "bg-blue-900/30 border-l-4 border-blue-500 text-blue-300"
+                    : "border-l-4 border-transparent text-gray-300 hover:bg-white/10 hover:text-white"
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
-                aria-current={location === item.path ? "page" : undefined}
               >
-                <span className={`${getIconColor(location === item.path)} mr-3`}>{item.icon}</span>
-                {item.label}
+                <span className="flex items-center">
+                  <span className={`${location === item.path ? "text-blue-400" : "text-gray-400"} mr-3`}>
+                    {item.icon}
+                  </span>
+                  {item.label}
+                </span>
               </a>
             ))}
-          </div>
-          <div className="pt-4 pb-3 border-t border-white/10">
-            <div className="flex items-center px-4 py-2">
-              <div className="flex-shrink-0">
-                <Avatar className="h-10 w-10 cosmic-glow">
-                  <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold">
+
+            <div className="pt-4 mt-4 border-t border-gray-700">
+              <div className="flex items-center px-3 py-2">
+                <div className="flex-shrink-0">
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
                     {initials}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-              <div className="ml-3">
-                <div className="text-base font-medium text-gray-200">
-                  {user ? user.username : "Guest Mode"}
+                  </div>
                 </div>
+                <div className="ml-3">
+                  <div className="text-base font-medium text-gray-300">
+                    {user ? user.username : "Guest Mode"}
+                  </div>
+                </div>
+                <button
+                  onClick={toggleDarkMode}
+                  className="ml-auto p-2 rounded-full text-gray-300 hover:text-white hover:bg-white/10"
+                >
+                  {isDarkMode ? <Sun className="h-6 w-6" /> : <Moon className="h-6 w-6" />}
+                </button>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleDarkMode}
-                className="ml-auto text-gray-300 hover:text-white hover:bg-white/10"
-                aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-              >
-                {darkMode ? <Sun className="h-6 w-6" /> : <Moon className="h-6 w-6" />}
-              </Button>
-            </div>
-            <div className="mt-3 space-y-1">
-              {user ? (
-                <>
-                  <Button
-                    variant="ghost"
-                    className="flex w-full items-center text-left px-4 py-2 text-base font-medium text-gray-300 hover:text-white hover:bg-white/10"
-                  >
-                    <User className="mr-3 h-5 w-5 text-blue-400" />
-                    Your Profile
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={handleLogout}
-                    className="flex w-full items-center text-left px-4 py-2 text-base font-medium text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                  >
-                    <LogOut className="mr-3 h-5 w-5" />
-                    Sign out
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button
-                    variant="ghost"
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      openLogin();
-                    }}
-                    className="flex w-full items-center text-left px-4 py-2 text-base font-medium text-blue-400 hover:text-blue-300 hover:bg-blue-900/20"
-                  >
-                    <LogIn className="mr-3 h-5 w-5" />
-                    Log In
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      openRegister();
-                    }}
-                    className="flex w-full items-center text-left px-4 py-2 text-base font-medium text-green-400 hover:text-green-300 hover:bg-green-900/20"
-                  >
-                    <User className="mr-3 h-5 w-5" />
-                    Sign Up
-                  </Button>
-                </>
-              )}
+              
+              <div className="mt-3 space-y-1 px-2">
+                {user ? (
+                  <>
+                    <a
+                      href="/profile"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-white/10 hover:text-white"
+                    >
+                      <span className="flex items-center">
+                        <User className="mr-3 h-5 w-5 text-blue-400" />
+                        Your Profile
+                      </span>
+                    </a>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-400 hover:bg-red-900/20"
+                    >
+                      <span className="flex items-center">
+                        <LogOut className="mr-3 h-5 w-5" />
+                        Sign out
+                      </span>
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        openLogin();
+                      }}
+                      className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-blue-400 hover:bg-blue-900/20"
+                    >
+                      <span className="flex items-center">
+                        <LogIn className="mr-3 h-5 w-5" />
+                        Log In
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        openRegister();
+                      }}
+                      className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-green-400 hover:bg-green-900/20"
+                    >
+                      <span className="flex items-center">
+                        <User className="mr-3 h-5 w-5" />
+                        Sign Up
+                      </span>
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>

@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useGuestMode } from "@/hooks/use-guest-mode";
 import { useAuth } from "@/hooks/use-auth";
-import CosmicBackground from "@/components/cosmic-background";
+
 
 export default function JobDetails() {
   const [, setLocation] = useLocation();

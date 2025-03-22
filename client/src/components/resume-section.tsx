@@ -100,13 +100,13 @@ export function ResumeExperienceSection({ experiences, onUpdate }: ResumeExperie
   return (
     <div>
       {experiences.length > 0 && (
-        <div className="cosmic-add-button-container flex justify-end">
+        <div className="cosmic-add-button-container flex justify-end mb-4">
           <Button
             onClick={handleAdd}
-            className="cosmic-add-experience"
-            variant="ghost"
+            className="cosmic-add-experience bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-500/30"
+            variant="outline"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
@@ -262,13 +262,13 @@ export function ResumeEducationSection({ education, onUpdate }: ResumeEducationS
   return (
     <div>
       {education.length > 0 && (
-        <div className="cosmic-add-button-container flex justify-end">
+        <div className="cosmic-add-button-container flex justify-end mb-4">
           <Button
             onClick={handleAdd}
-            className="cosmic-add-education"
-            variant="ghost"
+            className="cosmic-add-education bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-500/30"
+            variant="outline"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>

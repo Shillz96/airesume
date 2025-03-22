@@ -2506,11 +2506,17 @@ export default function ResumeBuilder() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{ background: 'var(--cosmicBackground)' }}>
       <CosmicBackground />
       <Navbar />
 
-      <main className="container mx-auto pt-12 pb-20 px-4">
+      <main className="container mx-auto pt-12 pb-20 px-4" style={{ 
+        '--cosmic-primary': 'var(--cosmicPrimary)',
+        '--cosmic-text': 'var(--cosmicText)',
+        '--cosmic-border-glow': 'var(--cosmicBorderGlow)',
+        '--cosmic-card-bg': 'var(--cosmicCardBg)',
+        '--cosmic-card-border': 'var(--cosmicCardBorder)'
+      } as React.CSSProperties}>
         {/* Page Header */}
         <div className="mb-8 flex justify-between items-center">
           <div>

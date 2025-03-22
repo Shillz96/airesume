@@ -35,9 +35,6 @@
 /* Import utilities last to ensure they have highest specificity */
 @import './styles/utilities/utilities.css';
 
-/* Import style fixes with highest specificity to override all previous styles */
-@import './styles/style-fixes.css';
-
 /**
  * Legacy theme variables - these will be phased out in favor of theme-variables.css
  * Keeping them for backwards compatibility during the transition

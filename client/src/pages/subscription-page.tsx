@@ -427,56 +427,45 @@ export default function SubscriptionPage() {
 
               {/* Pro Plan Card */}
               <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
-                <CardHeader className="pb-4">
+                <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle>Pro</CardTitle>
-                      <CardDescription>Advanced features for professionals</CardDescription>
+                      <CardTitle className="text-white">Pro</CardTitle>
+                      <CardDescription className="text-gray-400">Advanced features for professionals</CardDescription>
                     </div>
                     <div className="text-right">
-                      <span className="text-2xl font-bold">$19.99</span>
-                      <span className="text-sm text-muted-foreground">/month</span>
+                      <span className="text-2xl font-bold text-white">$19.99</span>
+                      <span className="text-sm text-gray-400">/month</span>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="pb-2 min-h-[216px]">
-                  <ul className="space-y-2 text-sm">
+                <CardContent className="pb-4 min-h-[200px]">
+                  <ul className="space-y-3 mt-3 text-sm">
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      Unlimited custom resumes
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">Unlimited custom resumes</span>
                     </li>
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      Advanced AI tailoring
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">Advanced AI tailoring</span>
                     </li>
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      Priority job matching
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">Priority job matching</span>
                     </li>
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      Interview AI assistance
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">Interview AI assistance</span>
                     </li>
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      3 cover letter templates
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">3 cover letter templates</span>
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="border-t border-[#252a47] pt-4">
                   <Button 
-                    className="w-full"
-                    variant="outline"
+                    className="w-full bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
                     onClick={() => {
                       setSelectedPlan("pro");
                       setActivePlanDialog(true);
@@ -487,57 +476,47 @@ export default function SubscriptionPage() {
                 </CardFooter>
               </Card>
 
-              <Card className="bg-card/60 backdrop-blur shadow-md border-primary/40">
-                <CardHeader className="pb-4">
+              {/* Career Builder Plan Card */}
+              <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
+                <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle>Career Builder</CardTitle>
-                      <CardDescription>Complete career development package</CardDescription>
+                      <CardTitle className="text-white">Career Builder</CardTitle>
+                      <CardDescription className="text-gray-400">Complete career development package</CardDescription>
                     </div>
                     <div className="text-right">
-                      <span className="text-2xl font-bold">$29.99</span>
-                      <span className="text-sm text-muted-foreground">/month</span>
+                      <span className="text-2xl font-bold text-white">$29.99</span>
+                      <span className="text-sm text-gray-400">/month</span>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="pb-2 min-h-[216px]">
-                  <ul className="space-y-2 text-sm">
+                <CardContent className="pb-4 min-h-[200px]">
+                  <ul className="space-y-3 mt-3 text-sm">
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      Everything in Pro plan
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">Everything in Pro plan</span>
                     </li>
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      LinkedIn profile optimizations
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">LinkedIn profile optimizations</span>
                     </li>
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      Personal branding assistance
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">Personal branding assistance</span>
                     </li>
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      Unlimited cover letters
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">Unlimited cover letters</span>
                     </li>
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      Job application prioritization
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">Job application prioritization</span>
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="border-t border-[#252a47] pt-4">
                   <Button 
-                    className="w-full"
-                    variant="outline"
+                    className="w-full bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
                     onClick={() => {
                       setSelectedPlan("career_builder");
                       setActivePlanDialog(true);
@@ -553,27 +532,27 @@ export default function SubscriptionPage() {
           <TabsContent value="addons" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
               {/* Current Add-ons */}
-              <Card className="col-span-1 md:col-span-2 bg-card/60 backdrop-blur shadow-md">
+              <Card className="col-span-1 md:col-span-2 border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
                 <CardHeader>
-                  <CardTitle>Your Add-ons</CardTitle>
-                  <CardDescription>Your active add-on products</CardDescription>
+                  <CardTitle className="text-white">Your Add-ons</CardTitle>
+                  <CardDescription className="text-gray-400">Your active add-on products</CardDescription>
                 </CardHeader>
                 <CardContent className="min-h-[150px]">
                   {isLoadingAddons ? (
                     <div className="flex justify-center py-6">
-                      <Loader2 className="h-6 w-6 animate-spin" />
+                      <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
                     </div>
                   ) : addons && addons.length > 0 ? (
                     <ul className="space-y-3">
                       {addons.map((addon) => (
-                        <li key={addon.id} className="flex justify-between items-center p-3 bg-background/30 rounded-md border border-border">
+                        <li key={addon.id} className="flex justify-between items-center p-3 bg-[#0f1229]/80 rounded-md border border-[#252a47]">
                           <div>
-                            <p className="font-medium">{getAddonName(addon.addonType)}</p>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="font-medium text-white">{getAddonName(addon.addonType)}</p>
+                            <p className="text-sm text-gray-400">
                               Purchased on {formatDate(addon.createdAt)}
                             </p>
                           </div>
-                          <Badge variant="outline">
+                          <Badge className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-0 rounded-full px-3 text-xs">
                             {addon.expiresAt ? `Expires ${formatDate(addon.expiresAt)}` : 'Lifetime'}
                           </Badge>
                         </li>
@@ -581,13 +560,12 @@ export default function SubscriptionPage() {
                     </ul>
                   ) : (
                     <div className="py-6 text-center">
-                      <p className="mb-4">You don't have any add-ons yet.</p>
+                      <p className="mb-4 text-gray-400">You don't have any add-ons yet.</p>
                       <Button 
-                        variant="outline"
+                        className="bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
                         onClick={() => document.getElementById("add-ons-section")?.scrollIntoView({ behavior: "smooth" })}
-                        className="items-center gap-2"
                       >
-                        <PlusCircleIcon className="w-4 h-4" />
+                        <PlusCircleIcon className="w-4 h-4 mr-2" />
                         Browse Add-ons
                       </Button>
                     </div>
@@ -596,43 +574,38 @@ export default function SubscriptionPage() {
               </Card>
               
               {/* Add-on Cards */}
-              <Card className="bg-card/60 backdrop-blur shadow-md border-primary/40" id="add-ons-section">
-                <CardHeader>
-                  <CardTitle>Cover Letter Pack</CardTitle>
-                  <CardDescription>Professional cover letter templates</CardDescription>
-                </CardHeader>
-                <CardContent className="min-h-[150px]">
-                  <div className="flex justify-between items-start mb-4">
+              <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden" id="add-ons-section">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
                     <div>
-                      <span className="text-2xl font-bold">$4.99</span>
-                      <span className="text-sm text-muted-foreground">/month</span>
+                      <CardTitle className="text-white">Cover Letter Pack</CardTitle>
+                      <CardDescription className="text-gray-400">Professional cover letter templates</CardDescription>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-2xl font-bold text-white">$4.99</span>
+                      <span className="text-sm text-gray-400">/month</span>
                     </div>
                   </div>
-                  <ul className="space-y-2 text-sm">
+                </CardHeader>
+                <CardContent className="pb-4 min-h-[150px]">
+                  <ul className="space-y-3 mt-3 text-sm">
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      5 Premium cover letter templates
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">5 Premium cover letter templates</span>
                     </li>
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      AI-powered customization
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">AI-powered customization</span>
                     </li>
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      Job-specific tailoring
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">Job-specific tailoring</span>
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="border-t border-[#252a47] pt-4">
                   <Button 
-                    className="w-full"
-                    variant="outline"
+                    className="w-full bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
                     onClick={() => {
                       setSelectedAddon("cover_letter_pack");
                       handlePurchaseAddon();
@@ -646,43 +619,38 @@ export default function SubscriptionPage() {
                 </CardFooter>
               </Card>
               
-              <Card className="bg-card/60 backdrop-blur shadow-md border-primary/40">
-                <CardHeader>
-                  <CardTitle>Interview Prep</CardTitle>
-                  <CardDescription>AI-powered interview preparation</CardDescription>
-                </CardHeader>
-                <CardContent className="min-h-[150px]">
-                  <div className="flex justify-between items-start mb-4">
+              <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
                     <div>
-                      <span className="text-2xl font-bold">$7.99</span>
-                      <span className="text-sm text-muted-foreground">/month</span>
+                      <CardTitle className="text-white">Interview Prep</CardTitle>
+                      <CardDescription className="text-gray-400">AI-powered interview preparation</CardDescription>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-2xl font-bold text-white">$7.99</span>
+                      <span className="text-sm text-gray-400">/month</span>
                     </div>
                   </div>
-                  <ul className="space-y-2 text-sm">
+                </CardHeader>
+                <CardContent className="pb-4 min-h-[150px]">
+                  <ul className="space-y-3 mt-3 text-sm">
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      200+ practice interview questions
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">200+ practice interview questions</span>
                     </li>
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      AI feedback on responses
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">AI feedback on responses</span>
                     </li>
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      Industry-specific preparation
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">Industry-specific preparation</span>
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="border-t border-[#252a47] pt-4">
                   <Button 
-                    className="w-full"
-                    variant="outline"
+                    className="w-full bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
                     onClick={() => {
                       setSelectedAddon("interview_prep");
                       handlePurchaseAddon();
@@ -696,43 +664,38 @@ export default function SubscriptionPage() {
                 </CardFooter>
               </Card>
               
-              <Card className="bg-card/60 backdrop-blur shadow-md border-primary/40">
-                <CardHeader>
-                  <CardTitle>Premium Filters</CardTitle>
-                  <CardDescription>Advanced job search filters</CardDescription>
-                </CardHeader>
-                <CardContent className="min-h-[150px]">
-                  <div className="flex justify-between items-start mb-4">
+              <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
                     <div>
-                      <span className="text-2xl font-bold">$3.99</span>
-                      <span className="text-sm text-muted-foreground">/month</span>
+                      <CardTitle className="text-white">Premium Filters</CardTitle>
+                      <CardDescription className="text-gray-400">Advanced job search filters</CardDescription>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-2xl font-bold text-white">$3.99</span>
+                      <span className="text-sm text-gray-400">/month</span>
                     </div>
                   </div>
-                  <ul className="space-y-2 text-sm">
+                </CardHeader>
+                <CardContent className="pb-4 min-h-[150px]">
+                  <ul className="space-y-3 mt-3 text-sm">
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      Salary range filters
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">Salary range filters</span>
                     </li>
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      Company size & type filters
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">Company size & type filters</span>
                     </li>
                     <li className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                      Custom algorithm matching
+                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
+                      <span className="text-gray-300">Custom algorithm matching</span>
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="border-t border-[#252a47] pt-4">
                   <Button 
-                    className="w-full"
-                    variant="outline"
+                    className="w-full bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
                     onClick={() => {
                       setSelectedAddon("premium_filters");
                       handlePurchaseAddon();
@@ -749,52 +712,51 @@ export default function SubscriptionPage() {
           </TabsContent>
 
           <TabsContent value="billing" className="space-y-4">
-            <Card className="bg-card/60 backdrop-blur shadow-md">
+            <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
               <CardHeader>
-                <CardTitle>Payment History</CardTitle>
-                <CardDescription>Your recent payments and transactions</CardDescription>
+                <CardTitle className="text-white">Payment History</CardTitle>
+                <CardDescription className="text-gray-400">Your recent payments and transactions</CardDescription>
               </CardHeader>
               <CardContent>
                 {isLoadingPayments ? (
                   <div className="flex justify-center py-6">
-                    <Loader2 className="h-6 w-6 animate-spin" />
+                    <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
                   </div>
                 ) : payments && payments.length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="text-left">
-                          <th className="px-4 py-2 text-sm font-medium">Date</th>
-                          <th className="px-4 py-2 text-sm font-medium">Description</th>
-                          <th className="px-4 py-2 text-sm font-medium text-right">Amount</th>
-                          <th className="px-4 py-2 text-sm font-medium text-right">Status</th>
+                        <tr className="text-left border-b border-[#252a47]">
+                          <th className="px-4 py-2 text-sm font-medium text-gray-400">Date</th>
+                          <th className="px-4 py-2 text-sm font-medium text-gray-400">Description</th>
+                          <th className="px-4 py-2 text-sm font-medium text-gray-400 text-right">Amount</th>
+                          <th className="px-4 py-2 text-sm font-medium text-gray-400 text-right">Status</th>
                         </tr>
                       </thead>
                       <tbody>
                         {payments.map((payment) => (
-                          <tr key={payment.id} className="border-t border-border hover:bg-background/40">
-                            <td className="px-4 py-3 text-sm">
+                          <tr key={payment.id} className="border-t border-[#252a47] hover:bg-[#1a1f3a]">
+                            <td className="px-4 py-3 text-sm text-gray-300">
                               {formatDate(payment.createdAt)}
                             </td>
-                            <td className="px-4 py-3 text-sm">
+                            <td className="px-4 py-3 text-sm text-gray-300">
                               {payment.itemType === 'subscription'
                                 ? 'Subscription Plan'
                                 : payment.itemType === 'addon'
                                 ? 'Add-on Purchase'
                                 : 'Payment'}
                             </td>
-                            <td className="px-4 py-3 text-sm text-right">
+                            <td className="px-4 py-3 text-sm text-gray-300 text-right">
                               ${parseFloat(payment.amount).toFixed(2)} {payment.currency}
                             </td>
                             <td className="px-4 py-3 text-right">
                               <Badge
-                                variant={
-                                  payment.status === 'completed'
-                                    ? 'default'
-                                    : payment.status === 'failed'
-                                    ? 'destructive'
-                                    : 'outline'
-                                }
+                                className={cn(
+                                  "bg-gradient-to-r rounded-full px-3 text-xs font-medium",
+                                  payment.status === 'completed' 
+                                    ? "from-green-500 to-emerald-600 text-white" 
+                                    : "from-red-500 to-red-600 text-white"
+                                )}
                               >
                                 {payment.status.charAt(0).toUpperCase() + payment.status.slice(1)}
                               </Badge>
@@ -806,23 +768,22 @@ export default function SubscriptionPage() {
                   </div>
                 ) : (
                   <div className="py-6 text-center">
-                    <p>No payment history available.</p>
+                    <p className="text-gray-400">No payment history available.</p>
                   </div>
                 )}
               </CardContent>
             </Card>
 
-            <Card className="bg-card/60 backdrop-blur shadow-md">
+            <Card className="border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
               <CardHeader>
-                <CardTitle>Payment Methods</CardTitle>
-                <CardDescription>Manage your payment options</CardDescription>
+                <CardTitle className="text-white">Payment Methods</CardTitle>
+                <CardDescription className="text-gray-400">Manage your payment options</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="py-6 text-center">
-                  <p className="mb-4">No payment methods saved.</p>
+                  <p className="mb-4 text-gray-400">No payment methods saved.</p>
                   <Button 
-                    variant="outline"
-                    className="items-center gap-2"
+                    className="bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
                     onClick={() => {
                       toast({
                         title: "Coming Soon",
@@ -830,7 +791,7 @@ export default function SubscriptionPage() {
                       });
                     }}
                   >
-                    <CreditCardIcon className="w-4 h-4" />
+                    <CreditCardIcon className="w-4 h-4 mr-2" />
                     Add Payment Method
                   </Button>
                 </div>
@@ -841,22 +802,22 @@ export default function SubscriptionPage() {
         
         {/* Active Plan Purchase Dialog */}
         <Dialog open={activePlanDialog} onOpenChange={setActivePlanDialog}>
-          <DialogContent className="bg-card/90 backdrop-blur shadow-lg max-w-md">
+          <DialogContent className="bg-[#151830] border border-[#252a47] shadow-xl text-white max-w-md">
             <DialogHeader>
-              <DialogTitle>Subscribe to {selectedPlan.replace('_', ' ')} Plan</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-white text-xl">Subscribe to {selectedPlan.replace('_', ' ')} Plan</DialogTitle>
+              <DialogDescription className="text-gray-400">
                 Complete your subscription purchase
               </DialogDescription>
             </DialogHeader>
             
             <div className="space-y-4 py-4">
-              <div className="flex justify-between items-center p-4 rounded-md bg-background/40 border border-border">
+              <div className="flex justify-between items-center p-4 rounded-md bg-[#0f1229]/80 border border-[#252a47]">
                 <div>
-                  <p className="font-medium capitalize">{selectedPlan.replace('_', ' ')} Plan</p>
-                  <p className="text-sm text-muted-foreground">Monthly subscription</p>
+                  <p className="font-medium capitalize text-white">{selectedPlan.replace('_', ' ')} Plan</p>
+                  <p className="text-sm text-gray-400">Monthly subscription</p>
                 </div>
                 <div>
-                  <p className="font-bold text-lg">
+                  <p className="font-bold text-lg text-white">
                     {selectedPlan === 'starter' ? '$9.99' : 
                      selectedPlan === 'pro' ? '$19.99' : '$29.99'}
                   </p>
@@ -868,22 +829,23 @@ export default function SubscriptionPage() {
                   <Switch
                     id="auto-renew-option"
                     checked={autoRenew}
+                    className="data-[state=checked]:bg-indigo-600"
                     onCheckedChange={setAutoRenew}
                   />
-                  <Label htmlFor="auto-renew-option">Auto-renew subscription</Label>
+                  <Label htmlFor="auto-renew-option" className="text-gray-300">Auto-renew subscription</Label>
                 </div>
               </div>
             </div>
             
-            <DialogFooter>
+            <DialogFooter className="border-t border-[#252a47] pt-4">
               <Button
-                variant="outline"
+                className="bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
                 onClick={() => setActivePlanDialog(false)}
               >
                 Cancel
               </Button>
               <Button 
-                className="gap-2"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white border-0"
                 onClick={handlePurchasePlan}
                 disabled={createSubscriptionMutation.isPending}
               >

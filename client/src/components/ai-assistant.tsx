@@ -246,7 +246,20 @@ export default function AIAssistant({
  const { mutate: generateSummary, isPending: isGeneratingSummary } = useMutation({
  mutationFn: async () => {
  if (!resumeId) return null;
- const res = await apiRequest("GET", `/api/resumes/${resumeId}/suggestions?summaryOnly=true`);
+ 
+ // Extract current summary from resume if available to avoid repetition
+ let existingSummary = "";
+ if (resume?.personalInfo?.summary) {
+   existingSummary = encodeURIComponent(resume.personalInfo.summary);
+ }
+ 
+ // Build query with context parameters
+ let url = `/api/resumes/${resumeId}/suggestions?summaryOnly=true`;
+ if (existingSummary) {
+   url += `&existingSummary=${existingSummary}`;
+ }
+ 
+ const res = await apiRequest("GET", url);
  return await res.json();
  },
  onSuccess: (data) => {
@@ -318,11 +331,42 @@ export default function AIAssistant({
 
  // Generate bullet points mutation
  const { mutate: generateBulletPoints, isPending: isGeneratingBullets } = useMutation({
- mutationFn: async () => {
- if (!resumeId) return null;
- const res = await apiRequest("GET", `/api/resumes/${resumeId}/suggestions?experienceOnly=true`);
- return await res.json();
- },
+  mutationFn: async () => {
+    if (!resumeId) return null;
+    
+    // Extract existing experience descriptions to avoid repetition
+    let existingBulletPoints: string[] = [];
+    let currentRole = "";
+    
+    if (resume?.experience && Array.isArray(resume.experience)) {
+      existingBulletPoints = resume.experience
+        .map(exp => exp.description || "")
+        .filter(Boolean);
+      
+      // Get current role from most recent experience
+      const sortedExperience = [...resume.experience].sort((a, b) => 
+        new Date(b.startDate || 0).getTime() - new Date(a.startDate || 0).getTime()
+      );
+      
+      if (sortedExperience[0]?.title) {
+        currentRole = sortedExperience[0].title;
+      }
+    }
+    
+    // Build query with context parameters
+    let url = `/api/resumes/${resumeId}/suggestions?experienceOnly=true`;
+    
+    if (currentRole) {
+      url += `&currentRole=${encodeURIComponent(currentRole)}`;
+    }
+    
+    if (existingBulletPoints.length > 0) {
+      url += `&existingBulletPoints=${encodeURIComponent(existingBulletPoints.join('||'))}`;
+    }
+    
+    const res = await apiRequest("GET", url);
+    return await res.json();
+  },
  onSuccess: (data) => {
  if (data?.success && data.suggestions && Array.isArray(data.suggestions)) {
  const bullets = data.suggestions.slice(0, 2);

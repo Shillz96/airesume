@@ -32,19 +32,19 @@ export default function ResumeBuilderHeader({
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   
   return (
-    <header className="sticky top-0 z-10 bg-gradient-to-r from-gray-900 to-gray-800 border-b border-blue-900/30 shadow-md py-4">
-      <div className="container mx-auto px-4 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Link href="/resumes" className="text-gray-300 hover:text-white">
+    <header className="sticky top-0 z-10 cosmic-header border-b border-cosmic-border shadow-md" style={{ padding: 'var(--space-4) 0' }}>
+      <div className="container mx-auto px-4 flex items-center justify-between" style={{ padding: '0 var(--space-4)' }}>
+        <div className="flex items-center" style={{ gap: 'var(--space-4)' }}>
+          <Link href="/resumes" className="text-cosmic-text-secondary hover:text-cosmic-text">
             <ArrowLeft className="h-5 w-5" />
           </Link>
           
           {isEditingTitle ? (
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center" style={{ gap: 'var(--space-2)' }}>
               <Input
                 value={resumeTitle}
                 onChange={(e) => onTitleChange(e.target.value)}
-                className="h-8 bg-gray-800 border-blue-600/30 text-white"
+                className="cosmic-input h-8 bg-cosmic-input-bg border-cosmic-border text-cosmic-text"
                 placeholder="Resume title"
                 onBlur={() => setIsEditingTitle(false)}
                 onKeyDown={(e) => {
@@ -58,14 +58,14 @@ export default function ResumeBuilderHeader({
                 variant="ghost" 
                 size="sm"
                 onClick={() => setIsEditingTitle(false)}
-                className="h-8 px-2 text-gray-400 hover:text-white"
+                className="cosmic-button-ghost h-8 px-2 text-cosmic-text-secondary hover:text-cosmic-text"
               >
                 Done
               </Button>
             </div>
           ) : (
             <div 
-              className="text-lg font-medium text-white cursor-pointer hover:underline" 
+              className="text-lg font-medium text-cosmic-text cursor-pointer hover:underline" 
               onClick={() => setIsEditingTitle(true)}
             >
               {resumeTitle || "Untitled Resume"}
@@ -73,25 +73,25 @@ export default function ResumeBuilderHeader({
           )}
           
           {isDirty && !isSaving && (
-            <span className="text-amber-400 text-xs">Unsaved changes</span>
+            <span className="text-cosmic-warning text-xs">Unsaved changes</span>
           )}
         </div>
         
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center" style={{ gap: 'var(--space-2)' }}>
           <Button
             variant="outline" 
             size="sm"
-            className="text-white bg-blue-900/20 border-blue-900/50 hover:bg-blue-900/30"
+            className="cosmic-button-outline text-cosmic-text border-cosmic-border hover:bg-cosmic-card-hover"
             onClick={onOpenAIAssistant}
           >
-            <Sparkles className="h-4 w-4 mr-1 text-blue-400" />
+            <Sparkles className="h-4 w-4 mr-1 text-cosmic-accent" />
             AI Assist
           </Button>
           
           <Button
             variant="outline"
             size="sm"
-            className="text-white bg-blue-900/20 border-blue-900/50 hover:bg-blue-900/30"
+            className="cosmic-button-outline text-cosmic-text border-cosmic-border hover:bg-cosmic-card-hover"
             onClick={onDownload}
           >
             <Download className="h-4 w-4 mr-1" />
@@ -100,7 +100,7 @@ export default function ResumeBuilderHeader({
           
           <Button
             size="sm"
-            className="bg-blue-600 hover:bg-blue-700 text-white"
+            className="cosmic-button bg-cosmic-accent hover:bg-cosmic-accent-hover text-white"
             onClick={onSave}
             disabled={isSaving || !isDirty}
           >

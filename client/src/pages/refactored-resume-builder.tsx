@@ -284,9 +284,9 @@ export default function ResumeBuilder() {
             </TabsTrigger>
           </TabsList>
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6" style={{ gap: 'var(--space-6)' }}>
             {/* Main Content - Left/Center */}
-            <div className={activeSection === "preview" ? "lg:col-span-3" : "lg:col-span-2 space-y-6"}>
+            <div className={activeSection === "preview" ? "lg:col-span-3" : "lg:col-span-2 space-y-6"} style={{ '--space-y': 'var(--space-6)' } as React.CSSProperties}>
               {/* Content for each tab */}
               <TabsContent value="profile" className="mt-0">
                 <PersonalInfoSection
@@ -329,29 +329,30 @@ export default function ResumeBuilder() {
               </TabsContent>
               
               <TabsContent value="summary" className="mt-0">
-                <div className="cosmic-card border border-white/10 bg-black/30 p-6 rounded-lg">
-                  <h2 className="text-lg font-medium mb-4 text-white">Resume Summary</h2>
-                  <p className="text-gray-300 mb-4">
+                <div className="cosmic-card cosmic-panel border border-cosmic-border p-6 rounded-lg" style={{ padding: 'var(--space-6)' }}>
+                  <h2 className="text-lg font-medium mb-4 text-cosmic-text">Resume Summary</h2>
+                  <p className="text-cosmic-text-secondary mb-4" style={{ marginBottom: 'var(--space-4)' }}>
                     Write a compelling summary that highlights your key qualifications, skills, and career goals.
                   </p>
                   <textarea
                     value={resume.personalInfo.summary}
                     onChange={(e) => handlePersonalInfoUpdate('summary', e.target.value)}
-                    className="w-full h-32 p-3 bg-black/50 border border-blue-900/50 rounded-lg text-white"
+                    className="cosmic-input w-full h-32 p-3 bg-cosmic-input-bg border border-cosmic-border rounded-lg text-cosmic-text"
+                    style={{ padding: 'var(--space-3)', height: '8rem' }}
                     placeholder="Enter a professional summary..."
                   />
                 </div>
               </TabsContent>
               
               <TabsContent value="preview" className="mt-0">
-                <div className="flex flex-col space-y-6">
+                <div className="flex flex-col space-y-6" style={{ gap: 'var(--space-6)' }}>
                   <TemplateSelector
                     selectedTemplate={resume.template}
                     onTemplateChange={updateResumeTemplate}
                   />
                   
                   {/* Full Width Preview Only Shown on Preview Tab */}
-                  <div className="h-[calc(100vh-320px)]">
+                  <div className="h-[calc(100vh-320px)] cosmic-card cosmic-panel border border-cosmic-border rounded-lg overflow-hidden">
                     <ResumePreviewComponent
                       resume={resume}
                       onTemplateChange={updateResumeTemplate}
@@ -365,17 +366,17 @@ export default function ResumeBuilder() {
             {/* AI Assistant - Right Side (Only show when not in preview) */}
             {activeSection !== "preview" && (
               <div className="lg:col-span-1 h-[calc(100vh-220px)] sticky top-20">
-                <div className="cosmic-card border border-white/10 bg-black/30 rounded-lg h-full flex flex-col">
+                <div className="cosmic-card cosmic-panel border border-cosmic-border rounded-lg h-full flex flex-col overflow-hidden">
                   {/* Assistant Header */}
-                  <div className="p-4 border-b border-white/10 flex items-center justify-between">
+                  <div className="p-4 border-b border-cosmic-border flex items-center justify-between" style={{ padding: 'var(--space-4)' }}>
                     <div className="flex items-center">
-                      <Bot className="h-5 w-5 text-blue-400 mr-2" />
-                      <h2 className="text-lg font-medium text-white">AI Resume Assistant</h2>
+                      <Bot className="h-5 w-5 text-cosmic-accent mr-2" />
+                      <h2 className="text-lg font-medium text-cosmic-text">AI Resume Assistant</h2>
                     </div>
                   </div>
                   
                   {/* Chat Messages */}
-                  <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                  <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ padding: 'var(--space-4)', '--space-y': 'var(--space-4)' } as React.CSSProperties}>
                     {chatMessages.map((message: any) => (
                       <div
                         key={message.id}
@@ -384,15 +385,16 @@ export default function ResumeBuilder() {
                         <div
                           className={`max-w-[85%] rounded-lg p-3 ${
                             message.sender === "User"
-                              ? "bg-blue-600 text-white"
-                              : "bg-gray-800 border border-gray-700 text-gray-100"
+                              ? "bg-cosmic-accent text-white"
+                              : "bg-cosmic-card-hover border border-cosmic-border text-cosmic-text"
                           }`}
+                          style={{ padding: 'var(--space-3)' }}
                         >
                           {message.isLoading ? (
                             <div className="flex items-center space-x-2">
-                              <div className="w-2 h-2 bg-blue-300 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                              <div className="w-2 h-2 bg-blue-300 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                              <div className="w-2 h-2 bg-blue-300 rounded-full animate-bounce"></div>
+                              <div className="w-2 h-2 bg-cosmic-accent-light rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                              <div className="w-2 h-2 bg-cosmic-accent-light rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                              <div className="w-2 h-2 bg-cosmic-accent-light rounded-full animate-bounce"></div>
                             </div>
                           ) : (
                             <>
@@ -400,16 +402,17 @@ export default function ResumeBuilder() {
                               
                               {/* Suggestions */}
                               {message.suggestions && message.suggestions.length > 0 && (
-                                <div className="mt-3 space-y-2">
+                                <div className="mt-3 space-y-2" style={{ marginTop: 'var(--space-3)', '--space-y': 'var(--space-2)' } as React.CSSProperties}>
                                   {message.suggestions.map((suggestion: string, idx: number) => (
                                     <div key={idx} className="flex">
                                       <Button
                                         variant="outline"
                                         size="sm"
-                                        className="text-xs text-left justify-start h-auto py-2 bg-gray-700/50 hover:bg-blue-900/50 w-full"
+                                        className="cosmic-button-outline text-xs text-left justify-start h-auto py-2 bg-cosmic-card-hover hover:bg-cosmic-accent-muted w-full"
+                                        style={{ padding: 'var(--space-2) var(--space-3)' }}
                                         onClick={() => handleSuggestionClick(suggestion)}
                                       >
-                                        <Lightbulb className="h-3 w-3 mr-2 text-blue-400 flex-shrink-0" />
+                                        <Lightbulb className="h-3 w-3 mr-2 text-cosmic-accent flex-shrink-0" />
                                         <span className="whitespace-normal">{suggestion}</span>
                                       </Button>
                                     </div>
@@ -419,13 +422,13 @@ export default function ResumeBuilder() {
                               
                               {/* Add buttons for applying content */}
                               {message.type === "summary" && message.suggestions && (
-                                <div className="mt-2">
+                                <div className="mt-2" style={{ marginTop: 'var(--space-2)' }}>
                                   {message.suggestions.map((text: string, idx: number) => (
-                                    <div key={idx} className="mt-2 flex justify-end">
+                                    <div key={idx} className="mt-2 flex justify-end" style={{ marginTop: 'var(--space-2)' }}>
                                       <Button
                                         size="sm"
                                         variant="outline"
-                                        className="text-xs bg-blue-900/30 border-blue-500/30 text-blue-400 hover:bg-blue-800/20"
+                                        className="cosmic-button-outline text-xs bg-cosmic-card-hover border-cosmic-accent-muted text-cosmic-accent hover:bg-cosmic-accent-muted"
                                         onClick={() => handleApplySummary(text)}
                                       >
                                         <Plus className="h-3 w-3 mr-2" />
@@ -437,13 +440,13 @@ export default function ResumeBuilder() {
                               )}
                               
                               {message.type === "bullet" && message.suggestions && (
-                                <div className="mt-2">
+                                <div className="mt-2" style={{ marginTop: 'var(--space-2)' }}>
                                   {message.suggestions.map((text: string, idx: number) => (
-                                    <div key={idx} className="mt-2 flex justify-end">
+                                    <div key={idx} className="mt-2 flex justify-end" style={{ marginTop: 'var(--space-2)' }}>
                                       <Button
                                         size="sm"
                                         variant="outline"
-                                        className="text-xs bg-blue-900/30 border-blue-500/30 text-blue-400 hover:bg-blue-800/20"
+                                        className="cosmic-button-outline text-xs bg-cosmic-card-hover border-cosmic-accent-muted text-cosmic-accent hover:bg-cosmic-accent-muted"
                                         onClick={() => handleApplyBulletPoint(text)}
                                       >
                                         <Plus className="h-3 w-3 mr-2" />
@@ -455,13 +458,13 @@ export default function ResumeBuilder() {
                               )}
                               
                               {message.type === "skill" && message.suggestions && (
-                                <div className="mt-2 flex flex-wrap gap-2">
+                                <div className="mt-2 flex flex-wrap gap-2" style={{ marginTop: 'var(--space-2)', gap: 'var(--space-2)' }}>
                                   {message.suggestions.map((skill: string, idx: number) => (
                                     <Button
                                       key={idx}
                                       size="sm"
                                       variant="outline"
-                                      className="text-xs bg-blue-900/30 border-blue-500/30 text-blue-400 hover:bg-blue-800/20"
+                                      className="cosmic-button-outline text-xs bg-cosmic-card-hover border-cosmic-accent-muted text-cosmic-accent hover:bg-cosmic-accent-muted"
                                       onClick={() => handleApplySkill(skill)}
                                     >
                                       <Plus className="h-3 w-3 mr-1" />
@@ -478,13 +481,13 @@ export default function ResumeBuilder() {
                   </div>
                   
                   {/* Chat Input */}
-                  <div className="p-4 border-t border-white/10">
-                    <div className="flex space-x-2">
+                  <div className="p-4 border-t border-cosmic-border" style={{ padding: 'var(--space-4)' }}>
+                    <div className="flex space-x-2" style={{ gap: 'var(--space-2)' }}>
                       <Input
                         value={chatInput}
                         onChange={(e) => setChatInput(e.target.value)}
                         placeholder="Ask for resume help..."
-                        className="cosmic-input flex-1"
+                        className="cosmic-input flex-1 bg-cosmic-input-bg border-cosmic-border text-cosmic-text"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             handleSendMessage();
@@ -494,7 +497,7 @@ export default function ResumeBuilder() {
                       <Button
                         onClick={handleSendMessage}
                         size="icon"
-                        className="bg-blue-600 hover:bg-blue-700"
+                        className="cosmic-button bg-cosmic-accent hover:bg-cosmic-accent-hover text-white"
                         disabled={!chatInput.trim()}
                       >
                         <Send className="h-4 w-4" />

@@ -2830,110 +2830,124 @@ export default function ResumeBuilder() {
                       </div>
                     )}
                   <div className="md:col-span-2 space-y-6">
-                    <div>
-                      <h2 className="text-xl font-semibold mb-4 text-white flex items-center">
-                        <User className="h-5 w-5 mr-2 text-blue-400" />
+                    <div className="cosmic-resume-section">
+                      <h3 className="cosmic-section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                          <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
                         Personal Information
-                      </h2>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="firstName" className="text-gray-300">
-                            First Name
-                          </Label>
-                          <Input
-                            id="firstName"
-                            value={resume?.personalInfo?.firstName || ""}
-                            onChange={(e) =>
-                              updatePersonalInfo("firstName", e.target.value)
-                            }
-                            className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="lastName" className="text-gray-300">
-                            Last Name
-                          </Label>
-                          <Input
-                            id="lastName"
-                            value={resume?.personalInfo?.lastName || ""}
-                            onChange={(e) =>
-                              updatePersonalInfo("lastName", e.target.value)
-                            }
-                            className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="email" className="text-gray-300">
-                            Email
-                          </Label>
-                          <Input
-                            id="email"
-                            type="email"
-                            value={resume?.personalInfo?.email || ""}
-                            onChange={(e) =>
-                              updatePersonalInfo("email", e.target.value)
-                            }
-                            className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="phone" className="text-gray-300">
-                            Phone
-                          </Label>
-                          <Input
-                            id="phone"
-                            value={resume?.personalInfo?.phone || ""}
-                            onChange={(e) =>
-                              updatePersonalInfo("phone", e.target.value)
-                            }
-                            className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                          />
+                      </h3>
+                      <div className="cosmic-item relative">
+                        <div className="cosmic-glow cosmic-glow-top-right"></div>
+                        <div className="relative z-10 p-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="cosmic-form-group">
+                              <Label htmlFor="firstName" className="cosmic-form-label">
+                                First Name
+                              </Label>
+                              <Input
+                                id="firstName"
+                                value={resume?.personalInfo?.firstName || ""}
+                                onChange={(e) =>
+                                  updatePersonalInfo("firstName", e.target.value)
+                                }
+                                className="cosmic-form-input"
+                              />
+                            </div>
+                            <div className="cosmic-form-group">
+                              <Label htmlFor="lastName" className="cosmic-form-label">
+                                Last Name
+                              </Label>
+                              <Input
+                                id="lastName"
+                                value={resume?.personalInfo?.lastName || ""}
+                                onChange={(e) =>
+                                  updatePersonalInfo("lastName", e.target.value)
+                                }
+                                className="cosmic-form-input"
+                              />
+                            </div>
+                            <div className="cosmic-form-group">
+                              <Label htmlFor="email" className="cosmic-form-label">
+                                Email
+                              </Label>
+                              <Input
+                                id="email"
+                                type="email"
+                                value={resume?.personalInfo?.email || ""}
+                                onChange={(e) =>
+                                  updatePersonalInfo("email", e.target.value)
+                                }
+                                className="cosmic-form-input"
+                              />
+                            </div>
+                            <div className="cosmic-form-group">
+                              <Label htmlFor="phone" className="cosmic-form-label">
+                                Phone
+                              </Label>
+                              <Input
+                                id="phone"
+                                value={resume?.personalInfo?.phone || ""}
+                                onChange={(e) =>
+                                  updatePersonalInfo("phone", e.target.value)
+                                }
+                                className="cosmic-form-input"
+                              />
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div>
-                      <Label htmlFor="headline" className="text-gray-300">
-                        Professional Headline
-                      </Label>
-                      <Input
-                        id="headline"
-                        value={resume?.personalInfo?.headline || ""}
-                        onChange={(e) =>
-                          updatePersonalInfo("headline", e.target.value)
-                        }
-                        className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                        placeholder="e.g., Senior Software Engineer | Front-End Specialist | React & TypeScript Expert"
-                      />
-                    </div>
+                      <div className="cosmic-item relative mt-4">
+                        <div className="cosmic-glow cosmic-glow-bottom-left"></div>
+                        <div className="relative z-10 p-4">
+                          <div className="cosmic-form-group">
+                            <Label htmlFor="headline" className="cosmic-form-label">
+                              Professional Headline
+                            </Label>
+                            <Input
+                              id="headline"
+                              value={resume?.personalInfo?.headline || ""}
+                              onChange={(e) =>
+                                updatePersonalInfo("headline", e.target.value)
+                              }
+                              className="cosmic-form-input"
+                              placeholder="e.g., Senior Software Engineer | Front-End Specialist | React & TypeScript Expert"
+                            />
+                          </div>
 
-                    <div>
-                      <Label htmlFor="summary" className="text-gray-300">
-                        Professional Summary
-                      </Label>
-                      <Textarea
-                        id="summary"
-                        value={resume?.personalInfo?.summary || ""}
-                        onChange={(e) =>
-                          updatePersonalInfo("summary", e.target.value)
-                        }
-                        className="mt-1 min-h-32 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                        placeholder="Write a concise summary of your professional background, key skills, and career achievements."
-                      />
-                      <div className="mt-2 text-xs text-gray-300 bg-white/5 p-3 rounded-lg">
-                        <p className="mb-2 text-blue-300 font-medium">
-                          Tips for a great summary:
-                        </p>
-                        <ul className="list-disc pl-4 space-y-1">
-                          <li>Keep it concise (3-5 sentences)</li>
-                          <li>Highlight your most relevant experience</li>
-                          <li>
-                            Focus on achievements rather than responsibilities
-                          </li>
-                          <li>
-                            Include keywords relevant to your target position
-                          </li>
-                        </ul>
+                          <div className="cosmic-form-group mt-4">
+                            <Label htmlFor="summary" className="cosmic-form-label">
+                              Professional Summary
+                            </Label>
+                            <Textarea
+                              id="summary"
+                              value={resume?.personalInfo?.summary || ""}
+                              onChange={(e) =>
+                                updatePersonalInfo("summary", e.target.value)
+                              }
+                              className="cosmic-form-input cosmic-form-textarea"
+                              rows={4}
+                              placeholder="Write a concise summary of your professional background, key skills, and career achievements."
+                            />
+                            <div className="mt-3 text-xs text-blue-100/60 bg-blue-500/5 p-3 rounded-lg border border-blue-500/10">
+                              <p className="mb-2 text-blue-300 font-medium">
+                                Tips for a great summary:
+                              </p>
+                              <ul className="list-disc pl-4 space-y-1">
+                                <li>Keep it concise (3-5 sentences)</li>
+                                <li>Highlight your most relevant experience</li>
+                                <li>
+                                  Focus on achievements rather than responsibilities
+                                </li>
+                                <li>
+                                  Include keywords relevant to your target position
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

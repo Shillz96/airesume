@@ -33,7 +33,7 @@ import {
   TemplatePreviewIndustry,
   TemplatePreviewBold
 } from '@/components/resume-template';
-import CosmicBackground from '@/components/cosmic-background';
+
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { useGuestMode } from '@/hooks/use-guest-mode';
@@ -240,7 +240,6 @@ export default function ResumesPage() {
 
   return (
     <>
-      <CosmicBackground />
       <Navbar />
       <div className="container pt-12 pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
         <div className="flex items-center justify-between mb-6">

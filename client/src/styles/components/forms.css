@@ -1,268 +1,122 @@
-/* Cosmic Resume Form Styles */
+/**
+ * Form Styles
+ * 
+ * This file defines styles for form elements and inputs
+ */
 
-.cosmic-form {
-  @apply space-y-6;
+/* Form fields and controls */
+.form-group {
+  margin-bottom: var(--space-4);
 }
 
-.cosmic-form .form-group {
-  @apply space-y-2;
+.input-field, .select-field, .textarea-field {
+  @apply w-full rounded-md bg-white/10 border border-gray-700;
+  padding: var(--space-3) var(--space-4);
 }
 
-.cosmic-form label {
-  @apply block text-sm font-medium text-white mb-1;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+/* Custom checkbox with cosmic styling */
+.cosmic-checkbox {
+  @apply relative h-5 w-5 cursor-pointer appearance-none rounded-md 
+    border border-blue-500/40 bg-blue-900/20 transition-colors;
 }
 
-.cosmic-form .form-text {
-  @apply text-xs text-gray-400 mt-1;
+.cosmic-checkbox:checked {
+  @apply bg-blue-600 border-blue-400;
 }
 
-/* Input styling */
-.cosmic-form input[type="text"],
-.cosmic-form input[type="email"],
-.cosmic-form input[type="tel"],
-.cosmic-form input[type="url"],
-.cosmic-form input[type="date"],
-.cosmic-form input[type="month"],
-.cosmic-form input[type="number"],
-.cosmic-form select,
-.cosmic-form textarea {
-  @apply w-full px-4 py-2.5 rounded-lg bg-black/50 border border-white/20 
-  text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500/50 
-  focus:border-blue-500/50 transition-all duration-200 backdrop-blur-sm;
-  box-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
-}
-
-.cosmic-form input:focus,
-.cosmic-form select:focus,
-.cosmic-form textarea:focus {
-  @apply bg-black/70 border-blue-500/50;
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
-}
-
-/* Input with icon */
-.cosmic-form .input-with-icon {
-  @apply relative;
-}
-
-.cosmic-form .input-with-icon input,
-.cosmic-form .input-with-icon select {
-  @apply pl-10;
-}
-
-.cosmic-form .input-with-icon .icon {
-  @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400;
-}
-
-/* Form grid */
-.cosmic-form .form-grid {
-  @apply grid grid-cols-1 md:grid-cols-2 gap-4;
-}
-
-/* Form actions */
-.cosmic-form .form-actions {
-  @apply flex justify-end space-x-3 mt-8;
-}
-
-/* Required field indicator */
-.cosmic-form .required-field label::after {
-  content: "*";
-  @apply ml-1 text-red-400;
-}
-
-/* Form validation */
-.cosmic-form .error-message {
-  @apply text-red-400 text-xs mt-1 animate-pulse;
-}
-
-.cosmic-form input.has-error,
-.cosmic-form select.has-error,
-.cosmic-form textarea.has-error {
-  @apply border-red-500/50 bg-red-900/10;
-  box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
-}
-
-/* Form sections */
-.cosmic-form .form-section {
-  @apply border border-white/10 bg-black/30 p-5 rounded-lg relative overflow-hidden mb-6;
-}
-
-.cosmic-form .form-section::before {
+.cosmic-checkbox:checked::after {
   content: '';
-  @apply absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%) rotate(45deg);
+  width: 3px;
+  height: 6px;
+  border-bottom: 2px solid white;
+  border-right: 2px solid white;
 }
 
-.cosmic-form .form-section-title {
-  @apply text-lg font-medium text-white mb-4 flex items-center;
+.cosmic-checkbox:focus {
+  @apply outline-none ring-2 ring-blue-500/50;
 }
 
-.cosmic-form .form-section-title svg {
-  @apply h-5 w-5 mr-2 text-blue-400;
+/* Custom radio with cosmic styling */
+.cosmic-radio {
+  @apply relative h-5 w-5 cursor-pointer appearance-none rounded-full
+    border border-blue-500/40 bg-blue-900/20 transition-colors;
 }
 
-/* Animated placeholder */
-.cosmic-form .animated-placeholder input::placeholder,
-.cosmic-form .animated-placeholder textarea::placeholder {
-  @apply transition-all duration-300;
+.cosmic-radio:checked {
+  @apply bg-blue-900/40 border-blue-400;
 }
 
-.cosmic-form .animated-placeholder input:focus::placeholder,
-.cosmic-form .animated-placeholder textarea:focus::placeholder {
-  @apply text-blue-400/50 translate-x-1;
+.cosmic-radio:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #60a5fa;
+  box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
 }
 
-/* Toggle switches */
-.cosmic-form .toggle-switch {
-  @apply relative inline-flex items-center cursor-pointer;
+.cosmic-radio:focus {
+  @apply outline-none ring-2 ring-blue-500/50;
 }
 
-.cosmic-form .toggle-switch input {
-  @apply sr-only;
-}
-
-.cosmic-form .toggle-slider {
-  @apply w-11 h-6 bg-black/60 border border-white/20 rounded-full transition-all duration-200;
-}
-
-.cosmic-form .toggle-slider:before {
-  content: "";
-  @apply absolute left-1 bottom-1 bg-white w-4 h-4 rounded-full transition-all duration-200;
-}
-
-.cosmic-form .toggle-switch input:checked + .toggle-slider {
-  @apply bg-blue-600/50 border-blue-400/30;
-}
-
-.cosmic-form .toggle-switch input:checked + .toggle-slider:before {
-  @apply transform translate-x-5 bg-white;
-}
-
-/* Autofill styling */
-.cosmic-form input:-webkit-autofill,
-.cosmic-form input:-webkit-autofill:hover,
-.cosmic-form input:-webkit-autofill:focus {
-  -webkit-text-fill-color: white;
-  -webkit-box-shadow: 0 0 0px 1000px rgba(0, 0, 0, 0.7) inset;
-  transition: background-color 5000s ease-in-out 0s;
-  caret-color: white;
-}
-
-/* Range inputs */
-.cosmic-form input[type="range"] {
-  @apply h-2 rounded-lg appearance-none bg-black/50 border border-white/20;
-}
-
-.cosmic-form input[type="range"]::-webkit-slider-thumb {
-  @apply appearance-none w-4 h-4 rounded-full bg-blue-500 cursor-pointer;
-}
-
-/* Rich text editor area */
-.cosmic-form .rich-text-editor {
-  @apply w-full min-h-[150px] px-4 py-3 rounded-lg bg-black/50 border border-white/20 
-  text-white focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 
-  transition-all duration-200 backdrop-blur-sm;
-}
-
-/* Button styling within forms */
-.cosmic-form .cosmic-button {
-  @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg 
-  font-medium transition-all duration-200 text-sm;
-}
-
-.cosmic-form .cosmic-button.primary {
-  @apply bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 
-  text-white border border-blue-500/50 shadow-lg shadow-blue-500/20;
-}
-
-.cosmic-form .cosmic-button.secondary {
-  @apply bg-gray-800/80 hover:bg-gray-700/80 text-white border border-white/10 
-  shadow-lg shadow-black/20;
-}
-
-.cosmic-form .cosmic-button.outline {
-  @apply bg-transparent hover:bg-white/5 text-white border border-white/20;
-}
-
-.cosmic-form .cosmic-button.danger {
-  @apply bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 
-  text-white border border-red-500/50 shadow-lg shadow-red-500/20;
-}
-
-.cosmic-form .cosmic-button svg {
-  @apply h-4 w-4 mr-2;
-}
-
-.cosmic-form .cosmic-button.loading {
-  @apply opacity-75 cursor-not-allowed;
-}
-
-.cosmic-form .cosmic-button.loading::after {
-  content: "";
-  @apply inline-block h-4 w-4 ml-2 rounded-full border-2 border-white border-t-transparent animate-spin;
-}
-
-/* Field hints and tooltips */
-.cosmic-form .field-hint {
+/* Custom select with cosmic styling */
+.cosmic-select-wrapper {
   @apply relative;
 }
 
-.cosmic-form .field-hint .hint-icon {
-  @apply inline-flex ml-1 text-gray-500 hover:text-gray-300 cursor-help;
+.cosmic-select {
+  @apply w-full rounded-md bg-white/10 border border-white/20 text-white 
+    appearance-none pr-8 pl-3 py-2 cursor-pointer;
 }
 
-.cosmic-form .field-hint .hint-content {
-  @apply absolute z-10 invisible opacity-0 
-  transition-opacity duration-300 bottom-full left-1/2 transform -translate-x-1/2 mb-2
-  w-48 p-2 rounded-lg bg-gray-900 border border-white/10 text-xs text-gray-300 shadow-xl;
+.cosmic-select-arrow {
+  @apply absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none
+    text-blue-400;
 }
 
-.cosmic-form .field-hint:hover .hint-content {
-  @apply visible opacity-100;
+/* Cosmic slider */
+.cosmic-slider {
+  @apply w-full h-2 bg-blue-900/30 rounded-full appearance-none;
 }
 
-/* Compact form variation */
-.cosmic-form.compact input,
-.cosmic-form.compact select,
-.cosmic-form.compact textarea {
-  @apply py-2 text-sm;
+.cosmic-slider::-webkit-slider-thumb {
+  @apply appearance-none w-4 h-4 rounded-full bg-blue-500 
+    cursor-pointer shadow-[0_0_5px_rgba(59,130,246,0.7)] border-2 border-white/70;
 }
 
-.cosmic-form.compact .form-group {
-  @apply space-y-1;
+.cosmic-slider::-moz-range-thumb {
+  @apply appearance-none w-4 h-4 rounded-full bg-blue-500 
+    cursor-pointer shadow-[0_0_5px_rgba(59,130,246,0.7)] border-2 border-white/70;
 }
 
-.cosmic-form.compact .form-actions {
-  @apply mt-4;
+/* Form label */
+.cosmic-label {
+  @apply block text-sm font-medium text-blue-200 mb-1;
 }
 
-/* Skill proficiency indicator */
-.cosmic-form .skill-proficiency {
-  @apply mt-2;
+/* Form helper text */
+.cosmic-helper-text {
+  @apply text-xs text-blue-300/70 mt-1;
 }
 
-.cosmic-form .skill-proficiency-bar {
-  @apply h-1.5 bg-black/30 rounded-full overflow-hidden;
+/* Error state */
+.cosmic-error {
+  @apply text-xs text-red-400 mt-1;
 }
 
-.cosmic-form .skill-proficiency-fill {
-  @apply h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500;
+.cosmic-input-error {
+  @apply border-red-500/70 bg-red-900/10;
 }
 
-.cosmic-form .skill-proficiency-labels {
-  @apply flex justify-between text-xs text-gray-400 mt-1;
-}
-
-/* Draggable form items */
-.cosmic-form .draggable-item {
-  @apply border border-white/10 rounded-lg p-4 mb-3 cursor-move bg-black/40 backdrop-blur-sm 
-  hover:border-blue-500/30 hover:bg-blue-900/10 transition-all duration-200;
-}
-
-.cosmic-form .draggable-item.dragging {
-  @apply border-blue-500/50 bg-blue-900/20 shadow-lg shadow-blue-500/10;
-  transform: scale(1.02);
-}
-
-.cosmic-form .drag-handle {
-  @apply cursor-move p-1 rounded-md hover:bg-white/10 text-gray-400;
+/* Disabled state */
+.cosmic-input-disabled {
+  @apply opacity-50 cursor-not-allowed;
 }

@@ -1,119 +1,49 @@
 /**
  * Navigation Styles
  * 
- * This file defines styles for navigation elements, sidebars, and tabs
+ * This file defines styles for navigation elements like navbar, sidebar, and tabs
  */
 
-/* Tabs styling for cosmic theme */
-.cosmic-tabs-container {
-  @apply w-full;
-}
-
-.cosmic-tabs-list {
-  @apply flex space-x-1 rounded-lg p-1 mb-4 border-b border-white/10;
-}
-
-.cosmic-tab {
-  @apply w-full py-3 text-center rounded-md text-sm font-medium transition-all duration-300
-         text-gray-300 hover:text-white data-[state=active]:text-blue-300;
-}
-
-.cosmic-tab[data-state="active"] {
-  @apply bg-white/5 shadow-sm border-b-2 border-blue-500;
-  position: relative;
-}
-
-.cosmic-tab[data-state="active"]::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
+/* Navbar styles */
+.cosmic-navbar {
+  position: fixed;
+  top: 0;
   left: 0;
   right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  width: 100%;
+  z-index: var(--z-sticky);
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Resume navigation tabs specific styling */
-.resume-tabs .cosmic-tab {
-  @apply flex items-center justify-center gap-2;
+/* Active nav link indicator */
+.nav-link-indicator {
+  @apply absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500 transform origin-left;
+  transition: transform var(--transition-normal) ease;
 }
 
-.resume-tabs .cosmic-tab-icon {
-  @apply text-lg opacity-70 group-hover:opacity-100;
-}
-
-/* Sidebar navigation */
-.cosmic-sidebar {
-  @apply h-full w-64 bg-gradient-to-b from-black/80 to-blue-950/50 backdrop-blur-lg 
-         border-r border-white/10 flex flex-col transition-all duration-300 py-6;
-}
-
-.cosmic-sidebar-collapsed {
-  @apply w-16;
-}
-
-.cosmic-sidebar-header {
-  @apply px-4 mb-6 flex items-center justify-between;
-}
-
-.cosmic-sidebar-nav {
-  @apply space-y-1 px-3 flex-grow;
-}
-
-.cosmic-sidebar-footer {
-  @apply px-4 mt-auto pt-6 border-t border-white/10;
-}
-
-.cosmic-sidebar-item {
-  @apply flex items-center gap-3 px-3 py-2 rounded-md text-gray-300 
-         hover:text-white hover:bg-white/5 transition-all duration-200;
-}
-
-.cosmic-sidebar-item-active {
-  @apply text-blue-300 bg-blue-900/30 font-medium;
-}
-
-.cosmic-sidebar-item-icon {
-  @apply text-lg opacity-70 group-hover:opacity-100;
+/* Style overrides for tabs in cosmic theme */
+.cosmic-tabs button[data-state='active'] {
+  @apply bg-blue-600/50 text-white border-b-2 border-blue-400;
 }
 
 /* Mobile navigation */
-.cosmic-mobile-nav {
-  @apply fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-blue-950/70
-         backdrop-blur-lg border-t border-white/10 flex justify-around py-3 px-2;
+.mobile-nav-overlay {
+  @apply fixed inset-0 z-40 bg-black/50 backdrop-blur-sm;
 }
 
-.cosmic-mobile-nav-item {
-  @apply flex flex-col items-center justify-center text-xs text-gray-300
-         hover:text-white transition-all duration-200 px-1;
-}
-
-.cosmic-mobile-nav-icon {
-  @apply text-xl mb-1;
-}
-
-.cosmic-mobile-nav-item-active {
-  @apply text-blue-300 relative;
-}
-
-.cosmic-mobile-nav-item-active::after {
-  content: '';
-  @apply absolute -top-3 left-1/2 -translate-x-1/2 w-5 h-1 bg-blue-500 rounded-full;
+.mobile-nav-content {
+  @apply fixed top-0 right-0 bottom-0 w-3/4 max-w-xs bg-black/80 backdrop-blur-md
+         border-l border-white/10 z-50 shadow-xl transition-transform duration-300;
 }
 
 /* Breadcrumbs */
 .cosmic-breadcrumbs {
-  @apply flex items-center text-sm text-gray-400 mb-4;
+  @apply flex items-center text-sm text-blue-300/70 mb-4;
 }
 
-.cosmic-breadcrumb-item {
-  @apply hover:text-blue-300 transition-colors;
-}
-
-.cosmic-breadcrumb-separator {
-  @apply mx-2 text-gray-500;
-}
-
-.cosmic-breadcrumb-active {
-  @apply text-blue-300;
+.cosmic-breadcrumbs-separator {
+  @apply mx-2 text-blue-300/40;
 }

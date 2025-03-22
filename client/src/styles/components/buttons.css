@@ -92,6 +92,22 @@
   @apply cosmic-button-primary;
 }
 
+/* Cosmic button glow effect */
+.cosmic-btn-glow {
+  background: linear-gradient(to right, #3b82f6, #8b5cf6);
+  color: white;
+  font-weight: 500;
+  border-radius: 0.375rem; 
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+  border: none;
+}
+
+.cosmic-btn-glow:hover {
+  background: linear-gradient(to right, #2563eb, #7c3aed);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.7);
+}
+
 /* Icon button */
 .cosmic-icon-button {
   @apply rounded-full p-2 flex items-center justify-center transition-all duration-300;

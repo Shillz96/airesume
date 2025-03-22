@@ -1,0 +1,681 @@
+Key Enhancements for Amazing Resumes
+Contextual Awareness
+Use the existing content (e.g., uploaded summaries, skills, or experience) to avoid repetition and suggest complementary or advanced content.
+Example: If a user already has "Python" listed as a skill, suggest "Machine Learning" instead of repeating "Python."
+Job-Specific Customization
+Leverage the jobTitle prop to tailor suggestions to the specific role the user is targeting.
+Example: For a "Software Developer" job, prioritize technical skills like "React" or "AWS" and bullet points about coding projects.
+Quantifiable Achievements
+Add measurable results to experience bullet points to make them more impressive (e.g., "increased efficiency by 30%" instead of "improved processes").
+Action Verbs and Power Words
+Incorporate strong verbs like "spearheaded," "orchestrated," or "pioneered" to make summaries and bullet points more dynamic.
+Industry-Specific Language
+Use terminology and buzzwords relevant to the user’s field to align with industry expectations and improve ATS (Applicant Tracking System) performance.
+Personalization
+Allow users to input additional details (e.g., career goals or unique traits) to make suggestions more reflective of their individuality.
+Diversity in Suggestions
+Ensure varied and creative options with each refresh, avoiding repetitive phrasing or ideas.
+ATS Optimization
+Include keywords and formatting that align with current ATS trends to help resumes pass automated screening.
+Enhanced Components
+Below are the improved versions of your components, incorporating the above enhancements.
+
+1. Enhanced SummarySuggestions Component
+typescript
+
+Collapse
+
+Unwrap
+
+Copy
+import React, { useState } from "react";
+import { apiRequest } from "@/lib/queryClient";
+import { Button } from "@/components/ui/button";
+import { Loader2, Check, Sparkles, RefreshCw } from "lucide-react";
+
+export interface SummarySuggestionsProps {
+  resumeId: string;
+  jobTitle?: string;
+  existingSummary?: string; // Added to avoid repetition
+  onApply: (summary: string) => void;
+}
+
+export type SummaryLength = "short" | "medium" | "long";
+
+export default function SummarySuggestions({
+  resumeId,
+  jobTitle,
+  existingSummary,
+  onApply,
+}: SummarySuggestionsProps) {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [summaries, setSummaries] = useState<string[]>([]);
+  const [lastUsedLength, setLastUsedLength] = useState<SummaryLength>("medium");
+  const [generationCount, setGenerationCount] = useState(0);
+  const [refreshCount, setRefreshCount] = useState<Record<SummaryLength, number>>({
+    short: 0,
+    medium: 0,
+    long: 0,
+  });
+
+  const handleGenerateSummaries = async (length: SummaryLength = "medium") => {
+    setIsGenerating(true);
+
+    if (lastUsedLength !== length) {
+      setLastUsedLength(length);
+      setGenerationCount((prev) => prev + 1);
+      setRefreshCount((prev) => ({ ...prev, [length]: 0 }));
+    } else {
+      const newRefreshCount = refreshCount[length] + 1;
+      if (newRefreshCount <= 5) {
+        setRefreshCount((prev) => ({ ...prev, [length]: newRefreshCount }));
+        setGenerationCount((prev) => prev + 1);
+      } else {
+        console.log("Refresh limit reached. Try a different length option.");
+        setIsGenerating(false);
+        return;
+      }
+    }
+
+    const getFallbackSummaries = (length: SummaryLength) => {
+      const jobTitle_safe = jobTitle || "professional";
+      if (length === "short") {
+        return [
+          `Results-driven ${jobTitle_safe} with a proven track record of success.`,
+          `Innovative ${jobTitle_safe} skilled in delivering high-impact solutions.`,
+          `Dynamic ${jobTitle_safe} with expertise in driving operational excellence.`,
+        ];
+      } else if (length === "long") {
+        return [
+          `Accomplished ${jobTitle_safe} with over 5 years of experience in leading cross-functional teams to achieve strategic goals. Proven ability to optimize processes, resulting in a 30% increase in efficiency and $200K in cost savings. Recognized for exceptional leadership and problem-solving skills.`,
+          `Results-oriented ${jobTitle_safe} with a strong background in data-driven decision-making. Successfully implemented innovative solutions that improved customer satisfaction by 25% and reduced operational costs by 15%. Adept at collaborating with stakeholders to deliver measurable results.`,
+          `Versatile ${jobTitle_safe} with expertise in project management and process improvement. Led multiple high-impact initiatives, including a $1M project that increased revenue by 20%. Known for strong communication skills and ability to drive change in fast-paced environments.`,
+        ];
+      } else {
+        return [
+          `Experienced ${jobTitle_safe} with a track record of delivering innovative solutions. Skilled in process optimization and team leadership, resulting in significant efficiency gains.`,
+          `Dedicated ${jobTitle_safe} with expertise in strategic planning and execution. Proven ability to drive business outcomes through data-driven insights and collaboration.`,
+          `Proactive ${jobTitle_safe} with strong problem-solving skills. Successfully led initiatives that improved performance metrics by 25% and enhanced customer satisfaction.`,
+        ];
+      }
+    };
+
+    if (resumeId && resumeId !== "new") {
+      try {
+        let url = `/api/resumes/${resumeId}/suggestions?summaryOnly=true&length=${length}&seed=${generationCount}`;
+        if (jobTitle) url += `&jobTitle=${encodeURIComponent(jobTitle)}`;
+        if (existingSummary) url += `&existingSummary=${encodeURIComponent(existingSummary)}`;
+
+        const res = await apiRequest("GET", url);
+        const data = await res.json();
+
+        if (data.success && Array.isArray(data.suggestions)) {
+          setSummaries(data.suggestions.slice(0, 3));
+          setIsGenerating(false);
+          return;
+        }
+      } catch (error) {
+        console.error("Error generating summaries:", error);
+      }
+    }
+
+    setSummaries(getFallbackSummaries(length));
+    setIsGenerating(false);
+  };
+
+  return (
+    <div>
+      {summaries.length === 0 ? (
+        <div className="space-y-4 py-3">
+          <div className="text-center">
+            <h4 className="text-sm font-medium text-blue-300 mb-2">Choose Summary Length</h4>
+            <div className="flex space-x-2 mb-4">
+              <Button
+                onClick={() => handleGenerateSummaries("short")}
+                disabled={isGenerating}
+                variant="outline"
+                size="sm"
+                className="flex-1 border-blue-500/30 text-blue-200 hover:bg-blue-900/30 hover:text-blue-100"
+              >
+                Short
+              </Button>
+              <Button
+                onClick={() => handleGenerateSummaries("medium")}
+                disabled={isGenerating}
+                variant="outline"
+                size="sm"
+                className="flex-1 border-blue-500/30 text-blue-200 hover:bg-blue-900/30 hover:text-blue-100"
+              >
+                Medium
+              </Button>
+              <Button
+                onClick={() => handleGenerateSummaries("long")}
+                disabled={isGenerating}
+                variant="outline"
+                size="sm"
+                className="flex-1 border-blue-500/30 text-blue-200 hover:bg-blue-900/30 hover:text-blue-100"
+              >
+                Long
+              </Button>
+            </div>
+          </div>
+          <Button
+            onClick={() => handleGenerateSummaries("medium")}
+            disabled={isGenerating}
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2 bg-[rgba(20,30,70,0.6)] border-blue-500/30 text-blue-100"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generating summaries...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                Generate AI summaries
+              </>
+            )}
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {summaries.map((summary, index) => (
+            <div
+              key={index}
+              className="bg-[rgba(20,30,70,0.6)] p-3 rounded-md border border-blue-500/30 text-sm relative group backdrop-blur-sm"
+            >
+              <p className="text-gray-200">{summary}</p>
+              <Button
+                onClick={() => onApply(summary)}
+                size="sm"
+                className="mt-2 w-full flex items-center justify-center gap-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0"
+              >
+                <Check className="h-3 w-3" />
+                Use this summary
+              </Button>
+            </div>
+          ))}
+          <div className="flex space-x-2">
+            <Button
+              onClick={() => handleGenerateSummaries("short")}
+              variant="ghost"
+              size="sm"
+              className="flex-1 items-center justify-center text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Short
+            </Button>
+            <Button
+              onClick={() => handleGenerateSummaries("medium")}
+              variant="ghost"
+              size="sm"
+              className="flex-1 items-center justify-center text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Medium
+            </Button>
+            <Button
+              onClick={() => handleGenerateSummaries("long")}
+              variant="ghost"
+              size="sm"
+              className="flex-1 items-center justify-center text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Long
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+Improvements:
+
+Added existingSummary prop to ensure suggestions complement what’s already written.
+Tailored fallback summaries to include the jobTitle for relevance.
+Used power words (e.g., "results-driven," "accomplished") and quantifiable results (e.g., "30% increase in efficiency") in fallback suggestions.
+2. Enhanced SkillSuggestions Component
+typescript
+
+Collapse
+
+Unwrap
+
+Copy
+import React, { useState } from "react";
+import { apiRequest } from "@/lib/queryClient";
+import { Button } from "@/components/ui/button";
+import { Loader2, Plus, Sparkles, RefreshCw } from "lucide-react";
+
+export interface SkillSuggestionsProps {
+  resumeId: string;
+  jobTitle?: string;
+  existingSkills?: string[]; // Added to avoid duplicates
+  onApply: (skill: string) => void;
+}
+
+export type SkillsCategory = "technical" | "soft" | "industry";
+
+export default function SkillSuggestions({
+  resumeId,
+  jobTitle,
+  existingSkills = [],
+  onApply,
+}: SkillSuggestionsProps) {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [skills, setSkills] = useState<string[]>([]);
+  const [lastUsedCategory, setLastUsedCategory] = useState<SkillsCategory>("technical");
+  const [generationCount, setGenerationCount] = useState(0);
+  const [refreshCount, setRefreshCount] = useState<Record<SkillsCategory, number>>({
+    technical: 0,
+    soft: 0,
+    industry: 0,
+  });
+
+  const handleGenerateSkills = async (category: SkillsCategory = "technical") => {
+    setIsGenerating(true);
+
+    if (lastUsedCategory !== category) {
+      setLastUsedCategory(category);
+      setGenerationCount((prev) => prev + 1);
+      setRefreshCount((prev) => ({ ...prev, [category]: 0 }));
+    } else {
+      const newRefreshCount = refreshCount[category] + 1;
+      if (newRefreshCount <= 5) {
+        setRefreshCount((prev) => ({ ...prev, [category]: newRefreshCount }));
+        setGenerationCount((prev) => prev + 1);
+      } else {
+        console.log("Refresh limit reached. Try a different category option.");
+        setIsGenerating(false);
+        return;
+      }
+    }
+
+    const getFallbackSkills = (category: SkillsCategory) => {
+      const jobTitle_safe = jobTitle || "professional";
+      if (category === "technical") {
+        if (jobTitle_safe.toLowerCase().includes("develop")) {
+          return ["React", "TypeScript", "Node.js", "GraphQL", "AWS", "Docker", "CI/CD"];
+        } else if (jobTitle_safe.toLowerCase().includes("data")) {
+          return ["Python", "SQL", "Machine Learning", "Tableau", "ETL Processes", "Big Data"];
+        } else {
+          return ["Project Management", "CRM Systems", "Data Analytics", "Cloud Computing"];
+        }
+      } else if (category === "soft") {
+        return ["Leadership", "Communication", "Problem-Solving", "Adaptability", "Team Collaboration"];
+      } else {
+        if (jobTitle_safe.toLowerCase().includes("market")) {
+          return ["SEO/SEM", "Content Marketing", "Social Media Strategy", "Analytics"];
+        } else if (jobTitle_safe.toLowerCase().includes("finance")) {
+          return ["Financial Modeling", "Risk Management", "Budgeting", "Forecasting"];
+        } else {
+          return ["Strategic Planning", "Quality Assurance", "Vendor Negotiation", "Business Development"];
+        }
+      }
+    };
+
+    if (resumeId && resumeId !== "new") {
+      try {
+        let url = `/api/resumes/${resumeId}/suggestions?skillsOnly=true&category=${category}&seed=${generationCount}`;
+        if (jobTitle) url += `&jobTitle=${encodeURIComponent(jobTitle)}`;
+        if (existingSkills.length > 0) url += `&existingSkills=${encodeURIComponent(existingSkills.join(","))}`;
+
+        const res = await apiRequest("GET", url);
+        const data = await res.json();
+
+        if (data.success && Array.isArray(data.suggestions)) {
+          setSkills(data.suggestions.filter((skill: string) => !existingSkills.includes(skill)).slice(0, 8));
+          setIsGenerating(false);
+          return;
+        }
+      } catch (error) {
+        console.error("Error generating skills:", error);
+      }
+    }
+
+    const fallbackSkills = getFallbackSkills(category).filter((skill) => !existingSkills.includes(skill));
+    setSkills(fallbackSkills.slice(0, 8));
+    setIsGenerating(false);
+  };
+
+  return (
+    <div>
+      {skills.length === 0 ? (
+        <div className="space-y-4 py-3">
+          <div className="text-center">
+            <h4 className="text-sm font-medium text-blue-300 mb-2">Choose Skills Category</h4>
+            <div className="flex space-x-2 mb-4">
+              <Button
+                onClick={() => handleGenerateSkills("technical")}
+                disabled={isGenerating}
+                variant="outline"
+                size="sm"
+                className="flex-1 border-blue-500/30 text-blue-200 hover:bg-blue-900/30 hover:text-blue-100"
+              >
+                Technical
+              </Button>
+              <Button
+                onClick={() => handleGenerateSkills("soft")}
+                disabled={isGenerating}
+                variant="outline"
+                size="sm"
+                className="flex-1 border-blue-500/30 text-blue-200 hover:bg-blue-900/30 hover:text-blue-100"
+              >
+                Soft
+              </Button>
+              <Button
+                onClick={() => handleGenerateSkills("industry")}
+                disabled={isGenerating}
+                variant="outline"
+                size="sm"
+                className="flex-1 border-blue-500/30 text-blue-200 hover:bg-blue-900/30 hover:text-blue-100"
+              >
+                Industry
+              </Button>
+            </div>
+          </div>
+          <Button
+            onClick={() => handleGenerateSkills("technical")}
+            disabled={isGenerating}
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2 bg-[rgba(20,30,70,0.6)] border-blue-500/30 text-blue-100"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generating skills...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                Generate AI skills
+              </>
+            )}
+          </Button>
+        </div>
+      ) : (
+        <div>
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            {skills.map((skill, index) => (
+              <div
+                key={index}
+                className="bg-[rgba(20,30,70,0.6)] p-2 rounded-md border border-blue-500/30 text-sm relative group backdrop-blur-sm"
+              >
+                <p className="text-gray-200 mb-2">{skill}</p>
+                <Button
+                  onClick={() => onApply(skill)}
+                  size="sm"
+                  className="w-full flex items-center justify-center gap-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 text-xs py-1"
+                >
+                  <Plus className="h-3 w-3" />
+                  Add skill
+                </Button>
+              </div>
+            ))}
+          </div>
+          <div className="flex space-x-2">
+            <Button
+              onClick={() => handleGenerateSkills("technical")}
+              variant="ghost"
+              size="sm"
+              className="flex-1 items-center justify-center text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Technical
+            </Button>
+            <Button
+              onClick={() => handleGenerateSkills("soft")}
+              variant="ghost"
+              size="sm"
+              className="flex-1 items-center justify-center text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Soft
+            </Button>
+            <Button
+              onClick={() => handleGenerateSkills("industry")}
+              variant="ghost"
+              size="sm"
+              className="flex-1 items-center justify-center text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Industry
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+Improvements:
+
+Added existingSkills prop to filter out skills the user already has.
+Tailored technical and industry skills based on jobTitle (e.g., "React" for developers, "SEO/SEM" for marketers).
+Reduced the number of suggestions to 8 for a cleaner display, focusing on high-impact skills.
+3. Enhanced ExperienceSuggestions Component
+typescript
+
+Collapse
+
+Unwrap
+
+Copy
+import React, { useState } from "react";
+import { apiRequest } from "@/lib/queryClient";
+import { Button } from "@/components/ui/button";
+import { Loader2, Check, Sparkles, RefreshCw } from "lucide-react";
+
+export interface ExperienceSuggestionsProps {
+  resumeId: string;
+  jobTitle?: string;
+  existingExperience?: string[]; // Added to avoid duplicates
+  onApply: (bulletPoint: string) => void;
+}
+
+export type BulletLength = "short" | "medium" | "long";
+
+export default function ExperienceSuggestions({
+  resumeId,
+  jobTitle,
+  existingExperience = [],
+  onApply,
+}: ExperienceSuggestionsProps) {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [bulletPoints, setBulletPoints] = useState<string[]>([]);
+  const [lastUsedLength, setLastUsedLength] = useState<BulletLength>("medium");
+  const [generationCount, setGenerationCount] = useState(0);
+  const [refreshCount, setRefreshCount] = useState<Record<BulletLength, number>>({
+    short: 0,
+    medium: 0,
+    long: 0,
+  });
+
+  const handleGenerateBulletPoints = async (length: BulletLength = "medium") => {
+    setIsGenerating(true);
+
+    if (lastUsedLength !== length) {
+      setLastUsedLength(length);
+      setGenerationCount((prev) => prev + 1);
+      setRefreshCount((prev) => ({ ...prev, [length]: 0 }));
+    } else {
+      const newRefreshCount = refreshCount[length] + 1;
+      if (newRefreshCount <= 5) {
+        setRefreshCount((prev) => ({ ...prev, [length]: newRefreshCount }));
+        setGenerationCount((prev) => prev + 1);
+      } else {
+        console.log("Refresh limit reached. Try a different style option.");
+        setIsGenerating(false);
+        return;
+      }
+    }
+
+    const getFallbackBulletPoints = (length: BulletLength) => {
+      const jobTitle_safe = jobTitle || "professional";
+      if (length === "short") {
+        return [
+          `Led ${jobTitle_safe} initiatives to improve efficiency by 25%.`,
+          `Managed teams to deliver projects on time and within budget.`,
+          `Optimized processes, reducing costs by 15%.`,
+        ];
+      } else if (length === "long") {
+        return [
+          `Spearheaded a company-wide initiative as ${jobTitle_safe} to streamline operations, resulting in a 30% reduction in processing time and $150K in annual savings. Collaborated with senior leadership to align project goals with strategic objectives.`,
+          `Orchestrated a $1M project as ${jobTitle_safe}, completing it 2 weeks ahead of schedule and 10% under budget. Recognized for exceptional leadership and stakeholder management.`,
+          `Pioneered a new ${jobTitle_safe} framework that improved data accuracy by 40%, enabling a 15% increase in quarterly revenue through better decision-making.`,
+        ];
+      } else {
+        return [
+          `Directed ${jobTitle_safe} projects that improved efficiency by 20% and saved $100K annually.`,
+          `Collaborated with teams to deliver high-impact solutions, boosting productivity by 15%.`,
+          `Implemented process improvements that reduced timelines by 10% and enhanced quality.`,
+        ];
+      }
+    };
+
+    if (resumeId && resumeId !== "new") {
+      try {
+        let url = `/api/resumes/${resumeId}/suggestions?experienceOnly=true&length=${length}&seed=${generationCount}`;
+        if (jobTitle) url += `&jobTitle=${encodeURIComponent(jobTitle)}`;
+        if (existingExperience.length > 0) url += `&existingExperience=${encodeURIComponent(existingExperience.join(","))}`;
+
+        const res = await apiRequest("GET", url);
+        const data = await res.json();
+
+        if (data.success && Array.isArray(data.suggestions)) {
+          setBulletPoints(data.suggestions.filter((bp: string) => !existingExperience.includes(bp)).slice(0, 5));
+          setIsGenerating(false);
+          return;
+        }
+      } catch (error) {
+        console.error("Error generating experience bullet points:", error);
+      }
+    }
+
+    const fallbackBulletPoints = getFallbackBulletPoints(length).filter((bp) => !existingExperience.includes(bp));
+    setBulletPoints(fallbackBulletPoints.slice(0, 5));
+    setIsGenerating(false);
+  };
+
+  return (
+    <div>
+      {bulletPoints.length === 0 ? (
+        <div className="space-y-4 py-3">
+          <div className="text-center">
+            <h4 className="text-sm font-medium text-blue-300 mb-2">Choose Bullet Point Style</h4>
+            <div className="flex space-x-2 mb-4">
+              <Button
+                onClick={() => handleGenerateBulletPoints("short")}
+                disabled={isGenerating}
+                variant="outline"
+                size="sm"
+                className="flex-1 border-blue-500/30 text-blue-200 hover:bg-blue-900/30 hover:text-blue-100"
+              >
+                Concise
+              </Button>
+              <Button
+                onClick={() => handleGenerateBulletPoints("medium")}
+                disabled={isGenerating}
+                variant="outline"
+                size="sm"
+                className="flex-1 border-blue-500/30 text-blue-200 hover:bg-blue-900/30 hover:text-blue-100"
+              >
+                Standard
+              </Button>
+              <Button
+                onClick={() => handleGenerateBulletPoints("long")}
+                disabled={isGenerating}
+                variant="outline"
+                size="sm"
+                className="flex-1 border-blue-500/30 text-blue-200 hover:bg-blue-900/30 hover:text-blue-100"
+              >
+                Detailed
+              </Button>
+            </div>
+          </div>
+          <Button
+            onClick={() => handleGenerateBulletPoints("medium")}
+            disabled={isGenerating}
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2 bg-[rgba(20,30,70,0.6)] border-blue-500/30 text-blue-100"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generating bullet points...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                Generate AI bullet points
+              </>
+            )}
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {bulletPoints.map((bullet, index) => (
+            <div
+              key={index}
+              className="bg-[rgba(20,30,70,0.6)] p-3 rounded-md border border-blue-500/30 text-sm relative group backdrop-blur-sm"
+            >
+              <p className="text-gray-200">{bullet}</p>
+              <Button
+                onClick={() => onApply(bullet)}
+                size="sm"
+                className="mt-2 w-full flex items-center justify-center gap-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0"
+              >
+                <Check className="h-3 w-3" />
+                Use this bullet point
+              </Button>
+            </div>
+          ))}
+          <div className="flex space-x-2">
+            <Button
+              onClick={() => handleGenerateBulletPoints("short")}
+              variant="ghost"
+              size="sm"
+              className="flex-1 items-center justify-center text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Concise
+            </Button>
+            <Button
+              onClick={() => handleGenerateBulletPoints("medium")}
+              variant="ghost"
+              size="sm"
+              className="flex-1 items-center justify-center text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Standard
+            </Button>
+            <Button
+              onClick={() => handleGenerateBulletPoints("long")}
+              variant="ghost"
+              size="sm"
+              className="flex-1 items-center justify-center text-blue-400 hover:text-blue-300 hover:bg-blue-900/30"
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Detailed
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+Improvements:
+
+Added existingExperience prop to filter out duplicate bullet points.
+Included quantifiable achievements (e.g., "saved $150K annually") and action verbs (e.g., "spearheaded," "orchestrated") in fallback bullet points.
+Tailored suggestions to the jobTitle for relevance and impact.
+How These Enhancements Create Amazing Resumes
+Personalization: By using existingSummary, existingSkills, and existingExperience, the AI builds on what the user has already provided, making suggestions feel custom-made.
+Relevance: The jobTitle integration ensures suggestions align with the target role, increasing the resume’s appeal to employers.
+Impact: Quantifiable results and strong verbs make the resume stand out, showing concrete achievements rather than vague statements.
+ATS Success: Industry-specific terms and keywords improve the resume’s chances of passing automated screening systems.
+Next Steps for Further Improvement
+User Input: Add a field for users to input career goals or achievements (e.g., "I led a team to launch a product") to generate even more tailored suggestions.
+Feedback Loop: Let users rate suggestions, so the AI learns their preferences over time.
+Backend Enhancements: Update the API (/api/resumes/${resumeId}/suggestions) to process existing content and job descriptions more effectively, ensuring the AI leverages all available data.
+With these updated components, your resume builder will create standout resumes that truly reflect each user’s unique strengths and aspirations!

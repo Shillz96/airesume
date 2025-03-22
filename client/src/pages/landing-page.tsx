@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import CosmicBackground from "@/components/cosmic-background";
 import Navbar from "@/components/navbar";
 import { 
   FileText, 
@@ -22,6 +21,7 @@ import {
   Rocket
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CosmicButton } from "@/components/cosmic-button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -232,7 +232,6 @@ export default function LandingPage() {
 
   return (
     <>
-      <CosmicBackground />
       <Navbar />
 
       {/* Login Dialog */}
@@ -423,21 +422,23 @@ export default function LandingPage() {
               className="mt-10 flex justify-center gap-4"
               ref={ctaRef}
             >
-              <Button 
-                size="lg" 
-                className="px-8 py-6 text-lg cosmic-btn-glow"
+              <CosmicButton 
+                size="xl" 
+                variant="primary"
+                withGlow
+                className="px-8 py-6 text-lg"
                 onClick={() => setIsRegisterOpen(true)}
               >
                 Try for Free <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button 
+              </CosmicButton>
+              <CosmicButton 
                 variant="outline" 
-                size="lg" 
-                className="px-8 py-6 text-lg border-white/10 hover:bg-white/10 text-gray-200"
+                size="xl" 
+                className="px-8 py-6 text-lg"
                 onClick={() => showGuestModal()}
               >
                 Continue as Guest
-              </Button>
+              </CosmicButton>
             </div>
           </div>
         </section>

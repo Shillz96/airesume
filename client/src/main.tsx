@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
-import "./index.css";
+import "./index.css"; // This now includes all styles (base, components, layout, animations)
 import { initializeTheme } from "./lib/theme-loader";
 
 // Initialize theme before rendering the app

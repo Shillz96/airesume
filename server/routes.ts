@@ -569,6 +569,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const experienceOnly = req.query.experienceOnly === 'true';
       const skillsOnly = req.query.skillsOnly === 'true';
       const jobTitle = req.query.jobTitle as string | undefined;
+      const currentRole = req.query.currentRole as string | undefined;
+      const existingSummary = req.query.existingSummary as string | undefined;
+      
+      // Handle existing bullet points (passed as concatenated string with delimiter)
+      const existingBulletPointsStr = req.query.existingBulletPoints as string | undefined;
+      const existingBulletPoints = existingBulletPointsStr ? 
+        existingBulletPointsStr.split('||').filter(b => b.trim().length > 0) : [];
+      
+      // Handle existing skills (passed as concatenated string with delimiter)
+      const existingSkillsStr = req.query.existingSkills as string | undefined;
+      const existingSkills = existingSkillsStr ? 
+        existingSkillsStr.split('||').filter(s => s.trim().length > 0) : [];
       
       const resume = await storage.getResume(resumeId, userId);
       if (!resume) {
@@ -588,11 +600,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
               },
               {
                 role: "user",
-                content: `Generate 5 professional and ATS-optimized bullet points for a ${jobTitle || 'professional'} based on this existing experience:
+                content: `Generate 5 professional and ATS-optimized bullet points for a ${jobTitle || 'professional'} ${currentRole ? `with focus on the '${currentRole}' role` : ''} based on this existing experience:
                 
                 Experience: ${JSON.stringify(resume.content?.experience || [])}
                 
                 Skills: ${JSON.stringify(resume.content?.skills || [])}
+                
+                ${existingBulletPoints.length > 0 ? `Current bullet points (please avoid duplicating concepts):
+                ${existingBulletPoints.join('\n')}
+                ` : ''}
                 
                 Format each bullet point to:
                 1. Start with a strong action verb
@@ -600,6 +616,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 3. Incorporate keywords that ATS systems look for
                 4. Focus on accomplishments, not just responsibilities
                 5. Be concise (15-20 words per bullet)
+                ${existingBulletPoints.length > 0 ? '6. Avoid duplicating concepts from existing bullet points' : ''}
 
                 Return only the bullet points, each on a new line. Do not include any other text.`
               }
@@ -664,11 +681,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 
                 Current Skills: ${JSON.stringify(resume.content?.skills || [])}
                 
+                ${existingSkills.length > 0 ? `Already suggested skills (avoid duplicating these):
+                ${existingSkills.join(', ')}
+                ` : ''}
+                
                 Return a list of 10 skills only, with no additional text. Include both technical and soft skills that are:
                 1. Highly relevant to their experience
                 2. In-demand in the current job market
                 3. Frequently included in ATS systems as keywords
-                4. A mix of both hard technical skills and valuable soft skills`
+                4. A mix of both hard technical skills and valuable soft skills
+                ${existingSkills.length > 0 ? '5. Different from the already suggested skills' : ''}`
               }
             ],
             response_format: { type: "text" }
@@ -754,6 +776,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 
                 Current Summary: ${resume.content?.personalInfo?.summary || ''}
                 
+                ${existingSummary ? `Previous Generated Summary (please provide alternatives different from this):
+                ${existingSummary}
+                ` : ''}
+                
                 Experience: ${JSON.stringify(resume.content?.experience || [])}
                 
                 Skills: ${JSON.stringify(resume.content?.skills || [])}
@@ -763,6 +789,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 2. Include ATS-friendly keywords that hiring systems scan for
                 3. Highlight different strengths or angles in each version
                 4. Be ready to use without modification
+                ${existingSummary ? '5. Different from the previously generated summary' : ''}
                 
                 Return just the summaries, not explanations or other text.`
               }

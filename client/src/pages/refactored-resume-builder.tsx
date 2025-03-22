@@ -3,6 +3,10 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/contexts/ThemeContext";
+import PageHeader from "@/components/page-header";
+
+// Resume components
 import ResumeTips from "@/components/resume-tips";
 import Navbar from "@/components/navbar";
 import ResumeTemplate, {
@@ -21,23 +25,34 @@ import ResumeTemplate, {
   TemplatePreviewIndustry,
   TemplatePreviewBold,
 } from "@/components/resume-template";
+
+// Import our unified resume section components for consistent styling
 import {
-  ResumeExperienceSection,
-  ResumeEducationSection,
-  ResumeSkillsSection,
-  ResumeProjectsSection,
+  PersonalInfoSection,
+  ExperienceSection,
+  EducationSection,
+  SkillsSection,
+  ProjectsSection
+} from "@/components/resume/UnifiedResumeSections";
+
+// Types for resume data
+import {
   ExperienceItem,
   EducationItem,
   SkillItem,
   ProjectItem,
-} from "@/components/resume-section";
+} from "@/hooks/use-resume-data";
 import { Resume } from "@/components/resume-template";
+
+// UI Components
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { CosmicButton } from "@/components/cosmic-button";
+import { CosmicButton } from "@/components/cosmic-button-refactored";
 import RichTextEditor from "@/components/rich-text-editor";
+
+// Icons
 import {
   FileText,
   GraduationCap,
@@ -63,6 +78,8 @@ import {
   X,
   Zap,
 } from "lucide-react";
+
+// UI Components
 import { Badge } from "@/components/ui/badge";
 import {
   Accordion,
@@ -94,9 +111,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+// AI and Background Components
 import AIAssistant from "@/components/ai-assistant";
-import AIResumeAssistant from "@/components/resume/AIResumeAssistant";
-import CosmicBackground from "@/components/cosmic-background";
+// Using global theme from cosmic-theme.css instead of custom starfield
 
 // Component for professional summary AI suggestions
 interface SummarySuggestionsProps {
@@ -905,13 +922,13 @@ function SkillSuggestions({
 function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resume: Resume; onTemplateChange: (template: string) => void; onDownload?: () => void }) {
   // Local state for downloading
   const [isDownloading, setIsDownloading] = useState(false);
-  
+
   // Function to handle download with progress indicator
   const handleDownload = async () => {
     if (isDownloading) return; // Prevent multiple clicks
-    
+
     setIsDownloading(true);
-    
+
     try {
       if (onDownload) {
         await onDownload();
@@ -947,73 +964,73 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
       const originalScale = scale;
       const originalFontScale = fontScale;
       const originalSpacingScale = spacingScale;
-      
+
       // Set to 100% scale, reset font and spacing scales to 1
       setScale(1.0);
       setFontScale(1);
       setSpacingScale(1);
-      
+
       // Add a loading toast to show progress
       toast({
         title: "Preparing PDF",
         description: "Optimizing your resume for PDF download...",
       });
-      
+
       // Wait for the scale changes to apply
       setTimeout(async () => {
         if (!previewRef.current) return;
-        
+
         // Create a virtual link element
         const link = document.createElement('a');
-        
+
         // Generate a filename with the person's name (if available) or a default name
         const name = resume?.personalInfo?.firstName && resume?.personalInfo?.lastName ? 
           `${resume.personalInfo.firstName}_${resume.personalInfo.lastName}` : 
           'Resume';
         const fileName = `${name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
-        
+
         // Try server-side PDF generation first, then fall back to print dialog
         try {
           // Create a form to send to the server for PDF generation
           const formData = new FormData();
           formData.append('resumeData', JSON.stringify(resume));
           formData.append('template', resume.template || 'professional');
-          
+
           // Send the resume data to the server for PDF generation
           const response = await fetch('/api/generate-pdf', {
             method: 'POST',
             body: formData
           });
-          
+
           if (!response.ok) throw new Error('Failed to generate PDF');
-          
+
           // Get the PDF blob from the response
           const blob = await response.blob();
-          
+
           // Create a URL for the blob
           const url = window.URL.createObjectURL(blob);
-          
+
           // Set up the download link
           link.href = url;
           link.download = fileName;
           link.click();
-          
+
           // Clean up
           window.URL.revokeObjectURL(url);
-          
+
           toast({
             title: "PDF Downloaded",
             description: `Your resume has been downloaded as ${fileName}`,
           });
         } catch (error) {
           console.error('Error downloading PDF from server:', error);
-          
+
           // If server-side generation fails, try client-side printing
           toast({
             title: "Using Print Dialog",
             description: "Server PDF generation failed. Using browser print dialog instead.",
           });
-          
+
           // Add print-specific styles to the document
           const style = document.createElement('style');
           style.id = 'print-resume-style';
@@ -1038,16 +1055,16 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
             }
           `;
           document.head.appendChild(style);
-          
+
           // Create a unique id for the preview element if it doesn't have one
           if (!previewRef.current.id) {
             previewRef.current.id = 'resume-preview';
           }
-          
+
           // Trigger print dialog after a brief delay
           setTimeout(() => {
             window.print();
-            
+
             // Remove the print styles after printing
             setTimeout(() => {
               const printStyle = document.getElementById('print-resume-style');
@@ -1055,7 +1072,7 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
             }, 1000);
           }, 500);
         }
-        
+
         // Restore the original scales
         setTimeout(() => {
           setScale(originalScale);
@@ -1065,16 +1082,16 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
       }, 300);
     } catch (error) {
       console.error('Error preparing PDF download:', error);
-      
+
       // Fall back to basic print dialog as last resort
       window.print();
-      
+
       toast({
         title: "Using Print Dialog",
         description: "There was an issue preparing the PDF. Using browser print dialog instead.",
         variant: "destructive"
       });
-      
+
       // Reset the scales
       setScale(0.85);
       setFontScale(1);
@@ -1093,7 +1110,7 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
     if (isEditing) {
       // Apply changes from editedResume to the actual resume
       onTemplateChange(editedResume.template);
-      
+
       // Dispatch event to update parent component
       const event = new CustomEvent('resumeEdited', {
         detail: { resume: editedResume }
@@ -1111,7 +1128,7 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
   ) => {
     setEditedResume((prev) => {
       const newResume = { ...prev };
-      
+
       if (section === "personalInfo") {
         newResume.personalInfo = { 
           ...newResume.personalInfo, 
@@ -1136,7 +1153,7 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
           [field]: value 
         };
       }
-      
+
       return newResume;
     });
   };
@@ -1144,30 +1161,30 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
   // Auto-adjust feature to fit content on one page
   const autoAdjust = () => {
     setIsAutoAdjusting(true);
-    
+
     // First reset to default scale to get accurate measurements
     setScale(1.0);
-    
+
     // Intelligent scaling algorithm to fit content
     setTimeout(() => {
       if (!previewRef.current) {
         setIsAutoAdjusting(false);
         return;
       }
-      
+
       const contentHeight = previewRef.current.scrollHeight;
       const containerHeight = 297 * 3.78; // A4 height in pixels (297mm converted to px)
-      
+
       // Calculate the required scaling factors
       const heightRatio = containerHeight / contentHeight;
-      
+
       // Log for debugging
       console.log('Content height:', contentHeight, 'Container height:', containerHeight, 'Ratio:', heightRatio);
-      
+
       // Apply the scaling depending on whether content is too large
       if (heightRatio < 1) {
         // Content is too large, scale down the font and spacing gradually
-        
+
         // Calculate optimal font scaling - more gentle reduction for minor overflows
         let newFontScale = 1;
         if (heightRatio >= 0.9) { // Minor overflow (less than 10%)
@@ -1177,14 +1194,14 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
         } else { // Major overflow (>20%)
           newFontScale = Math.max(0.7, heightRatio * 0.9);
         }
-        
+
         // Spacing can be reduced more aggressively than font size
         const newSpacingScale = Math.max(0.7, heightRatio * 0.85);
-        
+
         // Set new scales
         setFontScale(newFontScale);
         setSpacingScale(newSpacingScale);
-        
+
         // Also adjust the view scale for better visibility if content is very large
         if (heightRatio < 0.7) {
           // For very large content, zoom out to see more
@@ -1193,7 +1210,7 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
           // For moderately large content, keep scale at 0.85
           setScale(0.85);
         }
-        
+
         toast({
           title: "Smart Fit Applied",
           description: `Content adjusted to fit on one page (${Math.round(newFontScale * 100)}% text scale)`,
@@ -1202,25 +1219,25 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
         // Content fits already, reset to default
         setFontScale(1);
         setSpacingScale(1);
-        
+
         // Set view scale to show the full page
         setScale(0.85);
-        
+
         toast({
           title: "Smart Fit Reset",
           description: "Your content already fits on one page. Using default sizes.",
         });
       }
-      
+
       setIsAutoAdjusting(false);
     }, 500);
   };
-  
+
   // Keep editedResume in sync with resume props changes
   useEffect(() => {
     setEditedResume(resume);
   }, [resume]);
-  
+
   return (
     <div className="space-y-4">
       {/* Controls */}
@@ -1383,19 +1400,19 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
                   />
                 </div>
               </div>
-              
+
               {/* Experience Section */}
               <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-3">Experience</h3>
                 {editedResume.experience.map((exp, index) => (
-                  <div key={exp.id} className="mb-4 pb-4 border-b border-gray-100">
+                  <div key={exp.id} className="mb-4 pb-4 bg-gray-900/50 border border-blue-500/30 rounded-md p-4">
                     <div className="flex flex-wrap gap-3 mb-2">
                       <div className="flex-1 min-w-[200px]">
                         <label className="text-xs text-gray-500 block mb-1">Job Title</label>
                         <Input
                           value={exp.title}
                           onChange={(e) => handleFieldChange("experience", "title", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full bg-white"
+                          className="cosmic-navy-input"
                         />
                       </div>
                       <div className="flex-1 min-w-[200px]">
@@ -1403,7 +1420,7 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
                         <Input
                           value={exp.company}
                           onChange={(e) => handleFieldChange("experience", "company", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full bg-white"
+                          className="cosmic-navy-input"
                         />
                       </div>
                     </div>
@@ -1413,7 +1430,7 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
                         <Input
                           value={exp.startDate}
                           onChange={(e) => handleFieldChange("experience", "startDate", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full bg-white"
+                          className="cosmic-navy-input"
                         />
                       </div>
                       <div className="flex-1 min-w-[200px]">
@@ -1421,7 +1438,7 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
                         <Input
                           value={exp.endDate}
                           onChange={(e) => handleFieldChange("experience", "endDate", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full bg-white"
+                          className="cosmic-navy-input"
                         />
                       </div>
                     </div>
@@ -1437,35 +1454,35 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
                   </div>
                 ))}
               </div>
-              
+
               {/* Skills Section */}
               <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-3">Skills</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                   {editedResume.skills.map((skill, index) => (
-                    <div key={skill.id} className="border border-gray-200 rounded p-2">
+                    <div key={skill.id} className="bg-gray-900/50 border border-blue-500/30 rounded-md p-2">
                       <Input
                         value={skill.name}
                         onChange={(e) => handleFieldChange("skills", "name", e.target.value, index)}
-                        className="border-none p-0 text-sm w-full"
+                        className="cosmic-navy-input border-none p-0 text-sm w-full"
                       />
                     </div>
                   ))}
                 </div>
               </div>
-              
+
               {/* Education Section - Simplified */}
               <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-3">Education</h3>
                 {editedResume.education.map((edu, index) => (
-                  <div key={edu.id} className="mb-4 pb-4 border-b border-gray-100">
+                  <div key={edu.id} className="mb-4 pb-4 bg-gray-900/50 border border-blue-500/30 rounded-md p-4">
                     <div className="flex flex-wrap gap-3 mb-2">
                       <div className="flex-1 min-w-[200px]">
                         <label className="text-xs text-gray-500 block mb-1">Degree</label>
                         <Input
                           value={edu.degree}
                           onChange={(e) => handleFieldChange("education", "degree", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full bg-white"
+                          className="cosmic-navy-input"
                         />
                       </div>
                       <div className="flex-1 min-w-[200px]">
@@ -1473,7 +1490,27 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
                         <Input
                           value={edu.institution}
                           onChange={(e) => handleFieldChange("education", "institution", e.target.value, index)}
-                          className="border border-gray-200 p-1 text-sm w-full bg-white"
+                          className="cosmic-navy-input"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-3 mb-2">
+                      <div className="flex-1 min-w-[200px]">
+                        <label className="text-xs text-gray-500 block mb-1">Start Date</label>
+                        <Input
+                          value={edu.startDate}
+                          onChange={(e) => handleFieldChange("education", "startDate", e.target.value, index)}
+                          className="cosmic-navy-input"
+                          placeholder="MM/YYYY"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-[200px]">
+                        <label className="text-xs text-gray-500 block mb-1">End Date</label>
+                        <Input
+                          value={edu.endDate}
+                          onChange={(e) => handleFieldChange("education", "endDate", e.target.value, index)}
+                          className="cosmic-navy-input"
+                          placeholder="MM/YYYY or Present"
                         />
                       </div>
                     </div>
@@ -1504,8 +1541,8 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
       </div>
 
       {/* Template Selection */}
-      <div className="mt-8">
-        <h3 className="text-lg font-medium mb-4 text-white">Choose a Template</h3>
+      <div className="mt-8 bg-gray-900/50 border border-blue-500/30 rounded-md p-6">
+        <h3 className="text-lg font-semibold mb-4 text-white">Choose a Template</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {[
             { name: "professional", preview: TemplatePreviewProfessional },
@@ -1519,10 +1556,10 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
             <div
               key={template.name}
               className={cn(
-                "cursor-pointer p-3 rounded-lg transition-all",
+                "cursor-pointer p-3 rounded-lg transition-all backdrop-blur-sm",
                 resume.template === template.name
-                  ? "border-2 border-blue-500 shadow-lg"
-                  : "border border-white/20"
+                  ? "border-2 border-blue-500 shadow-lg bg-blue-500/10"
+                  : "border border-white/20 hover:border-blue-400/50 hover:bg-blue-500/5"
               )}
               onClick={() => onTemplateChange(template.name)}
             >
@@ -1557,50 +1594,50 @@ export default function ResumeBuilder() {
   const [showTips, setShowTips] = useState<
     "summary" | "experience" | "skills" | null
   >(null);
-  
+
   // Reference to the resume preview component
   const previewRef = useRef<HTMLDivElement>(null);
-  
+
   // Function to download the resume as PDF
   const downloadResume = async () => {
     try {
       // Generate a clean printable HTML version of the resume
       const printableHTML = generatePrintableHTML(resume);
-      
+
       // Generate a clean filename with the person's name or a default name
       const name = resume?.personalInfo?.firstName && resume?.personalInfo?.lastName ? 
         `${resume.personalInfo.firstName}_${resume.personalInfo.lastName}_Resume` : 
         'Resume';
       const fileName = `${name.replace(/\s+/g, '_')}`;
-      
+
       toast({
         title: "Preparing Resume",
         description: "Opening print dialog...",
       });
-      
+
       // Create a blob with the HTML content
       const blob = new Blob([printableHTML], { type: 'text/html' });
       const url = window.URL.createObjectURL(blob);
-      
+
       // Open the HTML in a new window for printing
       const printWindow = window.open(url, '_blank');
-      
+
       if (!printWindow) {
         throw new Error('Popup blocked. Please allow popups for this site.');
       }
-      
+
       // Clean up the blob URL after the window is opened
       setTimeout(() => {
         window.URL.revokeObjectURL(url);
       }, 1000);
-      
+
       toast({
         title: "Print Dialog Opened",
         description: "Use your browser's print function to save as PDF.",
       });
     } catch (error) {
       console.error('Error generating printable version:', error);
-      
+
       // Fall back to the browser print dialog for the current page
       toast({
         title: "Using Print Dialog",
@@ -1609,7 +1646,7 @@ export default function ResumeBuilder() {
       });
     }
   };
-  
+
   // Function to generate a clean, printable HTML version of the resume
   function generatePrintableHTML(resumeData: Resume): string {
     // Get current Smart Fit settings if they exist in the window object
@@ -1618,13 +1655,13 @@ export default function ResumeBuilder() {
       fontScale: document.querySelector('.resume-content-container')?.getAttribute('data-font-scale') || '1',
       spacingScale: document.querySelector('.resume-content-container')?.getAttribute('data-spacing-scale') || '1'
     };
-    
+
     // Convert to numbers
     const fontScale = parseFloat(smartFit.fontScale);
     const spacingScale = parseFloat(smartFit.spacingScale);
-    
+
     console.log('Print with Smart Fit settings:', { fontScale, spacingScale });
-    
+
     // Basic styling for the resume with Smart Fit adjustments applied
     const styles = `
       <style>
@@ -1634,7 +1671,7 @@ export default function ResumeBuilder() {
             margin: 10mm;
           }
         }
-        
+
         body {
           font-family: 'Arial', sans-serif;
           line-height: ${1.5 * spacingScale};
@@ -1644,7 +1681,7 @@ export default function ResumeBuilder() {
           background: white;
           font-size: ${16 * fontScale}px;
         }
-        
+
         .resume-container {
           width: 100%;
           max-width: 800px;
@@ -1653,27 +1690,27 @@ export default function ResumeBuilder() {
           box-sizing: border-box;
           background: white;
         }
-        
+
         .header {
           text-align: center;
           margin-bottom: ${20 * spacingScale}px;
         }
-        
+
         .header h1 {
           margin: 0;
           font-size: ${28 * fontScale}px;
           color: #2a3f5f;
         }
-        
+
         .header .contact {
           margin-top: ${10 * spacingScale}px;
           font-size: ${14 * fontScale}px;
         }
-        
+
         .section {
           margin-bottom: ${20 * spacingScale}px;
         }
-        
+
         .section-title {
           font-size: ${18 * fontScale}px;
           font-weight: bold;
@@ -1682,39 +1719,39 @@ export default function ResumeBuilder() {
           padding-bottom: ${5 * spacingScale}px;
           color: #2a3f5f;
         }
-        
+
         .experience-item, .education-item, .project-item {
           margin-bottom: ${15 * spacingScale}px;
         }
-        
+
         .item-header {
           display: flex;
           justify-content: space-between;
           font-weight: bold;
         }
-        
+
         .item-title {
           font-weight: bold;
         }
-        
+
         .item-subtitle {
           font-style: italic;
         }
-        
+
         .item-date {
           color: #666;
         }
-        
+
         .item-description {
           margin-top: ${5 * spacingScale}px;
         }
-        
+
         .skills-list {
           display: flex;
           flex-wrap: wrap;
           gap: ${10 * spacingScale}px;
         }
-        
+
         .skill-item {
           background-color: #f5f5f5;
           border-radius: 3px;
@@ -1723,11 +1760,11 @@ export default function ResumeBuilder() {
         }
       </style>
     `;
-    
+
     // Get personal info
     const { firstName, lastName, email, phone, headline, summary } = resumeData.personalInfo;
     const fullName = `${firstName} ${lastName}`.trim() || 'Your Name';
-    
+
     // Generate header section
     const headerSection = `
       <div class="header">
@@ -1740,7 +1777,7 @@ export default function ResumeBuilder() {
         </div>
       </div>
     `;
-    
+
     // Generate summary section
     const summarySection = summary ? `
       <div class="section">
@@ -1748,7 +1785,7 @@ export default function ResumeBuilder() {
         <div class="summary-content">${summary}</div>
       </div>
     ` : '';
-    
+
     // Generate experience section
     let experienceSection = '';
     if (resumeData.experience && resumeData.experience.length > 0) {
@@ -1764,7 +1801,7 @@ export default function ResumeBuilder() {
           </div>
         `)
         .join('');
-      
+
       experienceSection = `
         <div class="section">
           <div class="section-title">Experience</div>
@@ -1772,7 +1809,7 @@ export default function ResumeBuilder() {
         </div>
       `;
     }
-    
+
     // Generate education section
     let educationSection = '';
     if (resumeData.education && resumeData.education.length > 0) {
@@ -1788,7 +1825,7 @@ export default function ResumeBuilder() {
           </div>
         `)
         .join('');
-      
+
       educationSection = `
         <div class="section">
           <div class="section-title">Education</div>
@@ -1796,14 +1833,14 @@ export default function ResumeBuilder() {
         </div>
       `;
     }
-    
+
     // Generate skills section
     let skillsSection = '';
     if (resumeData.skills && resumeData.skills.length > 0) {
       const skillItems = resumeData.skills
         .map(skill => `<div class="skill-item">${skill.name || ''}</div>`)
         .join('');
-      
+
       skillsSection = `
         <div class="section">
           <div class="section-title">Skills</div>
@@ -1813,7 +1850,7 @@ export default function ResumeBuilder() {
         </div>
       `;
     }
-    
+
     // Generate projects section
     let projectsSection = '';
     if (resumeData.projects && resumeData.projects.length > 0) {
@@ -1828,7 +1865,7 @@ export default function ResumeBuilder() {
           </div>
         `)
         .join('');
-      
+
       projectsSection = `
         <div class="section">
           <div class="section-title">Projects</div>
@@ -1836,7 +1873,7 @@ export default function ResumeBuilder() {
         </div>
       `;
     }
-    
+
     // Add auto-print script with styles to hide URL in footer
     const printScript = `
       <script>
@@ -1864,7 +1901,7 @@ export default function ResumeBuilder() {
         }
       </style>
     `;
-    
+
     // Combine all sections
     return `
       <!DOCTYPE html>
@@ -1924,16 +1961,16 @@ export default function ResumeBuilder() {
         if (savedData) {
           const parsedData = JSON.parse(savedData);
           console.log("Recovering resume data from sessionStorage:", parsedData);
-          
+
           if (parsedData.resumeData) {
             // Apply the recovered data if we don't already have data
             setResume(parsedData.resumeData as Resume);
-            
+
             // If we know the ID, set it
             if (parsedData.resumeData.id) {
               setResumeId(parsedData.resumeData.id);
             }
-            
+
             toast({
               title: "Resume Data Recovered",
               description: "Your resume data has been recovered from a previous session.",
@@ -1951,13 +1988,13 @@ export default function ResumeBuilder() {
     // Check for resume ID in URL parameters
     const resumeIdParam = searchParams.get("id");
     const isEditMode = searchParams.get("edit") === "true";
-    
+
     if (resumeIdParam) {
       try {
         const id = parseInt(resumeIdParam, 10);
         if (!isNaN(id)) {
           setResumeId(id);
-          
+
           // Check if we have pre-loaded resume data from editing
           if (isEditMode) {
             const storedResumeData = localStorage.getItem('editingResume');
@@ -1965,14 +2002,14 @@ export default function ResumeBuilder() {
               try {
                 const parsedData = JSON.parse(storedResumeData);
                 console.log("Found pre-loaded resume data:", parsedData);
-                
+
                 if (parsedData.resumeData) {
                   const resumeData = parsedData.resumeData;
-                  
+
                   // Process the resume data to ensure it has the proper structure
                   // The data comes with a nested 'content' object that contains all resume sections
                   const content = resumeData.content || {};
-                  
+
                   const completeResume = {
                     id: resumeData.id,
                     title: resumeData.title || "Untitled Resume",
@@ -2002,17 +2039,17 @@ export default function ResumeBuilder() {
                     })) : [],
                     template: resumeData.template || "professional"
                   };
-                  
+
                   // Update the resume state directly with the loaded data
                   setResume(completeResume as Resume);
                   setActiveSection("profile");
-                  
+
                   // Show success toast
                   toast({
                     title: "Resume Loaded Successfully",
                     description: `"${completeResume.title}" has been loaded for editing`,
                   });
-                  
+
                   // Clear the localStorage to prevent stale data
                   localStorage.removeItem('editingResume');
                 }
@@ -2047,12 +2084,12 @@ export default function ResumeBuilder() {
   useEffect(() => {
     if (fetchedResume) {
       console.log("Resume data fetched:", JSON.stringify(fetchedResume, null, 2));
-      
+
       try {
         // The API returns resume data with a nested 'content' object
         const content = fetchedResume.content || {};
         console.log("Resume content extracted:", content);
-        
+
         // Ensure we have complete data structure for all fields
         const completeResume = {
           id: fetchedResume.id,
@@ -2083,12 +2120,12 @@ export default function ResumeBuilder() {
           })) : [],
           template: fetchedResume.template || "professional"
         };
-        
+
         console.log("Processed resume to load:", JSON.stringify(completeResume, null, 2));
-        
+
         // Force a complete state update by creating a brand new object
         setResume(completeResume as Resume);
-        
+
         // Set a debug flag in local storage to help with diagnostics
         localStorage.setItem('lastLoadedResume', JSON.stringify({
           resumeId: completeResume.id,
@@ -2096,7 +2133,7 @@ export default function ResumeBuilder() {
           lastName: completeResume.personalInfo.lastName,
           timestamp: new Date().toISOString()
         }));
-        
+
         // Show success toast when resume is fully loaded
         toast({
           title: "Resume Loaded Successfully",
@@ -2213,7 +2250,7 @@ export default function ResumeBuilder() {
     // Run this effect only once on component mount (empty dependency array)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
+
   // Auto-save resume to localStorage when user makes changes
   useEffect(() => {
     // Don't auto-save if just initialized with default values
@@ -2224,11 +2261,11 @@ export default function ResumeBuilder() {
         resumeData: resume,
         timestamp: new Date().toISOString()
       }));
-      
+
       console.log("Auto-saved resume to localStorage");
     }
   }, [resume, resumeId]);
-  
+
   // Check for auto-saved resume data when component mounts
   useEffect(() => {
     // Only load from auto-save if we don't already have content in our resume
@@ -2238,22 +2275,22 @@ export default function ResumeBuilder() {
         if (autoSavedData) {
           const parsedData = JSON.parse(autoSavedData);
           console.log("Found auto-saved resume data:", parsedData);
-          
+
           // Check if the data is not too old (within 24 hours)
           const savedTime = new Date(parsedData.timestamp).getTime();
           const currentTime = new Date().getTime();
           const hoursDiff = (currentTime - savedTime) / (1000 * 60 * 60);
-          
+
           if (hoursDiff < 24) {
             // Apply the auto-saved data
             if (parsedData.resumeData) {
               setResume(parsedData.resumeData as Resume);
-              
+
               // If we have a resumeId saved, use it
               if (parsedData.resumeId) {
                 setResumeId(parsedData.resumeId);
               }
-              
+
               toast({
                 title: "Recovered Unsaved Changes",
                 description: "Your previously unsaved work has been restored.",
@@ -2295,7 +2332,7 @@ export default function ResumeBuilder() {
       });
 
       queryClient.invalidateQueries({ queryKey: ["/api/resumes"] });
-      
+
       // Clear the auto-saved data since we've now properly saved the resume
       localStorage.removeItem('autoSavedResume');
     },
@@ -2506,77 +2543,75 @@ export default function ResumeBuilder() {
     fileInputRef.current?.click();
   };
 
+  const { isDarkMode } = useTheme();
+
   return (
-    <div className="min-h-screen" style={{ background: 'var(--cosmicBackground)' }}>
-      <CosmicBackground />
+    <div className="cosmic-app-container flex flex-col min-h-screen">
       <Navbar />
-
-      <main className="container mx-auto pt-12 pb-20 px-4" style={{ 
-        '--cosmic-primary': 'var(--cosmicPrimary)',
-        '--cosmic-text': 'var(--cosmicText)',
-        '--cosmic-border-glow': 'var(--cosmicBorderGlow)',
-        '--cosmic-card-bg': 'var(--cosmicCardBg)',
-        '--cosmic-card-border': 'var(--cosmicCardBorder)'
-      } as React.CSSProperties}>
+      <div className="cosmic-main-content container pt-12 pb-20 px-4 md:px-6 max-w-7xl mx-auto relative z-10">
         {/* Page Header */}
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold cosmic-text-gradient mb-2">
-              Resume Builder
-            </h1>
-            <p className="text-gray-300">
-              Create a professional resume that passes ATS systems and gets you
-              hired.
-            </p>
-          </div>
-
-          <div className="flex space-x-3">
-            {/* Load Saved Resume Dropdown */}
+        <PageHeader 
+          title={<span className="cosmic-text-gradient">Resume Builder</span>}
+          subtitle="Create a professional resume that passes ATS systems and gets you hired."
+          actions={
+            <div className="flex space-x-3">
+              {/* Load Saved Resume Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
+                <CosmicButton 
                   variant="outline" 
-                  className="border-white/10 bg-blue-600/40 text-white hover:bg-blue-600/60"
+                  className="cosmic-dropdown-trigger"
+                  iconLeft={<FolderOpen className="h-4 w-4" />}
                 >
-                  <FolderOpen className="h-4 w-4 mr-2" />
-                  <span>Load Resume</span>
-                </Button>
+                  Load Resume
+                </CosmicButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 bg-gray-900/95 border border-gray-800">
-                <DropdownMenuLabel className="text-gray-300">Your Saved Resumes</DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-gray-700" />
+              <DropdownMenuContent className="cosmic-dropdown-content w-56">
+                <DropdownMenuLabel className="cosmic-dropdown-label">Your Saved Resumes</DropdownMenuLabel>
+                <DropdownMenuSeparator className="cosmic-dropdown-separator" />
                 {Array.isArray(userResumes) && userResumes.length > 0 ? (
                   userResumes.map((savedResume: any) => (
                     <DropdownMenuItem
                       key={savedResume.id}
-                      className="text-gray-300 hover:text-white cursor-pointer focus:text-white focus:bg-blue-700"
+                      className="cosmic-dropdown-item"
                       onClick={async () => {
                         try {
                           // Ensure we have a valid resume ID before using it
                           if (savedResume && typeof savedResume.id === 'number') {
                             console.log("Loading resume with ID:", savedResume.id);
-                            
+
                             // Show loading toast
                             toast({
                               title: "Loading Resume",
                               description: `Loading ${savedResume.title || "Untitled Resume"}...`,
                             });
-                            
+
                             // Directly fetch the resume data instead of relying on useQuery
                             try {
                               const response = await fetch(`/api/resumes/${savedResume.id}`);
-                              
+
                               if (!response.ok) {
                                 throw new Error(`Error fetching resume: ${response.status}`);
                               }
-                              
-                              const resumeData = await response.json();
+
+                              const resumeData = await response.json() as {
+                                id?: number;
+                                title?: string;
+                                content?: {
+                                  personalInfo?: any;
+                                  experience?: any[];
+                                  education?: any[];
+                                  skills?: any[];
+                                  projects?: any[];
+                                };
+                                template?: string;
+                              };
                               console.log("Direct fetch resume data:", JSON.stringify(resumeData, null, 2));
-                              
+
                               // The API returns resume data with a nested 'content' object
                               const content = resumeData.content || {};
                               console.log("Resume content extracted:", content);
-                                
+
                               // Process the resume data
                               const completeResume = {
                                 id: resumeData.id,
@@ -2607,25 +2642,25 @@ export default function ResumeBuilder() {
                                 })) : [],
                                 template: resumeData.template || "professional"
                               };
-                              
+
                               // Preserve the reference to the complete resume for later
                               const finalResumeData = {...completeResume};
-                              
+
                               // Set the resume ID and update the UI state
                               setResumeId(savedResume.id);
                               setActiveSection("profile");
-                              
+
                               // Force a complete state update by creating a brand new object
                               // We wrap this in setTimeout to ensure it runs after other state changes
                               setResume(finalResumeData as Resume);
-                              
+
                               // Add a safety net: store the loaded resume in sessionStorage
                               // so we can recover if state gets lost
                               sessionStorage.setItem('loadedResumeData', JSON.stringify({
                                 resumeData: finalResumeData,
                                 timestamp: new Date().toISOString()
                               }));
-                              
+
                               // Set a debug flag in local storage
                               localStorage.setItem('lastLoadedResume', JSON.stringify({
                                 resumeId: completeResume.id,
@@ -2633,13 +2668,13 @@ export default function ResumeBuilder() {
                                 lastName: completeResume.personalInfo.lastName,
                                 timestamp: new Date().toISOString()
                               }));
-                              
+
                               // Show success toast
                               toast({
                                 title: "Resume Loaded Successfully",
                                 description: `"${completeResume.title}" has been loaded with ${completeResume.experience.length} experiences, ${completeResume.skills.length} skills, and ${completeResume.education.length} education entries.`,
                               });
-                              
+
                             } catch (fetchError) {
                               console.error("Error fetching resume data:", fetchError);
                               toast({
@@ -2671,7 +2706,7 @@ export default function ResumeBuilder() {
                     </DropdownMenuItem>
                   ))
                 ) : (
-                  <DropdownMenuItem disabled className="text-gray-500">
+                  <DropdownMenuItem disabled className="cosmic-dropdown-item-disabled">
                     No saved resumes found
                   </DropdownMenuItem>
                 )}
@@ -2708,81 +2743,58 @@ export default function ResumeBuilder() {
               className="hidden"
             />
           </div>
-        </div>
+          }
+        />
 
         {/* Main content area */}
         <div className="cosmic-card border border-white/10 rounded-xl shadow-lg backdrop-blur-md overflow-hidden">
           {/* Horizontal Tab Navigation */}
           <div className="relative">
-            <div className="bg-gradient-to-r from-blue-900/80 to-purple-900/80 rounded-t-xl px-6 py-4 border-b border-white/10">
+            <div>
               <Tabs
                 value={activeSection}
                 onValueChange={setActiveSection}
-                className="w-full cosmic-tabs"
+                className="cosmic-tabs"
               >
-                <TabsList className="bg-transparent w-full justify-start mb-1 p-0 space-x-1">
+                <TabsList className="cosmic-tabs-list">
                   <TabsTrigger
                     value="profile"
-                    className={`${
-                      activeSection === "profile"
-                        ? "bg-blue-600/50 text-white border-b-2 border-blue-400"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
-                    } font-medium transition-all duration-200`}
+                    className="cosmic-tab-trigger"
                   >
-                    <FileText className="h-4 w-4 mr-2" />
+                    <User className="h-4 w-4 mr-2" />
                     PROFILE
                   </TabsTrigger>
                   <TabsTrigger
                     value="experience"
-                    className={`${
-                      activeSection === "experience"
-                        ? "bg-blue-600/50 text-white border-b-2 border-blue-400"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
-                    } font-medium transition-all duration-200`}
+                    className="cosmic-tab-trigger"
                   >
                     <Briefcase className="h-4 w-4 mr-2" />
                     EXPERIENCE
                   </TabsTrigger>
                   <TabsTrigger
                     value="education"
-                    className={`${
-                      activeSection === "education"
-                        ? "bg-blue-600/50 text-white border-b-2 border-blue-400"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
-                    } font-medium transition-all duration-200`}
+                    className="cosmic-tab-trigger"
                   >
                     <GraduationCap className="h-4 w-4 mr-2" />
                     EDUCATION
                   </TabsTrigger>
                   <TabsTrigger
                     value="skills"
-                    className={`${
-                      activeSection === "skills"
-                        ? "bg-blue-600/50 text-white border-b-2 border-blue-400"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
-                    } font-medium transition-all duration-200`}
+                    className="cosmic-tab-trigger"
                   >
                     <Code className="h-4 w-4 mr-2" />
                     SKILLS
                   </TabsTrigger>
                   <TabsTrigger
                     value="projects"
-                    className={`${
-                      activeSection === "projects"
-                        ? "bg-blue-600/50 text-white border-b-2 border-blue-400"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
-                    } font-medium transition-all duration-200`}
+                    className="cosmic-tab-trigger"
                   >
                     <FolderKanban className="h-4 w-4 mr-2" />
                     PROJECTS
                   </TabsTrigger>
                   <TabsTrigger
                     value="preview"
-                    className={`${
-                      activeSection === "preview"
-                        ? "bg-blue-600/50 text-white border-b-2 border-blue-400"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
-                    } font-medium transition-all duration-200`}
+                    className="cosmic-tab-trigger"
                   >
                     <Maximize2 className="h-4 w-4 mr-2" />
                     PREVIEW
@@ -2792,23 +2804,29 @@ export default function ResumeBuilder() {
             </div>
 
             {/* Tab Content */}
-            <div className="p-6">
+            <div 
+              className="cosmic-content-container p-6 md:p-8"
+              style={{
+                lineHeight: "1.6", // Improved line height for readability
+                minHeight: "calc(100vh - 200px)", // Ensure content area fills viewport
+              }}
+            >
               {/* Profile Section */}
               {activeSection === "profile" && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* Tailored Resume Banner - show briefly when coming from job details */}
                   {isTailoredResume && (
-                    <div className="md:col-span-3 mb-4">
-                      <div className="cosmic-card border border-green-500/30 bg-green-900/20 p-4 rounded-lg relative overflow-hidden backdrop-blur-sm">
+                    <div className="md:col-span-3 mb-space-4">
+                      <div className="cosmic-card border border-green-500/30 bg-green-900/20 p-space-4 rounded-lg relative overflow-hidden backdrop-blur-sm">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-3xl"></div>
                         <div className="relative z-10">
-                          <div className="flex items-center mb-2">
-                            <Sparkles className="h-5 w-5 mr-2 text-green-400" />
+                          <div className="flex items-center mb-space-2">
+                            <Sparkles className="h-5 w-5 mr-space-2 text-green-400" />
                             <h3 className="font-medium text-xl text-white">
                               Job-Tailored Resume
                             </h3>
                           </div>
-                          <p className="text-gray-300 mb-2">
+                          <p className="text-gray-300 mb-space-2">
                             Your resume is being updated with tailored content
                             optimized for the job description. Review each
                             section and make any additional adjustments before
@@ -2822,22 +2840,22 @@ export default function ResumeBuilder() {
                   {/* Welcome Banner - only show when resume is empty */}
                   {!resume?.personalInfo?.firstName &&
                     !resume?.personalInfo?.lastName && (
-                      <div className="md:col-span-3 mb-4">
-                        <div className="cosmic-card border border-blue-500/30 bg-blue-900/20 p-6 rounded-lg relative overflow-hidden backdrop-blur-sm">
+                      <div className="md:col-span-3 mb-space-4">
+                        <div className="cosmic-card border border-blue-500/30 bg-blue-900/20 p-space-6 rounded-lg relative overflow-hidden backdrop-blur-sm">
                           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
                           <div className="relative z-10">
-                            <div className="flex items-center mb-3">
-                              <Upload className="h-5 w-5 mr-2 text-blue-400" />
+                            <div className="flex items-center mb-space-3">
+                              <Upload className="h-5 w-5 mr-space-2 text-blue-400" />
                               <h3 className="font-medium text-xl text-white">
                                 Upload Your Existing Resume
                               </h3>
                             </div>
-                            <p className="text-gray-300 mb-4">
+                            <p className="text-gray-300 mb-space-4">
                               Skip manual entry by uploading your existing
                               resume. Our AI will automatically extract your
                               information and fill out this form for you.
                             </p>
-                            <div className="flex flex-wrap gap-3">
+                            <div className="flex flex-wrap gap-space-3">
                               <CosmicButton
                                 variant="primary"
                                 onClick={handleFileInputClick}
@@ -2846,7 +2864,7 @@ export default function ResumeBuilder() {
                                 Upload PDF, DOCX, or TXT
                               </CosmicButton>
                               <p className="text-sm text-gray-400 flex items-center">
-                                <span className="mr-1">or</span> fill out the
+                                <span className="mr-space-1">or</span> fill out the
                                 form manually below
                               </p>
                             </div>
@@ -2854,15 +2872,18 @@ export default function ResumeBuilder() {
                         </div>
                       </div>
                     )}
-                  <div className="md:col-span-2 space-y-6">
-                    <div>
-                      <h2 className="text-xl font-semibold mb-4 text-white flex items-center">
-                        <User className="h-5 w-5 mr-2 text-blue-400" />
-                        Personal Information
-                      </h2>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="firstName" className="text-gray-300">
+                  <div className="md:col-span-2 space-y-4">
+                    <div className="cosmic-resume-section mb-4">
+                      <div className="mb-4 ml-3">
+                        <h2 className="cosmic-section-title-large">
+                          <User className="cosmic-section-icon h-6 w-6 text-blue-400" />
+                          Contact Information
+                        </h2>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-2 mb-3">
+                        <div className="cosmic-form-group mb-2">
+                          <Label htmlFor="firstName" className="cosmic-form-label mb-1">
                             First Name
                           </Label>
                           <Input
@@ -2871,11 +2892,12 @@ export default function ResumeBuilder() {
                             onChange={(e) =>
                               updatePersonalInfo("firstName", e.target.value)
                             }
-                            className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                            className="cosmic-navy-input"
+                            placeholder="Dylan"
                           />
                         </div>
-                        <div>
-                          <Label htmlFor="lastName" className="text-gray-300">
+                        <div className="cosmic-form-group mb-2">
+                          <Label htmlFor="lastName" className="cosmic-form-label mb-1">
                             Last Name
                           </Label>
                           <Input
@@ -2884,11 +2906,12 @@ export default function ResumeBuilder() {
                             onChange={(e) =>
                               updatePersonalInfo("lastName", e.target.value)
                             }
-                            className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                            className="cosmic-navy-input"
+                            placeholder="Spivack"
                           />
                         </div>
-                        <div>
-                          <Label htmlFor="email" className="text-gray-300">
+                        <div className="cosmic-form-group mb-2">
+                          <Label htmlFor="email" className="cosmic-form-label mb-1">
                             Email
                           </Label>
                           <Input
@@ -2898,11 +2921,12 @@ export default function ResumeBuilder() {
                             onChange={(e) =>
                               updatePersonalInfo("email", e.target.value)
                             }
-                            className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                            className="cosmic-navy-input"
+                            placeholder="john.doe@example.com"
                           />
                         </div>
-                        <div>
-                          <Label htmlFor="phone" className="text-gray-300">
+                        <div className="cosmic-form-group mb-2">
+                          <Label htmlFor="phone" className="cosmic-form-label mb-1">
                             Phone
                           </Label>
                           <Input
@@ -2911,71 +2935,82 @@ export default function ResumeBuilder() {
                             onChange={(e) =>
                               updatePersonalInfo("phone", e.target.value)
                             }
-                            className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                            className="cosmic-navy-input"
+                            placeholder="(555) 123-4567"
                           />
                         </div>
                       </div>
-                    </div>
 
-                    <div>
-                      <Label htmlFor="headline" className="text-gray-300">
-                        Professional Headline
-                      </Label>
-                      <Input
-                        id="headline"
-                        value={resume?.personalInfo?.headline || ""}
-                        onChange={(e) =>
-                          updatePersonalInfo("headline", e.target.value)
-                        }
-                        className="mt-1 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                        placeholder="e.g., Senior Software Engineer | Front-End Specialist | React & TypeScript Expert"
-                      />
-                    </div>
+                      <div className="mb-3 border-b border-gray-700 pb-3">
+                        <div className="cosmic-form-group mb-2">
+                          <Label htmlFor="headline" className="cosmic-form-label mb-1">
+                            Professional Headline
+                          </Label>
+                          <Input
+                            id="headline"
+                            value={resume?.personalInfo?.headline || ""}
+                            onChange={(e) =>
+                              updatePersonalInfo("headline", e.target.value)
+                            }
+                            className="cosmic-navy-input"
+                            placeholder="Frontend Developer | React & TypeScript Specialist"
+                          />
+                          <p className="mt-2 text-xs text-blue-300/70">A brief title that describes your professional identity</p>
+                        </div>
+                      </div>
 
-                    <div>
-                      <Label htmlFor="summary" className="text-gray-300">
-                        Professional Summary
-                      </Label>
-                      <Textarea
-                        id="summary"
-                        value={resume?.personalInfo?.summary || ""}
-                        onChange={(e) =>
-                          updatePersonalInfo("summary", e.target.value)
-                        }
-                        className="mt-1 min-h-32 bg-black/60 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                        placeholder="Write a concise summary of your professional background, key skills, and career achievements."
-                      />
-                      <div className="mt-2 text-xs text-gray-300 bg-white/5 p-3 rounded-lg">
-                        <p className="mb-2 text-blue-300 font-medium">
-                          Tips for a great summary:
-                        </p>
-                        <ul className="list-disc pl-4 space-y-1">
-                          <li>Keep it concise (3-5 sentences)</li>
-                          <li>Highlight your most relevant experience</li>
-                          <li>
-                            Focus on achievements rather than responsibilities
-                          </li>
-                          <li>
-                            Include keywords relevant to your target position
-                          </li>
-                        </ul>
+                      <div>
+                        <div className="cosmic-form-group mb-2">
+                          <Label htmlFor="summary" className="cosmic-form-label mb-1">
+                            Professional Summary
+                          </Label>
+                          <Textarea
+                            id="summary"
+                            value={resume?.personalInfo?.summary || ""}
+                            onChange={(e) =>
+                              updatePersonalInfo("summary", e.target.value)
+                            }
+                            className="cosmic-navy-input cosmic-form-textarea min-h-[120px]"
+                            rows={5}
+                            placeholder="Experienced Staff Development RN with a proven track record in long-term care, adept at enhancing staff competencies through targeted training and compassionate leadership. Holds an RN license with a commitment to high-quality healthcare and improving patient outcomes."
+                          />
+                          <div className="mt-space-4 text-xs text-blue-100/80 bg-blue-500/5 p-space-4 rounded-lg border border-blue-500/20">
+                            <p className="mb-space-2 text-blue-300 font-medium">
+                              Tips for a great summary:
+                            </p>
+                            <ul className="list-disc pl-space-4 space-y-space-1">
+                              <li>Keep it concise (3-5 sentences)</li>
+                              <li>Highlight your most relevant experience</li>
+                              <li>
+                                Focus on achievements rather than responsibilities
+                              </li>
+                              <li>
+                                Include keywords relevant to your target position
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   {/* AI Tips Section */}
                   <div className="md:col-span-1">
-                    <div className="cosmic-card border border-white/10 bg-black/40 p-5 rounded-lg relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+                    <div className="cosmic-ai-card min-h-[300px]">
+                      <div className="cosmic-glow cosmic-glow-top-right"></div>
+                      <div className="cosmic-glow cosmic-glow-bottom-left"></div>
+                      
                       <div className="relative z-10">
-                        <div className="flex items-center mb-4">
-                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
-                          <h3 className="font-medium text-white">
+                        <div className="flex items-center gap-2 mb-5">
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center">
+                            <Cpu className="h-4 w-4 text-white" />
+                          </div>
+                          <h3 className="font-medium text-white text-lg">
                             AI Resume Assistant
                           </h3>
                         </div>
 
-                        <div className="w-full">
+                        <div className="w-full space-y-4">
                           <ResumeTips
                             resumeId={resumeId}
                             onApplySuggestion={(suggestion) => {
@@ -3015,42 +3050,21 @@ export default function ResumeBuilder() {
 
               {/* Experience Section */}
               {activeSection === "experience" && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="md:col-span-2">
-                    <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-xl font-semibold text-white flex items-center">
-                        <Briefcase className="h-5 w-5 mr-2 text-blue-400" />
+                    <div className="cosmic-section-header flex justify-between items-center mb-space-4">
+                      <h2 className="cosmic-section-title flex items-center">
+                        <Briefcase className="cosmic-section-icon h-5 w-5 mr-space-2" />
                         Work Experience
                       </h2>
-                      <CosmicButton
-                        variant="ghost"
-                        onClick={() => {
-                          const newExperience: ExperienceItem = {
-                            id: `exp-${Date.now()}`,
-                            title: "Position Title",
-                            company: "Company Name",
-                            startDate: "",
-                            endDate: "",
-                            description: "",
-                          };
-
-                          setResume({
-                            ...resume,
-                            experience: [...(resume?.experience || []), newExperience],
-                          });
-                        }}
-                        iconLeft={<Plus className="h-4 w-4" />}
-                      >
-                        Add Experience
-                      </CosmicButton>
                     </div>
 
-                    <ResumeExperienceSection
-                      experiences={resume?.experience || []}
-                      onUpdate={(experiences) => {
+                    <ExperienceSection
+                      experience={resume?.experience || []}
+                      onUpdate={(experience) => {
                         setResume({
                           ...resume,
-                          experience: experiences,
+                          experience,
                         });
                       }}
                     />
@@ -3058,17 +3072,18 @@ export default function ResumeBuilder() {
 
                   {/* Tips for Experience */}
                   <div className="md:col-span-1">
-                    <div className="cosmic-card border border-white/10 bg-black/40 p-5 rounded-lg relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+                    <div className="cosmic-ai-card min-h-[300px]">
                       <div className="relative z-10">
-                        <div className="flex items-center mb-4">
-                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
-                          <h3 className="font-medium text-white">
+                        <div className="flex items-center gap-2 mb-5">
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center">
+                            <Briefcase className="h-4 w-4 text-white" />
+                          </div>
+                          <h3 className="font-medium text-white text-lg">
                             AI Experience Assistant
                           </h3>
                         </div>
 
-                        <div className="w-full">
+                        <div className="w-full space-y-4">
                           <ResumeTips
                             resumeId={resumeId}
                             onApplySuggestion={(bulletPoint) => {
@@ -3116,77 +3131,96 @@ export default function ResumeBuilder() {
 
               {/* Education Section */}
               {activeSection === "education" && (
-                <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold text-white flex items-center">
-                      <GraduationCap className="h-5 w-5 mr-2 text-blue-400" />
-                      Education
-                    </h2>
-                    <CosmicButton
-                      variant="ghost"
-                      onClick={() => {
-                        const newEducation: EducationItem = {
-                          id: `edu-${Date.now()}`,
-                          degree: "Degree Name",
-                          institution: "Institution Name",
-                          startDate: "",
-                          endDate: "",
-                          description: "",
-                        };
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="md:col-span-2">
+                    <div className="cosmic-section-header flex justify-between items-center mb-space-4">
+                      <h2 className="cosmic-section-title flex items-center">
+                        <GraduationCap className="cosmic-section-icon h-5 w-5 mr-space-2" />
+                        Education
+                      </h2>
+                    </div>
 
+                    <EducationSection
+                      education={resume?.education || []}
+                      onUpdate={(education) => {
                         setResume({
                           ...resume,
-                          education: [...(resume?.education || []), newEducation],
+                          education,
                         });
                       }}
-                      iconLeft={<Plus className="h-4 w-4" />}
-                    >
-                      Add Education
-                    </CosmicButton>
+                    />
+
+                    <div className="cosmic-tip-section mt-space-4 text-xs text-gray-300 bg-gray-900/50 p-space-4 rounded-lg border border-blue-500/30">
+                      <p className="mb-space-2 text-blue-300 font-medium">
+                        Tips for education section:
+                      </p>
+                      <ul className="list-disc pl-space-4 space-y-space-1">
+                        <li>List your most recent education first</li>
+                        <li>Include relevant coursework and achievements</li>
+                        <li>Mention academic honors and awards</li>
+                        <li>Only include GPA if it strengthens your profile</li>
+                      </ul>
+                    </div>
                   </div>
 
-                  <ResumeEducationSection
-                    education={resume?.education || []}
-                    onUpdate={(education) => {
-                      setResume({
-                        ...resume,
-                        education,
-                      });
-                    }}
-                  />
+                  {/* Education AI Assistant */}
+                  <div className="md:col-span-1">
+                    <div className="cosmic-ai-card min-h-[300px]">
+                      <div className="relative z-10 p-space-4">
+                        <div className="flex items-center gap-space-2 mb-space-5">
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center">
+                            <GraduationCap className="h-4 w-4 text-white" />
+                          </div>
+                          <h3 className="font-medium text-white text-lg">
+                            Education Assistant
+                          </h3>
+                        </div>
+
+                        <div className="space-y-space-4">
+                          <p className="text-sm text-blue-100">
+                            Enhance your education section with these tips from our AI assistant:
+                          </p>
+
+                          <div className="space-y-space-2 text-sm">
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                              Focus on relevant coursework that aligns with your target job
+                            </div>
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                              Highlight leadership roles in student organizations
+                            </div>
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                              Include special projects, research, or thesis work
+                            </div>
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                              List certifications or specialized training programs
+                            </div>
+                          </div>
+
+                          <button 
+                            className="w-full mt-space-4 py-2 px-3 bg-blue-600/30 hover:bg-blue-600/50 rounded-md text-white text-sm transition-colors"
+                            onClick={() => setIsDialogOpen(true)}
+                          >
+                            Get AI suggestions
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
               {/* Skills Section */}
               {activeSection === "skills" && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="md:col-span-2">
-                    <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-xl font-semibold text-white flex items-center">
-                        <Code className="h-5 w-5 mr-2 text-blue-400" />
+                    <div className="cosmic-section-header flex justify-between items-center mb-space-4">
+                      <h2 className="cosmic-section-title flex items-center">
+                        <Code className="cosmic-section-icon h-5 w-5 mr-space-2" />
                         Skills
                       </h2>
-                      <CosmicButton
-                        variant="ghost"
-                        onClick={() => {
-                          const newSkill: SkillItem = {
-                            id: `skill-${Date.now()}`,
-                            name: "New Skill",
-                            proficiency: 3,
-                          };
-
-                          setResume({
-                            ...resume,
-                            skills: [...(resume?.skills || []), newSkill],
-                          });
-                        }}
-                        iconLeft={<Plus className="h-4 w-4" />}
-                      >
-                        Add Skill
-                      </CosmicButton>
                     </div>
 
-                    <ResumeSkillsSection
+                    <SkillsSection
                       skills={resume?.skills || []}
                       onUpdate={(skills) => {
                         setResume({
@@ -3196,11 +3230,11 @@ export default function ResumeBuilder() {
                       }}
                     />
 
-                    <div className="mt-2 text-xs text-gray-300 bg-white/5 p-3 rounded-lg">
-                      <p className="mb-2 text-blue-300 font-medium">
+                    <div className="mt-space-4 text-xs text-gray-300 bg-gray-900/50 p-space-4 rounded-lg border border-blue-500/30">
+                      <p className="mb-space-2 text-blue-300 font-medium">
                         Tips for showcasing skills:
                       </p>
-                      <ul className="list-disc pl-4 space-y-1">
+                      <ul className="list-disc pl-space-4 space-y-space-1">
                         <li>Include a mix of technical and soft skills</li>
                         <li>Prioritize skills mentioned in job descriptions</li>
                         <li>Be honest about your proficiency levels</li>
@@ -3211,17 +3245,18 @@ export default function ResumeBuilder() {
 
                   {/* Tips for Skills */}
                   <div className="md:col-span-1">
-                    <div className="cosmic-card border border-white/10 bg-black/40 p-5 rounded-lg relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
-                      <div className="relative z-10">
-                        <div className="flex items-center mb-4">
-                          <Cpu className="h-5 w-5 mr-2 text-blue-400 animate-pulse" />
-                          <h3 className="font-medium text-white">
+                    <div className="cosmic-ai-card min-h-[300px]">
+                      <div className="relative z-10 p-space-4">
+                        <div className="flex items-center gap-space-2 mb-space-5">
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center">
+                            <Code className="h-4 w-4 text-white" />
+                          </div>
+                          <h3 className="font-medium text-white text-lg">
                             AI Skills Assistant
                           </h3>
                         </div>
 
-                        <div className="w-full">
+                        <div className="w-full space-y-space-4">
                           <ResumeTips
                             resumeId={resumeId}
                             onApplySuggestion={(skill) => {
@@ -3267,89 +3302,262 @@ export default function ResumeBuilder() {
 
               {/* Projects Section */}
               {activeSection === "projects" && (
-                <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold text-white flex items-center">
-                      <FolderKanban className="h-5 w-5 mr-2 text-blue-400" />
-                      Projects
-                    </h2>
-                    <CosmicButton
-                      variant="ghost"
-                      onClick={() => {
-                        const newProject: ProjectItem = {
-                          id: `proj-${Date.now()}`,
-                          title: "Project Name",
-                          description: "",
-                          technologies: [],
-                        };
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="md:col-span-2">
+                    <div className="cosmic-section-header flex justify-between items-center mb-space-4">
+                      <h2 className="cosmic-section-title flex items-center">
+                        <FolderKanban className="cosmic-section-icon h-5 w-5 mr-space-2" />
+                        Projects
+                      </h2>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="ml-auto"
+                        onClick={() => {
+                          // Add an empty project
+                          const newProject = {
+                            id: `project-${Date.now()}`,
+                            title: "",
+                            description: "",
+                            technologies: [],
+                          };
+                          setResume({
+                            ...resume,
+                            projects: [...(resume?.projects || []), newProject],
+                          });
+                        }}
+                      >
+                        Add Project
+                      </Button>
+                    </div>
 
+                    <ProjectsSection
+                      projects={resume?.projects || []}
+                      onUpdate={(projects) => {
                         setResume({
                           ...resume,
-                          projects: [...(resume?.projects || []), newProject],
+                          projects,
                         });
                       }}
-                      iconLeft={<Plus className="h-4 w-4" />}
-                    >
-                      Add Project
-                    </CosmicButton>
+                    />
+
+                    <div className="mt-space-4 text-xs text-gray-300 bg-gray-900/50 p-space-4 rounded-lg border border-blue-500/30">
+                      <p className="mb-space-2 text-blue-300 font-medium">
+                        Tips for adding projects:
+                      </p>
+                      <ul className="list-disc pl-4 space-y-1">
+                        <li>Include personal projects or significant academic/work initiatives</li>
+                        <li>Highlight technologies and methodologies used</li>
+                        <li>Detail your specific contributions to team projects</li>
+                        <li>Add links to repositories or live demos when available</li>
+                      </ul>
+                    </div>
                   </div>
 
-                  <ResumeProjectsSection
-                    projects={resume?.projects || []}
-                    onUpdate={(projects) => {
-                      setResume({
-                        ...resume,
-                        projects,
-                      });
-                    }}
-                  />
+                  {/* Projects AI Assistant */}
+                  <div className="md:col-span-1">
+                    <div className="cosmic-ai-card min-h-[300px]">
+                      <div className="relative z-10 p-space-4">
+                        <div className="flex items-center gap-space-2 mb-space-5">
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center">
+                            <FolderKanban className="h-4 w-4 text-white" />
+                          </div>
+                          <h3 className="font-medium text-white text-lg">
+                            Projects Assistant
+                          </h3>
+                        </div>
+
+                        <div className="space-y-space-4">
+                          <p className="text-sm text-blue-100">
+                            Enhance your projects section with these formatting tips:
+                          </p>
+
+                          <div className="space-y-space-2 text-sm">
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                              Use action verbs to describe your contributions
+                            </div>
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                              Quantify achievements with metrics when possible
+                            </div>
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                              Showcase problem-solving and technical skills
+                            </div>
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                              Include the business impact of your project
+                            </div>
+                          </div>
+
+                          <button 
+                            className="w-full mt-space-4 py-2 px-3 bg-blue-600/30 hover:bg-blue-600/50 rounded-md text-white text-sm transition-colors"
+                            onClick={() => setIsDialogOpen(true)}
+                          >
+                            Get AI suggestions
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
               {/* Preview Section */}
               {activeSection === "preview" && (
-                <div className="text-white">
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-semibold text-white flex items-center">
-                      <Maximize2 className="h-5 w-5 mr-2 text-blue-400" />
-                      Resume Preview
-                    </h2>
-                    <CosmicButton
-                      variant="outline"
-                      onClick={downloadResume}
-                      iconLeft={<Download className="h-4 w-4" />}
-                    >
-                      Download PDF
-                    </CosmicButton>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div className="md:col-span-3 text-white">
+                    <div className="cosmic-section-header flex justify-between items-center mb-space-6">
+                      <h2 className="cosmic-section-title flex items-center">
+                        <Maximize2 className="cosmic-section-icon h-5 w-5 mr-space-2" />
+                        Resume Preview
+                      </h2>
+                      <CosmicButton
+                        variant="outline"
+                        onClick={downloadResume}
+                        iconLeft={<Download className="h-4 w-4" />}
+                      >
+                        Download PDF
+                      </CosmicButton>
+                    </div>
+                    <div className="cosmic-card border border-white/10 backdrop-blur-sm p-space-8 rounded-xl shadow-lg">
+                      <ResumePreviewComponent
+                        resume={resume || {
+                          title: "My Professional Resume",
+                          personalInfo: {
+                            firstName: "",
+                            lastName: "",
+                            email: "",
+                            phone: "",
+                            headline: "",
+                            summary: "",
+                          },
+                          experience: [],
+                          education: [],
+                          skills: [],
+                          projects: [],
+                          template: "professional",
+                        }}
+                        onTemplateChange={handleTemplateChange}
+                        onDownload={downloadResume}
+                      />
+                    </div>
                   </div>
-                  <div className="bg-white/5 backdrop-blur-sm p-8 rounded-xl border border-white/10 shadow-xl">
-                    <ResumePreviewComponent
-                      resume={resume || {
-                        title: "My Professional Resume",
-                        personalInfo: {
-                          firstName: "",
-                          lastName: "",
-                          email: "",
-                          phone: "",
-                          headline: "",
-                          summary: "",
-                        },
-                        experience: [],
-                        education: [],
-                        skills: [],
-                        projects: [],
-                        template: "professional",
-                      }}
-                      onTemplateChange={handleTemplateChange}
-                      onDownload={downloadResume}
-                    />
+
+                  {/* Final Preview Tips */}
+                  <div className="md:col-span-1">
+                    <div className="cosmic-ai-card min-h-[300px]">
+                      <div className="relative z-10 p-space-4">
+                        <div className="flex items-center gap-space-2 mb-space-5">
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center">
+                            <Check className="h-4 w-4 text-white" />
+                          </div>
+                          <h3 className="font-medium text-white text-lg">
+                            Final Checks
+                          </h3>
+                        </div>
+
+                        <div className="space-y-space-4">
+                          <p className="text-sm text-blue-100">
+                            Before downloading, review your resume for these common issues:
+                          </p>
+
+                          <div className="space-y-space-2 text-sm">
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
+                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
+                              <span>Check for spelling and grammar errors</span>
+                            </div>
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
+                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
+                              <span>Ensure consistent formatting throughout</span>
+                            </div>
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
+                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
+                              <span>Verify all contact information is correct</span>
+                            </div>
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
+                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
+                              <span>Confirm dates are accurate and consistent</span>
+                            </div>
+                          </div>
+
+                          <button 
+                            className="w-full mt-space-4 py-2 px-3 bg-blue-600/30 hover:bg-blue-600/50 rounded-md text-white text-sm transition-colors"
+                            onClick={() => setIsDialogOpen(true)}
+                          >
+                            Get final AI review
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
             </div>
           </div>
         </div>
-      </main>
+
+      {/* Floating AI Assistant Button */}
+      <div className="fixed bottom-6 right-6 z-50 group">
+        <div className="absolute -inset-0.5 rounded-full bg-blue-500 opacity-75 blur-sm group-hover:opacity-100 transition duration-300 animate-pulse"></div>
+        <CosmicButton
+          variant="primary"
+          onClick={() => setIsDialogOpen(!isDialogOpen)}
+          className="relative h-14 w-14 rounded-full p-0 shadow-lg group-hover:scale-105 transition duration-300"
+          aria-label="Open AI Assistant"
+        >
+          <div className="absolute inset-0 rounded-full border border-white/20 animate-ping opacity-40"></div>
+          <Sparkles className="h-5 w-5 text-white" />
+        </CosmicButton>
+        <span className="absolute top-0 right-16 bg-black/80 text-white text-sm py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+          AI Assistant
+        </span>
+      </div>
+
+      {/* AI Assistant Chat Box */}
+      {isDialogOpen && (
+        <div className="fixed bottom-24 right-6 z-50 w-96 max-w-full shadow-xl rounded-lg overflow-hidden transition-all duration-300 ease-in-out cosmic-ai-card border-0">
+          <div className="bg-gradient-to-r from-blue-900 to-purple-900 p-space-4 flex justify-between items-center border-b border-blue-500/30">
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center">
+                <Sparkles className="h-4 w-4 text-white" />
+              </div>
+              <h3 className="text-white font-medium text-lg">AI Resume Assistant</h3>
+            </div>
+            <CosmicButton
+              variant="ghost"
+              onClick={() => setIsDialogOpen(false)}
+              className="h-8 w-8 rounded-full p-0 hover:bg-white/10"
+              aria-label="Close"
+            >
+              <X className="h-4 w-4 text-white" />
+            </CosmicButton>
+          </div>
+          <div className="bg-black/90 border-x border-blue-500/30 border-b p-space-5 h-96 overflow-y-auto">
+            <AIAssistant
+              resumeId={resumeId?.toString()}
+              onApplySummary={handleApplySummary}
+              onApplyBulletPoint={handleApplyBulletPoint}
+              onApplySkill={handleApplySkill}
+              resume={resume || {
+                title: "My Professional Resume",
+                personalInfo: {
+                  firstName: "",
+                  lastName: "",
+                  email: "",
+                  phone: "",
+                  headline: "",
+                  summary: "",
+                },
+                experience: [],
+                education: [],
+                skills: [],
+                projects: [],
+                template: "professional",
+              }}
+              activeTab={activeSection || 'contact'}
+            />
+          </div>
+        </div>
+      )}
+      </div>
     </div>
   );
 }

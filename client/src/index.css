@@ -6,34 +6,45 @@
  */
 
 /* Import base styles first */
+@import './styles/base/theme-variables.css'; /* Added new theme variables */
 @import './styles/base/variables.css';
 @import './styles/base/base.css';
 
+/* Import master cosmic theme */
+@import './styles/cosmic-theme.css'; /* Master cosmic theme styling */
+@import './styles/cosmic-config.css'; /* Central configuration for cosmic styling */
+
 /* Import component styles */
+@import './styles/components/cosmic-components.css'; /* Added unified cosmic component styles */
+@import './styles/cosmic-resume.css'; /* Cosmic resume component styling */
 @import './styles/components/buttons.css';
 @import './styles/components/cards.css';
 @import './styles/components/forms.css';
-@import './styles/components/cosmic-resume.css';
+@import './styles/components/tabs.css';
+@import './styles/components/cosmic-tabs.css'; /* Added new cosmic tabs styling */
+@import './styles/components/cosmic-dialog.css'; /* Added new cosmic dialog styling */
+@import './styles/components/resume-sections.css'; /* Added resume section styling */
 
 /* Import layout styles */
 @import './styles/layout/navigation.css';
 
 /* Import animations */
 @import './styles/animations/animations.css';
+@import './styles/animations/cosmic-animations.css';
 
 /* Import utilities last to ensure they have highest specificity */
 @import './styles/utilities/utilities.css';
 
 /**
- * Theme specific variables - these are set dynamically based on theme.json
- * They override the defaults in variables.css
+ * Legacy theme variables - these will be phased out in favor of theme-variables.css
+ * Keeping them for backwards compatibility during the transition
  */
 :root {
   /* These variables will be set dynamically at runtime based on theme.json */
   --primary: hsl(221.2 83.2% 53.3%);
   --primary-foreground: hsl(0 0% 100%);
   
-  /* Base colors for dark mode */
+  /* Base colors for dark mode - being replaced with RGB values in theme-variables.css */
   --background: #050A18;
   --foreground: #ffffff;
   --card: rgba(255, 255, 255, 0.05);
@@ -41,4 +52,12 @@
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.1);
   --ring: rgba(59, 130, 246, 0.5);
+  
+  /* Cosmic theme variables */
+  --cosmic-accent-primary: rgba(59, 130, 246, 0.5);
+  --cosmic-accent-secondary: rgba(139, 92, 246, 0.3);
+  --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.2);
+  --transition-fast: 0.2s;
+  --transition-normal: 0.3s;
+  --z-negative: -1;
 }

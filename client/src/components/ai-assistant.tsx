@@ -903,7 +903,7 @@ export default function AIAssistant({
 
  {/* Quick actions */}
  {chatMode === "general" ? (
- <div className="p-2 border-t border-[rgba(255,255,255,0.1)] flex flex-wrap gap-1 bg-[rgba(20,25,40,0.5)]">
+ <div className="p-2 border-t border-[#252a47] flex flex-wrap gap-1 bg-[#1a203c]">
  <Button
  size="sm"
  variant="ghost"
@@ -951,7 +951,7 @@ export default function AIAssistant({
  </Button>
  </div>
  ) : (
- <form onSubmit={(e) => { e.preventDefault(); handleTailorSubmit(e); }} className="p-2 border-t border-[rgba(255,255,255,0.1)] space-y-2 bg-[rgba(20,25,40,0.5)]">
+ <form onSubmit={(e) => { e.preventDefault(); handleTailorSubmit(e); }} className="p-2 border-t border-[#252a47] space-y-2 bg-[#1a203c]">
  <Input
  placeholder="Company name (optional)"
  value={company}
@@ -998,13 +998,13 @@ export default function AIAssistant({
 
  {/* Chat input */}
  {chatMode === "general" && (
- <div className="p-2 border-t border-[rgba(255,255,255,0.1)] flex items-center gap-2 bg-[rgba(10,15,30,0.8)]">
+ <div className="p-2 border-t border-[#252a47] flex items-center gap-2 bg-[#1a203c]">
  <Input
  value={userInput}
  onChange={(e) => setUserInput(e.target.value)}
  onKeyPress={(e) => e.key === "Enter" && debouncedHandleUserMessage()}
  placeholder="Ask me anything..."
- className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white text-sm h-8"
+ className="bg-[#0c101b] border-[#252a47] text-white text-sm h-8"
  aria-label="Chat input"
  />
  <Button

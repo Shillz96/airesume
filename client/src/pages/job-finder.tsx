@@ -52,6 +52,36 @@ export default function JobFinder() {
     salary: "",
     country: "us",
   });
+
+  // Get user location on mount
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            // Convert coordinates to location name using reverse geocoding
+            const response = await fetch(
+              `https://api.opencagedata.com/geocode/v1/json?q=${position.coords.latitude}+${position.coords.longitude}&key=${process.env.OPENCAGE_API_KEY}`
+            );
+            const data = await response.json();
+            if (data.results?.[0]?.components?.city) {
+              setFilterValues(prev => ({
+                ...prev,
+                location: data.results[0].components.city,
+                country: data.results[0].components.country_code?.toLowerCase() || "us"
+              }));
+            }
+          } catch (error) {
+            console.error("Error getting location:", error);
+          }
+        },
+        (error) => {
+          console.log("Geolocation error:", error);
+          // Keep default US jobs if location access denied
+        }
+      );
+    }
+  }, []);
   
   // Query jobs with filters
   const { data: jobs = [], isLoading, error } = useQuery<Job[]>({

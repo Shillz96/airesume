@@ -128,7 +128,7 @@ export default function ExperienceSuggestions({
         ) {
           // Filter out any bullet points that might duplicate existing ones
           // Perform similarity check - here we're just checking if they start with the same words
-          const filteredBulletPoints = data.suggestions.filter(bullet => {
+          const filteredBulletPoints = data.suggestions.filter((bullet: string) => {
             // Function to normalize text for comparison (lowercase, remove punctuation)
             const normalize = (text: string) => text.toLowerCase().replace(/[^\w\s]/g, '').trim();
             
@@ -154,7 +154,7 @@ export default function ExperienceSuggestions({
     }
 
     // Fallback to generated bullet points, but filter out any duplicates
-    const fallbackBulletPoints = getFallbackBulletPoints(length).filter(bullet => {
+    const fallbackBulletPoints = getFallbackBulletPoints(length).filter((bullet: string) => {
       // Simple check for duplicate bullet points
       const normalize = (text: string) => text.toLowerCase().replace(/[^\w\s]/g, '').trim();
       const bulletNormalized = normalize(bullet);

@@ -125,8 +125,34 @@ export default function SummarySuggestions({
     }
 
     // If we get here, either the API call failed or we don't have a valid resumeId
-    // Use the fallback summaries
-    setSummaries(getFallbackSummaries(length));
+    // Filter fallback summaries to avoid similar content to existing summary
+    if (existingSummary) {
+      const normalize = (text: string) => text.toLowerCase().replace(/[^\w\s]/g, '').trim();
+      const existingSummaryNormalized = normalize(existingSummary);
+      
+      // Get fallback summaries
+      const fallbackSummaries = getFallbackSummaries(length).filter(summary => {
+        const summaryNormalized = normalize(summary);
+        
+        // Simple similarity check - if they share too many words, filter out
+        const existingWords = existingSummaryNormalized.split(' ');
+        const summaryWords = summaryNormalized.split(' ');
+        
+        // Count common words
+        const commonWords = existingWords.filter(word => 
+          word.length > 3 && summaryWords.includes(word)
+        ).length;
+        
+        // If more than 30% of words are common, consider it too similar
+        return commonWords / Math.min(existingWords.length, summaryWords.length) < 0.3;
+      });
+      
+      // Use filtered summaries if available, otherwise use all fallbacks
+      setSummaries(fallbackSummaries.length > 0 ? fallbackSummaries : getFallbackSummaries(length));
+    } else {
+      // No existing summary, use all fallbacks
+      setSummaries(getFallbackSummaries(length));
+    }
     setIsGenerating(false);
   };
 

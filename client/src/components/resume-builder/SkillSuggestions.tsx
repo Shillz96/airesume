@@ -165,7 +165,7 @@ export default function SkillSuggestions({
           Array.isArray(data.suggestions)
         ) {
           // Filter out any skills that might be duplicates (case insensitive comparison)
-          const filteredSkills = data.suggestions.filter(skill => 
+          const filteredSkills = data.suggestions.filter((skill: string) => 
             !existingSkills.some(existingSkill => 
               existingSkill.toLowerCase() === skill.toLowerCase()
             )

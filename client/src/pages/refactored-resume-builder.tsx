@@ -2976,11 +2976,11 @@ export default function ResumeBuilder() {
                             rows={5}
                             placeholder="Experienced Staff Development RN with a proven track record in long-term care, adept at enhancing staff competencies through targeted training and compassionate leadership. Holds an RN license with a commitment to high-quality healthcare and improving patient outcomes."
                           />
-                          <div className="mt-4 text-xs text-blue-100/80 bg-blue-500/5 p-4 rounded-lg border border-blue-500/20">
-                            <p className="mb-2 text-blue-300 font-medium">
+                          <div className="mt-space-4 text-xs text-blue-100/80 bg-blue-500/5 p-space-4 rounded-lg border border-blue-500/20">
+                            <p className="mb-space-2 text-blue-300 font-medium">
                               Tips for a great summary:
                             </p>
-                            <ul className="list-disc pl-4 space-y-1">
+                            <ul className="list-disc pl-space-4 space-y-space-1">
                               <li>Keep it concise (3-5 sentences)</li>
                               <li>Highlight your most relevant experience</li>
                               <li>
@@ -3156,7 +3156,7 @@ export default function ResumeBuilder() {
                       <p className="mb-space-2 text-blue-300 font-medium">
                         Tips for education section:
                       </p>
-                      <ul className="list-disc pl-4 space-y-1">
+                      <ul className="list-disc pl-space-4 space-y-space-1">
                         <li>List your most recent education first</li>
                         <li>Include relevant coursework and achievements</li>
                         <li>Mention academic honors and awards</li>
@@ -3236,7 +3236,7 @@ export default function ResumeBuilder() {
                       <p className="mb-space-2 text-blue-300 font-medium">
                         Tips for showcasing skills:
                       </p>
-                      <ul className="list-disc pl-4 space-y-1">
+                      <ul className="list-disc pl-space-4 space-y-space-1">
                         <li>Include a mix of technical and soft skills</li>
                         <li>Prioritize skills mentioned in job descriptions</li>
                         <li>Be honest about your proficiency levels</li>
@@ -3347,7 +3347,7 @@ export default function ResumeBuilder() {
                       <p className="mb-space-2 text-blue-300 font-medium">
                         Tips for adding projects:
                       </p>
-                      <ul className="list-disc pl-4 space-y-1">
+                      <ul className="list-disc pl-space-4 space-y-space-1">
                         <li>Include personal projects or significant academic/work initiatives</li>
                         <li>Highlight technologies and methodologies used</li>
                         <li>Detail your specific contributions to team projects</li>
@@ -3463,19 +3463,19 @@ export default function ResumeBuilder() {
 
                           <div className="space-y-space-2 text-sm">
                             <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
-                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
+                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-space-2 flex-shrink-0" />
                               <span>Check for spelling and grammar errors</span>
                             </div>
                             <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
-                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
+                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-space-2 flex-shrink-0" />
                               <span>Ensure consistent formatting throughout</span>
                             </div>
                             <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
-                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
+                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-space-2 flex-shrink-0" />
                               <span>Verify all contact information is correct</span>
                             </div>
                             <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 flex items-start">
-                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
+                              <Check className="h-4 w-4 text-green-500 mt-0.5 mr-space-2 flex-shrink-0" />
                               <span>Confirm dates are accurate and consistent</span>
                             </div>
                           </div>

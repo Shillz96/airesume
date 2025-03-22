@@ -875,14 +875,16 @@ export default function ResumeBuilder() {
         {showPreview ? (
           // Preview mode
           <div className="flex-1 flex flex-col items-center">
-            <ResumePreviewComponent 
-              resume={resume} 
-              onTemplateChange={handleTemplateChange}
-              onDownload={handleDownloadResume}
-              onToggleSkillsDisplay={toggleSkillsDisplay}
-              onSmartAdjust={handleSmartAdjust}
-              onEdit={() => togglePreviewMode()}
-            />
+            <div className="max-w-4xl w-full mb-6 p-6 cosmic-card shadow-xl shadow-blue-900/20">
+              <ResumePreviewComponent 
+                resume={resume} 
+                onTemplateChange={handleTemplateChange}
+                onDownload={handleDownloadResume}
+                onToggleSkillsDisplay={toggleSkillsDisplay}
+                onSmartAdjust={handleSmartAdjust}
+                onEdit={() => togglePreviewMode()}
+              />
+            </div>
           </div>
         ) : (
           // Edit mode

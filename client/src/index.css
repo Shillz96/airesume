@@ -450,5 +450,8 @@
 
 /* Input field styling for cosmic theme */
 .cosmic-input {
-  @apply bg-[rgba(30,40,80,0.4)] border-blue-900/30 focus:border-blue-500 text-gray-200;
+  @apply bg-[rgba(30,40,80,0.4)] border-blue-900/30 text-gray-200 rounded-md px-4 py-2;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-600;
+  @apply hover:border-blue-700;
 }

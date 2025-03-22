@@ -1496,6 +1496,26 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
                         />
                       </div>
                     </div>
+                    <div className="flex flex-wrap gap-3 mb-2">
+                      <div className="flex-1 min-w-[200px]">
+                        <label className="text-xs text-gray-500 block mb-1">Start Date</label>
+                        <Input
+                          value={edu.startDate}
+                          onChange={(e) => handleFieldChange("education", "startDate", e.target.value, index)}
+                          className="cosmic-navy-input"
+                          placeholder="MM/YYYY"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-[200px]">
+                        <label className="text-xs text-gray-500 block mb-1">End Date</label>
+                        <Input
+                          value={edu.endDate}
+                          onChange={(e) => handleFieldChange("education", "endDate", e.target.value, index)}
+                          className="cosmic-navy-input"
+                          placeholder="MM/YYYY or Present"
+                        />
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -1523,8 +1543,8 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
       </div>
 
       {/* Template Selection */}
-      <div className="mt-8">
-        <h3 className="text-lg font-medium mb-4 text-white">Choose a Template</h3>
+      <div className="mt-8 bg-gray-900/50 border border-blue-500/30 rounded-md p-6">
+        <h3 className="text-lg font-semibold mb-4 text-white">Choose a Template</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {[
             { name: "professional", preview: TemplatePreviewProfessional },
@@ -1538,10 +1558,10 @@ function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { resu
             <div
               key={template.name}
               className={cn(
-                "cursor-pointer p-3 rounded-lg transition-all",
+                "cursor-pointer p-3 rounded-lg transition-all backdrop-blur-sm",
                 resume.template === template.name
-                  ? "border-2 border-blue-500 shadow-lg"
-                  : "border border-white/20"
+                  ? "border-2 border-blue-500 shadow-lg bg-blue-500/10"
+                  : "border border-white/20 hover:border-blue-400/50 hover:bg-blue-500/5"
               )}
               onClick={() => onTemplateChange(template.name)}
             >

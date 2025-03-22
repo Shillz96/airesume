@@ -57,57 +57,96 @@ export default function ResumePreviewComponent({
   };
 
   return (
-    <div className="cosmic-card border border-white/10 backdrop-blur-sm rounded-lg overflow-hidden h-full flex flex-col">
-      <div className="cosmic-card-header p-3 border-b border-white/10 flex justify-between items-center">
-        <h3 className="cosmic-text-gradient font-medium text-sm">Resume Preview</h3>
-        <div className="flex space-x-1">
-          {onDownload && (
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-7 w-7 p-0 text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
-              onClick={onDownload}
-              title="Download as PDF"
-            >
-              <Download className="h-4 w-4" />
-            </Button>
-          )}
+    <div className="cosmic-preview-container h-full flex flex-col">
+      {/* Preview Header */}
+      <div className="bg-gray-800 border-b border-gray-700 p-3 flex items-center justify-between">
+        <h3 className="text-sm font-medium text-white">Preview</h3>
+        <div className="flex items-center gap-2">
           <Button
-            size="sm"
             variant="ghost"
-            className="h-7 w-7 p-0 text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
-            onClick={() => {
-              if (onDownload) onDownload(); // Print
-            }}
-            title="Print resume"
+            size="sm"
+            className="h-7 w-7 p-0 text-gray-300 hover:text-white"
+            onClick={() => window.print()}
+            title="Print Resume"
           >
             <Printer className="h-4 w-4" />
           </Button>
+          
           <Button
-            size="sm"
             variant="ghost"
-            className="h-7 w-7 p-0 text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
+            size="sm"
+            className="h-7 w-7 p-0 text-gray-300 hover:text-white"
+            onClick={() => onDownload && onDownload()}
+            title="Download Resume"
+          >
+            <Download className="h-4 w-4" />
+          </Button>
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 w-7 p-0 text-gray-300 hover:text-white"
             onClick={() => setIsFullScreenPreview(true)}
-            title="View in full screen"
+            title="Fullscreen Preview"
           >
             <Maximize2 className="h-4 w-4" />
           </Button>
         </div>
       </div>
       
-      <div className="cosmic-card-body flex-grow overflow-auto bg-white p-4">
-        <div className="max-w-[800px] mx-auto shadow-md">
+      {/* Resume Preview */}
+      <div className="flex-1 overflow-auto bg-gray-200">
+        <div className="mx-auto w-full h-full max-w-[612px] shadow-lg">
           {renderSelectedTemplate()}
         </div>
       </div>
-
-      {/* Full Screen Preview Dialog */}
-      <Dialog open={isFullScreenPreview} onOpenChange={setIsFullScreenPreview}>
-        <DialogContent className="max-w-[900px] h-[90vh] p-0 bg-white">
-          <div className="h-full overflow-auto p-6">
-            {renderSelectedTemplate()}
+      
+      {/* Fullscreen Preview Dialog */}
+      <Dialog 
+        open={isFullScreenPreview} 
+        onOpenChange={setIsFullScreenPreview}
+      >
+        <DialogContent className="max-w-[90vw] w-[850px] max-h-[90vh] p-0 overflow-hidden">
+          <div className="bg-gray-800 p-3 flex items-center justify-between">
+            <h3 className="text-sm font-medium text-white">Resume Preview</h3>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 text-gray-300 hover:text-white"
+                onClick={() => window.print()}
+                title="Print Resume"
+              >
+                <Printer className="h-4 w-4" />
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 text-gray-300 hover:text-white"
+                onClick={() => onDownload && onDownload()}
+                title="Download Resume"
+              >
+                <Download className="h-4 w-4" />
+              </Button>
+              
+              <DialogClose asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 p-1 text-gray-300 hover:text-white"
+                >
+                  Close
+                </Button>
+              </DialogClose>
+            </div>
           </div>
-          <DialogClose className="absolute top-4 right-4" />
+          
+          <div className="overflow-auto bg-gray-200 h-[calc(90vh-52px)]">
+            <div className="mx-auto my-8 w-full max-w-[850px] bg-white shadow-xl">
+              {renderSelectedTemplate()}
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

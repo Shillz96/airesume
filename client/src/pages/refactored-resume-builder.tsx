@@ -2855,15 +2855,17 @@ export default function ResumeBuilder() {
                       </div>
                     )}
                   <div className="md:col-span-2 space-y-8">
-                    <div className="mb-8">
-                      <div className="flex items-center mb-10 ml-3">
-                        <User className="h-6 w-6 text-blue-400 mr-3" />
-                        <h2 className="text-2xl font-semibold text-white">Contact Information</h2>
+                    <div className="cosmic-resume-section mb-8">
+                      <div className="mb-10 ml-3">
+                        <h2 className="cosmic-section-title-large">
+                          <User className="cosmic-section-icon h-6 w-6 text-blue-400" />
+                          Contact Information
+                        </h2>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8 mb-12">
-                        <div>
-                          <Label htmlFor="firstName" className="block text-sm font-medium text-gray-300 mb-2">
+                        <div className="cosmic-form-group">
+                          <Label htmlFor="firstName" className="cosmic-form-label">
                             First Name
                           </Label>
                           <Input
@@ -2872,12 +2874,12 @@ export default function ResumeBuilder() {
                             onChange={(e) =>
                               updatePersonalInfo("firstName", e.target.value)
                             }
-                            className="bg-navy-800 border border-gray-700 rounded-md text-white w-full p-2.5 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            className="cosmic-navy-input"
                             placeholder="Dylan"
                           />
                         </div>
-                        <div>
-                          <Label htmlFor="lastName" className="block text-sm font-medium text-gray-300 mb-2">
+                        <div className="cosmic-form-group">
+                          <Label htmlFor="lastName" className="cosmic-form-label">
                             Last Name
                           </Label>
                           <Input
@@ -2886,12 +2888,12 @@ export default function ResumeBuilder() {
                             onChange={(e) =>
                               updatePersonalInfo("lastName", e.target.value)
                             }
-                            className="bg-navy-800 border border-gray-700 rounded-md text-white w-full p-2.5 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            className="cosmic-navy-input"
                             placeholder="Spivack"
                           />
                         </div>
-                        <div>
-                          <Label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                        <div className="cosmic-form-group">
+                          <Label htmlFor="email" className="cosmic-form-label">
                             Email
                           </Label>
                           <Input
@@ -2901,12 +2903,12 @@ export default function ResumeBuilder() {
                             onChange={(e) =>
                               updatePersonalInfo("email", e.target.value)
                             }
-                            className="bg-navy-800 border border-gray-700 rounded-md text-white w-full p-2.5 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            className="cosmic-navy-input"
                             placeholder="john.doe@example.com"
                           />
                         </div>
-                        <div>
-                          <Label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-2">
+                        <div className="cosmic-form-group">
+                          <Label htmlFor="phone" className="cosmic-form-label">
                             Phone
                           </Label>
                           <Input
@@ -2915,15 +2917,15 @@ export default function ResumeBuilder() {
                             onChange={(e) =>
                               updatePersonalInfo("phone", e.target.value)
                             }
-                            className="bg-navy-800 border border-gray-700 rounded-md text-white w-full p-2.5 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            className="cosmic-navy-input"
                             placeholder="(555) 123-4567"
                           />
                         </div>
                       </div>
 
                       <div className="mb-12 border-b border-gray-700 pb-10">
-                        <div>
-                          <Label htmlFor="headline" className="block text-sm font-medium text-gray-300 mb-2">
+                        <div className="cosmic-form-group">
+                          <Label htmlFor="headline" className="cosmic-form-label">
                             Professional Headline
                           </Label>
                           <Input
@@ -2932,7 +2934,7 @@ export default function ResumeBuilder() {
                             onChange={(e) =>
                               updatePersonalInfo("headline", e.target.value)
                             }
-                            className="bg-navy-800 border border-gray-700 rounded-md text-white w-full p-2.5 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            className="cosmic-navy-input"
                             placeholder="Frontend Developer | React & TypeScript Specialist"
                           />
                           <p className="mt-2 text-xs text-blue-300/70">A brief title that describes your professional identity</p>
@@ -2940,8 +2942,8 @@ export default function ResumeBuilder() {
                       </div>
 
                       <div>
-                        <div>
-                          <Label htmlFor="summary" className="block text-sm font-medium text-gray-300 mb-2">
+                        <div className="cosmic-form-group">
+                          <Label htmlFor="summary" className="cosmic-form-label">
                             Professional Summary
                           </Label>
                           <Textarea
@@ -2950,7 +2952,7 @@ export default function ResumeBuilder() {
                             onChange={(e) =>
                               updatePersonalInfo("summary", e.target.value)
                             }
-                            className="bg-navy-800 border border-gray-700 rounded-md text-white w-full p-2.5 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 min-h-[120px]"
+                            className="cosmic-navy-input cosmic-form-textarea min-h-[120px]"
                             rows={5}
                             placeholder="Experienced Staff Development RN with a proven track record in long-term care, adept at enhancing staff competencies through targeted training and compassionate leadership. Holds an RN license with a commitment to high-quality healthcare and improving patient outcomes."
                           />
@@ -2977,6 +2979,9 @@ export default function ResumeBuilder() {
                   {/* AI Tips Section */}
                   <div className="md:col-span-1">
                     <div className="cosmic-ai-card min-h-[300px]">
+                      <div className="cosmic-glow cosmic-glow-top-right"></div>
+                      <div className="cosmic-glow cosmic-glow-bottom-left"></div>
+                      
                       <div className="relative z-10">
                         <div className="flex items-center gap-2 mb-5">
                           <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center">

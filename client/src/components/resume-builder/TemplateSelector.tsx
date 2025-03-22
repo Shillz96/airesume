@@ -104,14 +104,14 @@ export default function TemplateSelector({
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="cosmic-card border border-white/10 bg-black/30 p-6 rounded-lg">
-        <h2 className="text-lg font-medium mb-2 text-white">Choose a Template</h2>
-        <p className="text-gray-300 mb-6">
+    <div className="space-y-6" style={{ '--space-y': 'var(--space-6)' } as React.CSSProperties}>
+      <div className="cosmic-card cosmic-panel border border-cosmic-border p-6 rounded-lg" style={{ padding: 'var(--space-6)' }}>
+        <h2 className="text-lg font-medium mb-2 text-cosmic-text" style={{ marginBottom: 'var(--space-2)' }}>Choose a Template</h2>
+        <p className="text-cosmic-text-secondary mb-6" style={{ marginBottom: 'var(--space-6)' }}>
           Select a template that best showcases your skills and matches your target industry. Your content will automatically adapt to the new design.
         </p>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" style={{ gap: 'var(--space-4)' }}>
           {templates.map((template) => (
             <TemplateOption
               key={template.id}

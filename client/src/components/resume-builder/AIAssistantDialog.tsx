@@ -308,29 +308,29 @@ export default function AIAssistantDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-[90vw] md:max-w-[700px] h-[80vh] p-0">
-        <DialogHeader className="px-6 pt-6 pb-2">
-          <DialogTitle className="flex items-center gap-2 text-xl">
-            <Cpu className="h-5 w-5 text-blue-400" />
+      <DialogContent className="max-w-[90vw] md:max-w-[700px] h-[80vh] p-0 cosmic-dialog bg-cosmic-background border border-cosmic-border">
+        <DialogHeader className="px-6 pt-6 pb-2" style={{ padding: 'var(--space-6) var(--space-6) var(--space-2)' }}>
+          <DialogTitle className="flex items-center gap-2 text-xl text-cosmic-text">
+            <Cpu className="h-5 w-5 text-cosmic-accent" />
             Resume AI Assistant
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-cosmic-text-secondary">
             Get intelligent suggestions to enhance your resume and stand out to employers
           </DialogDescription>
         </DialogHeader>
         
         <Tabs value={activeAssistantTab} onValueChange={setActiveAssistantTab} className="flex flex-col h-full">
-          <div className="px-6">
-            <TabsList className="grid grid-cols-3 mb-4">
-              <TabsTrigger value="chat" className="flex items-center gap-1">
+          <div className="px-6" style={{ padding: '0 var(--space-6)' }}>
+            <TabsList className="cosmic-tabs-list grid grid-cols-3 mb-4" style={{ marginBottom: 'var(--space-4)' }}>
+              <TabsTrigger value="chat" className="cosmic-tab-trigger flex items-center gap-1" style={{ gap: 'var(--space-1)' }}>
                 <Bot className="h-4 w-4" />
                 Chat Assistant
               </TabsTrigger>
-              <TabsTrigger value="summaries" className="flex items-center gap-1">
+              <TabsTrigger value="summaries" className="cosmic-tab-trigger flex items-center gap-1" style={{ gap: 'var(--space-1)' }}>
                 <FileText className="h-4 w-4" />
                 Summary Ideas
               </TabsTrigger>
-              <TabsTrigger value="bullets" className="flex items-center gap-1">
+              <TabsTrigger value="bullets" className="cosmic-tab-trigger flex items-center gap-1" style={{ gap: 'var(--space-1)' }}>
                 <Briefcase className="h-4 w-4" />
                 Bullet Points
               </TabsTrigger>
@@ -339,7 +339,7 @@ export default function AIAssistantDialog({
           
           <TabsContent value="chat" className="flex-1 flex flex-col px-6 overflow-hidden m-0">
             {/* Chat Messages */}
-            <div className="flex-1 overflow-y-auto mb-4 space-y-4 pr-2">
+            <div className="flex-1 overflow-y-auto mb-4 space-y-4 pr-2" style={{ marginBottom: 'var(--space-4)', '--space-y': 'var(--space-4)' } as React.CSSProperties}>
               {chatMessages.map((message) => (
                 <div
                   key={message.id}
@@ -348,15 +348,16 @@ export default function AIAssistantDialog({
                   <div
                     className={`max-w-[80%] rounded-lg p-3 ${
                       message.sender === "User"
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-800 border border-gray-700 text-gray-100"
+                        ? "bg-cosmic-accent text-white"
+                        : "bg-cosmic-card-secondary border border-cosmic-border text-cosmic-text"
                     }`}
+                    style={{ padding: 'var(--space-3)' }}
                   >
                     {message.isLoading ? (
-                      <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-blue-300 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                        <div className="w-2 h-2 bg-blue-300 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                        <div className="w-2 h-2 bg-blue-300 rounded-full animate-bounce"></div>
+                      <div className="flex items-center space-x-2" style={{ gap: 'var(--space-2)' }}>
+                        <div className="w-2 h-2 bg-cosmic-accent-light rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                        <div className="w-2 h-2 bg-cosmic-accent-light rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                        <div className="w-2 h-2 bg-cosmic-accent-light rounded-full animate-bounce"></div>
                       </div>
                     ) : (
                       <>
@@ -364,27 +365,29 @@ export default function AIAssistantDialog({
                         
                         {/* Suggestion Options */}
                         {message.options && message.options.length > 0 && (
-                          <div className="mt-2 space-y-2">
+                          <div className="mt-2 space-y-2" style={{ marginTop: 'var(--space-2)', '--space-y': 'var(--space-2)' } as React.CSSProperties}>
                             {message.options.map((option, index) => (
                               <div key={index} className="flex">
                                 {message.type && message.type !== "general" ? (
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    className="text-xs text-left justify-start h-auto py-2 bg-gray-700/50 hover:bg-blue-900/50 w-full"
+                                    className="cosmic-button-outline text-xs text-left justify-start h-auto py-2 bg-cosmic-card-hover hover:bg-cosmic-accent-muted border-cosmic-border w-full"
+                                    style={{ padding: 'var(--space-2) var(--space-3)' }}
                                     onClick={() => handleApplySuggestion(option, message.type)}
                                   >
-                                    <Sparkles className="h-3 w-3 mr-2 text-blue-400" />
+                                    <Sparkles className="h-3 w-3 mr-2 text-cosmic-accent" />
                                     <span className="whitespace-normal">{option}</span>
                                   </Button>
                                 ) : (
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    className="text-xs text-left justify-start h-auto py-2 bg-gray-700/50 hover:bg-blue-900/50 w-full"
+                                    className="cosmic-button-outline text-xs text-left justify-start h-auto py-2 bg-cosmic-card-hover hover:bg-cosmic-accent-muted border-cosmic-border w-full"
+                                    style={{ padding: 'var(--space-2) var(--space-3)' }}
                                     onClick={() => handleSuggestionClick(option)}
                                   >
-                                    <Lightbulb className="h-3 w-3 mr-2 text-blue-400" />
+                                    <Lightbulb className="h-3 w-3 mr-2 text-cosmic-accent" />
                                     <span className="whitespace-normal">{option}</span>
                                   </Button>
                                 )}
@@ -400,13 +403,13 @@ export default function AIAssistantDialog({
             </div>
             
             {/* Chat Input */}
-            <div className="border-t border-gray-800 pt-4 pb-2">
-              <div className="flex space-x-2">
+            <div className="border-t border-cosmic-border pt-4 pb-2" style={{ padding: 'var(--space-4) 0 var(--space-2)' }}>
+              <div className="flex gap-2" style={{ gap: 'var(--space-2)' }}>
                 <Input
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
                   placeholder="Ask for resume help or suggestions..."
-                  className="cosmic-input"
+                  className="cosmic-input bg-cosmic-input-bg border-cosmic-border text-cosmic-text"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       handleSendMessage();
@@ -417,6 +420,7 @@ export default function AIAssistantDialog({
                   onClick={handleSendMessage}
                   size="icon"
                   disabled={!chatInput.trim() || aiRequestMutation.isPending}
+                  className="cosmic-button bg-cosmic-accent hover:bg-cosmic-accent-hover text-white"
                 >
                   <Send className="h-4 w-4" />
                 </Button>

@@ -95,6 +95,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import AIAssistant from "@/components/ai-assistant";
+import AIResumeAssistant from "@/components/resume/AIResumeAssistant";
 import CosmicBackground from "@/components/cosmic-background";
 
 // Component for professional summary AI suggestions

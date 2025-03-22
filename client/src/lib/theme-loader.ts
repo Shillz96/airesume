@@ -5,8 +5,13 @@
  * It converts theme.json values into CSS variables that are applied to the document root
  */
 
-import { getThemeConfig, isDarkMode } from './theme-utils';
-import { ThemeAppearance, ThemeVariant, ThemeUpdateParams } from './theme-types';
+import { 
+  getThemeConfig, 
+  isDarkMode, 
+  ThemeAppearance, 
+  ThemeVariant, 
+  ThemeUpdateParams 
+} from './theme-utils';
 
 /**
  * Initialize theme by setting CSS variables from theme.json
@@ -76,13 +81,7 @@ function setVariantProperties(variant: ThemeVariant): void {
  * Update theme configuration
  * @param updates Partial theme updates to apply
  */
-export function updateTheme(updates: {
-  primary?: string;
-  appearance?: ThemeAppearance;
-  variant?: ThemeVariant;
-  radius?: number;
-  colors?: Record<string, string>;
-}): void {
+export function updateTheme(updates: ThemeUpdateParams): void {
   // In a production app, we would update the theme.json file or localStorage here
   // For this demo, we'll just update the CSS variables directly
   

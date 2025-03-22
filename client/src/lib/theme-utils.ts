@@ -6,12 +6,15 @@
  * and provides easy access to colors and other design tokens.
  */
 
-// Define theme types here to avoid circular dependencies
 export type ThemeVariant = 'professional' | 'vibrant' | 'tint' | string;
 export const THEME_VARIANTS = ['professional', 'vibrant', 'tint'] as const;
 
 export type ThemeAppearance = 'light' | 'dark' | 'system';
 export const THEME_APPEARANCES = ['light', 'dark', 'system'] as const;
+
+export interface ThemeChangeEventDetail {
+  isDarkMode: boolean;
+}
 
 export interface ThemeConfig {
   variant: ThemeVariant;
@@ -20,7 +23,21 @@ export interface ThemeConfig {
   radius: number;
   colors: Record<string, string>;
 }
-export const THEME_VARIANTS = ['professional', 'vibrant', 'tint'] as const;
+
+export interface ThemeUpdateParams {
+  primary?: string;
+  appearance?: ThemeAppearance;
+  variant?: ThemeVariant;
+  radius?: number;
+  colors?: Record<string, string>;
+}
+
+// Extend Window interface for our custom theme change event
+declare global {
+  interface WindowEventMap {
+    'theme-change': CustomEvent<ThemeChangeEventDetail>;
+  }
+}
 
 // Import theme.json at build time
 // Note: In production, we would use a more dynamic approach to access theme.json

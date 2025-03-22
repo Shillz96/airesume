@@ -1,151 +1,119 @@
-/* 
-   Card Styles
-   Standardized cosmic-themed card styles
-*/
+/**
+ * Card Styles
+ * 
+ * This file defines styles for card components and containers
+ */
 
-/* Base card class */
+/* Base cosmic card */
 .cosmic-card {
-  background-color: var(--cosmic-background-secondary);
-  border-radius: var(--radius-lg);
+  @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-lg shadow-lg transition-all duration-300;
+  position: relative;
   overflow: hidden;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow-md);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
 }
 
-/* Card with hover effect */
-.cosmic-card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-cosmic-md);
+.cosmic-card:hover {
+  @apply shadow-xl;
+  transform: translateY(-2px);
 }
 
 /* Card with glow effect */
 .cosmic-card-glow {
-  box-shadow: var(--shadow-cosmic-sm);
+  @apply cosmic-card;
 }
 
-.cosmic-card-glow:hover {
-  box-shadow: var(--shadow-cosmic-glow);
+.cosmic-card-glow::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+  filter: blur(10px);
+  z-index: -1;
 }
 
-/* Card sections */
+/* Interactive card that indicates it's clickable */
+.cosmic-card-interactive {
+  @apply cosmic-card cursor-pointer;
+}
+
+.cosmic-card-interactive:hover {
+  @apply bg-white/10;
+}
+
+/* Card with gradient border */
+.cosmic-card-gradient-border {
+  @apply cosmic-card p-0 overflow-hidden;
+  position: relative;
+}
+
+.cosmic-card-gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.cosmic-card-gradient-border-content {
+  padding: var(--space-4);
+}
+
+/* Card with gradient background */
+.cosmic-card-gradient {
+  @apply cosmic-card border-0;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(147, 51, 234, 0.15) 100%);
+}
+
+/* Glass card with stronger blur effect */
+.cosmic-card-glass {
+  @apply cosmic-card;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+}
+
+/* Bordered card */
+.cosmic-card-bordered {
+  @apply cosmic-card border border-white/20;
+}
+
+/* Shadowed card */
+.cosmic-card-shadowed {
+  @apply cosmic-card shadow-xl;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* Card with header */
 .cosmic-card-header {
-  padding: var(--space-card-padding);
-  border-bottom: 1px solid var(--cosmic-border-color);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  @apply mb-4 pb-4 border-b border-white/10 flex items-center justify-between;
 }
 
-.cosmic-card-content {
-  padding: var(--space-card-padding);
-}
-
+/* Card with footer */
 .cosmic-card-footer {
-  padding: var(--space-card-padding);
-  border-top: 1px solid var(--cosmic-border-color);
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: var(--spacing-md);
+  @apply mt-4 pt-4 border-t border-white/10 flex items-center justify-between;
 }
 
-/* Card variations */
-.cosmic-card-primary {
-  border-top: 4px solid var(--cosmic-accent-primary);
-}
-
-.cosmic-card-secondary {
-  border-top: 4px solid var(--cosmic-accent-secondary);
+/* Card states */
+.cosmic-card-active {
+  @apply border-blue-500/50 bg-blue-600/10;
 }
 
 .cosmic-card-success {
-  border-top: 4px solid var(--cosmic-success);
-}
-
-.cosmic-card-danger {
-  border-top: 4px solid var(--cosmic-danger);
+  @apply border-green-500/50 bg-green-600/10;
 }
 
 .cosmic-card-warning {
-  border-top: 4px solid var(--cosmic-warning);
+  @apply border-yellow-500/50 bg-yellow-600/10;
 }
 
-.cosmic-card-info {
-  border-top: 4px solid var(--cosmic-info);
-}
-
-/* Compact card */
-.cosmic-card-compact .cosmic-card-header,
-.cosmic-card-compact .cosmic-card-content,
-.cosmic-card-compact .cosmic-card-footer {
-  padding: var(--spacing-sm);
-}
-
-/* Card with image */
-.cosmic-card-image {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-}
-
-.cosmic-card-image-top {
-  border-top-left-radius: var(--radius-lg);
-  border-top-right-radius: var(--radius-lg);
-}
-
-.cosmic-card-image-bottom {
-  border-bottom-left-radius: var(--radius-lg);
-  border-bottom-right-radius: var(--radius-lg);
-}
-
-/* Card title and subtitle */
-.cosmic-card-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0;
-  line-height: 1.2;
-}
-
-.cosmic-card-subtitle {
-  font-size: 0.875rem;
-  color: var(--cosmic-text-secondary);
-  margin: var(--spacing-xs) 0 0 0;
-  line-height: 1.4;
-}
-
-/* Card actions */
-.cosmic-card-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-/* Horizontal card */
-.cosmic-card-horizontal {
-  display: flex;
-  flex-direction: row;
-}
-
-.cosmic-card-horizontal .cosmic-card-image {
-  width: 180px;
-  height: 100%;
-  min-height: 100%;
-}
-
-.cosmic-card-horizontal .cosmic-card-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Responsive adjustments */
-@media (max-width: 640px) {
-  .cosmic-card-horizontal {
-    flex-direction: column;
-  }
-  
-  .cosmic-card-horizontal .cosmic-card-image {
-    width: 100%;
-    height: 180px;
-  }
+.cosmic-card-error {
+  @apply border-red-500/50 bg-red-600/10;
 }

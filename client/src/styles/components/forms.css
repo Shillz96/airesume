@@ -1,350 +1,122 @@
-/* 
-   Form Styles
-   Standardized cosmic-themed form styles
-*/
+/**
+ * Form Styles
+ * 
+ * This file defines styles for form elements and inputs
+ */
 
-/* Form container */
-.cosmic-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-form-gap);
+/* Form fields and controls */
+.form-group {
+  margin-bottom: var(--space-4);
 }
 
-/* Form groups */
-.cosmic-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-md);
+.input-field, .select-field, .textarea-field {
+  @apply w-full rounded-md bg-white/10 border border-gray-700;
+  padding: var(--space-3) var(--space-4);
 }
 
-/* Form labels */
-.cosmic-form-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--cosmic-text-primary);
-  margin-bottom: var(--spacing-xxs);
+/* Custom checkbox with cosmic styling */
+.cosmic-checkbox {
+  @apply relative h-5 w-5 cursor-pointer appearance-none rounded-md 
+    border border-blue-500/40 bg-blue-900/20 transition-colors;
 }
 
-/* Form inputs */
-.cosmic-form-input {
-  background-color: var(--cosmic-background-input);
-  border: 1px solid var(--cosmic-border-color);
-  border-radius: var(--radius-md);
-  color: var(--cosmic-text-primary);
-  padding: var(--space-input-padding);
-  font-size: 1rem;
-  line-height: 1.5;
-  transition: all 0.2s ease-in-out;
-  width: 100%;
+.cosmic-checkbox:checked {
+  @apply bg-blue-600 border-blue-400;
 }
 
-.cosmic-form-input:focus {
-  outline: none;
-  border-color: var(--cosmic-accent-primary);
-  box-shadow: 0 0 0 2px rgba(var(--cosmic-accent-primary-rgb), 0.2);
-}
-
-.cosmic-form-input::placeholder {
-  color: var(--cosmic-text-tertiary);
-}
-
-.cosmic-form-input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Form text areas */
-.cosmic-form-textarea {
-  background-color: var(--cosmic-background-input);
-  border: 1px solid var(--cosmic-border-color);
-  border-radius: var(--radius-md);
-  color: var(--cosmic-text-primary);
-  padding: var(--space-input-padding);
-  font-size: 1rem;
-  line-height: 1.5;
-  transition: all 0.2s ease-in-out;
-  width: 100%;
-  min-height: 100px;
-  resize: vertical;
-}
-
-.cosmic-form-textarea:focus {
-  outline: none;
-  border-color: var(--cosmic-accent-primary);
-  box-shadow: 0 0 0 2px rgba(var(--cosmic-accent-primary-rgb), 0.2);
-}
-
-.cosmic-form-textarea::placeholder {
-  color: var(--cosmic-text-tertiary);
-}
-
-.cosmic-form-textarea:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Form selects */
-.cosmic-form-select {
-  background-color: var(--cosmic-background-input);
-  border: 1px solid var(--cosmic-border-color);
-  border-radius: var(--radius-md);
-  color: var(--cosmic-text-primary);
-  padding: var(--space-input-padding);
-  font-size: 1rem;
-  line-height: 1.5;
-  transition: all 0.2s ease-in-out;
-  width: 100%;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.5rem center;
-  background-size: 1rem;
-}
-
-.cosmic-form-select:focus {
-  outline: none;
-  border-color: var(--cosmic-accent-primary);
-  box-shadow: 0 0 0 2px rgba(var(--cosmic-accent-primary-rgb), 0.2);
-}
-
-.cosmic-form-select:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Form checkboxes and radios */
-.cosmic-form-checkbox,
-.cosmic-form-radio {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  cursor: pointer;
-}
-
-.cosmic-form-checkbox input[type="checkbox"],
-.cosmic-form-radio input[type="radio"] {
-  appearance: none;
-  width: 1rem;
-  height: 1rem;
-  border: 1px solid var(--cosmic-border-color);
-  background-color: var(--cosmic-background-input);
-  display: grid;
-  place-content: center;
-  transition: all 0.2s ease-in-out;
-}
-
-.cosmic-form-checkbox input[type="checkbox"] {
-  border-radius: var(--radius-sm);
-}
-
-.cosmic-form-radio input[type="radio"] {
-  border-radius: 50%;
-}
-
-.cosmic-form-checkbox input[type="checkbox"]:checked,
-.cosmic-form-radio input[type="radio"]:checked {
-  background-color: var(--cosmic-accent-primary);
-  border-color: var(--cosmic-accent-primary);
-}
-
-.cosmic-form-checkbox input[type="checkbox"]:checked::before {
-  content: "";
-  width: 0.5rem;
-  height: 0.5rem;
-  transform: scale(1);
-  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
-  background-color: white;
-}
-
-.cosmic-form-radio input[type="radio"]:checked::before {
-  content: "";
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  transform: scale(1);
-  background-color: white;
-}
-
-.cosmic-form-checkbox-label,
-.cosmic-form-radio-label {
-  font-size: 0.875rem;
-  line-height: 1.5;
-  color: var(--cosmic-text-primary);
-}
-
-/* Form helper text and error messages */
-.cosmic-form-helper-text {
-  font-size: 0.75rem;
-  color: var(--cosmic-text-secondary);
-  margin-top: var(--spacing-xxs);
-}
-
-.cosmic-form-error-text {
-  font-size: 0.75rem;
-  color: var(--cosmic-danger);
-  margin-top: var(--spacing-xxs);
-}
-
-/* Form validation states */
-.cosmic-form-input.is-valid,
-.cosmic-form-textarea.is-valid,
-.cosmic-form-select.is-valid {
-  border-color: var(--cosmic-success);
-}
-
-.cosmic-form-input.is-invalid,
-.cosmic-form-textarea.is-invalid,
-.cosmic-form-select.is-invalid {
-  border-color: var(--cosmic-danger);
-}
-
-/* Form group inline */
-.cosmic-form-group-inline {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
-.cosmic-form-group-inline .cosmic-form-label {
-  margin-bottom: 0;
-  width: 30%;
-  flex-shrink: 0;
-}
-
-.cosmic-form-group-inline .cosmic-form-input,
-.cosmic-form-group-inline .cosmic-form-select,
-.cosmic-form-group-inline .cosmic-form-textarea {
-  flex: 1;
-}
-
-/* Form actions */
-.cosmic-form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--spacing-sm);
-  margin-top: var(--spacing-lg);
-}
-
-/* Form fieldset */
-.cosmic-form-fieldset {
-  border: 1px solid var(--cosmic-border-color);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
-}
-
-.cosmic-form-legend {
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--cosmic-text-primary);
-  padding: 0 var(--spacing-xs);
-}
-
-/* Form range input */
-.cosmic-form-range {
-  -webkit-appearance: none;
-  width: 100%;
+.cosmic-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%) rotate(45deg);
+  width: 3px;
   height: 6px;
-  border-radius: var(--radius-full);
-  background-color: var(--cosmic-border-color);
-  outline: none;
-  transition: all 0.2s ease-in-out;
+  border-bottom: 2px solid white;
+  border-right: 2px solid white;
 }
 
-.cosmic-form-range::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background-color: var(--cosmic-accent-primary);
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
+.cosmic-checkbox:focus {
+  @apply outline-none ring-2 ring-blue-500/50;
 }
 
-.cosmic-form-range::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background-color: var(--cosmic-accent-primary);
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  border: none;
+/* Custom radio with cosmic styling */
+.cosmic-radio {
+  @apply relative h-5 w-5 cursor-pointer appearance-none rounded-full
+    border border-blue-500/40 bg-blue-900/20 transition-colors;
 }
 
-.cosmic-form-range::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
+.cosmic-radio:checked {
+  @apply bg-blue-900/40 border-blue-400;
 }
 
-.cosmic-form-range::-moz-range-thumb:hover {
-  transform: scale(1.2);
-}
-
-/* Form switch */
-.cosmic-form-switch {
-  position: relative;
-  display: inline-block;
-  width: 36px;
-  height: 20px;
-}
-
-.cosmic-form-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.cosmic-form-switch-slider {
+.cosmic-radio:checked::after {
+  content: '';
   position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--cosmic-border-color);
-  transition: .4s;
-  border-radius: 34px;
-}
-
-.cosmic-form-switch-slider:before {
-  position: absolute;
-  content: "";
-  height: 16px;
-  width: 16px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  transition: .4s;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
+  background-color: #60a5fa;
+  box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
 }
 
-.cosmic-form-switch input:checked + .cosmic-form-switch-slider {
-  background-color: var(--cosmic-accent-primary);
+.cosmic-radio:focus {
+  @apply outline-none ring-2 ring-blue-500/50;
 }
 
-.cosmic-form-switch input:checked + .cosmic-form-switch-slider:before {
-  transform: translateX(16px);
+/* Custom select with cosmic styling */
+.cosmic-select-wrapper {
+  @apply relative;
 }
 
-/* Responsive adjustments */
-@media (max-width: 640px) {
-  .cosmic-form-group-inline {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .cosmic-form-group-inline .cosmic-form-label {
-    width: 100%;
-    margin-bottom: var(--spacing-xxs);
-  }
-  
-  .cosmic-form-actions {
-    flex-direction: column;
-  }
-  
-  .cosmic-form-actions button {
-    width: 100%;
-  }
+.cosmic-select {
+  @apply w-full rounded-md bg-white/10 border border-white/20 text-white 
+    appearance-none pr-8 pl-3 py-2 cursor-pointer;
+}
+
+.cosmic-select-arrow {
+  @apply absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none
+    text-blue-400;
+}
+
+/* Cosmic slider */
+.cosmic-slider {
+  @apply w-full h-2 bg-blue-900/30 rounded-full appearance-none;
+}
+
+.cosmic-slider::-webkit-slider-thumb {
+  @apply appearance-none w-4 h-4 rounded-full bg-blue-500 
+    cursor-pointer shadow-[0_0_5px_rgba(59,130,246,0.7)] border-2 border-white/70;
+}
+
+.cosmic-slider::-moz-range-thumb {
+  @apply appearance-none w-4 h-4 rounded-full bg-blue-500 
+    cursor-pointer shadow-[0_0_5px_rgba(59,130,246,0.7)] border-2 border-white/70;
+}
+
+/* Form label */
+.cosmic-label {
+  @apply block text-sm font-medium text-blue-200 mb-1;
+}
+
+/* Form helper text */
+.cosmic-helper-text {
+  @apply text-xs text-blue-300/70 mt-1;
+}
+
+/* Error state */
+.cosmic-error {
+  @apply text-xs text-red-400 mt-1;
+}
+
+.cosmic-input-error {
+  @apply border-red-500/70 bg-red-900/10;
+}
+
+/* Disabled state */
+.cosmic-input-disabled {
+  @apply opacity-50 cursor-not-allowed;
 }

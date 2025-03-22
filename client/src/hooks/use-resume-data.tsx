@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { useSearchParams } from 'wouter';
+import { useLocation } from 'wouter';
 
 // Resume and related types
 export interface PersonalInfo {
@@ -80,7 +80,16 @@ const initialResume: Resume = {
  */
 export function useResumeData() {
   const { toast } = useToast();
-  const [searchParams] = useSearchParams();
+  const [location] = useLocation();
+  
+  // Parse search parameters manually since wouter doesn't have useSearchParams
+  const getSearchParams = () => {
+    const url = new URL(window.location.href);
+    return {
+      get: (param: string) => url.searchParams.get(param)
+    };
+  };
+  const searchParams = getSearchParams();
 
   // State for the resume data
   const [resume, setResume] = useState<Resume>(initialResume);
@@ -127,7 +136,7 @@ export function useResumeData() {
         template: templateParam
       }));
     }
-  }, [searchParams, toast]);
+  }, [location, toast]);
 
   // Fetch resume data if resumeId exists
   const { data: fetchedResume, error: fetchError } = useQuery({

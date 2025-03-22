@@ -9,6 +9,7 @@ import { GuestModeProvider } from "@/hooks/use-guest-mode";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home-page";
 import ResumeBuilder from "@/pages/resume-builder";
+import RefactoredResumeBuilder from "@/pages/refactored-resume-builder";
 import ResumesPage from "@/pages/resumes-page";
 import JobFinder from "@/pages/job-finder";
 import JobDetails from "@/pages/job-details";
@@ -35,6 +36,7 @@ function Router() {
       <Route path="/" component={LandingPage} />
       <ProtectedRoute path="/dashboard" component={HomePage} />
       <ProtectedRoute path="/resume-builder" component={ResumeBuilder} />
+      <ProtectedRoute path="/refactored-resume-builder" component={RefactoredResumeBuilder} />
       <ProtectedRoute path="/resumes" component={ResumesPage} />
       <ProtectedRoute path="/job-finder" component={JobFinder} />
       <ProtectedRoute path="/job/:id" component={JobDetails} />

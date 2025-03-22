@@ -1,11 +1,37 @@
-import React, { useState, useRef } from "react";
-import { useResumeData } from "@/hooks/use-resume-data";
+import React, { useState, useRef, useEffect } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation, useParams } from "wouter";
 import { useTheme } from "@/contexts/ThemeContext";
-import { cn } from "@/lib/utils";
+
+// Import custom components for resume builder
 import Navbar from "@/components/navbar";
-// Using global cosmic-theme.css instead of CosmicStarfield
-import { CosmicButton } from "@/components/cosmic-button-refactored";
+import ResumeBuilderHeader from "@/components/resume-builder/ResumeBuilderHeader";
+import SummarySuggestions from "@/components/resume-builder/SummarySuggestions";
+import ExperienceSuggestions from "@/components/resume-builder/ExperienceSuggestions";
+import SkillSuggestions from "@/components/resume-builder/SkillSuggestions";
+import TemplateSelector from "@/components/resume-builder/TemplateSelector";
+import ResumePreviewComponent from "@/components/resume-builder/ResumePreviewComponent";
+import AIAssistantDialog from "@/components/resume-builder/AIAssistantDialog";
+
+// Import modular resume section components
+import { PersonalInfoSection } from "@/components/resume/PersonalInfoSection";
+import { ExperienceSection } from "@/components/resume/ExperienceSection";
+import { EducationSection } from "@/components/resume/EducationSection";
+import { SkillsSection } from "@/components/resume/SkillsSection";
+import { ProjectsSection } from "@/components/resume/ProjectsSection";
+
+// Import resume types and hooks
+import { Resume, useResumeData } from "@/hooks/use-resume-data";
+import { 
+  ExperienceItem, 
+  EducationItem, 
+  SkillItem, 
+  ProjectItem 
+} from "@/components/resume-section";
+
+// UI Components
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Dialog,
@@ -14,360 +40,583 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
+// Icons
 import {
   FileText,
   GraduationCap,
   Briefcase,
   Code,
+  Award,
   FolderKanban,
-  Save,
-  Upload,
+  Sparkles,
   Loader2,
-  Maximize2,
-  Printer,
-  Download,
+  Cpu,
   User,
 } from "lucide-react";
 
-// Import our modular resume section components
-import { PersonalInfoSection } from "@/components/resume/PersonalInfoSection";
-import { ExperienceSection } from "@/components/resume/ExperienceSection";
-import { EducationSection } from "@/components/resume/EducationSection";
-import { SkillsSection } from "@/components/resume/SkillsSection";
-import { ProjectsSection } from "@/components/resume/ProjectsSection";
-import ResumeTemplate from "@/components/resume-template";
-
-// Resume preview component using cosmic styling
-function ResumePreviewComponent({ resume, onTemplateChange, onDownload }: { 
-  resume: any; 
-  onTemplateChange: (template: string) => void; 
-  onDownload?: () => void; 
-}) {
+export default function ResumeBuilder() {
+  // Get resumeId from URL params
+  const { resumeId } = useParams();
+  const [location, setLocation] = useLocation();
+  const { toast } = useToast();
   const { isDarkMode } = useTheme();
   
-  return (
-    <div className="cosmic-section relative flex flex-col h-full">
-      <div className="cosmic-section-header mb-4 flex items-center justify-between">
-        <div className="cosmic-section-title flex items-center">
-          <FileText className="w-5 h-5 mr-2 text-cosmic-accent" />
-          <h2 className="cosmic-title text-xl font-semibold">Resume Preview</h2>
-        </div>
-        
-        <div className="cosmic-actions flex space-x-2">
-          <CosmicButton
-            variant="outline"
-            size="sm"
-            onClick={onDownload}
-            iconLeft={<Download className="w-4 h-4" />}
-          >
-            Download
-          </CosmicButton>
-          <CosmicButton
-            variant="outline"
-            size="sm"
-            onClick={() => window.open('/resume-print', '_blank')}
-            iconLeft={<Printer className="w-4 h-4" />}
-          >
-            Print
-          </CosmicButton>
-          <CosmicButton
-            variant="outline"
-            size="sm"
-            onClick={() => window.open('/resume-view', '_blank')}
-            iconLeft={<Maximize2 className="w-4 h-4" />}
-          >
-            Full Screen
-          </CosmicButton>
-        </div>
-      </div>
-      
-      <div className={cn(
-        "cosmic-preview p-6 rounded-lg overflow-hidden flex-grow overflow-y-auto",
-        isDarkMode ? "bg-white" : "bg-white"
-      )}>
-        <ResumeTemplate 
-          resume={resume} 
-          onTemplateChange={onTemplateChange} 
-        />
-      </div>
-    </div>
-  );
-}
+  // Component state
+  const [activeTab, setActiveTab] = useState("personal");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
-export default function ResumeBuilder() {
-  // Use our custom hook for resume data and operations
+  // Import resume data hook functions
   const {
     resume,
-    resumeId,
-    activeSection,
-    setActiveSection,
     isLoading,
-    isDirty,
-    updatePersonalInfo,
-    updateExperienceList,
-    updateEducationList,
-    updateSkillsList,
-    updateProjectsList,
-    updateResumeTemplate,
-    updateResumeTitle,
+    error,
+    setResume,
+    createResumeMutation,
+    updateResumeMutation,
     addExperience,
+    updateExperience,
+    removeExperience,
     addEducation,
+    updateEducation,
+    removeEducation,
     addSkill,
+    updateSkill,
+    removeSkill,
     addProject,
-    saveResume
+    updateProject,
+    removeProject,
   } = useResumeData();
-  
-  const { toast } = useToast();
-  
-  // State for dialogs, file upload, etc.
-  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
-  const [resumeTitle, setResumeTitle] = useState(resume.title || "Untitled Resume");
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  
-  // Currently not refactored functions 
-  const handleFileInputClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
+
+  // Fetch resume data if editing existing resume
+  useEffect(() => {
+    if (resumeId && resumeId !== "new") {
+      queryClient.invalidateQueries({ queryKey: [`/api/resumes/${resumeId}`] });
     }
-  };
-  
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return;
-    
-    const file = e.target.files[0];
-    
-    // Show loading toast
-    toast({
-      title: "Parsing Resume",
-      description: "Analyzing your resume file...",
+  }, [resumeId]);
+
+  // Fetch the selected resume if we have an ID
+  const { data: fetchedResume, isLoading: isResumeLoading } = useQuery({
+    queryKey: [`/api/resumes/${resumeId}`],
+    queryFn: async () => {
+      if (!resumeId || resumeId === "new") return null;
+      const res = await apiRequest("GET", `/api/resumes/${resumeId}`);
+      if (!res.ok) throw new Error("Failed to fetch resume");
+      return res.json();
+    },
+    enabled: !!resumeId && resumeId !== "new",
+  });
+
+  // Update local resume state when fetched resume changes
+  useEffect(() => {
+    if (fetchedResume && fetchedResume.data) {
+      setResume(fetchedResume.data);
+      setIsDirty(false);
+    }
+  }, [fetchedResume, setResume]);
+
+  // Mark as dirty when resume changes
+  useEffect(() => {
+    if (!isResumeLoading && fetchedResume) {
+      setIsDirty(true);
+    }
+  }, [resume, isResumeLoading, fetchedResume]);
+
+  // Handler for resume title change
+  const handleTitleChange = (value: string) => {
+    setResume({
+      ...resume,
+      title: value,
     });
-    
-    // Create FormData object
-    const formData = new FormData();
-    formData.append('file', file);
-    
+    setIsDirty(true);
+  };
+
+  // Handler for personal info changes
+  const handlePersonalInfoChange = (field: string, value: string) => {
+    setResume({
+      ...resume,
+      personalInfo: {
+        ...resume.personalInfo,
+        [field]: value,
+      },
+    });
+    setIsDirty(true);
+  };
+
+  // Handler for template selection
+  const handleTemplateChange = (template: string) => {
+    setResume({
+      ...resume,
+      template,
+    });
+    setIsDirty(true);
+  };
+
+  // Handle saving the resume
+  const handleSaveResume = async () => {
     try {
-      const response = await fetch('/api/resumes/parse', {
-        method: 'POST',
-        body: formData,
-      });
-      
-      if (!response.ok) {
-        throw new Error('Resume parsing failed');
-      }
-      
-      const data = await response.json();
-      
-      if (data && data.success) {
-        // Update the resume with the parsed data
-        // This would need to be handled by our hook in a real implementation
+      if (resumeId && resumeId !== "new") {
+        // Update existing resume
+        await updateResumeMutation.mutateAsync({
+          id: resumeId,
+          resumeData: resume,
+        });
         toast({
-          title: "Resume Parsed Successfully",
-          description: "Your resume information has been extracted.",
+          title: "Resume updated",
+          description: "Your resume has been updated successfully.",
+          variant: "default",
         });
       } else {
-        throw new Error(data.message || 'Resume parsing failed');
+        // Create new resume
+        const result = await createResumeMutation.mutateAsync(resume);
+        if (result?.id) {
+          toast({
+            title: "Resume created",
+            description: "Your new resume has been created successfully.",
+            variant: "default",
+          });
+          // Redirect to the edit page for the new resume
+          setLocation(`/resumes/${result.id}`);
+        }
       }
+      setIsDirty(false);
     } catch (error) {
-      console.error('Error parsing resume:', error);
+      console.error("Error saving resume:", error);
       toast({
-        title: "Error Parsing Resume",
-        description: "We couldn't extract information from your resume file.",
+        title: "Error saving resume",
+        description: "There was a problem saving your resume. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      // Reset the file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+    }
+  };
+
+  // Handle downloading the resume as PDF
+  const handleDownloadResume = () => {
+    if (iframeRef.current) {
+      // Generate the printable HTML content
+      const printContent = generatePrintableHTML(resume);
+      
+      // Access the iframe document
+      const iframeDoc = iframeRef.current.contentDocument;
+      if (iframeDoc) {
+        iframeDoc.open();
+        iframeDoc.write(printContent);
+        iframeDoc.close();
+        
+        // Trigger the print dialog
+        setTimeout(() => {
+          iframeRef.current?.contentWindow?.print();
+        }, 500);
       }
     }
   };
-  
-  const handleSave = () => {
-    updateResumeTitle(resumeTitle);
-    saveResume();
-    setSaveDialogOpen(false);
-  };
-  
-  const { isDarkMode } = useTheme();
-  
-  return (
-    <div className="min-h-screen flex flex-col cosmic-page">
-      <Navbar />
-      <div className="container px-4 py-8 mx-auto max-w-7xl flex-grow relative z-10">
-        {/* Using global cosmic-theme.css background instead of local component */}
-        
-        {/* Page Title */}
-        <div className="cosmic-page-header mb-6 flex justify-between items-center relative z-10">
-          <h1 className="cosmic-page-title text-3xl font-bold tracking-tight">
-            Resume Builder
-          </h1>
-          
-          <CosmicButton
-            onClick={() => setSaveDialogOpen(true)}
-            variant="primary"
-            isLoading={isLoading}
-            iconLeft={isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          >
-            {isDirty ? "Save Resume*" : "Save Resume"}
-          </CosmicButton>
+
+  // Function to generate printable HTML
+  function generatePrintableHTML(resumeData: Resume): string {
+    // Choose the template based on the selected template
+    let templateHTML = "";
+    
+    // Create the HTML content with the appropriate template
+    switch (resumeData.template) {
+      case "professional":
+        templateHTML = `<div id="professional-template">
+          <!-- Professional template HTML -->
+          <h1>${resumeData.personalInfo.firstName} ${resumeData.personalInfo.lastName}</h1>
+          <p>${resumeData.personalInfo.email} | ${resumeData.personalInfo.phone}</p>
+          <h2>${resumeData.personalInfo.headline}</h2>
+          <p>${resumeData.personalInfo.summary}</p>
+          <!-- Sections would be added here -->
+        </div>`;
+        break;
+      default:
+        templateHTML = `<div id="default-template">
+          <!-- Default template HTML -->
+          <h1>${resumeData.personalInfo.firstName} ${resumeData.personalInfo.lastName}</h1>
+          <p>${resumeData.personalInfo.email} | ${resumeData.personalInfo.phone}</p>
+          <h2>${resumeData.personalInfo.headline}</h2>
+          <p>${resumeData.personalInfo.summary}</p>
+          <!-- Sections would be added here -->
+        </div>`;
+    }
+    
+    // Return the complete HTML document
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${resumeData.title || "Resume"}</title>
+        <style>
+          /* Print-specific styles would be added here */
+          body { font-family: Arial, sans-serif; }
+          h1 { color: #333; }
+          /* More styles based on template */
+        </style>
+      </head>
+      <body>
+        ${templateHTML}
+      </body>
+      </html>
+    `;
+  }
+
+  // If still loading, show a loading indicator
+  if (isLoading || isResumeLoading) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+        <span className="ml-2 text-blue-200">Loading resume...</span>
+      </div>
+    );
+  }
+
+  // If there's an error, show an error message
+  if (error) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-red-500">
+          <p>Error loading resume. Please try again.</p>
         </div>
-        
-        {/* Main content with tabs */}
-        <div className="cosmic-container mt-6 relative z-10 backdrop-blur-sm rounded-lg overflow-hidden border">
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-900">
+      <Navbar />
+      
+      {/* Resume Builder Header */}
+      <ResumeBuilderHeader
+        resumeTitle={resume.title}
+        onTitleChange={handleTitleChange}
+        onSave={handleSaveResume}
+        onDownload={handleDownloadResume}
+        onOpenAIAssistant={() => setIsDialogOpen(true)}
+        isSaving={updateResumeMutation.isPending || createResumeMutation.isPending}
+        isDirty={isDirty}
+      />
+      
+      <div className="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Resume Editor Panel */}
+        <div className="lg:col-span-2 space-y-6">
           <Tabs 
-            value={activeSection} 
-            onValueChange={setActiveSection}
-            className="cosmic-tabs"
+            defaultValue="personal" 
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
           >
-            <TabsList className="cosmic-tabs-list">
-              <TabsTrigger value="profile" className="cosmic-tab-trigger">
-                <User className="h-4 w-4 mr-2" />
-                Contact
+            <TabsList className="bg-slate-800/70 p-1 rounded-lg backdrop-blur-sm w-full flex overflow-x-auto">
+              <TabsTrigger
+                value="personal"
+                className="flex items-center data-[state=active]:bg-indigo-500/20 data-[state=active]:text-indigo-200"
+              >
+                <User className="h-4 w-4 mr-1" />
+                <span className="truncate">Personal</span>
               </TabsTrigger>
-              <TabsTrigger value="experience" className="cosmic-tab-trigger">
-                <Briefcase className="h-4 w-4 mr-2" />
-                Experience
+              <TabsTrigger
+                value="experience"
+                className="flex items-center data-[state=active]:bg-indigo-500/20 data-[state=active]:text-indigo-200"
+              >
+                <Briefcase className="h-4 w-4 mr-1" />
+                <span className="truncate">Experience</span>
               </TabsTrigger>
-              <TabsTrigger value="education" className="cosmic-tab-trigger">
-                <GraduationCap className="h-4 w-4 mr-2" />
-                Education
+              <TabsTrigger
+                value="education"
+                className="flex items-center data-[state=active]:bg-indigo-500/20 data-[state=active]:text-indigo-200"
+              >
+                <GraduationCap className="h-4 w-4 mr-1" />
+                <span className="truncate">Education</span>
               </TabsTrigger>
-              <TabsTrigger value="skills" className="cosmic-tab-trigger">
-                <Code className="h-4 w-4 mr-2" />
-                Skills
+              <TabsTrigger
+                value="skills"
+                className="flex items-center data-[state=active]:bg-indigo-500/20 data-[state=active]:text-indigo-200"
+              >
+                <Award className="h-4 w-4 mr-1" />
+                <span className="truncate">Skills</span>
               </TabsTrigger>
-              <TabsTrigger value="projects" className="cosmic-tab-trigger">
-                <FolderKanban className="h-4 w-4 mr-2" />
-                Projects
+              <TabsTrigger
+                value="projects"
+                className="flex items-center data-[state=active]:bg-indigo-500/20 data-[state=active]:text-indigo-200"
+              >
+                <FolderKanban className="h-4 w-4 mr-1" />
+                <span className="truncate">Projects</span>
               </TabsTrigger>
-              <TabsTrigger value="preview" className="cosmic-tab-trigger">
-                <FileText className="h-4 w-4 mr-2" />
-                Preview
+              <TabsTrigger
+                value="templates"
+                className="flex items-center data-[state=active]:bg-indigo-500/20 data-[state=active]:text-indigo-200"
+              >
+                <FileText className="h-4 w-4 mr-1" />
+                <span className="truncate">Templates</span>
               </TabsTrigger>
             </TabsList>
-            
-            {/* Tab content */}
-            <div className="p-6">
-              {/* Personal Info Section */}
-              <TabsContent value="profile">
-                <PersonalInfoSection 
-                  personalInfo={resume.personalInfo} 
-                  resumeId={resumeId || undefined}
-                  onUpdate={updatePersonalInfo}
-                  onFileUpload={handleFileInputClick}
-                  showUploadCard={true}
-                />
-                
-                {/* Hidden file input for resume upload */}
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileUpload}
-                  accept=".pdf,.docx,.doc,.txt"
-                  className="hidden"
-                />
+
+            <div className="mt-6">
+              <TabsContent value="personal">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-8">
+                    <PersonalInfoSection
+                      personalInfo={resume.personalInfo}
+                      resumeId={resumeId?.toString()}
+                      onUpdate={handlePersonalInfoChange}
+                    />
+                  </div>
+                  <div className="lg:col-span-4">
+                    <div className="bg-slate-800/50 rounded-lg border border-blue-500/20 p-4">
+                      <h3 className="text-blue-100 font-medium flex items-center mb-3">
+                        <Sparkles className="h-4 w-4 mr-2 text-blue-300" />
+                        AI Summary Suggestions
+                      </h3>
+                      <SummarySuggestions 
+                        resumeId={resumeId?.toString() || ""} 
+                        onApply={(summary) => handlePersonalInfoChange("summary", summary)} 
+                      />
+                    </div>
+                  </div>
+                </div>
               </TabsContent>
-              
-              {/* Experience Section */}
+
               <TabsContent value="experience">
-                <ExperienceSection 
-                  experiences={resume.experience}
-                  resumeId={resumeId || undefined}
-                  onUpdate={updateExperienceList}
-                  onAdd={addExperience}
-                />
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-8">
+                    <ExperienceSection
+                      experiences={resume.experience}
+                      resumeId={resumeId?.toString()}
+                      onUpdate={(experiences) => {
+                        setResume({ ...resume, experience: experiences });
+                        setIsDirty(true);
+                      }}
+                      onAdd={addExperience}
+                    />
+                  </div>
+                  <div className="lg:col-span-4">
+                    <div className="bg-slate-800/50 rounded-lg border border-blue-500/20 p-4">
+                      <h3 className="text-blue-100 font-medium flex items-center mb-3">
+                        <Sparkles className="h-4 w-4 mr-2 text-blue-300" />
+                        AI Bullet Point Suggestions
+                      </h3>
+                      <ExperienceSuggestions 
+                        resumeId={resumeId?.toString() || ""} 
+                        jobTitle={resume.experience[0]?.title || ""}
+                        onApply={(bullet) => {
+                          // Add to the first experience item's description
+                          if (resume.experience.length > 0) {
+                            const updated = [...resume.experience];
+                            updated[0] = {
+                              ...updated[0],
+                              description: updated[0].description 
+                                ? updated[0].description + "\n• " + bullet
+                                : "• " + bullet
+                            };
+                            setResume({ ...resume, experience: updated });
+                            setIsDirty(true);
+                          }
+                        }} 
+                      />
+                    </div>
+                  </div>
+                </div>
               </TabsContent>
-              
-              {/* Education Section */}
+
               <TabsContent value="education">
-                <EducationSection
-                  education={resume.education}
-                  resumeId={resumeId || undefined}
-                  onUpdate={updateEducationList}
-                  onAdd={addEducation}
-                />
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-8">
+                    <EducationSection
+                      education={resume.education}
+                      resumeId={resumeId?.toString()}
+                      onUpdate={(education) => {
+                        setResume({ ...resume, education });
+                        setIsDirty(true);
+                      }}
+                      onAdd={addEducation}
+                    />
+                  </div>
+                  <div className="lg:col-span-4">
+                    <div className="bg-slate-800/50 rounded-lg border border-blue-500/20 p-4 sticky top-20">
+                      <h3 className="text-blue-100 font-medium flex items-center">
+                        <Cpu className="h-4 w-4 mr-2 text-blue-300" />
+                        AI Resume Assistant
+                      </h3>
+                      <p className="text-blue-300 text-sm mt-2">
+                        Need help with your education section? The AI assistant can help you craft compelling descriptions and improve your educational achievements.
+                      </p>
+                      <div className="mt-4">
+                        <button
+                          onClick={() => setIsDialogOpen(true)}
+                          className="w-full py-2 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-md flex items-center justify-center"
+                        >
+                          <Cpu className="h-4 w-4 mr-2" />
+                          Open AI Assistant
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </TabsContent>
-              
-              {/* Skills Section */}
+
               <TabsContent value="skills">
-                <SkillsSection
-                  skills={resume.skills}
-                  resumeId={resumeId || undefined}
-                  onUpdate={updateSkillsList}
-                  onAdd={addSkill}
-                />
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-8">
+                    <SkillsSection
+                      skills={resume.skills}
+                      resumeId={resumeId?.toString()}
+                      onUpdate={(skills) => {
+                        setResume({ ...resume, skills });
+                        setIsDirty(true);
+                      }}
+                      onAdd={addSkill}
+                    />
+                  </div>
+                  <div className="lg:col-span-4">
+                    <div className="bg-slate-800/50 rounded-lg border border-blue-500/20 p-4">
+                      <h3 className="text-blue-100 font-medium flex items-center mb-3">
+                        <Sparkles className="h-4 w-4 mr-2 text-blue-300" />
+                        AI Skill Suggestions
+                      </h3>
+                      <SkillSuggestions 
+                        resumeId={resumeId?.toString() || ""} 
+                        jobTitle={resume.personalInfo.headline || resume.experience[0]?.title}
+                        onApply={(skill) => {
+                          addSkill();
+                          const newSkills = [...resume.skills];
+                          newSkills[newSkills.length - 1] = {
+                            ...newSkills[newSkills.length - 1],
+                            name: skill,
+                            proficiency: 3
+                          };
+                          setResume({ ...resume, skills: newSkills });
+                          setIsDirty(true);
+                        }} 
+                      />
+                    </div>
+                  </div>
+                </div>
               </TabsContent>
-              
-              {/* Projects Section */}
+
               <TabsContent value="projects">
-                <ProjectsSection
-                  projects={resume.projects}
-                  resumeId={resumeId || undefined}
-                  onUpdate={updateProjectsList}
-                  onAdd={addProject}
-                />
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-8">
+                    <ProjectsSection
+                      projects={resume.projects}
+                      resumeId={resumeId?.toString()}
+                      onUpdate={(projects) => {
+                        setResume({ ...resume, projects });
+                        setIsDirty(true);
+                      }}
+                      onAdd={addProject}
+                    />
+                  </div>
+                  <div className="lg:col-span-4">
+                    <div className="bg-slate-800/50 rounded-lg border border-blue-500/20 p-4 sticky top-20">
+                      <h3 className="text-blue-100 font-medium flex items-center">
+                        <Code className="h-4 w-4 mr-2 text-blue-300" />
+                        Project Tips
+                      </h3>
+                      <ul className="text-blue-300 text-sm mt-3 space-y-2">
+                        <li className="flex items-start">
+                          <span className="text-blue-400 mr-2">•</span>
+                          Include measurable achievements and outcomes
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-blue-400 mr-2">•</span>
+                          List technologies and tools you used
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-blue-400 mr-2">•</span>
+                          Add links to live demos or repositories
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-blue-400 mr-2">•</span>
+                          Describe your role and contributions
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-blue-400 mr-2">•</span>
+                          Highlight unique challenges you overcame
+                        </li>
+                      </ul>
+                      <div className="mt-4">
+                        <button
+                          onClick={() => setIsDialogOpen(true)}
+                          className="w-full py-2 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-md flex items-center justify-center"
+                        >
+                          <Cpu className="h-4 w-4 mr-2" />
+                          Open AI Assistant
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </TabsContent>
-              
-              {/* Preview Section */}
-              <TabsContent value="preview">
-                <ResumePreviewComponent
-                  resume={resume}
-                  onTemplateChange={updateResumeTemplate}
-                  onDownload={() => {
-                    // Would implement download functionality here
-                    toast({
-                      title: "Download Started",
-                      description: "Your resume is being prepared for download.",
-                    });
-                  }}
-                />
+
+              <TabsContent value="templates">
+                <div className="bg-slate-800/50 p-6 rounded-lg border border-blue-500/20">
+                  <h2 className="text-xl text-blue-50 font-semibold mb-4">Choose a Template</h2>
+                  <p className="text-blue-300 mb-6">
+                    Select a template that best showcases your experience and fits the job you're applying for.
+                  </p>
+                  <TemplateSelector 
+                    selectedTemplate={resume.template} 
+                    onTemplateChange={handleTemplateChange} 
+                  />
+                </div>
               </TabsContent>
             </div>
           </Tabs>
         </div>
+
+        {/* Resume Preview Panel */}
+        <div className="lg:col-span-1 h-[calc(100vh-200px)] sticky top-20">
+          <ResumePreviewComponent 
+            resume={resume} 
+            onTemplateChange={handleTemplateChange}
+            onDownload={handleDownloadResume}
+          />
+        </div>
       </div>
-      
-      {/* Save Dialog */}
-      <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
-        <DialogContent className="cosmic-dialog-content">
-          <DialogHeader>
-            <DialogTitle className="cosmic-dialog-title">Save Resume</DialogTitle>
-            <DialogDescription className="cosmic-dialog-description">
-              Give your resume a name before saving.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="cosmic-form-group py-4">
-            <Label htmlFor="resume-title" className="cosmic-label">Resume Title</Label>
-            <Input
-              id="resume-title"
-              value={resumeTitle}
-              onChange={(e) => setResumeTitle(e.target.value)}
-              placeholder="e.g., Software Engineer Resume"
-              className="cosmic-input mt-2"
-            />
-          </div>
-          
-          <DialogFooter className="cosmic-dialog-footer">
-            <CosmicButton
-              variant="outline"
-              onClick={() => setSaveDialogOpen(false)}
-            >
-              Cancel
-            </CosmicButton>
-            <CosmicButton
-              variant="primary"
-              onClick={handleSave}
-            >
-              Save Resume
-            </CosmicButton>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+
+      {/* Hidden iframe for printing */}
+      <iframe
+        ref={iframeRef}
+        style={{ display: "none" }}
+        title="Resume Print Frame"
+      />
+
+      {/* AI Assistant Dialog */}
+      <AIAssistantDialog
+        resumeId={resumeId?.toString()}
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onApplySummary={(summary) => handlePersonalInfoChange("summary", summary)}
+        onApplyBulletPoint={(bullet) => {
+          // Add to the first experience item's description
+          if (resume.experience.length > 0) {
+            const updated = [...resume.experience];
+            updated[0] = {
+              ...updated[0],
+              description: updated[0].description 
+                ? updated[0].description + "\n• " + bullet
+                : "• " + bullet
+            };
+            setResume({ ...resume, experience: updated });
+            setIsDirty(true);
+          }
+        }}
+        onApplySkill={(skill) => {
+          addSkill();
+          const newSkills = [...resume.skills];
+          newSkills[newSkills.length - 1] = {
+            ...newSkills[newSkills.length - 1],
+            name: skill,
+            proficiency: 3
+          };
+          setResume({ ...resume, skills: newSkills });
+          setIsDirty(true);
+        }}
+        resume={resume}
+        activeTab={activeTab}
+      />
     </div>
   );
 }

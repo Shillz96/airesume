@@ -90,88 +90,89 @@ export function ExperienceSection({
   };
 
   return (
-    <div className="cosmic-card border border-white/10 bg-black/30 p-6 rounded-lg">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-2">
-          <Briefcase className="h-5 w-5 text-blue-400" />
-          <h2 className="text-lg font-medium text-white">Experience</h2>
+    <div className="cosmic-section p-6 rounded-lg" style={{ padding: 'var(--space-6)' }}>
+      <div className="flex justify-between items-center mb-6" style={{ marginBottom: 'var(--space-6)' }}>
+        <div className="cosmic-profile-header flex items-center gap-2" style={{ gap: 'var(--space-2)' }}>
+          <Briefcase className="h-5 w-5 text-cosmic-accent" />
+          <h2 className="text-lg font-medium text-cosmic-text">Experience</h2>
         </div>
         <Button
           variant="outline"
           size="sm"
-          className="border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
+          className="cosmic-button-outline border-cosmic-accent/30 bg-cosmic-accent/10 text-cosmic-accent hover:bg-cosmic-accent/20"
           onClick={startAdding}
           disabled={isAdding}
         >
-          <Plus className="h-4 w-4 mr-1" />
+          <Plus className="h-4 w-4 mr-1" style={{ marginRight: 'var(--space-1)' }} />
           Add Experience
         </Button>
       </div>
       
       {/* Experience Form (editing or adding) */}
       {(isAdding || editingId) && (
-        <Card className="mb-6 bg-gray-800/50 border-gray-700">
-          <CardContent className="pt-6">
-            <div className="grid gap-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="title" className="text-gray-200">Job Title</Label>
+        <Card className="cosmic-card mb-6 bg-cosmic-card-bg border-cosmic-border" style={{ marginBottom: 'var(--space-6)' }}>
+          <CardContent className="cosmic-card-content pt-6" style={{ paddingTop: 'var(--space-6)' }}>
+            <div className="grid gap-4" style={{ gap: 'var(--space-4)' }}>
+              <div className="grid grid-cols-2 gap-4" style={{ gap: 'var(--space-4)' }}>
+                <div className="cosmic-form-group">
+                  <Label htmlFor="title" className="cosmic-form-label text-cosmic-text-secondary mb-1" style={{ marginBottom: 'var(--space-1)' }}>Job Title</Label>
                   <Input
                     id="title"
                     value={formData.title}
                     onChange={e => handleChange('title', e.target.value)}
-                    className="cosmic-input mt-1"
+                    className="cosmic-form-input w-full bg-cosmic-input-bg border-cosmic-border text-cosmic-text"
                     placeholder="e.g., Software Engineer"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="company" className="text-gray-200">Company</Label>
+                <div className="cosmic-form-group">
+                  <Label htmlFor="company" className="cosmic-form-label text-cosmic-text-secondary mb-1" style={{ marginBottom: 'var(--space-1)' }}>Company</Label>
                   <Input
                     id="company"
                     value={formData.company}
                     onChange={e => handleChange('company', e.target.value)}
-                    className="cosmic-input mt-1"
+                    className="cosmic-form-input w-full bg-cosmic-input-bg border-cosmic-border text-cosmic-text"
                     placeholder="e.g., TechCorp Inc."
                   />
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="startDate" className="text-gray-200">Start Date</Label>
+              <div className="grid grid-cols-2 gap-4" style={{ gap: 'var(--space-4)' }}>
+                <div className="cosmic-form-group">
+                  <Label htmlFor="startDate" className="cosmic-form-label text-cosmic-text-secondary mb-1" style={{ marginBottom: 'var(--space-1)' }}>Start Date</Label>
                   <Input
                     id="startDate"
                     type="month"
                     value={formData.startDate}
                     onChange={e => handleChange('startDate', e.target.value)}
-                    className="cosmic-input mt-1"
+                    className="cosmic-form-input w-full bg-cosmic-input-bg border-cosmic-border text-cosmic-text"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="endDate" className="text-gray-200">End Date</Label>
+                <div className="cosmic-form-group">
+                  <Label htmlFor="endDate" className="cosmic-form-label text-cosmic-text-secondary mb-1" style={{ marginBottom: 'var(--space-1)' }}>End Date</Label>
                   <Input
                     id="endDate"
                     type="month"
                     value={formData.endDate}
                     onChange={e => handleChange('endDate', e.target.value)}
-                    className="cosmic-input mt-1"
+                    className="cosmic-form-input w-full bg-cosmic-input-bg border-cosmic-border text-cosmic-text"
                     placeholder="Present (if currently employed)"
                   />
                 </div>
               </div>
               
-              <div>
-                <div className="flex justify-between items-center">
-                  <Label htmlFor="description" className="text-gray-200">
+              <div className="cosmic-form-group">
+                <div className="flex justify-between items-center mb-1" style={{ marginBottom: 'var(--space-1)' }}>
+                  <Label htmlFor="description" className="cosmic-form-label text-cosmic-text-secondary">
                     Description
                   </Label>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="border-blue-500/30 text-blue-400 hover:bg-blue-900/20 px-2 h-7"
+                    className="cosmic-button-outline text-cosmic-accent hover:bg-cosmic-accent/10 px-2 h-7"
                     onClick={generateBulletPoints}
+                    style={{ padding: '0 var(--space-2)', height: '1.75rem' }}
                   >
-                    <Sparkles className="h-4 w-4 mr-1" />
+                    <Sparkles className="h-4 w-4 mr-1" style={{ marginRight: 'var(--space-1)' }} />
                     Generate Bullet Points
                   </Button>
                 </div>
@@ -179,26 +180,26 @@ export function ExperienceSection({
                   id="description"
                   value={formData.description}
                   onChange={e => handleChange('description', e.target.value)}
-                  className="cosmic-textarea mt-1"
+                  className="cosmic-form-textarea w-full bg-cosmic-input-bg border-cosmic-border text-cosmic-text"
                   placeholder="Describe your responsibilities, achievements, and impact. Use bullet points starting with strong action verbs."
                   rows={5}
                 />
-                <div className="text-xs text-gray-400 mt-1">
+                <div className="text-xs text-cosmic-text-secondary mt-1" style={{ marginTop: 'var(--space-1)' }}>
                   Pro tip: Use bullet points and quantify achievements with metrics when possible.
                 </div>
               </div>
               
-              <div className="flex justify-end space-x-2 mt-2">
+              <div className="flex justify-end space-x-2 mt-4" style={{ gap: 'var(--space-2)', marginTop: 'var(--space-4)' }}>
                 <Button 
                   variant="outline" 
                   onClick={cancelEditing}
-                  className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                  className="cosmic-button-subtle border-cosmic-border text-cosmic-text-secondary hover:bg-cosmic-hover"
                 >
                   Cancel
                 </Button>
                 <Button 
                   onClick={saveExperience}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="cosmic-button bg-cosmic-accent hover:bg-cosmic-accent-hover text-white"
                 >
                   Save
                 </Button>
@@ -209,47 +210,50 @@ export function ExperienceSection({
       )}
       
       {/* List of Experience Items */}
-      <div className="space-y-4">
+      <div className="cosmic-experience-list space-y-4" style={{ '--space-y': 'var(--space-4)' } as React.CSSProperties}>
         {experiences.length === 0 && !isAdding ? (
-          <div className="text-center py-6 text-gray-400">
-            <Briefcase className="h-10 w-10 mx-auto mb-2 opacity-50" />
+          <div className="cosmic-empty-state text-center py-6 text-cosmic-text-secondary" style={{ padding: 'var(--space-6) 0' }}>
+            <Briefcase className="h-10 w-10 mx-auto mb-2 opacity-50" style={{ margin: '0 auto', marginBottom: 'var(--space-2)' }} />
             <p>No work experience added yet. Add your professional experience to strengthen your resume.</p>
           </div>
         ) : (
           experiences.map(item => (
             <div 
               key={item.id} 
-              className={`cosmic-experience-item ${editingId === item.id ? 'ring-2 ring-blue-500' : ''}`}
+              className={`cosmic-experience-item bg-cosmic-card-secondary/20 border border-cosmic-border rounded-md p-4 hover:bg-cosmic-card-hover transition-colors ${editingId === item.id ? 'ring-2 ring-cosmic-accent' : ''}`}
+              style={{ padding: 'var(--space-4)' }}
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="font-semibold text-white">{item.title}</h3>
-                  <div className="text-blue-400">{item.company}</div>
-                  <div className="text-gray-400 text-sm">
+                  <h3 className="font-semibold text-cosmic-text">{item.title}</h3>
+                  <div className="text-cosmic-accent">{item.company}</div>
+                  <div className="text-cosmic-text-secondary text-sm">
                     {item.startDate} - {item.endDate || "Present"}
                   </div>
                 </div>
-                <div className="cosmic-item-actions">
+                <div className="cosmic-item-actions flex space-x-1" style={{ gap: 'var(--space-1)' }}>
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="cosmic-item-button"
+                    className="cosmic-item-button h-7 w-7 rounded-full hover:bg-cosmic-hover"
                     onClick={() => startEditing(item)}
+                    style={{ height: '1.75rem', width: '1.75rem' }}
                   >
-                    <Edit className="h-4 w-4" />
+                    <Edit className="h-3.5 w-3.5 text-cosmic-accent" />
                   </Button>
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="cosmic-item-button cosmic-item-button-delete"
+                    className="cosmic-item-button h-7 w-7 rounded-full hover:bg-cosmic-hover"
                     onClick={() => deleteExperience(item.id)}
+                    style={{ height: '1.75rem', width: '1.75rem' }}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-3.5 w-3.5 text-cosmic-destructive" />
                   </Button>
                 </div>
               </div>
               {item.description && (
-                <div className="mt-2 text-gray-300 text-sm whitespace-pre-line">
+                <div className="mt-2 text-cosmic-text-secondary text-sm whitespace-pre-line" style={{ marginTop: 'var(--space-2)' }}>
                   {item.description}
                 </div>
               )}

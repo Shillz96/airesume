@@ -1,9 +1,16 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
+/**
+ * CosmicBackground Component
+ * 
+ * This component creates a dynamic and animated cosmic-themed background
+ * with stars, shooting stars, and nebula effects.
+ * 
+ * The styles are defined in animations.css, and this component manages
+ * the dynamic elements like shooting stars.
+ */
 export default function CosmicBackground() {
   const [isClient, setIsClient] = useState(false);
-  // We are not using separate animation styles to avoid injection issues
-  // Instead, we'll use the CSS file entries
 
   // Create stars manually to ensure they're visible
   const generateStars = () => {

@@ -2719,25 +2719,17 @@ export default function ResumeBuilder() {
                 onValueChange={setActiveSection}
                 className="w-full cosmic-tabs"
               >
-                <TabsList className="bg-transparent w-full justify-start mb-1 p-0 space-x-1">
+                <TabsList className="cosmic-tabs-list">
                   <TabsTrigger
                     value="profile"
-                    className={`${
-                      activeSection === "profile"
-                        ? "bg-blue-600/50 text-white border-b-2 border-blue-400"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
-                    } font-medium transition-all duration-200`}
+                    className="cosmic-tab-trigger"
                   >
                     <FileText className="h-4 w-4 mr-2" />
                     PROFILE
                   </TabsTrigger>
                   <TabsTrigger
                     value="experience"
-                    className={`${
-                      activeSection === "experience"
-                        ? "bg-blue-600/50 text-white border-b-2 border-blue-400"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
-                    } font-medium transition-all duration-200`}
+                    className="cosmic-tab-trigger"
                   >
                     <Briefcase className="h-4 w-4 mr-2" />
                     EXPERIENCE

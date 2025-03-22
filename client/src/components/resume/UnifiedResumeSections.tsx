@@ -1,1159 +1,1054 @@
-import { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { CosmicButton } from '@/components/cosmic-button-refactored';
-import { Badge } from '@/components/ui/badge';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { cn } from '@/lib/utils';
-import { useTheme } from '@/contexts/ThemeContext';
-import { getCosmicColor } from '@/lib/theme-utils';
+import React, { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Slider } from "@/components/ui/slider";
+import { cn } from "@/lib/utils";
 import {
-  User,
-  Mail,
-  Phone,
-  Briefcase,
-  CheckIcon,
-  Upload,
+  Pencil,
+  Trash2,
   Plus,
-  Trash2 as Trash,
-  Edit,
-  Save,
-  FolderGit2,
-  Link as LinkIcon,
-  X,
-  GraduationCap,
-  Calendar,
-  Building,
-  School,
-  Wrench,
-  Star
-} from 'lucide-react';
+  CheckCircle,
+  XCircle,
+  GripVertical,
+  Calculator,
+} from "lucide-react";
+import RichTextEditor from "@/components/rich-text-editor";
 
-import {
-  PersonalInfo,
-  ExperienceItem,
-  EducationItem,
-  SkillItem,
-  ProjectItem
-} from '@/hooks/use-resume-data';
-
-/* =========================== SHARED COMPONENTS =========================== */
-
-interface SectionHeaderProps {
-  title: string;
-  icon: React.ReactNode;
-  onAdd?: () => void;
-  addButtonText?: string;
-  className?: string;
-}
-
-export function SectionHeader({ title, icon, onAdd, addButtonText = 'Add', className = '' }: SectionHeaderProps) {
-  return (
-    <div className={`flex justify-between items-center resume-mb-4 ${className}`}>
-      <div className="flex items-center resume-gap-2">
-        {icon && <span className="text-resume-text-accent">{icon}</span>}
-        <h3 className="font-semibold text-lg text-resume-text-primary">{title}</h3>
-      </div>
-      {onAdd && (
-        <CosmicButton
-          size="sm"
-          variant="outline"
-          onClick={onAdd}
-          iconLeft={<Plus className="h-4 w-4" />}
-          withGlow
-        >
-          {addButtonText}
-        </CosmicButton>
-      )}
+// Shared Components
+export const SectionHeader = ({
+  title,
+  subtitle,
+  actions,
+}: {
+  title: React.ReactNode;
+  subtitle?: React.ReactNode;
+  actions?: React.ReactNode;
+}) => (
+  <div className="cosmic-section-header flex justify-between items-center mb-space-4 text-white">
+    <div>
+      <h3 className="text-lg font-medium text-white flex items-center">
+        {title}
+      </h3>
+      {subtitle && <p className="text-sm text-blue-300 mt-1">{subtitle}</p>}
     </div>
-  );
-}
+    {actions && <div className="flex space-x-2">{actions}</div>}
+  </div>
+);
 
-interface SectionCardProps {
-  children: React.ReactNode;
-  className?: string;
-  isEditing?: boolean;
-  withHoverEffect?: boolean;
-}
-
-export function SectionCard({ 
-  children, 
-  className = '', 
-  isEditing = false, 
-  withHoverEffect = true 
-}: SectionCardProps) {
-  return (
-    <div 
-      className={`cosmic-panel resume-p-4 resume-mb-4 backdrop-blur-sm ${withHoverEffect ? 'cosmic-card-hoverable cosmic-card-gradient' : ''} ${
-        isEditing ? 'border-primary/30 bg-primary/10' : ''
-      } ${className}`}
-    >
-      {children}
-    </div>
-  );
-}
-
-interface ItemActionsProps {
+export const ItemActions = ({
+  onEdit,
+  onDelete,
+  isEditing = false,
+  onCancel,
+  onSave,
+}: {
   onEdit?: () => void;
   onDelete?: () => void;
-  onCopy?: () => void;
-  onSave?: () => void;
   isEditing?: boolean;
+  onCancel?: () => void;
+  onSave?: () => void;
+}) => (
+  <div className="flex items-center space-x-1">
+    {isEditing ? (
+      <>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-green-500 hover:text-green-400 hover:bg-green-500/10"
+          onClick={onSave}
+        >
+          <CheckCircle className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-red-500 hover:text-red-400 hover:bg-red-500/10"
+          onClick={onCancel}
+        >
+          <XCircle className="h-4 w-4" />
+        </Button>
+      </>
+    ) : (
+      <>
+        {onEdit && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
+            onClick={onEdit}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+        )}
+        {onDelete && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+            onClick={onDelete}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        )}
+      </>
+    )}
+  </div>
+);
+
+export const ResumePanel = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
   className?: string;
-}
+}) => (
+  <div
+    className={cn(
+      "cosmic-resume-panel p-space-5 rounded-lg bg-gray-900/50 border border-blue-500/30 mb-space-4",
+      className
+    )}
+  >
+    {children}
+  </div>
+);
 
-export function ItemActions({ 
-  onEdit, 
-  onDelete, 
-  onCopy, 
-  onSave, 
-  isEditing = false,
-  className = '' 
-}: ItemActionsProps) {
-  return (
-    <div className={`flex resume-gap-2 ${className}`}>
-      {!isEditing && onEdit && (
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={onEdit} 
-          className="h-8 w-8 p-0 border border-resume-panel-border hover:bg-primary/20 hover:text-primary"
-          title="Edit"
-        >
-          <Edit className="h-4 w-4 text-resume-text-accent" />
-        </Button>
-      )}
-      
-      {isEditing && onSave && (
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={onSave} 
-          className="h-8 w-8 p-0 border border-resume-panel-border hover:bg-primary/20 hover:text-primary"
-          title="Save changes"
-        >
-          <Save className="h-4 w-4 text-resume-text-accent" />
-        </Button>
-      )}
-      
-      {onDelete && (
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={onDelete} 
-          className="h-8 w-8 p-0 border border-resume-panel-border hover:bg-destructive/20 hover:text-destructive"
-          title="Delete"
-        >
-          <Trash className="h-4 w-4 text-resume-text-accent" />
-        </Button>
-      )}
-    </div>
-  );
-}
-
-/* ============================= PERSONAL INFO SECTION ============================= */
-
-interface PersonalInfoSectionProps {
-  personalInfo: PersonalInfo;
-  resumeId?: string;
-  onUpdate: (field: keyof PersonalInfo, value: string) => void;
-  onFileUpload?: () => void;
-  showUploadCard?: boolean;
+// Personal Info Section
+export interface PersonalInfo {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  headline: string;
+  summary: string;
 }
 
 export function PersonalInfoSection({
   personalInfo,
-  resumeId,
   onUpdate,
-  onFileUpload,
-  showUploadCard = false
-}: PersonalInfoSectionProps) {
+}: {
+  personalInfo: PersonalInfo;
+  onUpdate: (info: PersonalInfo) => void;
+}) {
+  const [info, setInfo] = useState<PersonalInfo>(personalInfo);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setInfo((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    onUpdate({
+      ...personalInfo,
+      [name]: value,
+    });
+  };
+
+  const handleSummaryChange = (value: string) => {
+    setInfo((prev) => ({
+      ...prev,
+      summary: value,
+    }));
+    onUpdate({
+      ...personalInfo,
+      summary: value,
+    });
+  };
+
   return (
-    <div className="resume-space-y-4">
-      <SectionHeader 
-        title="Personal Information" 
-        icon={<User className="h-5 w-5" />}
-      />
-
-      {showUploadCard && onFileUpload && (
-        <SectionCard withHoverEffect={true} className="resume-mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium text-lg text-resume-text-accent">Import from Existing Resume</h4>
-              <p className="text-sm text-resume-text-secondary resume-mt-1">
-                Upload your existing resume to extract your information automatically
-              </p>
-            </div>
-            <CosmicButton
-              variant="outline"
-              onClick={onFileUpload}
-              iconLeft={<Upload className="h-4 w-4 resume-mr-2" />}
-              withGlow
-            >
-              Upload Resume
-            </CosmicButton>
+    <div className="space-y-space-5">
+      <ResumePanel>
+        <SectionHeader title="Contact Information" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
+          <div>
+            <label className="text-sm text-blue-300 block mb-1">
+              First Name
+            </label>
+            <Input
+              name="firstName"
+              value={info.firstName}
+              onChange={handleChange}
+              className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+              placeholder="First Name"
+            />
           </div>
-        </SectionCard>
-      )}
-
-      <SectionCard className="transition-all duration-300">
-        <div className="grid grid-cols-1 md:grid-cols-2 resume-gap-6">
-          {/* First column */}
-          <div className="resume-space-y-4">
-            <div className="resume-space-y-2">
-              <Label htmlFor="firstName" className="text-resume-text-secondary">First Name</Label>
-              <Input
-                id="firstName"
-                value={personalInfo.firstName}
-                onChange={(e) => onUpdate('firstName', e.target.value)}
-                placeholder="Your first name"
-                className="cosmic-input"
-              />
-            </div>
-
-            <div className="resume-space-y-2">
-              <Label htmlFor="lastName" className="text-resume-text-secondary">Last Name</Label>
-              <Input
-                id="lastName"
-                value={personalInfo.lastName}
-                onChange={(e) => onUpdate('lastName', e.target.value)}
-                placeholder="Your last name"
-                className="cosmic-input"
-              />
-            </div>
-
-            <div className="resume-space-y-2">
-              <Label htmlFor="email" className="text-resume-text-secondary">Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-resume-text-accent" />
-                <Input
-                  id="email"
-                  type="email"
-                  value={personalInfo.email}
-                  onChange={(e) => onUpdate('email', e.target.value)}
-                  className="cosmic-input pl-10"
-                  placeholder="your.email@example.com"
-                />
-              </div>
-            </div>
-
-            <div className="resume-space-y-2">
-              <Label htmlFor="phone" className="text-resume-text-secondary">Phone</Label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-resume-text-accent" />
-                <Input
-                  id="phone"
-                  value={personalInfo.phone}
-                  onChange={(e) => onUpdate('phone', e.target.value)}
-                  className="cosmic-input pl-10"
-                  placeholder="(555) 123-4567"
-                />
-              </div>
-            </div>
+          <div>
+            <label className="text-sm text-blue-300 block mb-1">Last Name</label>
+            <Input
+              name="lastName"
+              value={info.lastName}
+              onChange={handleChange}
+              className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+              placeholder="Last Name"
+            />
           </div>
-
-          {/* Second column */}
-          <div className="resume-space-y-4">
-            <div className="resume-space-y-2">
-              <Label htmlFor="headline" className="text-resume-text-secondary">Professional Headline</Label>
-              <div className="relative">
-                <Briefcase className="absolute left-3 top-3 h-4 w-4 text-resume-text-accent" />
-                <Input
-                  id="headline"
-                  value={personalInfo.headline}
-                  onChange={(e) => onUpdate('headline', e.target.value)}
-                  className="cosmic-input pl-10"
-                  placeholder="e.g., Senior Software Engineer | React Specialist"
-                />
-              </div>
-              <p className="resume-mt-2 text-xs text-resume-text-muted">
-                A short headline that appears below your name
-              </p>
-            </div>
-
-            <div className="resume-space-y-2">
-              <Label htmlFor="summary" className="text-resume-text-secondary">Professional Summary</Label>
-              <Textarea
-                id="summary"
-                value={personalInfo.summary}
-                onChange={(e) => onUpdate('summary', e.target.value)}
-                rows={8}
-                className="cosmic-input"
-                placeholder="Briefly introduce yourself, highlighting your expertise, experience, and unique value proposition..."
-              />
-              <p className="resume-mt-2 text-xs text-resume-text-muted">
-                Aim for 3-5 sentences that highlight your professional strengths and career goals
-              </p>
-            </div>
+          <div>
+            <label className="text-sm text-blue-300 block mb-1">Email</label>
+            <Input
+              name="email"
+              value={info.email}
+              onChange={handleChange}
+              className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+              placeholder="Email Address"
+              type="email"
+            />
+          </div>
+          <div>
+            <label className="text-sm text-blue-300 block mb-1">Phone</label>
+            <Input
+              name="phone"
+              value={info.phone}
+              onChange={handleChange}
+              className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+              placeholder="Phone Number"
+            />
           </div>
         </div>
+      </ResumePanel>
 
-        <div className="resume-mt-6 resume-pt-4 border-t border-resume-panel-border">
-          <h4 className="text-sm font-medium text-resume-text-secondary resume-mb-3">Recommendations:</h4>
-          <ul className="resume-space-y-2 text-sm">
-            <li className="flex items-start resume-gap-2">
-              <div className="rounded-full bg-primary/20 text-resume-text-accent p-0.5 mt-0.5">
-                <CheckIcon size={12} />
-              </div>
-              <span className="text-resume-text-secondary">Keep your summary concise and impactful - aim for 3-5 sentences</span>
-            </li>
-            <li className="flex items-start resume-gap-2">
-              <div className="rounded-full bg-primary/20 text-resume-text-accent p-0.5 mt-0.5">
-                <CheckIcon size={12} />
-              </div>
-              <span className="text-resume-text-secondary">Include relevant keywords from job descriptions you're targeting</span>
-            </li>
-            <li className="flex items-start resume-gap-2">
-              <div className="rounded-full bg-primary/20 text-resume-text-accent p-0.5 mt-0.5">
-                <CheckIcon size={12} />
-              </div>
-              <span className="text-resume-text-secondary">Your professional headline should be specific and include your specialty</span>
-            </li>
-            <li className="flex items-start resume-gap-2">
-              <div className="rounded-full bg-primary/20 text-resume-text-accent p-0.5 mt-0.5">
-                <CheckIcon size={12} />
-              </div>
-              <span className="text-resume-text-secondary">Use a professional email address, ideally with your name</span>
-            </li>
-          </ul>
-        </div>
-      </SectionCard>
+      <ResumePanel>
+        <SectionHeader title="Professional Headline" />
+        <Input
+          name="headline"
+          value={info.headline}
+          onChange={handleChange}
+          className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+          placeholder="e.g. Senior Software Engineer | React & Node.js Expert"
+        />
+      </ResumePanel>
+
+      <ResumePanel>
+        <SectionHeader title="Professional Summary" />
+        <RichTextEditor
+          value={info.summary}
+          onChange={handleSummaryChange}
+          className="cosmic-textarea bg-black/30 border-blue-500/30 text-white min-h-20 p-3"
+          placeholder="Write a professional summary that highlights your key strengths and experience..."
+          rows={6}
+        />
+      </ResumePanel>
     </div>
   );
 }
 
-/* ============================= EXPERIENCE SECTION ============================= */
-
-interface ExperienceSectionProps {
-  experiences: ExperienceItem[];
-  resumeId?: string;
-  onUpdate: (experiences: ExperienceItem[]) => void;
-  onAdd?: () => string; // Returns the new ID
+// Experience Section
+export interface ExperienceItem {
+  id: string;
+  title: string;
+  company: string;
+  startDate: string;
+  endDate: string;
+  description: string;
 }
 
 export function ExperienceSection({
-  experiences,
-  resumeId,
+  experience,
   onUpdate,
-  onAdd
-}: ExperienceSectionProps) {
-  const [expandedItem, setExpandedItem] = useState<string | null>(null);
-  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+}: {
+  experience: ExperienceItem[];
+  onUpdate: (experience: ExperienceItem[]) => void;
+}) {
+  const [editing, setEditing] = useState<string | null>(null);
+  const [currentItem, setCurrentItem] = useState<ExperienceItem | null>(null);
 
-  const handleAddExperience = () => {
-    if (onAdd) {
-      const newId = onAdd();
-      setExpandedItem(newId);
-      setEditingItemId(newId);
-    } else {
-      // Fallback if onAdd not provided
-      const newExperience = {
-        id: crypto.randomUUID(),
-        title: '',
-        company: '',
-        startDate: '',
-        endDate: '',
-        description: ''
-      };
-      onUpdate([...experiences, newExperience]);
-      setExpandedItem(newExperience.id);
-      setEditingItemId(newExperience.id);
-    }
+  const handleEdit = (item: ExperienceItem) => {
+    setEditing(item.id);
+    setCurrentItem({ ...item });
   };
 
-  const handleRemoveExperience = (id: string) => {
-    const updatedExperiences = experiences.filter(exp => exp.id !== id);
-    onUpdate(updatedExperiences);
-    if (expandedItem === id) {
-      setExpandedItem(null);
-    }
-    if (editingItemId === id) {
-      setEditingItemId(null);
-    }
-  };
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (!currentItem) return;
 
-  const handleExperienceChange = (id: string, field: keyof ExperienceItem, value: string) => {
-    const updatedExperiences = experiences.map(exp => {
-      if (exp.id === id) {
-        return { ...exp, [field]: value };
-      }
-      return exp;
+    const { name, value } = e.target;
+    setCurrentItem({
+      ...currentItem,
+      [name]: value,
     });
-    onUpdate(updatedExperiences);
+  };
+
+  const handleDescriptionChange = (value: string) => {
+    if (!currentItem) return;
+    setCurrentItem({
+      ...currentItem,
+      description: value,
+    });
+  };
+
+  const handleSave = () => {
+    if (!currentItem) return;
+
+    const updated = experience.map((item) =>
+      item.id === currentItem.id ? currentItem : item
+    );
+    onUpdate(updated);
+    setEditing(null);
+    setCurrentItem(null);
+  };
+
+  const handleCancel = () => {
+    setEditing(null);
+    setCurrentItem(null);
+  };
+
+  const handleDelete = (id: string) => {
+    onUpdate(experience.filter((item) => item.id !== id));
+  };
+
+  const handleAdd = () => {
+    const newItem: ExperienceItem = {
+      id: `exp-${Date.now()}`,
+      title: "",
+      company: "",
+      startDate: "",
+      endDate: "",
+      description: "",
+    };
+    onUpdate([...experience, newItem]);
+    handleEdit(newItem);
   };
 
   return (
-    <div className="resume-space-y-4">
-      <SectionHeader 
-        title="Work Experience" 
-        icon={<Briefcase className="h-5 w-5" />}
-        onAdd={handleAddExperience}
-        addButtonText="Add Experience"
-      />
+    <div className="space-y-space-4">
+      {experience.map((item) => (
+        <ResumePanel key={item.id}>
+          {editing === item.id ? (
+            // Edit Mode
+            <div className="space-y-space-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-medium text-white">Edit Experience</h3>
+                <ItemActions
+                  isEditing={true}
+                  onSave={handleSave}
+                  onCancel={handleCancel}
+                />
+              </div>
 
-      {experiences.length === 0 ? (
-        <div className="cosmic-panel resume-p-6 flex flex-col items-center justify-center">
-          <Briefcase className="h-12 w-12 resume-mb-2 text-resume-text-accent opacity-30" />
-          <p className="text-center text-sm resume-mb-4 text-resume-text-secondary">
-            Add your work experience to showcase your professional journey and accomplishments
-          </p>
-          <CosmicButton 
-            variant="outline" 
-            size="sm" 
-            onClick={handleAddExperience}
-            withGlow
-          >
-            Add Experience
-          </CosmicButton>
-        </div>
-      ) : (
-        <Accordion
-          type="single"
-          collapsible
-          value={expandedItem || undefined}
-          onValueChange={(value) => setExpandedItem(value)}
-          className="resume-space-y-2"
-        >
-          {experiences.map((experience) => (
-            <AccordionItem
-              key={experience.id}
-              value={experience.id}
-              className={cn(
-                "cosmic-panel overflow-hidden",
-                expandedItem === experience.id ? "ring-1 ring-resume-panel-border" : ""
-              )}
-            >
-              <AccordionTrigger className="resume-p-4 hover:bg-primary/10 data-[state=open]:bg-primary/20">
-                <div className="flex flex-1 justify-between items-center">
-                  <div className="text-left">
-                    <p className="font-medium text-resume-text-primary">
-                      {experience.title || "New Position"}
-                    </p>
-                    {experience.company && (
-                      <div className="flex items-center resume-gap-1 resume-mt-1 text-sm text-resume-text-secondary">
-                        <Building className="h-3 w-3" />
-                        <span>{experience.company}</span>
-                        {(experience.startDate || experience.endDate) && (
-                          <>
-                            <span className="mx-1">•</span>
-                            <Calendar className="h-3 w-3" />
-                            <span>
-                              {experience.startDate || 'Start'} - {experience.endDate || 'Present'}
-                            </span>
-                          </>
-                        )}
-                      </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
+                <div>
+                  <label className="text-sm text-blue-300 block mb-1">Job Title</label>
+                  <Input
+                    name="title"
+                    value={currentItem?.title || ""}
+                    onChange={handleChange}
+                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    placeholder="e.g. Senior Software Engineer"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-blue-300 block mb-1">Company</label>
+                  <Input
+                    name="company"
+                    value={currentItem?.company || ""}
+                    onChange={handleChange}
+                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    placeholder="e.g. Acme Inc."
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-blue-300 block mb-1">Start Date</label>
+                  <Input
+                    name="startDate"
+                    value={currentItem?.startDate || ""}
+                    onChange={handleChange}
+                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    placeholder="e.g. Jan 2020"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-blue-300 block mb-1">End Date</label>
+                  <Input
+                    name="endDate"
+                    value={currentItem?.endDate || ""}
+                    onChange={handleChange}
+                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    placeholder="e.g. Present"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm text-blue-300 block mb-1">Description</label>
+                <RichTextEditor
+                  value={currentItem?.description || ""}
+                  onChange={handleDescriptionChange}
+                  className="cosmic-textarea bg-black/30 border-blue-500/30 text-white min-h-20 p-3"
+                  placeholder="Describe your responsibilities and achievements..."
+                  rows={6}
+                />
+              </div>
+            </div>
+          ) : (
+            // View Mode
+            <div>
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-lg font-medium text-white">{item.title || "Job Title"}</h3>
+                  <p className="text-sm text-blue-300 mt-1">
+                    {item.company || "Company"}
+                    {item.company && (item.startDate || item.endDate) && " • "}
+                    {item.startDate && (
+                      <span>
+                        {item.startDate} - {item.endDate || "Present"}
+                      </span>
                     )}
-                  </div>
+                  </p>
                 </div>
-              </AccordionTrigger>
-              <AccordionContent className="pb-0">
-                <div className="resume-p-4 resume-space-y-4 bg-resume-panel-bg rounded-b-md">
-                  <div className="resume-space-y-2">
-                    <Label htmlFor={`exp-title-${experience.id}`} className="text-resume-text-secondary">Job Title</Label>
-                    <Input
-                      id={`exp-title-${experience.id}`}
-                      value={experience.title}
-                      onChange={(e) => handleExperienceChange(experience.id, 'title', e.target.value)}
-                      placeholder="e.g., Senior Software Engineer"
-                      className="cosmic-input"
-                    />
-                  </div>
+                <ItemActions
+                  onEdit={() => handleEdit(item)}
+                  onDelete={() => handleDelete(item.id)}
+                />
+              </div>
 
-                  <div className="resume-space-y-2">
-                    <Label htmlFor={`exp-company-${experience.id}`} className="text-resume-text-secondary">Company</Label>
-                    <Input
-                      id={`exp-company-${experience.id}`}
-                      value={experience.company}
-                      onChange={(e) => handleExperienceChange(experience.id, 'company', e.target.value)}
-                      placeholder="e.g., Acme Corporation"
-                      className="cosmic-input"
-                    />
-                  </div>
+              <div 
+                className="mt-3 text-sm text-gray-300 space-y-2 rich-text-content"
+                dangerouslySetInnerHTML={{ __html: item.description }}
+              />
+            </div>
+          )}
+        </ResumePanel>
+      ))}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 resume-gap-4">
-                    <div className="resume-space-y-2">
-                      <Label htmlFor={`exp-start-${experience.id}`} className="text-resume-text-secondary">Start Date</Label>
-                      <Input
-                        id={`exp-start-${experience.id}`}
-                        value={experience.startDate}
-                        onChange={(e) => handleExperienceChange(experience.id, 'startDate', e.target.value)}
-                        placeholder="e.g., Jun 2020 or 2020-06"
-                        className="cosmic-input"
-                      />
-                    </div>
-
-                    <div className="resume-space-y-2">
-                      <Label htmlFor={`exp-end-${experience.id}`} className="text-resume-text-secondary">End Date</Label>
-                      <Input
-                        id={`exp-end-${experience.id}`}
-                        value={experience.endDate}
-                        onChange={(e) => handleExperienceChange(experience.id, 'endDate', e.target.value)}
-                        placeholder="e.g., Present or 2023-08"
-                        className="cosmic-input"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="resume-space-y-2">
-                    <Label htmlFor={`exp-description-${experience.id}`} className="text-resume-text-secondary">Description</Label>
-                    <Textarea
-                      id={`exp-description-${experience.id}`}
-                      value={experience.description}
-                      onChange={(e) => handleExperienceChange(experience.id, 'description', e.target.value)}
-                      placeholder="Describe your responsibilities, achievements, and key contributions..."
-                      rows={6}
-                      className="cosmic-input"
-                    />
-                    <p className="resume-mt-2 text-xs text-resume-text-muted">
-                      Use bullet points starting with strong action verbs to highlight your accomplishments
-                    </p>
-                  </div>
-
-                  <div className="flex justify-end resume-pt-2 resume-pb-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive/90 hover:bg-destructive/10 border border-resume-panel-border"
-                      onClick={() => handleRemoveExperience(experience.id)}
-                    >
-                      <Trash className="h-4 w-4 resume-mr-1" />
-                      Remove
-                    </Button>
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      )}
+      <Button
+        variant="outline"
+        className="w-full mt-2 border-blue-500/30 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
+        onClick={handleAdd}
+      >
+        <Plus className="h-4 w-4 mr-2" /> Add Experience
+      </Button>
     </div>
   );
 }
 
-/* ============================= EDUCATION SECTION ============================= */
-
-interface EducationSectionProps {
-  education: EducationItem[];
-  resumeId?: string;
-  onUpdate: (education: EducationItem[]) => void;
-  onAdd?: () => string; // Returns the new ID
+// Education Section
+export interface EducationItem {
+  id: string;
+  degree: string;
+  institution: string;
+  startDate: string;
+  endDate: string;
+  description: string;
 }
 
 export function EducationSection({
   education,
-  resumeId,
   onUpdate,
-  onAdd
-}: EducationSectionProps) {
-  const [expandedItem, setExpandedItem] = useState<string | null>(null);
-  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+}: {
+  education: EducationItem[];
+  onUpdate: (education: EducationItem[]) => void;
+}) {
+  const [editing, setEditing] = useState<string | null>(null);
+  const [currentItem, setCurrentItem] = useState<EducationItem | null>(null);
 
-  const handleAddEducation = () => {
-    if (onAdd) {
-      const newId = onAdd();
-      setExpandedItem(newId);
-      setEditingItemId(newId);
-    } else {
-      // Fallback if onAdd not provided
-      const newEducation = {
-        id: crypto.randomUUID(),
-        degree: '',
-        institution: '',
-        startDate: '',
-        endDate: '',
-        description: ''
-      };
-      onUpdate([...education, newEducation]);
-      setExpandedItem(newEducation.id);
-      setEditingItemId(newEducation.id);
-    }
+  const handleEdit = (item: EducationItem) => {
+    setEditing(item.id);
+    setCurrentItem({ ...item });
   };
 
-  const handleRemoveEducation = (id: string) => {
-    const updatedEducation = education.filter(edu => edu.id !== id);
-    onUpdate(updatedEducation);
-    if (expandedItem === id) {
-      setExpandedItem(null);
-    }
-    if (editingItemId === id) {
-      setEditingItemId(null);
-    }
-  };
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (!currentItem) return;
 
-  const handleEducationChange = (id: string, field: keyof EducationItem, value: string) => {
-    const updatedEducation = education.map(edu => {
-      if (edu.id === id) {
-        return { ...edu, [field]: value };
-      }
-      return edu;
+    const { name, value } = e.target;
+    setCurrentItem({
+      ...currentItem,
+      [name]: value,
     });
-    onUpdate(updatedEducation);
+  };
+
+  const handleDescriptionChange = (value: string) => {
+    if (!currentItem) return;
+    setCurrentItem({
+      ...currentItem,
+      description: value,
+    });
+  };
+
+  const handleSave = () => {
+    if (!currentItem) return;
+
+    const updated = education.map((item) =>
+      item.id === currentItem.id ? currentItem : item
+    );
+    onUpdate(updated);
+    setEditing(null);
+    setCurrentItem(null);
+  };
+
+  const handleCancel = () => {
+    setEditing(null);
+    setCurrentItem(null);
+  };
+
+  const handleDelete = (id: string) => {
+    onUpdate(education.filter((item) => item.id !== id));
+  };
+
+  const handleAdd = () => {
+    const newItem: EducationItem = {
+      id: `edu-${Date.now()}`,
+      degree: "",
+      institution: "",
+      startDate: "",
+      endDate: "",
+      description: "",
+    };
+    onUpdate([...education, newItem]);
+    handleEdit(newItem);
   };
 
   return (
-    <div className="resume-space-y-4">
-      <SectionHeader 
-        title="Education" 
-        icon={<GraduationCap className="h-5 w-5" />}
-        onAdd={handleAddEducation}
-        addButtonText="Add Education"
-      />
+    <div className="space-y-space-4">
+      {education.map((item) => (
+        <ResumePanel key={item.id}>
+          {editing === item.id ? (
+            // Edit Mode
+            <div className="space-y-space-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-medium text-white">Edit Education</h3>
+                <ItemActions
+                  isEditing={true}
+                  onSave={handleSave}
+                  onCancel={handleCancel}
+                />
+              </div>
 
-      {education.length === 0 ? (
-        <div className="cosmic-panel resume-p-6 flex flex-col items-center justify-center">
-          <GraduationCap className="h-12 w-12 resume-mb-2 text-resume-text-accent opacity-30" />
-          <p className="text-center text-sm resume-mb-4 text-resume-text-secondary">
-            Add your educational background to showcase your academic achievements and qualifications
-          </p>
-          <CosmicButton 
-            variant="outline" 
-            size="sm" 
-            onClick={handleAddEducation}
-            withGlow
-          >
-            Add Education
-          </CosmicButton>
-        </div>
-      ) : (
-        <Accordion
-          type="single"
-          collapsible
-          value={expandedItem || undefined}
-          onValueChange={(value) => setExpandedItem(value)}
-          className="resume-space-y-2"
-        >
-          {education.map((edu) => (
-            <AccordionItem
-              key={edu.id}
-              value={edu.id}
-              className={cn(
-                "cosmic-panel overflow-hidden",
-                expandedItem === edu.id ? "ring-1 ring-resume-panel-border" : ""
-              )}
-            >
-              <AccordionTrigger className="resume-p-4 hover:bg-primary/10 data-[state=open]:bg-primary/20">
-                <div className="flex flex-1 justify-between items-center">
-                  <div className="text-left">
-                    <p className="font-medium text-resume-text-primary">
-                      {edu.degree || "New Degree"}
-                    </p>
-                    {edu.institution && (
-                      <div className="flex items-center resume-gap-1 resume-mt-1 text-sm text-resume-text-secondary">
-                        <School className="h-3 w-3" />
-                        <span>{edu.institution}</span>
-                        {(edu.startDate || edu.endDate) && (
-                          <>
-                            <span className="mx-1">•</span>
-                            <Calendar className="h-3 w-3" />
-                            <span>
-                              {edu.startDate || 'Start'} - {edu.endDate || 'Present'}
-                            </span>
-                          </>
-                        )}
-                      </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
+                <div>
+                  <label className="text-sm text-blue-300 block mb-1">Degree</label>
+                  <Input
+                    name="degree"
+                    value={currentItem?.degree || ""}
+                    onChange={handleChange}
+                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    placeholder="e.g. B.S. Computer Science"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-blue-300 block mb-1">Institution</label>
+                  <Input
+                    name="institution"
+                    value={currentItem?.institution || ""}
+                    onChange={handleChange}
+                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    placeholder="e.g. University of California"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-blue-300 block mb-1">Start Date</label>
+                  <Input
+                    name="startDate"
+                    value={currentItem?.startDate || ""}
+                    onChange={handleChange}
+                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    placeholder="e.g. 2016"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-blue-300 block mb-1">End Date</label>
+                  <Input
+                    name="endDate"
+                    value={currentItem?.endDate || ""}
+                    onChange={handleChange}
+                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    placeholder="e.g. 2020"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm text-blue-300 block mb-1">Description</label>
+                <RichTextEditor
+                  value={currentItem?.description || ""}
+                  onChange={handleDescriptionChange}
+                  className="cosmic-textarea bg-black/30 border-blue-500/30 text-white min-h-20 p-3"
+                  placeholder="List relevant coursework, achievements, activities..."
+                  rows={4}
+                />
+              </div>
+            </div>
+          ) : (
+            // View Mode
+            <div>
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-lg font-medium text-white">{item.degree || "Degree"}</h3>
+                  <p className="text-sm text-blue-300 mt-1">
+                    {item.institution || "Institution"}
+                    {item.institution && (item.startDate || item.endDate) && " • "}
+                    {item.startDate && (
+                      <span>
+                        {item.startDate} - {item.endDate || "Present"}
+                      </span>
                     )}
-                  </div>
+                  </p>
                 </div>
-              </AccordionTrigger>
-              <AccordionContent className="pb-0">
-                <div className="resume-p-4 resume-space-y-4 bg-resume-panel-bg rounded-b-md">
-                  <div className="resume-space-y-2">
-                    <Label htmlFor={`edu-degree-${edu.id}`} className="text-resume-text-secondary">Degree / Certification</Label>
-                    <Input
-                      id={`edu-degree-${edu.id}`}
-                      value={edu.degree}
-                      onChange={(e) => handleEducationChange(edu.id, 'degree', e.target.value)}
-                      placeholder="e.g., Bachelor of Science in Computer Science"
-                      className="cosmic-input"
-                    />
-                  </div>
+                <ItemActions
+                  onEdit={() => handleEdit(item)}
+                  onDelete={() => handleDelete(item.id)}
+                />
+              </div>
 
-                  <div className="resume-space-y-2">
-                    <Label htmlFor={`edu-institution-${edu.id}`} className="text-resume-text-secondary">Institution</Label>
-                    <Input
-                      id={`edu-institution-${edu.id}`}
-                      value={edu.institution}
-                      onChange={(e) => handleEducationChange(edu.id, 'institution', e.target.value)}
-                      placeholder="e.g., University of California, Berkeley"
-                      className="cosmic-input"
-                    />
-                  </div>
+              <div 
+                className="mt-3 text-sm text-gray-300 space-y-2 rich-text-content"
+                dangerouslySetInnerHTML={{ __html: item.description }}
+              />
+            </div>
+          )}
+        </ResumePanel>
+      ))}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 resume-gap-4">
-                    <div className="resume-space-y-2">
-                      <Label htmlFor={`edu-start-${edu.id}`} className="text-resume-text-secondary">Start Date</Label>
-                      <Input
-                        id={`edu-start-${edu.id}`}
-                        value={edu.startDate}
-                        onChange={(e) => handleEducationChange(edu.id, 'startDate', e.target.value)}
-                        placeholder="e.g., 2016 or 2016-09"
-                        className="cosmic-input"
-                      />
-                    </div>
-
-                    <div className="resume-space-y-2">
-                      <Label htmlFor={`edu-end-${edu.id}`} className="text-resume-text-secondary">End Date (or Expected)</Label>
-                      <Input
-                        id={`edu-end-${edu.id}`}
-                        value={edu.endDate}
-                        onChange={(e) => handleEducationChange(edu.id, 'endDate', e.target.value)}
-                        placeholder="e.g., 2020 or Present"
-                        className="cosmic-input"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="resume-space-y-2">
-                    <Label htmlFor={`edu-description-${edu.id}`} className="text-resume-text-secondary">Description (Optional)</Label>
-                    <Textarea
-                      id={`edu-description-${edu.id}`}
-                      value={edu.description}
-                      onChange={(e) => handleEducationChange(edu.id, 'description', e.target.value)}
-                      placeholder="Include relevant coursework, achievements, GPA if notable, extracurricular activities..."
-                      rows={4}
-                      className="cosmic-input"
-                    />
-                  </div>
-
-                  <div className="flex justify-end resume-pt-2 resume-pb-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive/90 hover:bg-destructive/10 border border-resume-panel-border"
-                      onClick={() => handleRemoveEducation(edu.id)}
-                    >
-                      <Trash className="h-4 w-4 resume-mr-1" />
-                      Remove
-                    </Button>
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      )}
+      <Button
+        variant="outline"
+        className="w-full mt-2 border-blue-500/30 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
+        onClick={handleAdd}
+      >
+        <Plus className="h-4 w-4 mr-2" /> Add Education
+      </Button>
     </div>
   );
 }
 
-/* ============================= SKILLS SECTION ============================= */
-
-interface SkillsSectionProps {
-  skills: SkillItem[];
-  resumeId?: string;
-  onUpdate: (skills: SkillItem[]) => void;
-  onAdd?: () => string; // Returns the new ID
+// Skills Section
+export interface SkillItem {
+  id: string;
+  name: string;
+  proficiency: number;
+  category?: string;
 }
 
 export function SkillsSection({
   skills,
-  resumeId,
   onUpdate,
-  onAdd
-}: SkillsSectionProps) {
-  const [skillInput, setSkillInput] = useState('');
-  const [editingSkill, setEditingSkill] = useState<string | null>(null);
+}: {
+  skills: SkillItem[];
+  onUpdate: (skills: SkillItem[]) => void;
+}) {
+  const [editing, setEditing] = useState<string | null>(null);
+  const [currentItem, setCurrentItem] = useState<SkillItem | null>(null);
 
-  // Handle adding a new skill
-  const handleAddSkill = () => {
-    if (!skillInput.trim()) return;
-    
-    // Check if skill already exists
-    if (skills.some(s => s.name.toLowerCase() === skillInput.trim().toLowerCase())) {
-      return; // Skip if duplicate
-    }
-
-    const newSkill: SkillItem = {
-      id: crypto.randomUUID(),
-      name: skillInput.trim(),
-      proficiency: 3, // Default to medium proficiency
-    };
-    
-    onUpdate([...skills, newSkill]);
-    setSkillInput('');
+  const handleEdit = (item: SkillItem) => {
+    setEditing(item.id);
+    setCurrentItem({ ...item });
   };
 
-  // Handle removing a skill
-  const handleRemoveSkill = (id: string) => {
-    const updatedSkills = skills.filter(skill => skill.id !== id);
-    onUpdate(updatedSkills);
-    
-    if (editingSkill === id) {
-      setEditingSkill(null);
-    }
-  };
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (!currentItem) return;
 
-  // Handle updating a skill
-  const handleSkillChange = (id: string, field: keyof SkillItem, value: any) => {
-    const updatedSkills = skills.map(skill => {
-      if (skill.id === id) {
-        return { ...skill, [field]: value };
-      }
-      return skill;
+    const { name, value } = e.target;
+    setCurrentItem({
+      ...currentItem,
+      [name]: value,
     });
-    onUpdate(updatedSkills);
   };
 
-  // Handle key press in skill input (add on Enter)
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddSkill();
+  const handleProficiencyChange = (value: number[]) => {
+    if (!currentItem) return;
+    setCurrentItem({
+      ...currentItem,
+      proficiency: value[0],
+    });
+  };
+
+  const handleSave = () => {
+    if (!currentItem) return;
+
+    const updated = skills.map((item) =>
+      item.id === currentItem.id ? currentItem : item
+    );
+    onUpdate(updated);
+    setEditing(null);
+    setCurrentItem(null);
+  };
+
+  const handleCancel = () => {
+    setEditing(null);
+    setCurrentItem(null);
+  };
+
+  const handleDelete = (id: string) => {
+    onUpdate(skills.filter((item) => item.id !== id));
+  };
+
+  const handleAdd = () => {
+    const newItem: SkillItem = {
+      id: `skill-${Date.now()}`,
+      name: "",
+      proficiency: 3,
+    };
+    onUpdate([...skills, newItem]);
+    handleEdit(newItem);
+  };
+
+  const getProficiencyLabel = (proficiency: number) => {
+    switch (proficiency) {
+      case 1:
+        return "Beginner";
+      case 2:
+        return "Intermediate";
+      case 3:
+        return "Advanced";
+      case 4:
+        return "Expert";
+      case 5:
+        return "Master";
+      default:
+        return "Advanced";
+    }
+  };
+
+  const getProficiencyColor = (proficiency: number) => {
+    switch (proficiency) {
+      case 1:
+        return "bg-blue-900/50";
+      case 2:
+        return "bg-blue-800/50";
+      case 3:
+        return "bg-blue-700/50";
+      case 4:
+        return "bg-blue-600/50";
+      case 5:
+        return "bg-blue-500/50";
+      default:
+        return "bg-blue-700/50";
     }
   };
 
   return (
-    <div className="resume-space-y-4">
-      <SectionHeader 
-        title="Skills" 
-        icon={<Wrench className="h-5 w-5" />}
-      />
+    <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {skills.map((item) => (
+          <ResumePanel
+            key={item.id}
+            className={`${
+              editing === item.id ? "col-span-full" : ""
+            } transition-all duration-300`}
+          >
+            {editing === item.id ? (
+              // Edit Mode
+              <div className="space-y-space-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-medium text-white">Edit Skill</h3>
+                  <ItemActions
+                    isEditing={true}
+                    onSave={handleSave}
+                    onCancel={handleCancel}
+                  />
+                </div>
 
-      <SectionCard>
-        <div className="resume-space-y-4">
-          <div className="resume-space-y-2">
-            <Label htmlFor="skill-input" className="text-resume-text-secondary">Add a Skill</Label>
-            <div className="flex resume-gap-2">
-              <Input
-                id="skill-input"
-                value={skillInput}
-                onChange={(e) => setSkillInput(e.target.value)}
-                onKeyDown={handleKeyPress}
-                placeholder="e.g., JavaScript, Project Management, Data Analysis"
-                className="cosmic-input"
-              />
-              <Button 
-                type="button" 
-                size="sm"
-                onClick={handleAddSkill}
-                className="bg-primary/20 text-resume-text-accent hover:bg-primary/30 hover:text-resume-text-primary"
-              >
-                Add
-              </Button>
-            </div>
-            <p className="resume-mt-1 text-xs text-resume-text-muted">
-              Press Enter after typing a skill to add it, or click the Add button
-            </p>
-          </div>
-
-          {skills.length > 0 ? (
-            <div>
-              <Label className="text-resume-text-secondary resume-mb-2 block">Your Skills</Label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 resume-gap-3">
-                {skills.map((skill) => (
-                  <div 
-                    key={skill.id} 
-                    className="flex items-center justify-between bg-resume-panel-bg border border-resume-panel-border p-2 rounded-md"
-                  >
-                    <div className="flex items-center resume-gap-2">
-                      <Star className="h-4 w-4 text-resume-text-accent" />
-                      <span className="text-resume-text-primary">{skill.name}</span>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemoveSkill(skill.id)}
-                      className="h-6 w-6 p-0 text-resume-text-muted hover:text-destructive hover:bg-destructive/10 rounded-full"
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
+                  <div>
+                    <label className="text-sm text-blue-300 block mb-1">Skill Name</label>
+                    <Input
+                      name="name"
+                      value={currentItem?.name || ""}
+                      onChange={handleChange}
+                      className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                      placeholder="e.g. React.js"
+                    />
                   </div>
-                ))}
+                  <div>
+                    <label className="text-sm text-blue-300 block mb-1">Category (Optional)</label>
+                    <Input
+                      name="category"
+                      value={currentItem?.category || ""}
+                      onChange={handleChange}
+                      className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                      placeholder="e.g. Programming Languages"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="text-sm text-blue-300">Proficiency</label>
+                    <span className="text-xs text-gray-400">
+                      {getProficiencyLabel(currentItem?.proficiency || 3)}
+                    </span>
+                  </div>
+                  <Slider
+                    value={[currentItem?.proficiency || 3]}
+                    min={1}
+                    max={5}
+                    step={1}
+                    onValueChange={handleProficiencyChange}
+                    className="py-space-2"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>Beginner</span>
+                    <span>Master</span>
+                  </div>
+                </div>
               </div>
-              
-              <div className="resume-mt-4 bg-primary/5 p-3 rounded-md border border-resume-panel-border">
-                <p className="text-xs text-resume-text-secondary">
-                  <span className="text-resume-text-accent font-medium">Tip:</span> Group similar skills together and list the most relevant skills for your target job first.
-                </p>
+            ) : (
+              // View Mode
+              <div>
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <h3 className="text-md font-medium text-white">{item.name || "Skill Name"}</h3>
+                    {item.category && (
+                      <p className="text-xs text-blue-400 mt-0.5">{item.category}</p>
+                    )}
+                  </div>
+                  <ItemActions
+                    onEdit={() => handleEdit(item)}
+                    onDelete={() => handleDelete(item.id)}
+                  />
+                </div>
+
+                <div className="mt-3">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs text-gray-400">
+                      {getProficiencyLabel(item.proficiency)}
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full ${getProficiencyColor(item.proficiency)} rounded-full`}
+                      style={{ width: `${(item.proficiency / 5) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center resume-p-6 bg-resume-panel-bg rounded-md border border-resume-panel-border">
-              <Wrench className="h-10 w-10 resume-mb-2 text-resume-text-accent opacity-30" />
-              <p className="text-center text-sm resume-mb-2 text-resume-text-secondary">
-                Add skills that are relevant to your target job
-              </p>
-              <p className="text-center text-xs text-resume-text-muted">
-                Include technical skills, soft skills, and industry-specific expertise
-              </p>
-            </div>
-          )}
-        </div>
-      </SectionCard>
+            )}
+          </ResumePanel>
+        ))}
+      </div>
+
+      <Button
+        variant="outline"
+        className="w-full mt-space-4 border-blue-500/30 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
+        onClick={handleAdd}
+      >
+        <Plus className="h-4 w-4 mr-2" /> Add Skill
+      </Button>
     </div>
   );
 }
 
-/* ============================= PROJECTS SECTION ============================= */
-
-interface ProjectsSectionProps {
-  projects: ProjectItem[];
-  resumeId?: string;
-  onUpdate: (projects: ProjectItem[]) => void;
-  onAdd?: () => string; // Returns the new ID
+// Projects Section
+export interface ProjectItem {
+  id: string;
+  title: string;
+  description: string;
+  technologies: string[];
+  link?: string;
 }
 
-export function ProjectsSection({ 
+export function ProjectsSection({
   projects,
-  resumeId,
   onUpdate,
-  onAdd
-}: ProjectsSectionProps) {
-  const [expandedItem, setExpandedItem] = useState<string | null>(null);
-  const [techInput, setTechInput] = useState<string>('');
-  const [activeTechProjectId, setActiveTechProjectId] = useState<string | null>(null);
+}: {
+  projects: ProjectItem[];
+  onUpdate: (projects: ProjectItem[]) => void;
+}) {
+  const [editing, setEditing] = useState<string | null>(null);
+  const [currentItem, setCurrentItem] = useState<ProjectItem | null>(null);
 
-  // Handle adding a new project
-  const handleAddProject = () => {
-    if (onAdd) {
-      const newId = onAdd();
-      setExpandedItem(newId);
-    } else {
-      // Fallback if onAdd not provided
-      const newProject = {
-        id: crypto.randomUUID(),
-        title: '',
-        description: '',
-        technologies: [],
-        link: ''
-      };
-      onUpdate([...projects, newProject]);
-      setExpandedItem(newProject.id);
-    }
+  const handleEdit = (item: ProjectItem) => {
+    setEditing(item.id);
+    setCurrentItem({ ...item });
   };
 
-  // Handle removing a project
-  const handleRemoveProject = (id: string) => {
-    const updatedProjects = projects.filter(project => project.id !== id);
-    onUpdate(updatedProjects);
-    if (expandedItem === id) {
-      setExpandedItem(null);
-    }
-  };
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (!currentItem) return;
 
-  // Handle updating a field in a project
-  const handleProjectChange = (id: string, field: keyof ProjectItem, value: any) => {
-    const updatedProjects = projects.map(project => {
-      if (project.id === id) {
-        return { ...project, [field]: value };
-      }
-      return project;
+    const { name, value } = e.target;
+    setCurrentItem({
+      ...currentItem,
+      [name]: value,
     });
-    onUpdate(updatedProjects);
   };
 
-  // Handle adding a technology to a project
-  const handleAddTechnology = (projectId: string) => {
-    if (!techInput.trim()) return;
-    
-    const updatedProjects = projects.map(project => {
-      if (project.id === projectId) {
-        // Check if tech already exists to avoid duplicates
-        if (!project.technologies.includes(techInput.trim())) {
-          return {
-            ...project,
-            technologies: [...project.technologies, techInput.trim()]
-          };
-        }
-      }
-      return project;
+  const handleDescriptionChange = (value: string) => {
+    if (!currentItem) return;
+    setCurrentItem({
+      ...currentItem,
+      description: value,
     });
-    
-    onUpdate(updatedProjects);
-    setTechInput('');
   };
 
-  // Handle removing a technology from a project
-  const handleRemoveTechnology = (projectId: string, tech: string) => {
-    const updatedProjects = projects.map(project => {
-      if (project.id === projectId) {
-        return {
-          ...project,
-          technologies: project.technologies.filter(t => t !== tech)
-        };
-      }
-      return project;
+  const handleTechnologiesChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (!currentItem) return;
+    const techArray = e.target.value
+      .split(",")
+      .map((tech) => tech.trim())
+      .filter((tech) => tech);
+    setCurrentItem({
+      ...currentItem,
+      technologies: techArray,
     });
-    
-    onUpdate(updatedProjects);
   };
 
-  // Handle key press in technology input (add on Enter)
-  const handleTechKeyPress = (e: React.KeyboardEvent, projectId: string) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddTechnology(projectId);
-    }
+  const handleSave = () => {
+    if (!currentItem) return;
+
+    const updated = projects.map((item) =>
+      item.id === currentItem.id ? currentItem : item
+    );
+    onUpdate(updated);
+    setEditing(null);
+    setCurrentItem(null);
+  };
+
+  const handleCancel = () => {
+    setEditing(null);
+    setCurrentItem(null);
+  };
+
+  const handleDelete = (id: string) => {
+    onUpdate(projects.filter((item) => item.id !== id));
+  };
+
+  const handleAdd = () => {
+    const newItem: ProjectItem = {
+      id: `project-${Date.now()}`,
+      title: "",
+      description: "",
+      technologies: [],
+    };
+    onUpdate([...projects, newItem]);
+    handleEdit(newItem);
   };
 
   return (
-    <div className="resume-space-y-4">
-      <SectionHeader 
-        title="Projects" 
-        icon={<FolderGit2 className="h-5 w-5" />}
-        onAdd={handleAddProject}
-        addButtonText="Add Project"
-      />
+    <div className="space-y-space-4">
+      {projects.map((item) => (
+        <ResumePanel key={item.id}>
+          {editing === item.id ? (
+            // Edit Mode
+            <div className="space-y-space-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-medium text-white">Edit Project</h3>
+                <ItemActions
+                  isEditing={true}
+                  onSave={handleSave}
+                  onCancel={handleCancel}
+                />
+              </div>
 
-      {projects.length === 0 ? (
-        <div className="cosmic-panel resume-p-6 flex flex-col items-center justify-center">
-          <FolderGit2 className="h-12 w-12 resume-mb-2 text-resume-text-accent opacity-30" />
-          <p className="text-center text-sm resume-mb-4 text-resume-text-secondary">
-            Add your notable projects to showcase your practical skills and achievements
-          </p>
-          <CosmicButton 
-            variant="outline" 
-            size="sm" 
-            onClick={handleAddProject}
-            withGlow
-          >
-            Add Project
-          </CosmicButton>
-        </div>
-      ) : (
-        <Accordion
-          type="single"
-          collapsible
-          value={expandedItem || undefined}
-          onValueChange={(value) => setExpandedItem(value)}
-          className="resume-space-y-2"
-        >
-          {projects.map((project) => (
-            <AccordionItem
-              key={project.id}
-              value={project.id}
-              className={cn(
-                "cosmic-panel overflow-hidden",
-                expandedItem === project.id ? "ring-1 ring-resume-panel-border" : ""
-              )}
-            >
-              <AccordionTrigger className="resume-p-4 hover:bg-primary/10 data-[state=open]:bg-primary/20">
-                <div className="flex flex-1 justify-between items-center">
-                  <div className="text-left">
-                    <p className="font-medium text-resume-text-primary">
-                      {project.title || "New Project"}
-                    </p>
-                    {project.technologies && project.technologies.length > 0 && (
-                      <div className="flex flex-wrap resume-gap-1 resume-mt-1 max-w-xs">
-                        {project.technologies.slice(0, 3).map((tech, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs px-1.5 py-0 bg-primary/20 text-resume-text-accent">
-                            {tech}
-                          </Badge>
-                        ))}
-                        {project.technologies.length > 3 && (
-                          <Badge variant="outline" className="text-xs px-1.5 py-0 text-resume-text-muted border-resume-panel-border">
-                            +{project.technologies.length - 3} more
-                          </Badge>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  {project.link && (
-                    <div className="resume-mr-4 text-resume-text-accent">
-                      <LinkIcon className="h-4 w-4" />
-                    </div>
-                  )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-4">
+                <div className="md:col-span-2">
+                  <label className="text-sm text-blue-300 block mb-1">Project Title</label>
+                  <Input
+                    name="title"
+                    value={currentItem?.title || ""}
+                    onChange={handleChange}
+                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    placeholder="e.g. E-commerce Platform"
+                  />
                 </div>
-              </AccordionTrigger>
-              <AccordionContent className="pb-0">
-                <div className="resume-p-4 resume-space-y-4 bg-resume-panel-bg rounded-b-md">
-                  <div className="resume-space-y-2">
-                    <Label htmlFor={`project-title-${project.id}`} className="text-resume-text-secondary">Project Title</Label>
-                    <Input
-                      id={`project-title-${project.id}`}
-                      value={project.title}
-                      onChange={(e) => handleProjectChange(project.id, 'title', e.target.value)}
-                      placeholder="e.g., E-commerce Website, Mobile App, Research Paper"
-                      className="cosmic-input"
-                    />
-                  </div>
+                <div className="md:col-span-2">
+                  <label className="text-sm text-blue-300 block mb-1">Project Link (Optional)</label>
+                  <Input
+                    name="link"
+                    value={currentItem?.link || ""}
+                    onChange={handleChange}
+                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    placeholder="e.g. https://github.com/username/project"
+                    type="url"
+                  />
+                </div>
+              </div>
 
-                  <div className="resume-space-y-2">
-                    <Label htmlFor={`project-description-${project.id}`} className="text-resume-text-secondary">Description</Label>
-                    <Textarea
-                      id={`project-description-${project.id}`}
-                      value={project.description}
-                      onChange={(e) => handleProjectChange(project.id, 'description', e.target.value)}
-                      placeholder="Describe the project, your role, and key achievements"
-                      rows={3}
-                      className="cosmic-input"
-                    />
-                  </div>
+              <div>
+                <label className="text-sm text-blue-300 block mb-1">Technologies Used</label>
+                <Input
+                  value={currentItem?.technologies?.join(", ") || ""}
+                  onChange={handleTechnologiesChange}
+                  className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                  placeholder="e.g. React, Node.js, MongoDB (comma separated)"
+                />
+              </div>
 
-                  <div className="resume-space-y-2">
-                    <Label htmlFor={`project-link-${project.id}`} className="text-resume-text-secondary">Project Link (Optional)</Label>
-                    <Input
-                      id={`project-link-${project.id}`}
-                      value={project.link || ''}
-                      onChange={(e) => handleProjectChange(project.id, 'link', e.target.value)}
-                      placeholder="e.g., https://github.com/yourusername/project"
-                      className="cosmic-input"
-                    />
-                  </div>
-
-                  <div className="resume-space-y-2">
-                    <Label htmlFor={`project-tech-${project.id}`} className="text-resume-text-secondary">Technologies Used</Label>
-                    <div className="flex flex-wrap resume-gap-2 resume-mb-2">
-                      {project.technologies.map((tech, index) => (
-                        <Badge 
-                          key={index} 
-                          className="flex items-center resume-gap-1 px-2 py-1 bg-primary/20 text-resume-text-accent"
+              <div>
+                <label className="text-sm text-blue-300 block mb-1">Description</label>
+                <RichTextEditor
+                  value={currentItem?.description || ""}
+                  onChange={handleDescriptionChange}
+                  className="cosmic-textarea bg-black/30 border-blue-500/30 text-white min-h-20 p-3"
+                  placeholder="Describe your project, your role, and achievements..."
+                  rows={6}
+                />
+              </div>
+            </div>
+          ) : (
+            // View Mode
+            <div>
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-lg font-medium text-white flex items-center">
+                    {item.title || "Project Title"}
+                    {item.link && (
+                      <a
+                        href={item.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-2 text-blue-400 hover:text-blue-300"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                          />
+                        </svg>
+                      </a>
+                    )}
+                  </h3>
+                  {item.technologies && item.technologies.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {item.technologies.map((tech, index) => (
+                        <Badge
+                          key={index}
+                          className="bg-blue-900/60 text-blue-200 border-blue-700/50 text-xs"
                         >
                           {tech}
-                          <X
-                            className="h-3 w-3 cursor-pointer ml-1"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRemoveTechnology(project.id, tech);
-                            }}
-                          />
                         </Badge>
                       ))}
                     </div>
-                    <div className="flex resume-gap-2">
-                      <Input
-                        id={`project-tech-${project.id}`}
-                        value={activeTechProjectId === project.id ? techInput : ''}
-                        onChange={(e) => setTechInput(e.target.value)}
-                        onFocus={() => setActiveTechProjectId(project.id)}
-                        onKeyDown={(e) => handleTechKeyPress(e, project.id)}
-                        placeholder="e.g., React, TypeScript, Node.js"
-                        className="cosmic-input"
-                      />
-                      <Button 
-                        type="button" 
-                        size="sm"
-                        onClick={() => handleAddTechnology(project.id)}
-                        className="bg-primary/20 text-resume-text-accent hover:bg-primary/30 hover:text-resume-text-primary"
-                      >
-                        Add
-                      </Button>
-                    </div>
-                    <p className="text-xs text-resume-text-muted resume-mt-1">
-                      Press Enter after each technology to add it, or click the Add button
-                    </p>
-                  </div>
-
-                  <div className="flex justify-end resume-pt-2 resume-pb-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive/90 hover:bg-destructive/10 border border-resume-panel-border"
-                      onClick={() => handleRemoveProject(project.id)}
-                    >
-                      <Trash className="h-4 w-4 resume-mr-1" />
-                      Remove
-                    </Button>
-                  </div>
+                  )}
                 </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      )}
+                <ItemActions
+                  onEdit={() => handleEdit(item)}
+                  onDelete={() => handleDelete(item.id)}
+                />
+              </div>
+
+              <div 
+                className="mt-3 text-sm text-gray-300 space-y-2 rich-text-content"
+                dangerouslySetInnerHTML={{ __html: item.description }}
+              />
+            </div>
+          )}
+        </ResumePanel>
+      ))}
+
+      <Button
+        variant="outline"
+        className="w-full mt-2 border-blue-500/30 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
+        onClick={handleAdd}
+      >
+        <Plus className="h-4 w-4 mr-2" /> Add Project
+      </Button>
     </div>
   );
 }

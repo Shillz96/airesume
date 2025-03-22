@@ -26,12 +26,12 @@ export const SectionHeader = ({
   subtitle?: React.ReactNode;
   actions?: React.ReactNode;
 }) => (
-  <div className="cosmic-section-header flex justify-between items-center mb-space-4 text-white">
+  <div className="flex justify-between items-center mb-4 text-foreground">
     <div>
-      <h3 className="text-lg font-medium text-white flex items-center">
+      <h3 className="text-lg font-medium flex items-center">
         {title}
       </h3>
-      {subtitle && <p className="text-sm text-blue-300 mt-1">{subtitle}</p>}
+      {subtitle && <p className="text-sm text-primary/80 mt-1">{subtitle}</p>}
     </div>
     {actions && <div className="flex space-x-2">{actions}</div>}
   </div>
@@ -106,7 +106,7 @@ export const ResumePanel = ({
 }) => (
   <div
     className={cn(
-      "cosmic-resume-panel p-space-5 rounded-lg bg-gray-900/50 border border-blue-500/30 mb-space-4",
+      "cosmic-card p-5 rounded-md bg-[#151830] border border-[#252a47] shadow-lg mb-4",
       className
     )}
   >
@@ -159,50 +159,50 @@ export function PersonalInfoSection({
   };
 
   return (
-    <div className="space-y-space-5">
+    <div className="space-y-5">
       <ResumePanel>
         <SectionHeader title="Contact Information" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-3">
           <div>
-            <label className="text-sm text-blue-300 block mb-1">
+            <label className="text-sm text-gray-400 block mb-1">
               First Name
             </label>
             <Input
               name="firstName"
               value={info.firstName}
               onChange={handleChange}
-              className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+              className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
               placeholder="First Name"
             />
           </div>
           <div>
-            <label className="text-sm text-blue-300 block mb-1">Last Name</label>
+            <label className="text-sm text-gray-400 block mb-1">Last Name</label>
             <Input
               name="lastName"
               value={info.lastName}
               onChange={handleChange}
-              className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+              className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
               placeholder="Last Name"
             />
           </div>
           <div>
-            <label className="text-sm text-blue-300 block mb-1">Email</label>
+            <label className="text-sm text-gray-400 block mb-1">Email</label>
             <Input
               name="email"
               value={info.email}
               onChange={handleChange}
-              className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+              className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
               placeholder="Email Address"
               type="email"
             />
           </div>
           <div>
-            <label className="text-sm text-blue-300 block mb-1">Phone</label>
+            <label className="text-sm text-gray-400 block mb-1">Phone</label>
             <Input
               name="phone"
               value={info.phone}
               onChange={handleChange}
-              className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+              className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
               placeholder="Phone Number"
             />
           </div>
@@ -215,7 +215,7 @@ export function PersonalInfoSection({
           name="headline"
           value={info.headline}
           onChange={handleChange}
-          className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+          className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
           placeholder="e.g. Senior Software Engineer | React & Node.js Expert"
         />
       </ResumePanel>
@@ -225,7 +225,7 @@ export function PersonalInfoSection({
         <RichTextEditor
           value={info.summary}
           onChange={handleSummaryChange}
-          className="cosmic-textarea bg-black/30 border-blue-500/30 text-white min-h-20 p-3"
+          className="bg-[#0c101b] border-[#252a47] text-white min-h-20 p-3 focus:border-primary/50 focus:ring-primary/25"
           placeholder="Write a professional summary that highlights your key strengths and experience..."
           rows={6}
         />
@@ -313,14 +313,14 @@ export function ExperienceSection({
   };
 
   return (
-    <div className="space-y-space-4">
+    <div className="space-y-4">
       {experience.map((item) => (
         <ResumePanel key={item.id}>
           {editing === item.id ? (
             // Edit Mode
-            <div className="space-y-space-4">
+            <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium text-white">Edit Experience</h3>
+                <h3 className="text-lg font-medium text-foreground">Edit Experience</h3>
                 <ItemActions
                   isEditing={true}
                   onSave={handleSave}
@@ -330,53 +330,53 @@ export function ExperienceSection({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-3">
                 <div>
-                  <label className="text-sm text-blue-300 block mb-1">Job Title</label>
+                  <label className="text-sm text-gray-400 block mb-1">Job Title</label>
                   <Input
                     name="title"
                     value={currentItem?.title || ""}
                     onChange={handleChange}
-                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
                     placeholder="e.g. Senior Software Engineer"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-blue-300 block mb-1">Company</label>
+                  <label className="text-sm text-gray-400 block mb-1">Company</label>
                   <Input
                     name="company"
                     value={currentItem?.company || ""}
                     onChange={handleChange}
-                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
                     placeholder="e.g. Acme Inc."
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-blue-300 block mb-1">Start Date</label>
+                  <label className="text-sm text-gray-400 block mb-1">Start Date</label>
                   <Input
                     name="startDate"
                     value={currentItem?.startDate || ""}
                     onChange={handleChange}
-                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
                     placeholder="e.g. Jan 2020"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-blue-300 block mb-1">End Date</label>
+                  <label className="text-sm text-gray-400 block mb-1">End Date</label>
                   <Input
                     name="endDate"
                     value={currentItem?.endDate || ""}
                     onChange={handleChange}
-                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
                     placeholder="e.g. Present"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-sm text-blue-300 block mb-1">Description</label>
+                <label className="text-sm text-gray-400 block mb-1">Description</label>
                 <RichTextEditor
                   value={currentItem?.description || ""}
                   onChange={handleDescriptionChange}
-                  className="cosmic-textarea bg-black/30 border-blue-500/30 text-white min-h-20 p-3"
+                  className="bg-[#0c101b] border-[#252a47] text-white min-h-20 p-3 focus:border-primary/50 focus:ring-primary/25"
                   placeholder="Describe your responsibilities and achievements..."
                   rows={6}
                 />
@@ -387,7 +387,7 @@ export function ExperienceSection({
             <div>
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="text-lg font-medium text-white">{item.title || "Job Title"}</h3>
+                  <h3 className="text-lg font-medium text-foreground">{item.title || "Job Title"}</h3>
                   <p className="text-sm text-blue-300 mt-1">
                     {item.company || "Company"}
                     {item.company && (item.startDate || item.endDate) && " • "}
@@ -415,7 +415,7 @@ export function ExperienceSection({
 
       <Button
         variant="outline"
-        className="w-full mt-2 border-blue-500/30 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
+        className="w-full mt-4 bg-[#1a203c] border-[#252a47] text-white hover:bg-[#252a47] hover:text-white"
         onClick={handleAdd}
       >
         <Plus className="h-4 w-4 mr-2" /> Add Experience
@@ -503,14 +503,14 @@ export function EducationSection({
   };
 
   return (
-    <div className="space-y-space-4">
+    <div className="space-y-4">
       {education.map((item) => (
         <ResumePanel key={item.id}>
           {editing === item.id ? (
             // Edit Mode
-            <div className="space-y-space-4">
+            <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium text-white">Edit Education</h3>
+                <h3 className="text-lg font-medium text-foreground">Edit Education</h3>
                 <ItemActions
                   isEditing={true}
                   onSave={handleSave}
@@ -520,53 +520,53 @@ export function EducationSection({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-3">
                 <div>
-                  <label className="text-sm text-blue-300 block mb-1">Degree</label>
+                  <label className="text-sm text-gray-400 block mb-1">Degree</label>
                   <Input
                     name="degree"
                     value={currentItem?.degree || ""}
                     onChange={handleChange}
-                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
                     placeholder="e.g. B.S. Computer Science"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-blue-300 block mb-1">Institution</label>
+                  <label className="text-sm text-gray-400 block mb-1">Institution</label>
                   <Input
                     name="institution"
                     value={currentItem?.institution || ""}
                     onChange={handleChange}
-                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
                     placeholder="e.g. University of California"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-blue-300 block mb-1">Start Date</label>
+                  <label className="text-sm text-gray-400 block mb-1">Start Date</label>
                   <Input
                     name="startDate"
                     value={currentItem?.startDate || ""}
                     onChange={handleChange}
-                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
                     placeholder="e.g. 2016"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-blue-300 block mb-1">End Date</label>
+                  <label className="text-sm text-gray-400 block mb-1">End Date</label>
                   <Input
                     name="endDate"
                     value={currentItem?.endDate || ""}
                     onChange={handleChange}
-                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
                     placeholder="e.g. 2020"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-sm text-blue-300 block mb-1">Description</label>
+                <label className="text-sm text-gray-400 block mb-1">Description</label>
                 <RichTextEditor
                   value={currentItem?.description || ""}
                   onChange={handleDescriptionChange}
-                  className="cosmic-textarea bg-black/30 border-blue-500/30 text-white min-h-20 p-3"
+                  className="bg-[#0c101b] border-[#252a47] text-white min-h-20 p-3 focus:border-primary/50 focus:ring-primary/25"
                   placeholder="List relevant coursework, achievements, activities..."
                   rows={4}
                 />
@@ -577,7 +577,7 @@ export function EducationSection({
             <div>
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="text-lg font-medium text-white">{item.degree || "Degree"}</h3>
+                  <h3 className="text-lg font-medium text-foreground">{item.degree || "Degree"}</h3>
                   <p className="text-sm text-blue-300 mt-1">
                     {item.institution || "Institution"}
                     {item.institution && (item.startDate || item.endDate) && " • "}
@@ -605,7 +605,7 @@ export function EducationSection({
 
       <Button
         variant="outline"
-        className="w-full mt-2 border-blue-500/30 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
+        className="w-full mt-4 bg-[#1a203c] border-[#252a47] text-white hover:bg-[#252a47] hover:text-white"
         onClick={handleAdd}
       >
         <Plus className="h-4 w-4 mr-2" /> Add Education
@@ -733,9 +733,9 @@ export function SkillsSection({
           >
             {editing === item.id ? (
               // Edit Mode
-              <div className="space-y-space-4">
+              <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-medium text-white">Edit Skill</h3>
+                  <h3 className="text-lg font-medium text-foreground">Edit Skill</h3>
                   <ItemActions
                     isEditing={true}
                     onSave={handleSave}
@@ -745,22 +745,22 @@ export function SkillsSection({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-3">
                   <div>
-                    <label className="text-sm text-blue-300 block mb-1">Skill Name</label>
+                    <label className="text-sm text-gray-400 block mb-1">Skill Name</label>
                     <Input
                       name="name"
                       value={currentItem?.name || ""}
                       onChange={handleChange}
-                      className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                      className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
                       placeholder="e.g. React.js"
                     />
                   </div>
                   <div>
-                    <label className="text-sm text-blue-300 block mb-1">Category (Optional)</label>
+                    <label className="text-sm text-gray-400 block mb-1">Category (Optional)</label>
                     <Input
                       name="category"
                       value={currentItem?.category || ""}
                       onChange={handleChange}
-                      className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                      className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
                       placeholder="e.g. Programming Languages"
                     />
                   </div>
@@ -824,7 +824,7 @@ export function SkillsSection({
 
       <Button
         variant="outline"
-        className="w-full mt-space-4 border-blue-500/30 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
+        className="w-full mt-4 bg-[#1a203c] border-[#252a47] text-white hover:bg-[#252a47] hover:text-white"
         onClick={handleAdd}
       >
         <Plus className="h-4 w-4 mr-2" /> Add Skill
@@ -923,14 +923,14 @@ export function ProjectsSection({
   };
 
   return (
-    <div className="space-y-space-4">
+    <div className="space-y-4">
       {projects.map((item) => (
         <ResumePanel key={item.id}>
           {editing === item.id ? (
             // Edit Mode
-            <div className="space-y-space-4">
+            <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium text-white">Edit Project</h3>
+                <h3 className="text-lg font-medium text-foreground">Edit Project</h3>
                 <ItemActions
                   isEditing={true}
                   onSave={handleSave}
@@ -940,22 +940,22 @@ export function ProjectsSection({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-3 gap-y-3">
                 <div className="md:col-span-2">
-                  <label className="text-sm text-blue-300 block mb-1">Project Title</label>
+                  <label className="text-sm text-gray-400 block mb-1">Project Title</label>
                   <Input
                     name="title"
                     value={currentItem?.title || ""}
                     onChange={handleChange}
-                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
                     placeholder="e.g. E-commerce Platform"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="text-sm text-blue-300 block mb-1">Project Link (Optional)</label>
+                  <label className="text-sm text-gray-400 block mb-1">Project Link (Optional)</label>
                   <Input
                     name="link"
                     value={currentItem?.link || ""}
                     onChange={handleChange}
-                    className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                    className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
                     placeholder="e.g. https://github.com/username/project"
                     type="url"
                   />
@@ -963,21 +963,21 @@ export function ProjectsSection({
               </div>
 
               <div>
-                <label className="text-sm text-blue-300 block mb-1">Technologies Used</label>
+                <label className="text-sm text-gray-400 block mb-1">Technologies Used</label>
                 <Input
                   value={currentItem?.technologies?.join(", ") || ""}
                   onChange={handleTechnologiesChange}
-                  className="cosmic-input bg-black/30 border-blue-500/30 text-white"
+                  className="bg-[#0c101b] border-[#252a47] text-white focus:border-primary/50 focus:ring-primary/25"
                   placeholder="e.g. React, Node.js, MongoDB (comma separated)"
                 />
               </div>
 
               <div>
-                <label className="text-sm text-blue-300 block mb-1">Description</label>
+                <label className="text-sm text-gray-400 block mb-1">Description</label>
                 <RichTextEditor
                   value={currentItem?.description || ""}
                   onChange={handleDescriptionChange}
-                  className="cosmic-textarea bg-black/30 border-blue-500/30 text-white min-h-20 p-3"
+                  className="bg-[#0c101b] border-[#252a47] text-white min-h-20 p-3 focus:border-primary/50 focus:ring-primary/25"
                   placeholder="Describe your project, your role, and achievements..."
                   rows={6}
                 />
@@ -1044,7 +1044,7 @@ export function ProjectsSection({
 
       <Button
         variant="outline"
-        className="w-full mt-2 border-blue-500/30 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
+        className="w-full mt-4 bg-[#1a203c] border-[#252a47] text-white hover:bg-[#252a47] hover:text-white"
         onClick={handleAdd}
       >
         <Plus className="h-4 w-4 mr-2" /> Add Project

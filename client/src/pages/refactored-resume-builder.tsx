@@ -3060,11 +3060,11 @@ export default function ResumeBuilder() {
                     </div>
 
                     <ExperienceSection
-                      experiences={resume?.experience || []}
-                      onUpdate={(experiences) => {
+                      experience={resume?.experience || []}
+                      onUpdate={(experience) => {
                         setResume({
                           ...resume,
-                          experience: experiences,
+                          experience,
                         });
                       }}
                     />
@@ -3150,7 +3150,7 @@ export default function ResumeBuilder() {
                       }}
                     />
 
-                    <div className="mt-space-4 text-xs text-gray-300 bg-white/5 p-space-4 rounded-lg border border-white/10">
+                    <div className="cosmic-tip-section mt-space-4 text-xs text-gray-300 bg-gray-900/50 p-space-4 rounded-lg border border-blue-500/30">
                       <p className="mb-space-2 text-blue-300 font-medium">
                         Tips for education section:
                       </p>
@@ -3182,16 +3182,16 @@ export default function ResumeBuilder() {
                           </p>
 
                           <div className="space-y-space-2 text-sm">
-                            <div className="p-space-2 rounded bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
                               Focus on relevant coursework that aligns with your target job
                             </div>
-                            <div className="p-space-2 rounded bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
                               Highlight leadership roles in student organizations
                             </div>
-                            <div className="p-space-2 rounded bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
                               Include special projects, research, or thesis work
                             </div>
-                            <div className="p-space-2 rounded bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
+                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
                               List certifications or specialized training programs
                             </div>
                           </div>

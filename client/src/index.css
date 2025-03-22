@@ -16,13 +16,13 @@
 
 /* Import component styles */
 @import './styles/components/cosmic-components.css'; /* Added unified cosmic component styles */
+@import './styles/cosmic-resume.css'; /* Cosmic resume component styling */
 @import './styles/components/buttons.css';
 @import './styles/components/cards.css';
 @import './styles/components/forms.css';
 @import './styles/components/tabs.css';
 @import './styles/components/cosmic-tabs.css'; /* Added new cosmic tabs styling */
 @import './styles/components/cosmic-dialog.css'; /* Added new cosmic dialog styling */
-@import './styles/components/cosmic-resume.css';
 @import './styles/components/resume-sections.css'; /* Added resume section styling */
 
 /* Import layout styles */

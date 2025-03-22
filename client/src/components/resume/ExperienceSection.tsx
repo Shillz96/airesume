@@ -146,7 +146,7 @@ export function ExperienceSection({
                         value={experience.title}
                         onChange={(e) => handleExperienceChange(experience.id, 'title', e.target.value)}
                         placeholder="e.g., Senior Developer"
-                        className="cosmic-input border-white/10"
+                        className="cosmic-navy-input"
                       />
                     </div>
                     <div className="space-y-2">
@@ -156,7 +156,7 @@ export function ExperienceSection({
                         value={experience.company}
                         onChange={(e) => handleExperienceChange(experience.id, 'company', e.target.value)}
                         placeholder="e.g., Acme Inc."
-                        className="cosmic-input border-white/10"
+                        className="cosmic-navy-input"
                       />
                     </div>
                   </div>
@@ -170,7 +170,7 @@ export function ExperienceSection({
                           id={`exp-start-${experience.id}`}
                           value={experience.startDate}
                           onChange={(e) => handleExperienceChange(experience.id, 'startDate', e.target.value)}
-                          className="pl-10 cosmic-input border-white/10"
+                          className="pl-10 cosmic-navy-input"
                           placeholder="e.g., Jan 2020"
                         />
                       </div>
@@ -183,7 +183,7 @@ export function ExperienceSection({
                           id={`exp-end-${experience.id}`}
                           value={experience.endDate}
                           onChange={(e) => handleExperienceChange(experience.id, 'endDate', e.target.value)}
-                          className="pl-10 cosmic-input border-white/10"
+                          className="pl-10 cosmic-navy-input"
                           placeholder="e.g., Dec 2022 or Present"
                         />
                       </div>
@@ -198,7 +198,7 @@ export function ExperienceSection({
                       onChange={(e) => handleExperienceChange(experience.id, 'description', e.target.value)}
                       placeholder="Describe your responsibilities, achievements, and skills used..."
                       rows={5}
-                      className="cosmic-input cosmic-textarea border-white/10"
+                      className="cosmic-navy-input cosmic-form-textarea"
                     />
                     <p className="text-xs text-muted-foreground opacity-80">
                       Use bullet points for better readability. Start with strong action verbs.

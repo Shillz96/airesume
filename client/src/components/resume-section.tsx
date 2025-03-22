@@ -430,20 +430,20 @@ export function ResumeSkillsSection({ skills, onUpdate }: ResumeSkillsSectionPro
         </div>
       )}
       
-      <div className="cosmic-skills-grid">
+      <div className="flex flex-wrap gap-3">
         {skills.map((skill) => (
-          <div key={skill.id} className="cosmic-skill-item">
+          <div key={skill.id} className="cosmic-skill-item flex w-full sm:w-auto">
             <Input
               value={skill.name}
               onChange={(e) => handleChange(skill.id, "name", e.target.value)}
               placeholder="Python"
-              className="cosmic-form-input flex-grow"
+              className="cosmic-form-input min-w-[120px] w-[180px] bg-[#1a2442] border-[#2a325a] focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             />
             <div className="relative ml-2">
               <select
                 value={skill.proficiency}
                 onChange={(e) => handleChange(skill.id, "proficiency", parseInt(e.target.value))}
-                className="cosmic-form-input appearance-none pr-8"
+                className="cosmic-form-input appearance-none pr-8 w-[120px] bg-[#1a2442] border-[#2a325a] focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               >
                 <option value={1}>Beginner</option>
                 <option value={2}>Intermediate</option>

@@ -99,19 +99,21 @@ export function ResumeExperienceSection({ experiences, onUpdate }: ResumeExperie
 
   return (
     <div>
-      <div className="cosmic-add-button-container flex justify-end">
-        <Button
-          onClick={handleAdd}
-          className="cosmic-add-experience"
-          variant="ghost"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          Add Experience
-        </Button>
-      </div>
+      {experiences.length > 0 && (
+        <div className="cosmic-add-button-container flex justify-end">
+          <Button
+            onClick={handleAdd}
+            className="cosmic-add-experience"
+            variant="ghost"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Experience
+          </Button>
+        </div>
+      )}
       
       {experiences.map((exp) => (
         <Collapsible
@@ -259,19 +261,21 @@ export function ResumeEducationSection({ education, onUpdate }: ResumeEducationS
 
   return (
     <div>
-      <div className="cosmic-add-button-container flex justify-end">
-        <Button
-          onClick={handleAdd}
-          className="cosmic-add-education"
-          variant="ghost"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          Add Education
-        </Button>
-      </div>
+      {education.length > 0 && (
+        <div className="cosmic-add-button-container flex justify-end">
+          <Button
+            onClick={handleAdd}
+            className="cosmic-add-education"
+            variant="ghost"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Education
+          </Button>
+        </div>
+      )}
       
       {education.map((edu) => (
         <Collapsible
@@ -410,19 +414,21 @@ export function ResumeSkillsSection({ skills, onUpdate }: ResumeSkillsSectionPro
 
   return (
     <div>
-      <div className="cosmic-add-button-container flex justify-end">
-        <Button
-          onClick={handleAdd}
-          className="cosmic-add-skill"
-          variant="ghost"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          Add Skill
-        </Button>
-      </div>
+      {skills.length > 0 && (
+        <div className="cosmic-add-button-container flex justify-end">
+          <Button
+            onClick={handleAdd}
+            className="cosmic-add-skill"
+            variant="ghost"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Skill
+          </Button>
+        </div>
+      )}
       
       <div className="cosmic-skills-grid">
         {skills.map((skill) => (
@@ -475,8 +481,6 @@ export function ResumeSkillsSection({ skills, onUpdate }: ResumeSkillsSectionPro
           Add Your First Skill
         </button>
       )}
-      
-
     </div>
   );
 }
@@ -513,19 +517,21 @@ export function ResumeProjectsSection({ projects, onUpdate }: ResumeProjectsSect
 
   return (
     <div>
-      <div className="cosmic-add-button-container flex justify-end">
-        <Button
-          onClick={handleAdd}
-          className="cosmic-add-project"
-          variant="ghost"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          Add Project
-        </Button>
-      </div>
+      {projects.length > 0 && (
+        <div className="cosmic-add-button-container flex justify-end">
+          <Button
+            onClick={handleAdd}
+            className="cosmic-add-project"
+            variant="ghost"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Project
+          </Button>
+        </div>
+      )}
       
       {projects.map((project) => (
         <Collapsible
@@ -633,8 +639,6 @@ export function ResumeProjectsSection({ projects, onUpdate }: ResumeProjectsSect
           Add Your First Project
         </button>
       )}
-      
-
     </div>
   );
 }

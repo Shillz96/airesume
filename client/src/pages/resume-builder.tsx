@@ -3349,23 +3349,6 @@ export default function ResumeBuilder() {
           </div>
         </div>
       </main>
-
-      {/* AI features are now integrated into each section */}
-      </div>
-
-      {/* AI Assistants are now integrated directly into each section */}
-                },
-                experience: [],
-                education: [],
-                skills: [],
-                projects: [],
-                template: "professional",
-              }}
-              activeTab={activeSection || 'contact'}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

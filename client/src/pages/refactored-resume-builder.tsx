@@ -3166,42 +3166,43 @@ export default function ResumeBuilder() {
                   {/* Education AI Assistant */}
                   <div className="md:col-span-1">
                     <div className="cosmic-ai-card min-h-[300px]">
-                      <div className="relative z-10 p-space-4">
-                        <div className="flex items-center gap-space-2 mb-space-5">
-                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center">
+                      <div className="relative z-10">
+                        <div className="flex items-center gap-2 mb-5">
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center">
                             <GraduationCap className="h-4 w-4 text-white" />
                           </div>
                           <h3 className="font-medium text-white text-lg">
-                            Education Assistant
+                            AI Education Assistant
                           </h3>
                         </div>
 
-                        <div className="space-y-space-4">
+                        <div className="w-full space-y-4">
                           <p className="text-sm text-blue-100">
-                            Enhance your education section with these tips from our AI assistant:
+                            Enhance your education section with these tips:
                           </p>
 
-                          <div className="space-y-space-2 text-sm">
-                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                          <div className="space-y-2 text-sm">
+                            <div className="p-2 rounded-md bg-[#1a203c] border border-[#252a47] hover:bg-blue-900/20 transition-colors cursor-pointer">
                               Focus on relevant coursework that aligns with your target job
                             </div>
-                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                            <div className="p-2 rounded-md bg-[#1a203c] border border-[#252a47] hover:bg-blue-900/20 transition-colors cursor-pointer">
                               Highlight leadership roles in student organizations
                             </div>
-                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                            <div className="p-2 rounded-md bg-[#1a203c] border border-[#252a47] hover:bg-blue-900/20 transition-colors cursor-pointer">
                               Include special projects, research, or thesis work
                             </div>
-                            <div className="p-space-2 rounded bg-gray-900/50 border border-blue-500/30 hover:bg-blue-500/10 transition-colors cursor-pointer">
+                            <div className="p-2 rounded-md bg-[#1a203c] border border-[#252a47] hover:bg-blue-900/20 transition-colors cursor-pointer">
                               List certifications or specialized training programs
                             </div>
                           </div>
 
-                          <button 
-                            className="w-full mt-space-4 py-2 px-3 bg-blue-600/30 hover:bg-blue-600/50 rounded-md text-white text-sm transition-colors"
+                          <Button 
+                            className="w-full mt-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                             onClick={() => setIsDialogOpen(true)}
                           >
+                            <Sparkles className="h-4 w-4 mr-2" />
                             Get AI suggestions
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -3246,9 +3247,9 @@ export default function ResumeBuilder() {
                   {/* Tips for Skills */}
                   <div className="md:col-span-1">
                     <div className="cosmic-ai-card min-h-[300px]">
-                      <div className="relative z-10 p-space-4">
-                        <div className="flex items-center gap-space-2 mb-space-5">
-                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center">
+                      <div className="relative z-10">
+                        <div className="flex items-center gap-2 mb-5">
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center">
                             <Code className="h-4 w-4 text-white" />
                           </div>
                           <h3 className="font-medium text-white text-lg">
@@ -3256,7 +3257,7 @@ export default function ResumeBuilder() {
                           </h3>
                         </div>
 
-                        <div className="w-full space-y-space-4">
+                        <div className="w-full space-y-4">
                           <ResumeTips
                             resumeId={resumeId}
                             onApplySuggestion={(skill) => {

@@ -79,7 +79,7 @@ export default function HomePage() {
   
   return (
     <>
-      <div className="container  pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
+      <div className="container pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
         <div ref={welcomeRef}>
           <PageHeader
             title={

@@ -96,7 +96,7 @@ function AppContent() {
       <div className="relative z-10" style={{ minHeight: '100vh' }}>
         {/* Master Navbar Component */}
         {showNavbar && <Navbar />}
-        <div className="pt-[4.5rem]" style={{ minHeight: 'calc(100vh - 4.5rem)' }}>
+        <div className="pt-16" style={{ minHeight: 'calc(100vh - 4rem)' }}>
           <Router />
         </div>
         {/* Admin access button - always visible */}

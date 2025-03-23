@@ -7,8 +7,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
-import PageHeader from "@/features/layout/components/PageHeader";
-import PageContainer from "@/components/PageContainer";
+import { UnifiedPageHeader, UnifiedContainer } from "@/components/unified";
 
 // Import from new organized structure
 import { Button } from "@/ui/core/Button";
@@ -388,8 +387,8 @@ export default function ResumeBuilderNew() {
 
   return (
     <>
-      <div className="page-container">
-        <PageHeader
+      <UnifiedContainer className="min-h-screen pb-10 pt-4">
+        <UnifiedPageHeader
           title="Resume Builder"
           subtitle="Create and customize your professional resume"
           actions={
@@ -696,7 +695,7 @@ export default function ResumeBuilderNew() {
             </div>
           </div>
         </div>
-      </div>
+      </UnifiedContainer>
     </>
   );
 }

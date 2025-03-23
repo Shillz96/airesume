@@ -29,7 +29,7 @@ import { Loader2, CreditCardIcon, ArrowRightIcon, GiftIcon, PlusCircleIcon, Arro
 
 import { AdminControls } from "@/features/admin/components/AdminTools";
 
-import PageHeader from "@/features/layout/components/PageHeader";
+import { UnifiedPageHeader, UnifiedContainer } from "@/components/unified";
 
 interface Subscription {
   id: number;

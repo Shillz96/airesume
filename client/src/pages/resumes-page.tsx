@@ -237,7 +237,7 @@ export default function ResumesPage() {
   return (
     <>
       
-      <UnifiedContainer className="pb-10 min-h-screen relative z-10">
+      <UnifiedContainer className="pb-10 min-h-screen relative z-10" paddingTop="sm">
         <UnifiedPageHeader 
           title="My Resumes"
           subtitle="Manage and organize all your resumes in one place"

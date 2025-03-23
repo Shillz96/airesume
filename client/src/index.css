@@ -1320,55 +1320,33 @@ a:hover {
 }
 
 /* --------------------------------
- * GLOBAL TABS STYLING OVERRIDE
+ * TAB STYLING CLASSES
  * -------------------------------- */
-/* This is a global override to ensure all tab elements have consistent styling */
-[role="tablist"],
-[data-orientation="horizontal"],
-.TabsList,
-div[data-orientation="horizontal"] {
-  background-color: rgba(25, 31, 69, 0.95) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  width: 100% !important;
-  max-width: 96% !important;
-  margin: 0 auto 1rem auto !important;
-  padding: 0.5rem 1.5rem !important;
-  border-radius: 0.5rem !important;
-  gap: 1rem !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  overflow-x: auto !important;
+/* Use these classes in the tab components directly */
+.cosmic-tablist {
+  background-color: rgba(25, 31, 69, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+  max-width: 96%;
+  margin: 0 auto 1rem auto;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  gap: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: auto;
 }
 
-[role="tab"],
-button[role="tab"] {
-  font-weight: 600 !important;
-  font-size: 0.75rem !important;
-  letter-spacing: 0.05em !important;
-  padding: 0.75rem 1rem !important;
-  color: rgba(255, 255, 255, 0.6) !important;
-  background: transparent !important;
-  border: none !important;
-  border-bottom: 2px solid transparent !important;
-  border-radius: 0 !important;
-  text-transform: uppercase !important;
-}
-
-[role="tab"][data-state="active"],
-button[role="tab"][data-state="active"] {
-  background-color: transparent !important;
-  color: white !important;
-  border-bottom: 2px solid var(--primary) !important;
-}
-
-[role="tab"][data-state="active"] svg,
-button[role="tab"][data-state="active"] svg {
-  color: var(--primary) !important;
-}
-
-[role="tab"]:hover,
-button[role="tab"]:hover {
-  color: white !important;
-  border-bottom-color: rgba(var(--primary-rgb), 0.3) !important;
+.cosmic-tab {
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  padding: 0.75rem 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  text-transform: uppercase;
 }

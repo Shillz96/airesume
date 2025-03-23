@@ -137,37 +137,37 @@ export default function JobFinder() {
 
         {/* Job Status Tabs */}
         <Tabs value={statusFilter} onValueChange={setStatusFilter} className="mb-8 cosmic-tabs">
-          <TabsList className="cosmic-tabs-list">
+          <TabsList className="cosmic-tablist">
             <TabsTrigger 
               value="all" 
-              className="cosmic-tab-trigger"
+              className="cosmic-tab"
             >
               All Jobs
             </TabsTrigger>
             <TabsTrigger 
               value="saved" 
-              className="cosmic-tab-trigger"
+              className="cosmic-tab"
             >
               <Heart className="h-4 w-4 mr-2" />
               Saved
             </TabsTrigger>
             <TabsTrigger 
               value="applied" 
-              className="cosmic-tab-trigger"
+              className="cosmic-tab"
             >
               <Share2 className="h-4 w-4 mr-2" />
               Applied
             </TabsTrigger>
             <TabsTrigger 
               value="interviewing" 
-              className="cosmic-tab-trigger"
+              className="cosmic-tab"
             >
               <Building className="h-4 w-4 mr-2" />
               Interviewing
             </TabsTrigger>
             <TabsTrigger 
               value="rejected" 
-              className="cosmic-tab-trigger"
+              className="cosmic-tab"
             >
               <XCircle className="h-4 w-4 mr-2" />
               Rejected

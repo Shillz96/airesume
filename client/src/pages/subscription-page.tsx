@@ -257,20 +257,20 @@ export default function SubscriptionPage() {
         />
         
         <Tabs defaultValue="subscription" className="w-full mt-6 cosmic-tabs">
-          <TabsList className="cosmic-tabs-list">
+          <TabsList className="cosmic-tablist">
             <TabsTrigger 
               value="subscription" 
-              className="cosmic-tab-trigger">
+              className="cosmic-tab">
               Plans
             </TabsTrigger>
             <TabsTrigger 
               value="addons" 
-              className="cosmic-tab-trigger">
+              className="cosmic-tab">
               Add-ons
             </TabsTrigger>
             <TabsTrigger 
               value="billing" 
-              className="cosmic-tab-trigger">
+              className="cosmic-tab">
               Billing
             </TabsTrigger>
           </TabsList>

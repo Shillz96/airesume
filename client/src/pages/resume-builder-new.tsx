@@ -504,46 +504,46 @@ export default function ResumeBuilderNew() {
               onValueChange={setActiveSection}
               className="w-full"
             >
-              <TabsList className="cosmic-tabs-list mb-6">
+              <TabsList className="cosmic-tablist mb-6">
                 <TabsTrigger 
                   value="contact" 
-                  className="cosmic-tab-trigger"
+                  className="cosmic-tab"
                 >
                   Contact
                 </TabsTrigger>
                 <TabsTrigger 
                   value="summary" 
-                  className="cosmic-tab-trigger"
+                  className="cosmic-tab"
                 >
                   Summary
                 </TabsTrigger>
                 <TabsTrigger 
                   value="experience" 
-                  className="cosmic-tab-trigger"
+                  className="cosmic-tab"
                 >
                   Experience
                 </TabsTrigger>
                 <TabsTrigger 
                   value="education" 
-                  className="cosmic-tab-trigger"
+                  className="cosmic-tab"
                 >
                   Education
                 </TabsTrigger>
                 <TabsTrigger 
                   value="skills" 
-                  className="cosmic-tab-trigger"
+                  className="cosmic-tab"
                 >
                   Skills
                 </TabsTrigger>
                 <TabsTrigger 
                   value="projects" 
-                  className="cosmic-tab-trigger"
+                  className="cosmic-tab"
                 >
                   Projects
                 </TabsTrigger>
                 <TabsTrigger 
                   value="preview" 
-                  className="cosmic-tab-trigger"
+                  className="cosmic-tab"
                 >
                   Preview
                 </TabsTrigger>

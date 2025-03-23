@@ -36,7 +36,30 @@ export default function SimpleNavbar() {
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
   const { openLogin, openRegister } = useAuthDialog();
-  const { isDarkMode, toggleDarkMode } = useTheme();
+  // Get direct access to document to toggle theme class
+  const [isDarkMode, setIsDarkMode] = useState(() => 
+    document.documentElement.classList.contains('dark')
+  );
+  
+  // Simple function to toggle dark mode directly on document
+  const toggleDarkMode = () => {
+    const html = document.documentElement;
+    const isDark = html.classList.contains('dark');
+    
+    if (isDark) {
+      // Switch to light mode
+      html.classList.remove('dark');
+      html.classList.add('light');
+      localStorage.setItem('theme-mode', 'light');
+      setIsDarkMode(false);
+    } else {
+      // Switch to dark mode
+      html.classList.add('dark');
+      html.classList.remove('light');
+      localStorage.setItem('theme-mode', 'dark');
+      setIsDarkMode(true);
+    }
+  };
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);

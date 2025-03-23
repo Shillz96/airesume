@@ -1,3 +1,9 @@
+/**
+ * COMPONENT MIGRATED: This component has been moved to features/admin/components/GoAdminLink.tsx
+ * Please use the new component from the admin feature directory
+ * This file will be removed in a future update
+ */
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";

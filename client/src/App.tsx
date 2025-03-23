@@ -19,11 +19,11 @@ import LandingPage from "@/pages/landing-page";
 import AdminAccess from "@/pages/admin-access";
 import { ProtectedRoute } from "./lib/protected-route";
 
-// Import components
-import Navbar from "@/components/navbar";
-import GoAdminLink from "@/components/go-admin-link";
-import QuickLogin from "@/components/quick-login";
-import AuthDialog from "@/components/auth-dialog";
+// Import components from their new locations after migration
+import Navbar from "@/ui/navigation/Navbar";
+import GoAdminLink from "@/features/admin/components/GoAdminLink";
+import QuickLogin from "@/features/auth/components/QuickLogin";
+import AuthDialog from "@/features/auth/components/AuthDialog";
 import CosmicBackground from "@/ui/theme/CosmicBackground";
 
 function Router() {

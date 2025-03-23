@@ -1,3 +1,9 @@
+/**
+ * COMPONENT MIGRATED: This component has been moved to features/auth/components/QuickLogin.tsx
+ * Please use the new component from the auth feature directory
+ * This file will be removed in a future update
+ */
+
 import React, { useState } from 'react';
 import {
   Dialog,

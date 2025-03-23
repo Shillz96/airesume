@@ -1,3 +1,9 @@
+/**
+ * COMPONENT MIGRATED: This component has been moved to ui/navigation/Navbar.tsx
+ * Please use the new component from the navigation directory
+ * This file will be removed in a future update
+ */
+
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";

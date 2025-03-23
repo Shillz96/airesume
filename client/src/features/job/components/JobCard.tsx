@@ -117,13 +117,13 @@ export default function JobCard({ job }: JobCardProps) {
               {job.skills.slice(0, 3).map((skill, index) => (
                 <span 
                   key={index} 
-                  className="px-2 py-0.5 bg-background text-foreground rounded-full text-xs border border-border"
+                  className="px-2 py-0.5 bg-card/90 text-foreground rounded-full text-xs border border-white/10"
                 >
                   {skill}
                 </span>
               ))}
               {job.skills.length > 3 && (
-                <span className="px-2 py-0.5 bg-background text-muted-foreground rounded-full text-xs border border-border">
+                <span className="px-2 py-0.5 bg-card/90 text-muted-foreground rounded-full text-xs border border-white/10">
                   +{job.skills.length - 3} more
                 </span>
               )}
@@ -132,15 +132,15 @@ export default function JobCard({ job }: JobCardProps) {
         </div>
       </div>
       
-      <div className="flex items-center justify-between mt-2 pt-2 border-t border-border">
+      <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/10">
         <div className="flex items-center space-x-2">
           {job.isNew && (
-            <span className="px-2 py-0.5 bg-green-500/10 text-green-500 rounded-full text-xs font-medium">
+            <span className="px-2 py-0.5 bg-green-500/10 text-green-500 rounded-full text-xs font-medium border border-green-500/20">
               New
             </span>
           )}
           {job.remote && (
-            <span className="px-2 py-0.5 bg-blue-500/10 text-blue-500 rounded-full text-xs font-medium">
+            <span className="px-2 py-0.5 bg-blue-500/10 text-blue-500 rounded-full text-xs font-medium border border-blue-500/20">
               Remote
             </span>
           )}

@@ -273,46 +273,46 @@ export default function ResumeBuilder() {
               onValueChange={setActiveSection}
               className="w-full"
             >
-              <TabsList className="mb-6 flex flex-wrap h-auto bg-background border border-border p-1 rounded-lg w-full space-x-1">
+              <TabsList className="mb-6 flex flex-wrap h-auto bg-black/90 border border-white/10 rounded-lg w-full gap-0">
                 <TabsTrigger 
                   value="contact" 
-                  className="py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
                 >
                   Contact
                 </TabsTrigger>
                 <TabsTrigger 
                   value="summary" 
-                  className="py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
                 >
                   Summary
                 </TabsTrigger>
                 <TabsTrigger 
                   value="experience" 
-                  className="py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
                 >
                   Experience
                 </TabsTrigger>
                 <TabsTrigger 
                   value="education" 
-                  className="py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
                 >
                   Education
                 </TabsTrigger>
                 <TabsTrigger 
                   value="skills" 
-                  className="py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
                 >
                   Skills
                 </TabsTrigger>
                 <TabsTrigger 
                   value="projects" 
-                  className="py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
                 >
                   Projects
                 </TabsTrigger>
                 <TabsTrigger 
                   value="preview" 
-                  className="py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
                 >
                   Preview
                 </TabsTrigger>

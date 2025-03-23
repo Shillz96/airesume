@@ -91,7 +91,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
           {/* Country */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Globe className="h-4 w-4 text-muted-foreground" />
+              <Globe className="h-4 w-4 text-primary" />
             </div>
             <select
               name="country"
@@ -116,7 +116,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
           {/* Job Type */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <BriefcaseBusiness className="h-4 w-4 text-muted-foreground" />
+              <BriefcaseBusiness className="h-4 w-4 text-primary" />
             </div>
             <select
               name="type"
@@ -140,7 +140,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
           {/* Experience Level */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <GraduationCap className="h-4 w-4 text-muted-foreground" />
+              <GraduationCap className="h-4 w-4 text-primary" />
             </div>
             <select
               name="experience"
@@ -164,7 +164,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
           {/* Remote/Onsite */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Wifi className="h-4 w-4 text-muted-foreground" />
+              <Wifi className="h-4 w-4 text-primary" />
             </div>
             <select
               name="remote"
@@ -186,7 +186,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
           {/* Salary Range */}
           <div className="relative md:col-span-2 lg:col-span-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <DollarSign className="h-4 w-4 text-primary" />
             </div>
             <select
               name="salary"

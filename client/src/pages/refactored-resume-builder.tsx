@@ -216,11 +216,11 @@ export default function ResumeBuilder() {
   };
 
   return (
-    <div className="min-h-screen">
-      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 py-6">
+    <div className="min-h-screen cosmic-page relative">
+      <div className="container mx-auto px-4 sm:px-6 py-6">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <h1 className="text-2xl sm:text-3xl font-bold cosmic-text-gradient">
               Resume Builder
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-1">
@@ -320,8 +320,8 @@ export default function ResumeBuilder() {
               </TabsList>
 
               <TabsContent value="contact">
-                <div className="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-                  <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">Contact Information</h2>
+                <div className="cosmic-card p-6 backdrop-blur-sm">
+                  <h2 className="text-2xl font-semibold cosmic-text-gradient mb-4">Contact Information</h2>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-2">
@@ -431,8 +431,8 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="summary">
-                <div className="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-                  <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">Professional Summary</h2>
+                <div className="cosmic-card p-6 backdrop-blur-sm">
+                  <h2 className="text-2xl font-semibold cosmic-text-gradient mb-4">Professional Summary</h2>
                   <p className="text-gray-600 dark:text-gray-400 mb-5">
                     Write a compelling summary that highlights your skills, experience, and achievements.
                   </p>
@@ -454,8 +454,8 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="experience">
-                <div className="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-                  <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">Work Experience</h2>
+                <div className="cosmic-card p-6 backdrop-blur-sm">
+                  <h2 className="text-2xl font-semibold cosmic-text-gradient mb-4">Work Experience</h2>
                   <p className="text-gray-600 dark:text-gray-400 mb-5">
                     Add your relevant work experience, starting with the most recent position.
                   </p>
@@ -467,8 +467,8 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="education">
-                <div className="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-                  <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">Education</h2>
+                <div className="cosmic-card p-6 backdrop-blur-sm">
+                  <h2 className="text-2xl font-semibold cosmic-text-gradient mb-4">Education</h2>
                   <p className="text-gray-600 dark:text-gray-400 mb-5">
                     List your educational qualifications and academic achievements.
                   </p>
@@ -480,8 +480,8 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="skills">
-                <div className="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-                  <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">Skills</h2>
+                <div className="cosmic-card p-6 backdrop-blur-sm">
+                  <h2 className="text-2xl font-semibold cosmic-text-gradient mb-4">Skills</h2>
                   <p className="text-gray-600 dark:text-gray-400 mb-5">
                     Highlight your technical and soft skills that are relevant to your target roles.
                   </p>
@@ -493,8 +493,8 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="projects">
-                <div className="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-                  <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">Projects</h2>
+                <div className="cosmic-card p-6 backdrop-blur-sm">
+                  <h2 className="text-2xl font-semibold cosmic-text-gradient mb-4">Projects</h2>
                   <p className="text-gray-600 dark:text-gray-400 mb-5">
                     Showcase projects that demonstrate your capabilities and accomplishments.
                   </p>

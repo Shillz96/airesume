@@ -103,8 +103,6 @@ export default function JobFinder() {
         <PageHeader 
           title="Job Finder"
           subtitle="AI-matched job opportunities based on your resume profile and skills"
-          variant="gradient"
-          borderStyle="gradient"
         />
         
         {/* Job Search and Filters */}

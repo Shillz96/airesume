@@ -241,8 +241,6 @@ export default function ResumesPage() {
         <PageHeader
           title="My Resumes"
           subtitle="Manage and organize all your resumes in one place"
-          variant="gradient"
-          borderStyle="gradient"
           actions={
             <div className="flex space-x-3">
             <CosmicButton 

@@ -29,9 +29,9 @@ export default function PageHeader({
   title, 
   subtitle, 
   actions, 
-  variant = 'default',
+  variant = 'cosmic',
   className,
-  borderStyle = 'subtle'
+  borderStyle = 'gradient'
 }: PageHeaderProps) {
   // Generate title classes based on variant
   const getTitleClasses = () => {

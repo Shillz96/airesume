@@ -225,8 +225,6 @@ export default function ResumeBuilder() {
         <PageHeader
           title="Resume Builder"
           subtitle="Create and customize your professional resume"
-          variant="cosmic"
-          borderStyle="gradient"
           actions={
             <div className="flex items-center gap-3">
               <Button

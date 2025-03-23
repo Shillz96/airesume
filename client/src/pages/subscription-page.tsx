@@ -236,8 +236,8 @@ export default function SubscriptionPage() {
   };
   
   return (
-    <>
-      <div className="container pb-10 px-4 md:px-6 max-w-7xl mx-auto relative z-10">
+    <div className="min-h-screen w-full flex flex-col relative z-10">
+      <div className="container pb-10 px-4 md:px-6 max-w-7xl mx-auto">
         <PageHeader
           title={
             <span className="cosmic-text-gradient">
@@ -861,6 +861,6 @@ export default function SubscriptionPage() {
           </DialogContent>
         </Dialog>
       </div>
-    </>
+    </div>
   );
 }

@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
-import { Loader2, X, ChevronDown, ChevronUp, Save, Download, PenSquare, Star, Plus, Trash, FilePlus, Bot, RefreshCw } from "lucide-react";
+import { Loader2, X, ChevronDown, ChevronUp, Save, Download, PenSquare, Star, Plus, Trash, FilePlus, Bot, RefreshCw, Upload, FileUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import PageHeader from "@/features/layout/components/PageHeader";
 import PageContainer from "@/components/PageContainer";
 
@@ -35,6 +36,9 @@ export default function ResumeBuilderNew() {
   const [skillSearchQuery, setSkillSearchQuery] = useState<string>("");
   const [detectedCareerPath, setDetectedCareerPath] = useState<CareerPath | null>(null);
   const [careerAdvice, setCareerAdvice] = useState<CareerSpecificAdvice | null>(null);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { 
     resume, 
@@ -81,6 +85,124 @@ export default function ResumeBuilderNew() {
     if (advice.suggestedSkills.length > 0 && activeSection === 'skills') {
       // Suggest adding first skill from career advice
       applySuggestion(advice.suggestedSkills[0]);
+    }
+  };
+
+  // Function to handle file upload
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Check file type
+    const allowedTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
+      'application/msword', // doc
+      'text/plain' // txt
+    ];
+    
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a PDF, DOCX, DOC, or TXT file.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      
+      // Create FormData to send the file
+      const formData = new FormData();
+      formData.append('resume', file);
+      
+      // Send the file to the server
+      const response = await fetch('/api/resumes/parse', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to parse resume');
+      }
+      
+      // Parse the response data
+      const parsedResume = await response.json();
+      
+      // Update the resume data with the parsed content
+      if (parsedResume) {
+        // Create a new resume object with the parsed data
+        const newResume = {
+          ...resume,
+          title: parsedResume.title || 'My Resume',
+          personalInfo: {
+            ...resume.personalInfo,
+            firstName: parsedResume.personalInfo?.firstName || resume.personalInfo.firstName,
+            lastName: parsedResume.personalInfo?.lastName || resume.personalInfo.lastName,
+            email: parsedResume.personalInfo?.email || resume.personalInfo.email,
+            phone: parsedResume.personalInfo?.phone || resume.personalInfo.phone,
+            headline: parsedResume.personalInfo?.headline || resume.personalInfo.headline,
+            summary: parsedResume.personalInfo?.summary || resume.personalInfo.summary
+          }
+        };
+        
+        // Update experience, education, skills if they exist in parsed data
+        if (parsedResume.experience && parsedResume.experience.length > 0) {
+          newResume.experience = parsedResume.experience.map((exp: any) => ({
+            id: `exp-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+            title: exp.title || 'Position Title',
+            company: exp.company || 'Company Name',
+            startDate: exp.startDate || 'Jan 2023',
+            endDate: exp.endDate || 'Present',
+            description: exp.description || ''
+          }));
+        }
+        
+        if (parsedResume.education && parsedResume.education.length > 0) {
+          newResume.education = parsedResume.education.map((edu: any) => ({
+            id: `edu-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+            degree: edu.degree || 'Degree',
+            institution: edu.institution || 'Institution Name',
+            startDate: edu.startDate || 'Jan 2020',
+            endDate: edu.endDate || 'Dec 2023',
+            description: edu.description || ''
+          }));
+        }
+        
+        if (parsedResume.skills && parsedResume.skills.length > 0) {
+          newResume.skills = parsedResume.skills.map((skill: any) => ({
+            id: `skill-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+            name: typeof skill === 'string' ? skill : skill.name || 'Skill',
+            proficiency: typeof skill === 'object' && skill.proficiency ? skill.proficiency : 80
+          }));
+        }
+        
+        // Update the resume state
+        updateResume(newResume);
+        
+        toast({
+          title: "Resume uploaded successfully",
+          description: "Your resume has been parsed and the data has been filled in.",
+        });
+        
+        // Close the dialog
+        setUploadDialogOpen(false);
+      }
+    } catch (error) {
+      console.error('Error uploading resume:', error);
+      toast({
+        title: "Error uploading resume",
+        description: "There was an error parsing your resume. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUploading(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -252,6 +374,68 @@ export default function ResumeBuilderNew() {
           subtitle="Create and customize your professional resume"
           actions={
             <div className="flex items-center gap-3">
+              <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+                <DialogTrigger asChild>
+                  <button
+                    className="btn btn-outline hidden sm:flex items-center"
+                    onClick={() => setUploadDialogOpen(true)}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Upload Resume</DialogTitle>
+                    <DialogDescription>
+                      Upload an existing resume file to auto-fill your resume information.
+                      We support PDF, DOCX, DOC, and TXT formats.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="py-4">
+                    <div className="flex flex-col items-center justify-center w-full">
+                      <label
+                        htmlFor="resume-file"
+                        className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100"
+                      >
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <FileUp className="w-8 h-8 mb-3 text-gray-500 dark:text-gray-400" />
+                          <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                            <span className="font-semibold">Click to upload</span> or drag and drop
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            PDF, DOCX, DOC, or TXT (max. 10MB)
+                          </p>
+                        </div>
+                        <input
+                          id="resume-file"
+                          type="file"
+                          className="hidden"
+                          accept=".pdf,.docx,.doc,.txt"
+                          onChange={handleFileUpload}
+                          ref={fileInputRef}
+                        />
+                      </label>
+                    </div>
+                    {isUploading && (
+                      <div className="mt-4 flex items-center justify-center">
+                        <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                        <span>Uploading and parsing resume...</span>
+                      </div>
+                    )}
+                  </div>
+                  <DialogFooter>
+                    <Button
+                      variant="outline"
+                      onClick={() => setUploadDialogOpen(false)}
+                      disabled={isUploading}
+                    >
+                      Cancel
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+              
               <button
                 className="btn btn-outline hidden sm:flex items-center"
                 disabled={!isDirty}
@@ -274,6 +458,10 @@ export default function ResumeBuilderNew() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => setUploadDialogOpen(true)}>
+                    <Upload className="mr-2 h-4 w-4" />
+                    <span>Upload</span>
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleSaveResume} disabled={!isDirty}>
                     <Save className="mr-2 h-4 w-4" />
                     <span>Save</span>

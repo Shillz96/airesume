@@ -11,7 +11,7 @@ const selectVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-white/10 focus-visible:border-blue-500/50",
+        default: "border-white/10 focus-visible:border-primary/50",
         error: "border-red-500/50 focus-visible:border-red-500",
       },
       glow: {

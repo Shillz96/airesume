@@ -342,7 +342,7 @@ export function ResumeAIAssistant({
                 <div 
                   className={`max-w-[80%] rounded-lg p-3 ${
                     message.role === 'user' 
-                      ? 'bg-blue-500 text-white' 
+                      ? 'bg-primary text-white' 
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                   }`}
                 >
@@ -406,7 +406,7 @@ export function ResumeAIAssistant({
             variant="ghost"
             size="sm"
             onClick={() => setIsChatView(true)}
-            className="h-7 w-7 p-0 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30"
+            className="h-7 w-7 p-0 rounded-full hover:bg-primary/10 dark:hover:bg-primary/20"
           >
             <MessageCircle className="h-3.5 w-3.5 text-primary" />
           </Button>
@@ -502,7 +502,7 @@ export function ResumeAIAssistant({
             variant="ghost"
             size="sm"
             onClick={() => setIsChatView(true)}
-            className="h-7 w-7 p-0 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30"
+            className="h-7 w-7 p-0 rounded-full hover:bg-primary/10 dark:hover:bg-primary/20"
           >
             <MessageCircle className="h-3.5 w-3.5 text-primary" />
           </Button>
@@ -568,7 +568,7 @@ export function ResumeAIAssistant({
             {suggestions.map((suggestion, index) => (
               <div 
                 key={index} 
-                className="bg-blue-50 dark:bg-blue-900/20 p-3.5 rounded-lg border border-blue-100 dark:border-blue-800"
+                className="bg-primary/5 dark:bg-primary/10 p-3.5 rounded-lg border border-primary/10 dark:border-primary/30"
               >
                 <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">{suggestion}</p>
                 <div className="mt-3 flex justify-end">
@@ -603,7 +603,7 @@ export function ResumeAIAssistant({
           <CosmicButton 
             variant="ghost" 
             size="sm" 
-            className="text-xs bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-indigo-700 px-0 font-medium"
+            className="text-xs cosmic-text-gradient px-0 font-medium"
             onClick={() => setIsChatView(true)}
             iconLeft={<MessageCircle className="h-3.5 w-3.5 text-primary" />}
           >

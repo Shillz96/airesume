@@ -18,18 +18,18 @@ export default function PageHeader({ title, subtitle, actions }: PageHeaderProps
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-white/10">
         <div>
           {typeof title === 'string' ? (
-            <h1>{title}</h1>
+            <h1 className="text-3xl font-bold">{title}</h1>
           ) : (
             title
           )}
           {subtitle && (
-            <div className="page-header-subtitle">
+            <div className="page-header-subtitle mt-2">
               {typeof subtitle === 'string' ? subtitle : subtitle}
             </div>
           )}
         </div>
         {actions && (
-          <div className="page-header-actions">
+          <div className="page-header-actions mt-4 sm:mt-0">
             {actions}
           </div>
         )}

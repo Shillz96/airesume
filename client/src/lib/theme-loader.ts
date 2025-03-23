@@ -16,6 +16,10 @@ import {
 /**
  * Initialize theme by setting CSS variables from theme.json
  * This should be called early in the application lifecycle
+ * 
+ * The new implementation uses a simplified approach where most styles
+ * come from index.css, and we only override specific variables
+ * based on appearance mode (dark/light)
  */
 export function initializeTheme(): void {
   // Get theme configuration
@@ -33,19 +37,13 @@ export function initializeTheme(): void {
   console.log("Initializing theme, saved appearance:", savedAppearance);
   
   // Apply theme class based on appearance
-  if (savedAppearance === 'dark') {
-    // User explicitly chose dark mode previously
+  if (savedAppearance === 'dark' || !savedAppearance) {
+    // User explicitly chose dark mode previously or no preference (default to dark)
     root.classList.add('dark');
     root.classList.remove('light');
     
-    // Also apply dark mode CSS variables
-    root.style.setProperty('--color-primary-hsl', '210 95% 65%');
-    root.style.setProperty('--color-background-hsl', '220 40% 13%');
-    root.style.setProperty('--color-foreground-hsl', '210 15% 95%');
-    root.style.setProperty('--color-card-hsl', '220 35% 18%');
-    root.style.setProperty('--color-muted-hsl', '215 20% 70%');
-    root.style.setProperty('--color-border-hsl', '220 25% 25%');
-    root.style.setProperty('--color-input-hsl', '220 25% 25%');
+    // Dark theme variables defined in index.css
+    // We're only setting color overrides here if needed
   } else if (savedAppearance === 'light') {
     // User explicitly chose light mode previously
     root.classList.add('light');

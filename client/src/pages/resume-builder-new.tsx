@@ -319,7 +319,7 @@ export default function ResumeBuilderNew() {
               </TabsList>
 
               <TabsContent value="contact">
-                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                <div className="card">
                   <ResumeContactSection
                     personalInfo={resume.personalInfo}
                     title={resume.title}
@@ -330,7 +330,7 @@ export default function ResumeBuilderNew() {
               </TabsContent>
 
               <TabsContent value="summary">
-                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                <div className="card">
                   <ResumeSummarySection
                     summary={resume.personalInfo.summary}
                     onUpdateSummary={(summary) => updatePersonalInfo({
@@ -342,7 +342,7 @@ export default function ResumeBuilderNew() {
               </TabsContent>
 
               <TabsContent value="experience">
-                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                <div className="card">
                   <ResumeExperienceSection
                     experiences={resume.experience}
                     onUpdate={updateExperienceList}
@@ -351,7 +351,7 @@ export default function ResumeBuilderNew() {
               </TabsContent>
 
               <TabsContent value="education">
-                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                <div className="card">
                   <ResumeEducationSection
                     education={resume.education}
                     onUpdate={updateEducationList}
@@ -360,7 +360,7 @@ export default function ResumeBuilderNew() {
               </TabsContent>
 
               <TabsContent value="skills">
-                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                <div className="card">
                   <ResumeSkillsSection
                     skills={resume.skills}
                     onUpdate={updateSkillsList}
@@ -369,7 +369,7 @@ export default function ResumeBuilderNew() {
               </TabsContent>
 
               <TabsContent value="projects">
-                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                <div className="card">
                   <ResumeProjectsSection
                     projects={resume.projects}
                     onUpdate={updateProjectsList}
@@ -378,12 +378,14 @@ export default function ResumeBuilderNew() {
               </TabsContent>
 
               <TabsContent value="preview">
-                <div className="bg-black/30 border border-white/10 rounded-md p-6">
-                  <h3 className="text-xl font-medium text-foreground mb-4">Resume Preview</h3>
-                  <p className="text-muted-foreground mb-5">
-                    See how your resume looks and download the final version.
-                  </p>
-                  <div className="mt-4">
+                <div className="card">
+                  <div className="card-header">
+                    <h3 className="card-title">Resume Preview</h3>
+                    <div className="card-description">
+                      See how your resume looks and download the final version.
+                    </div>
+                  </div>
+                  <div className="card-content">
                     <ResumeTemplate 
                       resume={resume} 
                       onDownload={handleDownload}
@@ -397,23 +399,27 @@ export default function ResumeBuilderNew() {
           {/* Right Sidebar - Temporary placeholder for AI Assistant */}
           <div className="w-full lg:w-80">
             <div className="sticky top-6">
-              <div className="bg-black/30 border border-white/10 rounded-md p-6 overflow-hidden">
-                <div className="flex items-center mb-4">
-                  <Bot className="h-5 w-5 mr-2 text-primary" />
-                  <h3 className="font-medium">AI Assistant</h3>
+              <div className="card">
+                <div className="card-header">
+                  <div className="flex items-center">
+                    <Bot className="h-5 w-5 mr-2 text-primary" />
+                    <h3 className="card-title">AI Assistant</h3>
+                  </div>
                 </div>
                 
-                <p className="text-sm text-muted-foreground mb-4">
-                  Getting intelligent suggestions for your resume...
-                </p>
-                
-                <div className="flex justify-center my-6">
-                  <RefreshCw className="h-8 w-8 animate-spin text-primary opacity-50" />
-                </div>
-                
-                <div className="text-xs text-muted-foreground text-center">
-                  The AI Assistant feature is being migrated to the new component structure. 
-                  It will be available soon!
+                <div className="card-content">
+                  <p className="mb-4">
+                    Getting intelligent suggestions for your resume...
+                  </p>
+                  
+                  <div className="flex justify-center my-6">
+                    <RefreshCw className="h-8 w-8 animate-spin text-primary opacity-50" />
+                  </div>
+                  
+                  <div className="text-xs text-muted text-center">
+                    The AI Assistant feature is being migrated to the new component structure. 
+                    It will be available soon!
+                  </div>
                 </div>
               </div>
             </div>

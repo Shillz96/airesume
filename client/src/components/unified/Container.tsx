@@ -37,11 +37,11 @@ export function UnifiedContainer({
   // Get padding top value based on the selected option
   const getPaddingTopClass = () => {
     switch (paddingTop) {
-      case 'none': return 'mt-[-8px]';
-      case 'sm': return 'mt-[-8px]';
-      case 'md': return 'mt-[-6px]';
-      case 'lg': return 'mt-[-4px]';
-      default: return 'mt-[-8px]';
+      case 'none': return 'mt-[-24px]';
+      case 'sm': return 'mt-[-24px]';
+      case 'md': return 'mt-[-20px]';
+      case 'lg': return 'mt-[-16px]';
+      default: return 'mt-[-24px]';
     }
   };
   

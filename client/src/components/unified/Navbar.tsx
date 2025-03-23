@@ -33,8 +33,8 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
-      <div className="container flex h-16 items-center">
+    <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/80 backdrop-blur-md pb-0 mb-0">
+      <div className="container flex h-14 items-center pb-0 mb-0">
         {/* Logo and Brand */}
         <div className="flex gap-2 items-center font-semibold mr-4">
           {config.variant === 'cosmic' ? (

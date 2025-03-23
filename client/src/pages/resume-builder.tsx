@@ -235,7 +235,7 @@ export default function ResumeBuilder() {
                 disabled={!isDirty}
                 onClick={handleSaveResume}
               >
-                <Save className="h-4 w-4 mr-2" />
+                <Save className="h-4 w-4 mr-2 text-primary" />
                 Save
               </Button>
               <Button 

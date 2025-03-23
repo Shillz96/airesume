@@ -75,7 +75,7 @@ export function ResumeExperienceSection({ experiences, onUpdate }: ResumeExperie
                 onClick={() => toggleExpand(exp.id)}
               >
                 <div className="flex items-center">
-                  <GripVertical className="h-5 w-5 text-muted-foreground mr-2 cursor-grab" />
+                  <GripVertical className="h-5 w-5 text-primary mr-2 cursor-grab" />
                   <div>
                     <h4 className="font-medium text-foreground">
                       {exp.title || "Untitled Position"}
@@ -101,9 +101,9 @@ export function ResumeExperienceSection({ experiences, onUpdate }: ResumeExperie
                     <Trash className="h-4 w-4 text-destructive" />
                   </Button>
                   {expandedId === exp.id ? (
-                    <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                    <ChevronUp className="h-5 w-5 text-primary" />
                   ) : (
-                    <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                    <ChevronDown className="h-5 w-5 text-primary" />
                   )}
                 </div>
               </div>
@@ -250,7 +250,7 @@ export function ResumeEducationSection({ education, onUpdate }: ResumeEducationS
                 onClick={() => toggleExpand(edu.id)}
               >
                 <div className="flex items-center">
-                  <GripVertical className="h-5 w-5 text-muted-foreground mr-2 cursor-grab" />
+                  <GripVertical className="h-5 w-5 text-primary mr-2 cursor-grab" />
                   <div>
                     <h4 className="font-medium text-foreground">
                       {edu.degree || "Untitled Degree"}
@@ -276,9 +276,9 @@ export function ResumeEducationSection({ education, onUpdate }: ResumeEducationS
                     <Trash className="h-4 w-4 text-destructive" />
                   </Button>
                   {expandedId === edu.id ? (
-                    <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                    <ChevronUp className="h-5 w-5 text-primary" />
                   ) : (
-                    <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                    <ChevronDown className="h-5 w-5 text-primary" />
                   )}
                 </div>
               </div>
@@ -682,7 +682,7 @@ export function ResumeProjectsSection({ projects, onUpdate }: ResumeProjectsSect
                 onClick={() => toggleExpand(project.id)}
               >
                 <div className="flex items-center">
-                  <GripVertical className="h-5 w-5 text-muted-foreground mr-2 cursor-grab" />
+                  <GripVertical className="h-5 w-5 text-primary mr-2 cursor-grab" />
                   <div>
                     <h4 className="font-medium text-foreground">
                       {project.title || "Untitled Project"}
@@ -707,9 +707,9 @@ export function ResumeProjectsSection({ projects, onUpdate }: ResumeProjectsSect
                     <Trash className="h-4 w-4 text-destructive" />
                   </Button>
                   {expandedId === project.id ? (
-                    <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                    <ChevronUp className="h-5 w-5 text-primary" />
                   ) : (
-                    <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                    <ChevronDown className="h-5 w-5 text-primary" />
                   )}
                 </div>
               </div>
@@ -752,7 +752,7 @@ export function ResumeProjectsSection({ projects, onUpdate }: ResumeProjectsSect
                       </label>
                       <div className="flex">
                         <div className="flex items-center px-3 bg-muted border border-r-0 border-border rounded-l-md">
-                          <Globe className="h-4 w-4 text-muted-foreground" />
+                          <Globe className="h-4 w-4 text-primary" />
                         </div>
                         <input
                           type="text"

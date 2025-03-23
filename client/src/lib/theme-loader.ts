@@ -157,17 +157,27 @@ export function initializeTheme(): void {
   setVariantProperties(variant);
   
   // Set colors from theme.json
-  Object.entries(colors).forEach(([name, value]) => {
-    // Convert hex colors to RGB values
-    const rgbColor = hexToRgb(value);
-    if (rgbColor) {
-      root.style.setProperty(`--color-${name}-rgb`, `${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}`);
-    } else {
-      root.style.setProperty(`--color-${name}`, value);
-    }
-    // Legacy support
-    root.style.setProperty(`--${name}`, value);
-  });
+  if (colors && typeof colors === 'object') {
+    Object.entries(colors).forEach(([name, value]) => {
+      // Skip null or undefined values
+      if (value == null) {
+        return;
+      }
+      
+      // Convert hex colors to RGB values
+      const rgbColor = hexToRgb(value);
+      if (rgbColor) {
+        root.style.setProperty(`--color-${name}-rgb`, `${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}`);
+      } else if (typeof value === 'string') {
+        root.style.setProperty(`--color-${name}`, value);
+      }
+      
+      // Legacy support - only set if value is a valid string
+      if (typeof value === 'string') {
+        root.style.setProperty(`--${name}`, value);
+      }
+    });
+  }
 }
 
 /**
@@ -238,17 +248,26 @@ export function updateTheme(updates: ThemeUpdateParams): void {
     root.style.setProperty('--radius', `${updates.radius}rem`); // Legacy support
   }
   
-  if (updates.colors) {
+  if (updates.colors && typeof updates.colors === 'object') {
     Object.entries(updates.colors).forEach(([name, value]) => {
+      // Skip null or undefined values
+      if (value == null) {
+        return;
+      }
+      
       // Convert hex colors to RGB values
       const rgbColor = hexToRgb(value);
       if (rgbColor) {
-        root.style.setProperty(`--color-${name}`, `${rgbColor.r} ${rgbColor.g} ${rgbColor.b}`);
-      } else {
+        root.style.setProperty(`--color-${name}-rgb`, `${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}`);
+        root.style.setProperty(`--color-${name}`, `rgb(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b})`);
+      } else if (typeof value === 'string') {
         root.style.setProperty(`--color-${name}`, value);
       }
-      // Legacy support
-      root.style.setProperty(`--${name}`, value);
+      
+      // Legacy support - only set if value is a valid string
+      if (typeof value === 'string') {
+        root.style.setProperty(`--${name}`, value);
+      }
     });
   }
 }
@@ -307,7 +326,13 @@ export function toggleDarkMode(): void {
  * @param hex HEX color string (e.g. #ff0000)
  * @returns RGB color object or null if invalid
  */
-function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+function hexToRgb(hex: string | any): { r: number; g: number; b: number } | null {
+  // Handle non-string values or undefined/null values
+  if (!hex || typeof hex !== 'string') {
+    console.warn('Invalid hex color value:', hex);
+    return null;
+  }
+  
   // If hex is a named color, return null (can't convert)
   if (!hex.startsWith('#')) {
     return null;
@@ -318,7 +343,7 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
   
   // Handle shorthand hex (e.g. #fff)
   if (hex.length === 3) {
-    hex = hex.split('').map(char => char + char).join('');
+    hex = hex.split('').map((char: string) => char + char).join('');
   }
   
   // Parse hex to RGB

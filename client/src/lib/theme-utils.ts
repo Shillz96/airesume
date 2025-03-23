@@ -39,10 +39,33 @@ declare global {
   }
 }
 
-// Import theme.json at build time
-// Note: In production, we would use a more dynamic approach to access theme.json
-// This is a simplified version that will be improved in the future
-import themeConfig from '../../../theme.json';
+// Load theme configuration dynamically
+// This is a simplified approach for the current development phase
+let themeConfig: any;
+
+try {
+  // Try to import the theme.json from the root directory
+  const theme = require('../../../theme.json');
+  themeConfig = theme;
+} catch (error) {
+  // Fallback to default theme config
+  console.warn('Failed to load theme.json, using default theme configuration');
+  themeConfig = {
+    variant: 'professional',
+    primary: '#3b82f6',
+    appearance: 'system',
+    radius: 0.5,
+    colors: {
+      cosmic: {
+        primary: '#3b82f6',
+        secondary: '#8b5cf6',
+        accent: '#10b981',
+        background: '#050A18',
+        foreground: '#ffffff'
+      }
+    }
+  };
+}
 
 /**
  * Helper to access our theme configuration

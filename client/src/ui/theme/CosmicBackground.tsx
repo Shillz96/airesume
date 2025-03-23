@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useRef, memo } from 'react';
-import { useTheme } from '@/contexts/ThemeContext';
-import { getCosmicColor } from '@/lib/theme-utils';
+import { useUnifiedTheme } from '@/contexts/UnifiedThemeContext';
 
 /**
- * CosmicBackground component
- * Creates a dynamic starfield with animated nebula effects using CSS animations
+ * Enhanced CosmicBackground component
+ * Creates a more immersive, dynamic starfield with animated nebula effects and parallax
  * Optimized with memoization to prevent re-renders and flickering when state changes
  * 
- * Properly integrated with the theme system for consistent styling across the application
+ * Properly integrated with the unified theme system for consistent styling
  */
 function CosmicBackgroundComponent() {
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, config } = useUnifiedTheme();
   const [starsGenerated, setStarsGenerated] = useState(false);
   const backgroundRef = useRef<HTMLDivElement>(null);
   
@@ -21,78 +20,146 @@ function CosmicBackgroundComponent() {
     // Get container dimensions
     const container = backgroundRef.current;
     const width = window.innerWidth;
-    const height = window.innerHeight * 1.2; // Extend past viewport to ensure coverage
+    const height = window.innerHeight * 1.5; // Extended coverage for parallax
     
-    // Star generation function
+    // Star generation function with improved distribution and varied sizes
     const generateStars = () => {
-      const starCount = Math.min(width * height / 1000, 1000); // Responsive star count
+      const starCount = Math.min(width * height / 800, 1200); // More stars for denser field
       let starsHtml = '';
       
-      for (let i = 0; i < starCount; i++) {
-        const x = Math.random() * 100;
-        const y = Math.random() * 100;
-        const size = Math.random() * 2;
-        const opacity = 0.2 + Math.random() * 0.8;
-        const animDuration = 2 + Math.random() * 8;
-        const animDelay = Math.random() * 5;
+      // Create 3 distinct star layers for parallax effect
+      for (let layer = 1; layer <= 3; layer++) {
+        const layerStars = Math.floor(starCount / 3);
+        const layerClass = `star-layer-${layer}`;
         
-        starsHtml += `<div class="star" style="
-          left: ${x}%;
-          top: ${y}%;
-          width: ${size}px;
-          height: ${size}px;
-          opacity: ${opacity};
-          animation-duration: ${animDuration}s;
-          animation-delay: ${animDelay}s;
-        "></div>`;
+        for (let i = 0; i < layerStars; i++) {
+          const x = Math.random() * 100;
+          const y = Math.random() * 100;
+          const size = (0.5 + Math.random() * 2) * (1 + (layer * 0.2)); // Larger stars in front layers
+          const opacity = 0.3 + Math.random() * 0.7;
+          const blurAmount = layer === 1 ? '0px' : layer === 2 ? '0.5px' : '0px';
+          const glowIntensity = layer === 1 ? '0 0 2px rgba(255,255,255,0.3)' : 'none';
+          
+          // Randomize colors for some stars
+          const isColoredStar = Math.random() > 0.8;
+          let starColor = 'rgba(255,255,255,1)';
+          
+          if (isColoredStar) {
+            // Extract RGB from theme primary color
+            const primaryColor = config.primaryColor;
+            const secondaryColor = config.secondaryColor;
+            const starColors = [
+              'rgba(255,255,255,1)', // White
+              'rgba(255,235,150,1)', // Yellowish
+              'rgba(200,230,255,1)', // Blueish
+              primaryColor,
+              secondaryColor
+            ];
+            starColor = starColors[Math.floor(Math.random() * starColors.length)];
+          }
+          
+          const animDuration = 2 + Math.random() * 8;
+          const animDelay = Math.random() * 5;
+          
+          starsHtml += `<div class="star ${layerClass}" style="
+            left: ${x}%;
+            top: ${y}%;
+            width: ${size}px;
+            height: ${size}px;
+            opacity: ${opacity};
+            background-color: ${starColor};
+            filter: blur(${blurAmount});
+            box-shadow: ${glowIntensity};
+            animation-duration: ${animDuration}s;
+            animation-delay: ${animDelay}s;
+          "></div>`;
+        }
       }
       
       return starsHtml;
     };
     
-    // Nebulae generation function
+    // Enhanced nebulae generation with more depth and theme colors
     const generateNebulae = () => {
-      const nebulaCount = 3;
+      const nebulaCount = 5; // More nebulae for more atmosphere
       let nebulaeHtml = '';
       
-      // Get theme colors for nebulae
-      const primaryColor = getCosmicColor('primary');
-      const accentColor = getCosmicColor('accent');
-      const tertiaryColor = getCosmicColor('muted');
+      // Use theme colors for nebulae
+      const { primaryColor, secondaryColor } = config;
       
-      // Define nebula colors from theme
+      // Convert hex to rgba
+      const hexToRgba = (hex: string, alpha: number) => {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        if (!result) return `rgba(99, 102, 241, ${alpha})`;
+        const r = parseInt(result[1], 16);
+        const g = parseInt(result[2], 16);
+        const b = parseInt(result[3], 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+      };
+      
+      // Define nebula colors from theme with more opacity variations
       const nebulaColors = [
-        `rgba(${hexToRgb(primaryColor)?.r || 63}, ${hexToRgb(primaryColor)?.g || 81}, ${hexToRgb(primaryColor)?.b || 181}, 0.03)`,
-        `rgba(${hexToRgb(accentColor)?.r || 113}, ${hexToRgb(accentColor)?.g || 47}, ${hexToRgb(accentColor)?.b || 173}, 0.02)`,
-        `rgba(${hexToRgb(tertiaryColor)?.r || 3}, ${hexToRgb(tertiaryColor)?.g || 152}, ${hexToRgb(tertiaryColor)?.b || 158}, 0.015)`
+        hexToRgba(primaryColor, 0.04),
+        hexToRgba(secondaryColor, 0.03),
+        hexToRgba(primaryColor, 0.025),
+        hexToRgba(secondaryColor, 0.035),
+        'rgba(10, 10, 40, 0.02)'
       ];
       
       for (let i = 0; i < nebulaCount; i++) {
         const x = 10 + Math.random() * 80;
         const y = 10 + Math.random() * 80;
-        const scale = 0.8 + Math.random() * 1.2;
+        const scale = 0.8 + Math.random() * 1.5;
         const rotation = Math.random() * 360;
         const color = nebulaColors[i % nebulaColors.length];
         const animDuration = 80 + Math.random() * 40;
         const animDelay = Math.random() * 10;
         
+        // Create more complex nebula with multiple layers
+        const blurAmount = 70 + Math.random() * 30;
+        
         nebulaeHtml += `<div class="nebula" style="
           left: ${x}%;
           top: ${y}%;
           transform: scale(${scale}) rotate(${rotation}deg);
-          background: radial-gradient(circle at center, ${color} 0%, transparent 70%);
-          width: 50%;
-          height: 50%;
+          background: radial-gradient(ellipse at center, ${color} 0%, transparent ${blurAmount}%);
+          width: 60%;
+          height: 60%;
+          filter: blur(${10 + Math.random() * 20}px);
           animation-duration: ${animDuration}s;
           animation-delay: ${animDelay}s;
+          z-index: ${Math.floor(Math.random() * 3) - 2};
         "></div>`;
       }
       
       return nebulaeHtml;
     };
     
+    // Add stars that flicker more dramatically for emphasis
+    const generatePulsars = () => {
+      const pulsarCount = 5;
+      let pulsarsHtml = '';
+      
+      for (let i = 0; i < pulsarCount; i++) {
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+        const size = 2 + Math.random() * 2;
+        const color = config.primaryColor;
+        
+        pulsarsHtml += `<div class="pulsar" style="
+          left: ${x}%;
+          top: ${y}%;
+          width: ${size}px;
+          height: ${size}px;
+          background-color: ${color};
+        "></div>`;
+      }
+      
+      return pulsarsHtml;
+    };
+    
     // Add generated HTML to the container
-    container.innerHTML = generateStars() + generateNebulae();
+    container.innerHTML = generateStars() + generateNebulae() + generatePulsars();
     setStarsGenerated(true);
     
     // Add shooting stars at random intervals
@@ -104,8 +171,8 @@ function CosmicBackgroundComponent() {
       
       // Random position and animation
       const startX = Math.random() * 100;
-      const startY = Math.random() * 100;
-      const angle = Math.random() * 45;
+      const startY = Math.random() * 40; // Start from top section
+      const angle = 20 + Math.random() * 50;
       const length = 100 + Math.random() * 150;
       
       shootingStar.style.left = `${startX}%`;
@@ -121,12 +188,37 @@ function CosmicBackgroundComponent() {
           shootingStar.parentNode.removeChild(shootingStar);
         }
       }, 1000);
-    }, 5000);
+    }, 4000);
+    
+    // Optional: Add interactive parallax effect based on mouse movement
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!backgroundRef.current) return;
+      
+      const moveX = (e.clientX - window.innerWidth / 2) / 50;
+      const moveY = (e.clientY - window.innerHeight / 2) / 50;
+      
+      // Apply different parallax speeds to each star layer
+      const layers = backgroundRef.current.querySelectorAll('.star-layer-1, .star-layer-2, .star-layer-3');
+      
+      layers.forEach((layer) => {
+        const element = layer as HTMLElement;
+        if (element.classList.contains('star-layer-1')) {
+          element.style.transform = `translate(${moveX * 0.5}px, ${moveY * 0.5}px)`;
+        } else if (element.classList.contains('star-layer-2')) {
+          element.style.transform = `translate(${moveX * 1}px, ${moveY * 1}px)`;
+        } else if (element.classList.contains('star-layer-3')) {
+          element.style.transform = `translate(${moveX * 2}px, ${moveY * 2}px)`;
+        }
+      });
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
     
     return () => {
       clearInterval(shootingStarsInterval);
+      window.removeEventListener('mousemove', handleMouseMove);
     };
-  }, [starsGenerated]);
+  }, [starsGenerated, config]);
   
   // CSS class based on theme mode
   const themeClass = isDarkMode ? 'cosmic-dark' : 'cosmic-light';
@@ -135,29 +227,14 @@ function CosmicBackgroundComponent() {
     <div className={`cosmic-background ${themeClass}`}>
       <div className="star-container" ref={backgroundRef}></div>
       
-      {/* Overlay gradients for atmosphere */}
-      <div className="cosmic-overlay"></div>
+      {/* Enhanced overlay gradients for depth and atmosphere */}
+      <div className="cosmic-overlay cosmic-overlay-base"></div>
+      <div className="cosmic-overlay cosmic-overlay-accent"></div>
       
-      {/* Styles are moved to CSS classes in index.css for proper compatibility */}
+      {/* Vignette effect */}
+      <div className="cosmic-vignette"></div>
     </div>
   );
-}
-
-// Helper function to convert HEX to RGB
-function hexToRgb(hex: string) {
-  // Default fallback color if parsing fails
-  if (!hex || typeof hex !== 'string') return { r: 100, g: 149, b: 237 };
-  
-  // Remove # if present
-  hex = hex.replace(/^#/, '');
-  
-  // Parse hex value
-  const bigint = parseInt(hex, 16);
-  const r = (bigint >> 16) & 255;
-  const g = (bigint >> 8) & 255;
-  const b = bigint & 255;
-  
-  return { r, g, b };
 }
 
 // Use memo to prevent unnecessary re-renders

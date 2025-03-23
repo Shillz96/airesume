@@ -111,21 +111,21 @@ export default function JobSearchProgress() {
   }, []);
   
   return (
-    <Card className="cosmic-card overflow-hidden" ref={cardRef}>
-      <CardHeader className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 pb-3">
+    <Card className="cosmic-card overflow-hidden border border-white/10 bg-black/30" ref={cardRef}>
+      <CardHeader className="pb-3">
         <CardTitle className="text-xl text-white">Job Search Progress</CardTitle>
         <CardDescription className="text-gray-300">
           Track your career journey milestones
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="p-8" ref={progressRef}>
+      <CardContent className="p-6" ref={progressRef}>
         <div className="space-y-8">
           {milestones.map((milestone, index) => (
             <div key={index} className="progress-item">
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center">
-                  <div className="mr-2 p-1.5 bg-white/5 rounded-full">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center space-x-3">
+                  <div className="p-1.5 bg-blue-900/30 rounded-md">
                     {milestone.icon}
                   </div>
                   <div>
@@ -136,18 +136,18 @@ export default function JobSearchProgress() {
                   </div>
                 </div>
                 
-                <div className="text-sm font-medium text-gray-300">
+                <div className="text-sm font-medium text-white">
                   {milestone.progress}%
                 </div>
               </div>
               
-              <div className="relative pt-1">
-                <div className="overflow-hidden h-1.5 text-xs flex rounded bg-white/5">
+              <div className="relative mt-2 mb-3">
+                <div className="overflow-hidden h-1 text-xs flex rounded-full bg-gray-800">
                   <div 
-                    className="progress-bar shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center origin-left cosmic-progress"
+                    className="progress-bar shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center origin-left"
                     style={{ 
                       width: `${milestone.progress}%`,
-                      background: `linear-gradient(to right, #3b82f6 0%, #8b5cf6 100%)`,
+                      background: `linear-gradient(to right, #3b82f6, #8b5cf6)`,
                       opacity: milestone.progress === 0 ? 0.3 : 1,
                       transform: 'scaleX(1)'
                     }}
@@ -155,12 +155,12 @@ export default function JobSearchProgress() {
                 </div>
               </div>
               
-              <div className="flex justify-end mt-1">
+              <div className="flex justify-end">
                 <Link href={milestone.link}>
                   <Button 
                     size="sm" 
                     variant="ghost" 
-                    className="h-6 text-xs px-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
+                    className="h-6 text-xs px-2 text-blue-400 hover:text-blue-300 hover:bg-transparent"
                   >
                     {milestone.linkText}
                     <ArrowUpRight className="ml-1 h-3 w-3" />

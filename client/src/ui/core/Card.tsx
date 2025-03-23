@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 // Card variant styles using class-variance-authority for theme consistency
 const cardVariants = cva(
-  "rounded-lg overflow-hidden transition-all", 
+  "rounded-lg overflow-hidden transition-all relative transform-gpu", 
   {
     variants: {
       variant: {
@@ -14,24 +14,41 @@ const cardVariants = cva(
         destructive: "bg-destructive/5 border border-destructive/20 hover:border-destructive/30",
         outline: "bg-transparent border border-border hover:border-border/80",
         ghost: "bg-transparent border-none hover:bg-muted/50",
-        cosmic: "bg-black/30 backdrop-blur-sm border border-white/10 hover:border-white/20",
+        cosmic: "bg-black/40 backdrop-blur-md border border-white/10 hover:border-white/20",
+        gradient: "cosmic-card-gradient bg-card/80 backdrop-blur-sm border-none",
       },
       size: {
-        sm: "p-3",
-        md: "p-4",
-        lg: "p-6",
+        sm: "p-[var(--card-padding-sm)]",
+        md: "p-[var(--card-padding)]",
+        lg: "p-[var(--card-padding-lg)]",
       },
       glow: {
         none: "",
         subtle: "shadow-md",
-        primary: "shadow-md shadow-primary/10",
-        cosmic: "shadow-lg shadow-primary/20",
+        primary: "shadow-md shadow-primary/10 hover:shadow-primary/20",
+        cosmic: "shadow-lg shadow-primary/20 hover:shadow-primary/30",
+        gradient: "shadow-xl cosmic-glow",
+      },
+      border: {
+        none: "",
+        subtle: "border border-border hover:border-border/80",
+        primary: "border border-primary/20 hover:border-primary/40",
+        gradient: "cosmic-gradient-border",
+        animated: "cosmic-animated-border",
+      },
+      animation: {
+        none: "",
+        hover: "hover:-translate-y-1 hover:scale-[1.01]",
+        float: "cosmic-card-float",
+        pulse: "cosmic-card-pulse",
       }
     },
     defaultVariants: {
       variant: "default",
       size: "md",
       glow: "none",
+      border: "none",
+      animation: "none"
     }
   }
 );
@@ -50,6 +67,8 @@ export function Card({
   variant,
   size,
   glow,
+  border,
+  animation,
   className,
   isLoading = false,
   children,
@@ -58,7 +77,7 @@ export function Card({
   return (
     <div
       className={cn(
-        cardVariants({ variant, size, glow }),
+        cardVariants({ variant, size, glow, border, animation }),
         className,
         isLoading && "relative"
       )}

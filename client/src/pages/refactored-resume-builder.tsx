@@ -83,27 +83,55 @@ export default function ResumeBuilder() {
   // Function to apply a suggestion from the AI Assistant to the resume
   const applySuggestion = (suggestion: string) => {
     if (activeSection === "summary") {
-      updateResume({
-        ...resume,
-        personalInfo: {
-          ...resume.personalInfo,
-          summary: suggestion
-        }
+      // Update the summary field
+      updatePersonalInfo({
+        ...resume.personalInfo,
+        summary: suggestion
+      });
+      
+      toast({
+        title: "Summary updated",
+        description: "Your professional summary has been updated with the AI suggestion."
       });
     } else if (activeSection === "experience") {
-      // For simplicity, we'll just add this as a new experience item
-      const newExp = {
-        id: `exp-${Date.now()}`,
-        title: "Position Title",
-        company: "Company Name",
-        startDate: "Jan 2020",
-        endDate: "Present",
-        description: suggestion
-      };
-      updateResume({
-        ...resume,
-        experience: [...resume.experience, newExp]
-      });
+      // Check if we have any existing experience to update
+      if (resume.experience.length > 0) {
+        // Update the most recent experience description
+        const updatedExperience = [...resume.experience];
+        const latestExp = {...updatedExperience[0]};
+        latestExp.description = suggestion;
+        updatedExperience[0] = latestExp;
+        
+        updateExperienceList(updatedExperience);
+        
+        toast({
+          title: "Experience updated",
+          description: "Your most recent experience has been updated with the AI suggestion."
+        });
+      } else {
+        // Create a new experience entry
+        const newExp = {
+          id: `exp-${Date.now()}`,
+          title: "Position Title",
+          company: "Company Name",
+          startDate: "Jan 2023",
+          endDate: "Present",
+          description: suggestion
+        };
+        
+        addExperience();
+        
+        // Need to use setTimeout because addExperience is async
+        setTimeout(() => {
+          const updatedExperience = [{...newExp}, ...resume.experience];
+          updateExperienceList(updatedExperience);
+        }, 100);
+        
+        toast({
+          title: "Experience added",
+          description: "A new experience entry has been created with the AI suggestion."
+        });
+      }
     } else if (activeSection === "skills") {
       // Add as a skill
       const newSkill = {
@@ -111,15 +139,79 @@ export default function ResumeBuilder() {
         name: suggestion,
         proficiency: 80
       };
-      updateResume({
-        ...resume,
-        skills: [...resume.skills, newSkill]
-      });
+      
+      // Check if skill already exists to avoid duplicates
+      const skillExists = resume.skills.some(
+        skill => skill.name.toLowerCase() === suggestion.toLowerCase()
+      );
+      
+      if (skillExists) {
+        toast({
+          title: "Skill already exists",
+          description: `${suggestion} is already in your skills list.`,
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      updateSkillsList([...resume.skills, newSkill]);
       
       toast({
         title: "Skill added",
-        description: `${suggestion} has been added to your skills.`
+        description: `"${suggestion}" has been added to your skills.`
       });
+    } else if (activeSection === "education") {
+      // For education, we'll update the description of the most recent education
+      if (resume.education.length > 0) {
+        const updatedEducation = [...resume.education];
+        const latestEdu = {...updatedEducation[0]};
+        latestEdu.description = suggestion;
+        updatedEducation[0] = latestEdu;
+        
+        updateEducationList(updatedEducation);
+        
+        toast({
+          title: "Education updated",
+          description: "Your most recent education entry has been updated with the AI suggestion."
+        });
+      } else {
+        toast({
+          title: "No education entries",
+          description: "Please add an education entry first.",
+          variant: "destructive"
+        });
+      }
+    } else if (activeSection === "projects") {
+      // For projects, we'll update the description of the most recent project
+      if (resume.projects.length > 0) {
+        const updatedProjects = [...resume.projects];
+        const latestProject = {...updatedProjects[0]};
+        latestProject.description = suggestion;
+        updatedProjects[0] = latestProject;
+        
+        updateProjectsList(updatedProjects);
+        
+        toast({
+          title: "Project updated",
+          description: "Your most recent project has been updated with the AI suggestion."
+        });
+      } else {
+        // Create a new project
+        const newProject = {
+          id: `proj-${Date.now()}`,
+          title: "Project Title",
+          description: suggestion,
+          technologies: ["React", "TypeScript", "Node.js"],
+          link: ""
+        };
+        
+        updateProjectsList([...resume.projects, newProject]);
+        
+        toast({
+          title: "Project added",
+          description: "A new project has been created with the AI suggestion."
+        });
+      }
     }
   };
 

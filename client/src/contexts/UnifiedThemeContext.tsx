@@ -206,8 +206,16 @@ export function UnifiedThemeProvider({ children }: { children: ReactNode }) {
     setConfig({ ...config, primaryColor });
   };
   
+  const setSecondaryColor = (secondaryColor: string) => {
+    setConfig({ ...config, secondaryColor });
+  };
+  
   const setBorderRadius = (borderRadius: number) => {
     setConfig({ ...config, borderRadius });
+  };
+  
+  const setAnimations = (animations: boolean) => {
+    setConfig({ ...config, animations });
   };
   
   const toggleDarkMode = () => {
@@ -222,6 +230,46 @@ export function UnifiedThemeProvider({ children }: { children: ReactNode }) {
     }
   };
   
+  /**
+   * Returns appropriate CSS classes for components based on current theme
+   */
+  const getThemeClass = (component: string): string => {
+    const { variant } = config;
+    
+    // Generate component-specific classes based on theme variant
+    switch (component) {
+      case 'button':
+        return variant === 'cosmic' ? 'cosmic-button cosmic-glow' : 
+               variant === 'professional' ? 'professional-button' : 
+               'minimal-button';
+               
+      case 'card':
+        return variant === 'cosmic' ? 'cosmic-card cosmic-glow' : 
+               variant === 'professional' ? 'professional-card' : 
+               'minimal-card';
+               
+      case 'input':
+        return variant === 'cosmic' ? 'cosmic-input' : 
+               variant === 'professional' ? 'professional-input' : 
+               'minimal-input';
+      
+      case 'text':
+        return variant === 'cosmic' ? 'cosmic-text' : 
+               variant === 'professional' ? 'professional-text' : 
+               'minimal-text';
+      
+      case 'header':
+        return variant === 'cosmic' ? 'cosmic-header' : 
+               variant === 'professional' ? 'professional-header' : 
+               'minimal-header';
+               
+      // Add more component variants as needed
+      
+      default:
+        return '';
+    }
+  };
+  
   // Combine state and functions for context value
   const contextValue: ThemeContextType = {
     config,
@@ -229,8 +277,11 @@ export function UnifiedThemeProvider({ children }: { children: ReactNode }) {
     setVariant,
     setMode,
     setPrimaryColor,
+    setSecondaryColor,
     setBorderRadius,
+    setAnimations,
     toggleDarkMode,
+    getThemeClass,
   };
   
   return (

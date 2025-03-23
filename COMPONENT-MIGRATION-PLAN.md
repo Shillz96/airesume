@@ -35,7 +35,7 @@ We have implemented the core infrastructure for our feature-based architecture:
 - [x] job-card.tsx → features/job/components/JobCard.tsx
 - [x] job-filter.tsx → features/job/components/JobFilter.tsx
 - [x] job-interview-avatar.tsx → features/job/components/JobInterviewAvatar.tsx
-- [ ] job-listing.tsx → features/job/components/JobListing.tsx
+- [x] job-listing.tsx → features/job/components/JobListing.tsx
 - [x] job-search-progress.tsx → features/job/components/JobSearchProgress.tsx
 
 ### Resume Feature Components

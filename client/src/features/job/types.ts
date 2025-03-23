@@ -75,3 +75,16 @@ export interface TailoredJobResume {
   keywordsIncorporated?: string[]; // ATS keywords added to the resume
   matchAnalysis?: string; // Analysis of how well the resume matches the job
 }
+
+// Type alias for TailoredResume used in JobListing component
+export type TailoredResume = TailoredJobResume;
+
+// Experience item used in resumes and job tailoring
+export interface ExperienceItem {
+  id: string;
+  title: string;
+  company: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+}

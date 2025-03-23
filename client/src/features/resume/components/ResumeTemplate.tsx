@@ -151,7 +151,7 @@ export default function ResumeTemplate({
 
   return (
     <div className="relative bg-card border border-border rounded-lg overflow-hidden shadow-sm">
-      {/* Template header with controls - Better mobile optimization */}
+      {/* Template header with controls - Mobile-first optimization */}
       <div className="p-2 sm:p-4 border-b border-border bg-muted/30">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
@@ -163,20 +163,22 @@ export default function ResumeTemplate({
               </div>
             )}
           </div>
-          
-          {/* Download button - always visible */}
-          {onDownload && (
+        </div>
+        
+        {/* Download button - separate row for better mobile visibility */}
+        {onDownload && (
+          <div className="flex justify-end mb-2">
             <Button
               variant="outline"
               size="sm"
               onClick={onDownload}
-              className="h-8 w-8 sm:h-8 sm:w-auto sm:px-3"
+              className="h-7 w-full sm:h-8 sm:w-auto sm:px-3"
             >
-              <Download className="h-3.5 w-3.5 sm:mr-2" />
-              <span className="hidden sm:inline">Download</span>
+              <Download className="h-3.5 w-3.5 mr-1.5" />
+              <span className="text-xs sm:text-sm">Download Resume</span>
             </Button>
-          )}
-        </div>
+          </div>
+        )}
         
         {/* Mobile-friendly controls with reduced spacing and optimized layout */}
         <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-1 sm:gap-2 mt-2">

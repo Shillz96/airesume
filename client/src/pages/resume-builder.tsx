@@ -432,11 +432,11 @@ export default function ResumeBuilder() {
 
               <TabsContent value="preview">
                 <div className="bg-black/30 border border-white/10 rounded-md p-3 sm:p-6">
-                  <h3 className="text-xl font-medium text-foreground mb-2 sm:mb-4">Resume Preview</h3>
-                  <p className="text-muted-foreground mb-3 sm:mb-5 text-sm sm:text-base">
+                  <h3 className="text-lg sm:text-xl font-medium text-foreground mb-1 sm:mb-3">Resume Preview</h3>
+                  <p className="text-muted-foreground mb-2 sm:mb-4 text-xs sm:text-sm">
                     See how your resume looks and download the final version.
                   </p>
-                  <div className="mt-2 sm:mt-4">
+                  <div className="mt-2">
                     <ResumeTemplate 
                       resume={resume} 
                       onDownload={handleDownload}

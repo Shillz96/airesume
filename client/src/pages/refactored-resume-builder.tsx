@@ -8,6 +8,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ResumeAIAssistant } from "@/components/resume/ResumeAIAssistant";
 
 import PageHeader from "@/components/page-header";
 import { 
@@ -265,16 +266,50 @@ export default function ResumeBuilder() {
     }
   };
   
-  // Function to generate AI suggestions based on the active section and suggestion type
-  const generateSuggestions = (type: "short" | "medium" | "long") => {
-    setAiSuggestionType(type);
-    setIsLoadingSuggestions(true);
-    
-    // In a real implementation, this would call an API
-    setTimeout(() => {
-      let newSuggestions: string[] = [];
+  // Function to apply a suggestion from the AI Assistant to the resume
+  const applySuggestion = (suggestion: string) => {
+    if (activeSection === "summary") {
+      updateResume({
+        ...resume,
+        personalInfo: {
+          ...resume.personalInfo,
+          summary: suggestion
+        }
+      });
+    } else if (activeSection === "experience") {
+      // For simplicity, we'll just add this as a new experience item
+      const newExp = {
+        id: `exp-${Date.now()}`,
+        title: "Position Title",
+        company: "Company Name",
+        startDate: "Jan 2020",
+        endDate: "Present",
+        description: suggestion
+      };
+      updateResume({
+        ...resume,
+        experience: [...resume.experience, newExp]
+      });
+    } else if (activeSection === "skills") {
+      // Add as a skill
+      const newSkill = {
+        id: `skill-${Date.now()}`,
+        name: suggestion,
+        proficiency: 80
+      };
+      updateResume({
+        ...resume,
+        skills: [...resume.skills, newSkill]
+      });
       
-      // Generate different suggestions based on the active section
+      toast({
+        title: "Skill added",
+        description: `${suggestion} has been added to your skills.`
+      });
+    }
+  };
+  
+  // Old functions for AI suggestions are now in the ResumeAIAssistant component
       if (activeSection === "summary") {
         // Based on the detected industry/role (here we're providing multiple industries)
         if (type === "short") {
@@ -838,176 +873,14 @@ export default function ResumeBuilder() {
                   <h3 className="text-lg font-medium">AI Assistant</h3>
                 </div>
                 
-                {activeSection === 'skills' ? (
-                  /* Skills-specific UI */
-                  <>
-                    <p className="text-sm text-gray-300 mb-4">
-                      Search and add skills that are relevant to your background and the jobs you're targeting.
-                    </p>
-
-                    {/* Search box for skills and refresh button */}
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="relative flex-1">
-                        <input
-                          type="text"
-                          placeholder="Search skills..."
-                          className="w-full px-3 py-2 bg-[#0f172a] border border-[#2a325a] rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          value={skillSearchQuery}
-                          onChange={(e) => {
-                            setSkillSearchQuery(e.target.value);
-                            if (e.target.value) {
-                              setIsLoadingSuggestions(true);
-                              // Simulate API delay for the AI search
-                              setTimeout(() => {
-                                setIsLoadingSuggestions(false);
-                              }, 500);
-                            }
-                          }}
-                        />
-                        {skillSearchQuery && !isLoadingSuggestions && (
-                          <button 
-                            className="absolute right-2 top-2 text-gray-400 hover:text-white"
-                            onClick={() => setSkillSearchQuery('')}
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        )}
-                        {isLoadingSuggestions && skillSearchQuery && (
-                          <div className="absolute right-2 top-2 text-blue-400">
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          </div>
-                        )}
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={generateSkillSuggestions}
-                        className="border-white/10 text-gray-200 hover:bg-white/10"
-                        title="Show different skills"
-                      >
-                        <RefreshCw className="h-4 w-4 mr-1" />
-                        Refresh
-                      </Button>
-                    </div>
-                    
-                    {/* Skills suggestions grid */}
-                    <div className="max-h-[400px] overflow-y-auto pr-1">
-                      {isLoadingSuggestions ? (
-                        <div className="flex justify-center items-center py-8">
-                          <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
-                        </div>
-                      ) : (
-                        <div className="grid grid-cols-2 gap-2">
-                          {getFilteredSkillSuggestions().map((skill, index) => (
-                            <div 
-                              key={index}
-                              className="p-2 rounded bg-[#1a2442] border border-[#2a325a] hover:border-blue-500/50 transition-all cursor-pointer text-center"
-                              onClick={() => {
-                                const newSkill = {
-                                  id: `skill-${Date.now()}-${index}`,
-                                  name: skill,
-                                  proficiency: 80
-                                };
-                                updateResume({
-                                  ...resume,
-                                  skills: [...resume.skills, newSkill]
-                                });
-                                toast({
-                                  title: "Skill added",
-                                  description: `${skill} has been added to your skills.`
-                                });
-                              }}
-                            >
-                              <p className="text-sm">{skill}</p>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  /* UI for Summary and Experience */
-                  <>
-                    {/* Length selector buttons */}
-                    <div className="flex gap-2 mb-4">
-                      <Button 
-                        size="sm" 
-                        variant={aiSuggestionType === 'short' ? 'default' : 'outline'}
-                        onClick={() => generateSuggestions('short')}
-                        className={aiSuggestionType === 'short' 
-                          ? 'bg-gradient-to-r from-blue-600 to-purple-600' 
-                          : 'border-white/10 text-gray-200 hover:bg-white/10'}
-                      >
-                        Short
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant={aiSuggestionType === 'medium' ? 'default' : 'outline'}
-                        onClick={() => generateSuggestions('medium')}
-                        className={aiSuggestionType === 'medium' 
-                          ? 'bg-gradient-to-r from-blue-600 to-purple-600' 
-                          : 'border-white/10 text-gray-200 hover:bg-white/10'}
-                      >
-                        Medium
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant={aiSuggestionType === 'long' ? 'default' : 'outline'}
-                        onClick={() => generateSuggestions('long')}
-                        className={aiSuggestionType === 'long' 
-                          ? 'bg-gradient-to-r from-blue-600 to-purple-600' 
-                          : 'border-white/10 text-gray-200 hover:bg-white/10'}
-                      >
-                        Long
-                      </Button>
-                      <Button 
-                        size="sm"
-                        variant="outline"
-                        onClick={() => generateSuggestions(aiSuggestionType)}
-                        className="border-white/10 text-gray-200 hover:bg-white/10 ml-auto"
-                        title="Generate new suggestions"
-                      >
-                        <RefreshCw className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    
-                    {/* Descriptive text based on active section */}
-                    <p className="text-sm text-gray-300 mb-4">
-                      {activeSection === 'summary' && 'Select a professional summary that highlights your expertise and achievements.'}
-                      {activeSection === 'experience' && 'Add impressive work experience bullet points to showcase your impact and skills.'}
-                    </p>
-                    
-                    {/* Suggestions area */}
-                    <div className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
-                      {isLoadingSuggestions ? (
-                        <div className="flex justify-center items-center py-8">
-                          <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
-                        </div>
-                      ) : suggestions.length > 0 ? (
-                        suggestions.map((suggestion, index) => (
-                          <div 
-                            key={index}
-                            className="p-3 rounded bg-[#1a2442] border border-[#2a325a] hover:border-blue-500/50 transition-all cursor-pointer"
-                            onClick={() => applySuggestion(suggestion)}
-                          >
-                            <p className="text-sm whitespace-pre-line">{suggestion}</p>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="p-4 text-center text-gray-400">
-                          <p>Click one of the buttons above to generate suggestions for your {activeSection}.</p>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Hint at bottom */}
-                    {suggestions.length > 0 && (
-                      <p className="text-xs text-gray-400 mt-4 text-center">
-                        Click on a suggestion to apply it to your resume
-                      </p>
-                    )}
-                  </>
-                )}
+                {/* Using our new ResumeAIAssistant component */}
+                <ResumeAIAssistant 
+                  activeSection={activeSection}
+                  skillSearchQuery={skillSearchQuery}
+                  setSkillSearchQuery={setSkillSearchQuery}
+                  onApplySuggestion={applySuggestion}
+                  isHidden={activeSection === 'preview' || activeSection === 'contact' || activeSection === 'education' || activeSection === 'projects'}
+                />
               </div>
             </div>
           </div>

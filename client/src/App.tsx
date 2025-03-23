@@ -6,8 +6,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { AuthDialogProvider, useAuthDialog } from "@/hooks/use-auth-dialog";
 import { GuestModeProvider } from "@/hooks/use-guest-mode";
-import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 import { UnifiedThemeProvider } from "@/contexts/UnifiedThemeContext";
+import { useUnifiedTheme } from "@/contexts/UnifiedThemeContext";
 import NotFound from "@/pages/not-found"; 
 import HomePage from "@/pages/home-page";
 import ResumeBuilderNew from "@/pages/resume-builder-new";
@@ -19,8 +19,7 @@ import LandingPage from "@/pages/landing-page";
 import AdminAccess from "@/pages/admin-access";
 import { ProtectedRoute } from "./lib/protected-route";
 
-// Import components from their new locations after migration
-import Navbar from "@/ui/navigation/Navbar";
+// Import admin and auth components
 import GoAdminLink from "@/features/admin/components/GoAdminLink";
 import QuickLogin from "@/features/auth/components/QuickLogin";
 import AuthDialog from "@/features/auth/components/AuthDialog";
@@ -55,7 +54,7 @@ function AppContent() {
   const [location] = useLocation();
   const { user } = useAuth();
   const { isOpen, activeTab, closeDialog } = useAuthDialog();
-  const { isDarkMode } = useTheme();
+  const { isDarkMode } = useUnifiedTheme();
   
   // Always show navbar for all pages
   const showNavbar = true;
@@ -121,20 +120,17 @@ function AppContent() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Keep the old ThemeProvider for backward compatibility */}
-      <ThemeProvider>
-        {/* Add the new UnifiedThemeProvider */}
-        <UnifiedThemeProvider>
-          <AuthProvider>
-            <GuestModeProvider>
-              <AuthDialogProvider>
-                <AppContent />
-                <Toaster />
-              </AuthDialogProvider>
-            </GuestModeProvider>
-          </AuthProvider>
-        </UnifiedThemeProvider>
-      </ThemeProvider>
+      {/* Single centralized theme provider */}
+      <UnifiedThemeProvider>
+        <AuthProvider>
+          <GuestModeProvider>
+            <AuthDialogProvider>
+              <AppContent />
+              <Toaster />
+            </AuthDialogProvider>
+          </GuestModeProvider>
+        </AuthProvider>
+      </UnifiedThemeProvider>
     </QueryClientProvider>
   );
 }

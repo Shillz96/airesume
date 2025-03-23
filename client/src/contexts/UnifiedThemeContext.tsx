@@ -1,6 +1,86 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 /**
+ * Helper function to convert hex color to RGB
+ */
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  // Remove # if present
+  hex = hex.replace('#', '');
+  
+  // Handle shorthand (e.g. #fff)
+  if (hex.length === 3) {
+    hex = hex.split('').map(x => x + x).join('');
+  }
+  
+  // Validate hex format
+  if (!/^[0-9A-F]{6}$/i.test(hex)) {
+    return null;
+  }
+  
+  // Parse hex
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+  
+  return { r, g, b };
+}
+
+/**
+ * Apply initial theme based on localStorage or system preference
+ * This should be called before the app renders to avoid flashing
+ */
+export function applyInitialTheme(): void {
+  // Check for saved theme preference in localStorage
+  const savedTheme = localStorage.getItem('theme-mode');
+  const html = document.documentElement;
+  
+  if (savedTheme === 'dark') {
+    html.classList.add('dark');
+    html.classList.remove('light');
+  } else if (savedTheme === 'light') {
+    html.classList.remove('dark');
+    html.classList.add('light');
+  } else {
+    // Use system preference as fallback
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    html.classList.toggle('dark', prefersDark);
+    html.classList.toggle('light', !prefersDark);
+  }
+  
+  // Load theme configuration from localStorage if available
+  try {
+    const savedConfig = localStorage.getItem('theme-config');
+    if (savedConfig) {
+      const config = JSON.parse(savedConfig);
+      
+      // Apply CSS variables based on the saved config
+      if (config.primaryColor) {
+        html.style.setProperty('--primary', config.primaryColor);
+      }
+      
+      if (config.secondaryColor) {
+        html.style.setProperty('--secondary', config.secondaryColor);
+      }
+      
+      if (config.borderRadius !== undefined) {
+        html.style.setProperty('--radius', `${config.borderRadius}rem`);
+      }
+      
+      // Apply other theme variables from the config
+      if (config.colors) {
+        Object.entries(config.colors).forEach(([key, value]) => {
+          if (typeof value === 'string') {
+            html.style.setProperty(`--${key}`, value);
+          }
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Error applying initial theme from localStorage:', error);
+  }
+}
+
+/**
  * Unified Theme Context
  * 
  * This is the single, centralized theme system that powers all UI components.
@@ -150,7 +230,11 @@ const defaultTheme: ThemeConfig = {
 // Create the context with default values
 const ThemeContext = createContext<ThemeContextType>({
   config: defaultTheme,
+  currentTheme: defaultTheme as any, // For backward compatibility
   isDarkMode: true,
+  isSystemTheme: false,
+  
+  // Theme changing functions
   setVariant: () => {},
   setMode: () => {},
   setPrimaryColor: () => {},
@@ -158,7 +242,24 @@ const ThemeContext = createContext<ThemeContextType>({
   setBorderRadius: () => {},
   setAnimations: () => {},
   toggleDarkMode: () => {},
+  
+  // Legacy compatibility functions
+  setThemeVariant: () => {},
+  setThemeAppearance: () => {},
+  setThemeRadius: () => {},
+  updateThemeSettings: () => {},
+  
+  // Utility functions
   getThemeClass: () => "",
+  getThemeVar: () => "",
+  getCurrentVariant: () => "cosmic",
+  getCurrentAppearance: () => "dark",
+  getCosmicColor: () => "",
+  getVariantClasses: () => "",
+  getTextColorClass: () => "",
+  getBackgroundClass: () => "",
+  getCardBackgroundClass: () => "",
+  getButtonClass: () => "",
 });
 
 /**
@@ -575,27 +676,3 @@ export function useUnifiedTheme() {
   return context;
 }
 
-/**
- * Helper function to convert hex color to RGB
- */
-function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
-  // Remove # if present
-  hex = hex.replace('#', '');
-  
-  // Handle shorthand (e.g. #fff)
-  if (hex.length === 3) {
-    hex = hex.split('').map(x => x + x).join('');
-  }
-  
-  // Validate hex format
-  if (!/^[0-9A-F]{6}$/i.test(hex)) {
-    return null;
-  }
-  
-  // Parse hex
-  const r = parseInt(hex.slice(0, 2), 16);
-  const g = parseInt(hex.slice(2, 4), 16);
-  const b = parseInt(hex.slice(4, 6), 16);
-  
-  return { r, g, b };
-}

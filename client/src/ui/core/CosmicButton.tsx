@@ -1,6 +1,6 @@
 import { Button } from "@/ui/core/Button";
 import { cn } from "@/lib/utils";
-import { getCurrentVariant } from "@/lib/theme-utils";
+import { useUnifiedTheme } from "@/contexts/UnifiedThemeContext";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
 type CosmicButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'success' | 'gradient-border' | 'animated-gradient';
@@ -43,8 +43,8 @@ export const CosmicButton = forwardRef<HTMLButtonElement, CosmicButtonProps>(
     disabled,
     ...props
   }, ref) => {
-    // Get current theme variant for any theme-specific adjustments
-    const themeVariant = getCurrentVariant();
+    // Get theme context
+    const theme = useUnifiedTheme();
     
     // Determine button styles based on variant from unified CSS
     const variantClasses = {

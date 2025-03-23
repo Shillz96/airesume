@@ -1,16 +1,25 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { ReactNode, useContext } from 'react';
 import { 
+  useUnifiedTheme, 
   ThemeVariant, 
   ThemeAppearance, 
-  ThemeConfig,
+  ThemeConfig, 
   ThemeUpdateParams,
-  getThemeConfig,
-  THEME_VARIANTS,
-  THEME_APPEARANCES
-} from '@/lib/theme-utils';
-import { initializeTheme, updateTheme, toggleDarkMode } from '@/lib/theme-loader';
+  ThemeMode
+} from './UnifiedThemeContext';
 
-// Define the shape of our theme context
+/**
+ * COMPATIBILITY LAYER
+ * 
+ * This file provides backward compatibility with the old ThemeContext.
+ * It redirects all calls to the new UnifiedThemeContext to ensure 
+ * a single source of truth for theme management.
+ * 
+ * This file should be considered DEPRECATED and will be removed in a future update.
+ * All components should migrate to use `useUnifiedTheme` directly.
+ */
+
+// Define the shape of our theme context (same as before for compatibility)
 interface ThemeContextType {
   // Current theme state
   currentTheme: ThemeConfig;
@@ -28,179 +37,33 @@ interface ThemeContextType {
   isSystemTheme: boolean;
 }
 
-// Create the theme context with default values
-const ThemeContext = createContext<ThemeContextType>({
-  currentTheme: {
-    variant: 'professional',
-    primary: '#3b82f6',
-    appearance: 'system',
-    radius: 0.5,
-    colors: {}
-  },
-  setThemeVariant: () => {},
-  setThemeAppearance: () => {},
-  setPrimaryColor: () => {},
-  setThemeRadius: () => {},
-  updateThemeSettings: () => {},
-  toggleDarkMode: () => {},
-  isDarkMode: false,
-  isSystemTheme: true
-});
+// Create the theme context
+const ThemeContext = React.createContext<ThemeContextType | null>(null);
 
-// Hook for consuming the theme context
+// Hook for consuming the theme context - now directly passes through to UnifiedThemeContext
 export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return context;
+  // Get the unified theme context
+  const unifiedContext = useUnifiedTheme();
+  
+  // Return a compatible subset of the unified theme context
+  return {
+    currentTheme: unifiedContext.currentTheme,
+    setThemeVariant: unifiedContext.setThemeVariant,
+    setThemeAppearance: unifiedContext.setThemeAppearance,
+    setPrimaryColor: unifiedContext.setPrimaryColor,
+    setThemeRadius: unifiedContext.setThemeRadius,
+    updateThemeSettings: unifiedContext.updateThemeSettings,
+    toggleDarkMode: unifiedContext.toggleDarkMode,
+    isDarkMode: unifiedContext.isDarkMode,
+    isSystemTheme: unifiedContext.isSystemTheme
+  };
 }
 
-// Function to determine if dark mode is active
-function isDarkModeActive(): boolean {
-  // Check if dark class is on html element
-  const htmlElement = document.documentElement;
-  return htmlElement.classList.contains('dark');
-}
-
-// Provider component to wrap application with
+// Empty provider component for backward compatibility
+// This only exists as a simple pass-through since we've moved to UnifiedThemeProvider 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Initialize with the current theme from theme.json, but with a safe copy to avoid circular references
-  const [currentTheme, setCurrentTheme] = useState<ThemeConfig>(() => {
-    const config = getThemeConfig();
-    // Create a safe copy without potential circular references
-    return {
-      variant: config.variant || 'professional',
-      primary: config.primary || '#3b82f6',
-      appearance: config.appearance || 'system',
-      radius: config.radius || 0.5,
-      colors: config.colors ? JSON.parse(JSON.stringify(config.colors)) : {}
-    };
-  });
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(isDarkModeActive());
-  
-  // We only need to listen for theme change events, not initialize the theme again
-  // The theme is already initialized in main.tsx before the App renders
-  useEffect(() => {
-    // Set the initial dark mode state
-    setIsDarkMode(isDarkModeActive());
-
-    // Listen for theme change events from outside this component
-    const handleThemeChange = (e: CustomEvent<{ isDarkMode: boolean }>) => {
-      setIsDarkMode(e.detail.isDarkMode);
-    };
-
-    window.addEventListener('theme-change', handleThemeChange as EventListener);
-    
-    return () => {
-      window.removeEventListener('theme-change', handleThemeChange as EventListener);
-    };
-  }, []);
-  
-  // Theme setting functions
-  const setThemeVariant = (variant: ThemeVariant) => {
-    updateTheme({ variant });
-    // Create a safe copy to avoid potential circular references
-    setCurrentTheme(prev => {
-      const newTheme = { ...prev };
-      newTheme.variant = variant;
-      return newTheme;
-    });
-  };
-  
-  const setThemeAppearance = (appearance: ThemeAppearance) => {
-    updateTheme({ appearance });
-    // Create a safe copy to avoid potential circular references
-    setCurrentTheme(prev => {
-      const newTheme = { ...prev };
-      newTheme.appearance = appearance;
-      return newTheme;
-    });
-    
-    // Update dark mode state based on new appearance
-    if (appearance === 'dark') {
-      setIsDarkMode(true);
-    } else if (appearance === 'light') {
-      setIsDarkMode(false);
-    } else {
-      // For 'system', check the system preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setIsDarkMode(prefersDark);
-    }
-  };
-  
-  const setPrimaryColor = (primary: string) => {
-    updateTheme({ primary });
-    // Create a safe copy to avoid potential circular references
-    setCurrentTheme(prev => {
-      const newTheme = { ...prev };
-      newTheme.primary = primary;
-      return newTheme;
-    });
-  };
-  
-  const setThemeRadius = (radius: number) => {
-    updateTheme({ radius });
-    // Create a safe copy to avoid potential circular references
-    setCurrentTheme(prev => {
-      const newTheme = { ...prev };
-      newTheme.radius = radius;
-      return newTheme;
-    });
-  };
-  
-  const updateThemeSettings = (updates: ThemeUpdateParams) => {
-    updateTheme(updates);
-    
-    // Create a safe copy of updates to avoid circular references
-    const safeUpdates: ThemeUpdateParams = { ...updates };
-    
-    // Handle colors separately to avoid potential circular references
-    if (updates.colors) {
-      try {
-        safeUpdates.colors = JSON.parse(JSON.stringify(updates.colors));
-      } catch (err) {
-        // If there's a circular reference, use a simpler approach
-        console.warn('Error parsing colors, using simplified approach');
-        safeUpdates.colors = { ...updates.colors };
-      }
-    }
-    
-    setCurrentTheme(prev => ({ ...prev, ...safeUpdates }));
-    
-    // If appearance is being updated, update dark mode state
-    if (updates.appearance) {
-      if (updates.appearance === 'dark') {
-        setIsDarkMode(true);
-      } else if (updates.appearance === 'light') {
-        setIsDarkMode(false);
-      }
-    }
-  };
-  
-  const handleToggleDarkMode = () => {
-    toggleDarkMode();
-    setIsDarkMode(isDarkModeActive());
-  };
-  
-  const contextValue: ThemeContextType = {
-    currentTheme,
-    setThemeVariant,
-    setThemeAppearance,
-    setPrimaryColor,
-    setThemeRadius,
-    updateThemeSettings,
-    toggleDarkMode: handleToggleDarkMode,
-    isDarkMode,
-    isSystemTheme: currentTheme.appearance === 'system'
-  };
-  
-  return (
-    <ThemeContext.Provider value={contextValue}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <>{children}</>;
 }
 
-// Optional: Create theme consumer component for class components
+// For class components (kept for compatibility)
 export const ThemeConsumer = ThemeContext.Consumer;

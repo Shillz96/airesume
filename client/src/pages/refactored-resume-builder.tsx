@@ -66,36 +66,148 @@ export default function ResumeBuilder() {
     }
   }, [activeSection]);
   
-  // All available skills
+  // All available skills across multiple industries
   const allSkills = [
-    // Programming Languages
-    "JavaScript", "TypeScript", "Python", "Java", "C#", "C++", "Go", "Ruby", "PHP", "Swift", "Kotlin", "Rust",
-    // Frontend 
-    "React", "Angular", "Vue.js", "Next.js", "HTML", "CSS", "SASS/SCSS", "Bootstrap", "Tailwind CSS", "Material-UI", 
-    "Redux", "Context API", "Webpack", "Babel", "GraphQL", "Apollo Client", "Responsive Design", "Mobile-First Design",
-    // Backend
-    "Node.js", "Express", "Django", "Flask", "Spring Boot", "Ruby on Rails", ".NET Core", "Laravel", "NestJS",
-    "REST APIs", "GraphQL", "WebSockets", "Microservices", "Socket.io", 
-    // Databases
-    "SQL", "PostgreSQL", "MySQL", "MongoDB", "Redis", "Elasticsearch", "Firebase", "Supabase", "DynamoDB", "Cassandra",
-    "ORM", "Sequelize", "TypeORM", "Mongoose", "Prisma", "Entity Framework",
-    // Cloud & DevOps
-    "AWS", "Azure", "Google Cloud", "Heroku", "Vercel", "Netlify", "Docker", "Kubernetes", "CI/CD", "GitHub Actions",
-    "Jenkins", "Terraform", "Serverless", "Cloudflare", "Load Balancing", "Auto-scaling",
-    // Testing
-    "Jest", "Mocha", "Cypress", "Selenium", "Puppeteer", "React Testing Library", "TDD", "BDD", "Unit Testing", 
-    "Integration Testing", "E2E Testing", "Test Coverage",
-    // Tools & Methodologies
-    "Git", "GitHub", "GitLab", "BitBucket", "Jira", "Agile", "Scrum", "Kanban", "Code Reviews", "Pair Programming",
-    // Security
-    "Authentication", "Authorization", "OAuth", "JWT", "HTTPS", "Encryption", "XSS Prevention", "CSRF Protection",
-    // Performance
-    "Web Performance", "Lazy Loading", "Code Splitting", "Bundle Optimization", "Server-Side Rendering", "Caching Strategies",
-    // Soft Skills
-    "Problem Solving", "Communication", "Teamwork", "Leadership", "Time Management", "Critical Thinking", 
-    "Adaptability", "Project Management", "Mentoring", "Documentation",
-    // Mobile
-    "React Native", "Flutter", "iOS Development", "Android Development", "Mobile UI/UX", "App Store Optimization"
+    // Technology & Software Development
+    "JavaScript", "TypeScript", "Python", "Java", "C#", "C++", "Go", "Ruby", "PHP", "Swift",
+    "React", "Angular", "Vue.js", "Node.js", "HTML/CSS", "SQL", "NoSQL", "MongoDB", "AWS", "Azure",
+    "Docker", "Kubernetes", "DevOps", "CI/CD", "Git", "REST APIs", "GraphQL", "Microservices",
+    "Agile", "Scrum", "Test-Driven Development", "Unit Testing", "Full-Stack Development",
+    "Mobile App Development", "Cloud Computing", "System Design", "Database Design", "Data Modeling",
+    "Web Accessibility", "SEO", "Performance Optimization", "Cybersecurity", "Network Security",
+    
+    // Healthcare & Medical
+    "Patient Care", "Clinical Documentation", "Electronic Medical Records (EMR)", "Medical Coding",
+    "Medical Billing", "HIPAA Compliance", "Vital Signs Monitoring", "Medication Administration",
+    "Phlebotomy", "Triage", "Case Management", "Patient Advocacy", "Disease Management",
+    "Diagnostic Imaging", "Laboratory Testing", "Rehabilitation Therapy", "Patient Education",
+    "Infection Control", "Emergency Response", "Nursing Informatics", "Telehealth", "Clinical Research",
+    "Medical Terminology", "Pharmacology", "Pain Management", "Wound Care", "Geriatric Care",
+    
+    // Business & Management
+    "Strategic Planning", "Business Development", "Market Analysis", "Competitive Analysis",
+    "Financial Analysis", "Budgeting", "Forecasting", "P&L Management", "Risk Management",
+    "Process Improvement", "Change Management", "Team Leadership", "Performance Management",
+    "Cross-functional Collaboration", "Stakeholder Management", "Vendor Management",
+    "Contract Negotiation", "Business Intelligence", "KPI Tracking", "Corporate Governance",
+    "Mergers & Acquisitions", "Due Diligence", "Business Model Innovation", "ROI Analysis",
+    
+    // Marketing & Communications
+    "Digital Marketing", "Content Marketing", "Social Media Marketing", "Email Marketing",
+    "SEO/SEM", "PPC Advertising", "Marketing Automation", "Campaign Management", "Brand Development", 
+    "Market Research", "Audience Segmentation", "Customer Journey Mapping", "CRM", "Lead Generation",
+    "Conversion Rate Optimization", "Google Analytics", "A/B Testing", "Copywriting", "Content Strategy",
+    "Marketing Analytics", "Public Relations", "Crisis Communications", "Media Relations",
+    "Internal Communications", "Event Planning", "Video Production", "Podcast Production",
+    
+    // Finance & Accounting
+    "Financial Reporting", "Generally Accepted Accounting Principles (GAAP)", "Accounts Payable",
+    "Accounts Receivable", "General Ledger", "Financial Statement Analysis", "Audit Preparation",
+    "Tax Preparation", "Cash Flow Management", "Fixed Asset Accounting", "Cost Accounting",
+    "Variance Analysis", "Regulatory Compliance", "Financial Modeling", "QuickBooks", "SAP",
+    "Oracle Financials", "Microsoft Dynamics", "Sarbanes-Oxley Compliance", "Revenue Recognition", 
+    "Expense Management", "Payroll Processing", "Financial Forecasting", "Treasury Management",
+    
+    // Sales & Customer Service
+    "Consultative Selling", "Solution Selling", "Sales Pipeline Management", "CRM Management",
+    "Customer Needs Analysis", "Relationship Building", "Account Management", "Territory Management",
+    "Contract Negotiation", "Closing Techniques", "Objection Handling", "Upselling", "Cross-selling",
+    "Customer Retention", "Conflict Resolution", "Active Listening", "Product Knowledge",
+    "Service Level Agreement Management", "Quality Assurance", "Call Center Operations",
+    "Customer Experience Management", "Voice of Customer Programs", "Customer Feedback Analysis",
+    
+    // Education & Training
+    "Curriculum Development", "Lesson Planning", "Instructional Design", "Learning Management Systems",
+    "Student Assessment", "Differentiated Instruction", "Classroom Management", "Distance Learning",
+    "E-Learning", "Educational Technology", "Special Education", "IEP Development", "STEM Education",
+    "Student Engagement", "Group Facilitation", "Adult Learning Theory", "Training Needs Analysis",
+    "Learning Outcome Measurement", "Experiential Learning", "Educational Research", "Academic Advising",
+    "Tutoring", "Student Support Services", "Behavior Management", "Multicultural Education",
+    
+    // Human Resources
+    "Talent Acquisition", "Recruitment", "Employee Onboarding", "Performance Evaluation",
+    "Compensation Planning", "Benefits Administration", "Employee Relations", "Conflict Resolution",
+    "Employment Law Compliance", "HRIS Management", "Succession Planning", "Workforce Planning",
+    "Diversity & Inclusion", "Training & Development", "Employee Engagement", "Policy Development",
+    "Change Management", "Organizational Development", "HR Analytics", "Payroll Administration",
+    "Retention Strategies", "Exit Interviews", "Labor Relations", "Collective Bargaining",
+    
+    // Legal
+    "Legal Research", "Legal Writing", "Case Management", "Document Review", "Contract Drafting",
+    "Contract Review", "Legal Compliance", "Regulatory Affairs", "Due Diligence", "Litigation Support",
+    "eDiscovery", "Legal Project Management", "Intellectual Property", "Patent Law", "Trademark Law",
+    "Copyright Law", "Corporate Law", "Employment Law", "Environmental Law", "Immigration Law",
+    "Family Law", "Criminal Law", "Real Estate Law", "Tax Law", "Mergers & Acquisitions",
+    
+    // Creative & Design
+    "Graphic Design", "UI/UX Design", "Web Design", "Mobile Design", "User Research",
+    "Wireframing", "Prototyping", "Adobe Creative Suite", "Photoshop", "Illustrator",
+    "InDesign", "After Effects", "Figma", "Sketch", "Brand Design", "Typography",
+    "Color Theory", "Visual Communication", "Advertising Design", "Package Design",
+    "Animation", "Video Editing", "Photography", "Art Direction", "3D Modeling",
+    
+    // Manufacturing & Operations
+    "Lean Manufacturing", "Six Sigma", "Process Optimization", "Quality Control",
+    "Quality Assurance", "Supply Chain Management", "Inventory Management", "Logistics",
+    "Warehouse Management", "Production Planning", "Production Scheduling", "Materials Management",
+    "Equipment Maintenance", "Preventive Maintenance", "Root Cause Analysis", "Safety Compliance",
+    "OSHA Regulations", "ISO Standards", "5S Methodology", "Continuous Improvement",
+    "Just-in-Time (JIT)", "Total Quality Management (TQM)", "Enterprise Resource Planning (ERP)",
+    
+    // Construction & Engineering
+    "Project Management", "Blueprint Reading", "AutoCAD", "Building Information Modeling (BIM)",
+    "Construction Planning", "Cost Estimation", "Structural Analysis", "Civil Engineering",
+    "Mechanical Engineering", "Electrical Engineering", "HVAC Systems", "Plumbing Systems",
+    "Building Codes", "Safety Standards", "Construction Supervision", "Contract Administration",
+    "Site Inspection", "Quality Control", "Permit Processing", "Material Procurement",
+    "Sustainability Design", "LEED Certification", "Energy Efficient Design", "Soil Mechanics",
+    
+    // Hospitality & Tourism
+    "Hotel Management", "Restaurant Management", "Event Planning", "Guest Relations",
+    "Front Desk Operations", "Reservation Systems", "Revenue Management", "Food & Beverage Management",
+    "Menu Development", "Catering Management", "Housekeeping Operations", "Facilities Management",
+    "Tourism Development", "Travel Planning", "Tour Guide Services", "Concierge Services",
+    "Customer Service Excellence", "Property Management Systems", "Hospitality Law",
+    "Health & Safety Compliance", "Crisis Management", "Sustainable Tourism",
+    
+    // Retail & Merchandising
+    "Retail Management", "Store Operations", "Visual Merchandising", "Inventory Control",
+    "Loss Prevention", "Point of Sale Systems", "Retail Analytics", "Merchandising Planning",
+    "Product Selection", "Pricing Strategy", "Promotional Planning", "Retail Marketing",
+    "Category Management", "Assortment Planning", "Vendor Negotiations", "Supply Chain Optimization",
+    "Customer Experience Design", "E-commerce Management", "Omnichannel Strategy", "Retail Compliance",
+    "Sales Training", "Staff Development", "Shrinkage Control", "Fashion Merchandising",
+    
+    // Environmental & Sustainability
+    "Environmental Impact Assessment", "Sustainability Planning", "Carbon Footprint Analysis",
+    "Waste Management", "Recycling Programs", "Water Conservation", "Energy Efficiency",
+    "Renewable Energy", "Environmental Compliance", "LEED Certification", "Green Building",
+    "Environmental Remediation", "Habitat Conservation", "Wildlife Management", "Natural Resource Management",
+    "Climate Change Mitigation", "Environmental Policy", "Stakeholder Engagement", "Corporate Social Responsibility",
+    "Life Cycle Assessment", "Circular Economy", "Sustainable Supply Chain", "Environmental Education",
+    
+    // Agriculture & Farming
+    "Crop Management", "Livestock Management", "Soil Conservation", "Irrigation Systems",
+    "Pest Management", "Integrated Pest Management", "Organic Farming", "Sustainable Agriculture",
+    "Farm Equipment Operation", "Harvest Management", "Post-harvest Handling", "Agricultural Planning",
+    "Agricultural Economics", "Farm Business Management", "Precision Agriculture", "Hydroponics",
+    "Aquaponics", "Animal Husbandry", "Plant Breeding", "Seed Production", "Agricultural Research",
+    "Agribusiness", "Farm-to-Table Operations", "Agricultural Marketing", "Food Safety Compliance",
+    
+    // Transportation & Logistics
+    "Supply Chain Management", "Logistics Planning", "Transportation Management", "Route Optimization",
+    "Fleet Management", "Warehouse Operations", "Inventory Control", "Distribution Management",
+    "Freight Forwarding", "Customs Compliance", "International Shipping", "Import/Export Regulations",
+    "Carrier Relations", "Transportation Safety", "Hazardous Materials Handling", "Cold Chain Logistics",
+    "Last Mile Delivery", "Logistics Software", "Demand Forecasting", "Order Fulfillment",
+    "Reverse Logistics", "Cross-docking", "Intermodal Transportation", "3PL Management",
+    
+    // Soft Skills (Universal)
+    "Communication", "Teamwork", "Problem Solving", "Critical Thinking", "Time Management",
+    "Leadership", "Conflict Resolution", "Decision Making", "Adaptability", "Emotional Intelligence",
+    "Active Listening", "Negotiation", "Persuasion", "Presentation Skills", "Public Speaking",
+    "Cultural Awareness", "Empathy", "Stress Management", "Work Ethic", "Attention to Detail",
+    "Creativity", "Analytical Thinking", "Strategic Planning", "Customer Service", "Networking"
   ];
   
   // Function to generate 10 random skills
@@ -164,43 +276,104 @@ export default function ResumeBuilder() {
       
       // Generate different suggestions based on the active section
       if (activeSection === "summary") {
+        // Based on the detected industry/role (here we're providing multiple industries)
         if (type === "short") {
           newSuggestions = [
+            // Technology
             "Dedicated software engineer with 5+ years experience in web development, specializing in React and Node.js.",
-            "Results-driven full-stack developer with expertise in building scalable applications and optimizing user experiences.",
-            "Tech professional with a proven track record of delivering efficient solutions in agile environments."
+            // Healthcare
+            "Compassionate Registered Nurse with 6+ years of acute care experience, specializing in emergency medicine and patient advocacy.",
+            // Marketing
+            "Creative Marketing Specialist with proven success developing innovative campaigns that increase brand visibility and drive conversion rates.",
+            // Finance
+            "Detail-oriented Financial Analyst with expertise in data-driven forecasting, budgeting, and financial modeling for business growth strategies.",
+            // Education
+            "Dedicated Elementary Educator with 8+ years experience fostering student growth through differentiated instruction and technology integration.",
+            // Hospitality
+            "Customer-focused Hospitality Manager with extensive experience in guest relations, staff development, and operational excellence."
           ];
         } else if (type === "medium") {
           newSuggestions = [
+            // Technology
             "Seasoned software engineer with 5+ years of experience building responsive web applications. Expertise in JavaScript frameworks (React, Vue) and backend technologies (Node.js, Express). Delivered solutions that improved customer engagement by 40%.",
-            "Full-stack developer with a passion for clean code and user-centric design. Specialized in modern JavaScript frameworks and cloud infrastructure. Proven track record of reducing application load times by 60% and increasing conversion rates.",
-            "Innovative web developer with extensive experience in frontend and backend technologies. Skilled in React, Node.js, and cloud platforms. Successfully led multiple teams to deliver enterprise-grade solutions on schedule and under budget."
+            // Healthcare
+            "Dedicated Registered Nurse with 6+ years of experience in emergency and critical care settings. Expertise in trauma assessment, medication administration, and patient advocacy. Consistently recognized for compassionate care and quick decision-making in high-pressure situations.",
+            // Sales/Business
+            "Results-driven Sales Manager with 7+ years experience exceeding targets in competitive markets. Skilled in team leadership, client relationship management, and strategic territory planning. Proven track record of increasing regional sales by 35% and implementing effective sales training programs.",
+            // Legal
+            "Detail-oriented Paralegal with 4+ years supporting corporate litigation teams. Proficient in legal research, document preparation, and client communications. Experienced in managing complex case files and coordinating with multiple stakeholders while ensuring strict confidentiality and compliance.",
+            // Human Resources
+            "Strategic HR Professional with 8+ years experience spanning talent acquisition, employee relations, and organizational development. Skilled in implementing effective retention programs and developing comprehensive training initiatives that improved employee satisfaction by 25%.",
+            // Construction
+            "Experienced Construction Manager with 10+ years overseeing residential and commercial projects. Expertise in project planning, cost estimation, and regulatory compliance. Successfully completed over 25 major projects on time and under budget while maintaining exceptional quality standards."
           ];
         } else {
           newSuggestions = [
-            "Senior software engineer with 5+ years of experience architecting and implementing scalable web applications. Proficient in the entire development lifecycle from concept to deployment. Core expertise includes React, Node.js, GraphQL, and AWS. Successfully reduced API response times by 65% and implemented CI/CD pipelines that decreased deployment times from days to minutes. Known for mentoring junior developers and promoting best practices across development teams.",
-            "Results-driven full-stack developer with a proven track record of converting business requirements into elegant technical solutions. Specialized in JavaScript ecosystems including React, Angular, and Node.js with experience in cloud platforms (AWS, Azure). Led development of an e-commerce platform that processes $2M in annual transactions. Passionate about performance optimization, having reduced application load times by 70% through code refactoring and infrastructure improvements.",
-            "Dedicated software professional with extensive experience developing enterprise-grade applications. Proficient in modern JavaScript frameworks (React, Vue) and server-side technologies (Node.js, Express, PostgreSQL). Implemented microservice architectures that improved system reliability by 99.9%. Strong collaborator who excels in agile environments and consistently delivers high-quality code that exceeds client expectations."
+            // Technology
+            "Senior Software Engineer with 5+ years of experience architecting and implementing scalable web applications. Proficient in the entire development lifecycle from concept to deployment. Core expertise includes React, Node.js, GraphQL, and AWS. Successfully reduced API response times by 65% and implemented CI/CD pipelines that decreased deployment times from days to minutes. Known for mentoring junior developers and promoting best practices across development teams.",
+            // Healthcare
+            "Compassionate and versatile Registered Nurse with 6+ years of progressive experience in emergency medicine and critical care settings. Advanced certifications in ACLS, PALS, and Trauma Nursing. Recognized for exceptional patient care, having maintained 98% patient satisfaction scores while managing high-volume trauma cases. Experienced in implementing new triage protocols that reduced wait times by 30% and improved patient outcomes. Actively contributes to cross-departmental initiatives and mentors new nursing staff on best practices in emergency care protocols.",
+            // Marketing
+            "Strategic Marketing Director with 8+ years of experience developing comprehensive marketing campaigns across digital and traditional channels. Expert in market analysis, brand development, and performance metrics. Spearheaded company rebrand that increased market share by 15% and customer engagement by 43%. Successfully managed $2.5M annual marketing budget, consistently achieving ROI targets while exploring innovative marketing technologies. Skilled team leader who has built and mentored high-performing marketing teams, implementing streamlined workflows that improved campaign delivery times by 35%.",
+            // Finance
+            "Results-driven Financial Controller with 10+ years of progressive experience in corporate finance and accounting operations. Expert in financial reporting, audit management, and regulatory compliance (GAAP, SOX). Successfully led the implementation of a new ERP system that streamlined financial operations and reduced month-end close time from 10 days to 3 days. Managed accounting team of 12 professionals while overseeing $50M annual budget. Developed comprehensive financial analysis models that identified $1.2M in cost-saving opportunities and supported strategic decision-making for C-suite executives.",
+            // Education
+            "Dedicated Educational Leader with 12+ years experience as a classroom teacher and curriculum specialist. Master's in Educational Technology with focus on innovative teaching methodologies. Developed and implemented district-wide literacy program that improved reading proficiency scores by 27% across 15 schools. Recipient of State Teacher of the Year award for creating inclusive learning environments that support diverse student needs. Expert in data-driven instruction, having trained over 100 educators in assessment strategies and personalized learning techniques that measurably increase student achievement.",
+            // Hospitality
+            "Dynamic Hospitality Executive with 15+ years of progressive experience managing luxury hotel operations and guest services. Expert in revenue management, staff development, and creating exceptional guest experiences with 97% satisfaction rates. Successfully directed $4M property renovation while maintaining operations and exceeding revenue targets by 18%. Implemented innovative training programs that reduced staff turnover by 40% and improved service consistency across five departments. Recognized industry leader in sustainability practices, having developed eco-friendly initiatives that reduced operational costs by $250K annually while enhancing brand reputation."
           ];
         }
       } else if (activeSection === "experience") {
         if (type === "short") {
           newSuggestions = [
+            // Technology
             "Led development of a customer-facing web application that increased user engagement by 45%.",
-            "Implemented responsive design principles that improved mobile conversion rates by 60%.",
-            "Refactored legacy codebase resulting in 30% performance improvement and 25% reduction in bugs."
+            // Healthcare
+            "Managed care for 15-20 patients daily in high-volume emergency department while maintaining 98% satisfaction rating.",
+            // Sales
+            "Exceeded quarterly sales targets by 32% through strategic account management and effective client relationship building.",
+            // Finance
+            "Analyzed financial statements and identified cost-saving measures that reduced operational expenses by 18%.",
+            // Marketing
+            "Created and implemented social media campaign that increased brand engagement by 75% and generated 2,500+ qualified leads.",
+            // Hospitality
+            "Supervised team of 15 staff members while maintaining high service standards and reducing turnover by 40%.",
+            // Education 
+            "Developed innovative curriculum that improved standardized test scores by 27% among previously underperforming students.",
+            // Manufacturing
+            "Streamlined production process that reduced assembly time by 15% while improving overall product quality.",
+            // Retail
+            "Managed $2M annual merchandise budget and increased store profitability by 22% through strategic inventory planning."
           ];
         } else if (type === "medium") {
           newSuggestions = [
-            "Spearheaded the development of a React-based customer portal that improved user engagement by 45% and reduced support tickets by 30%. Implemented state management using Redux and integrated with RESTful APIs.",
-            "Designed and built a responsive e-commerce platform using Vue.js and Node.js that increased mobile conversion rates by 60%. Integrated payment gateways and implemented cart optimization algorithms.",
-            "Led the refactoring of a critical legacy application, resulting in 30% improved performance and 25% fewer bugs. Implemented automated testing that increased code coverage from 20% to 85%."
+            // Technology
+            "Spearheaded the development of a React-based customer portal that improved user engagement by 45% and reduced support tickets by 30%. Implemented state management using Redux and integrated with RESTful APIs to streamline data flow and enhance application performance.",
+            // Healthcare
+            "Coordinated patient care for 15-20 individuals daily in high-volume emergency department, implementing new triage protocols that reduced wait times by 25%. Collaborated with interdisciplinary teams to ensure comprehensive treatment plans and maintained 98% patient satisfaction rating.",
+            // Finance 
+            "Conducted detailed financial analysis of operational expenses across 5 departments, identifying inefficiencies and implementing cost-saving measures that reduced overhead by 18%. Developed improved forecasting models that increased budget accuracy by 40% and supported strategic decision-making.",
+            // Marketing
+            "Designed and executed comprehensive social media strategy across multiple platforms (Instagram, LinkedIn, TikTok) that increased brand engagement by 75% and follower growth by 120%. Created data-driven content calendar that generated 2,500+ qualified leads and contributed to 28% revenue growth.",
+            // Education
+            "Developed and implemented student-centered learning curriculum for diverse classrooms of 25-30 students, incorporating technology and differentiated instruction methods. Created assessment strategies that improved standardized test scores by 27% among previously underperforming students.",
+            // Retail Management
+            "Managed store operations with annual revenue of $3.5M, including supervision of 25 employees across sales, visual merchandising, and inventory teams. Implemented new customer service protocols that increased customer retention by 35% and boosted average transaction value by 22%."
           ];
         } else {
           newSuggestions = [
-            "Led a team of 5 developers to redesign the company's flagship customer portal using React and GraphQL, resulting in a 45% increase in user engagement and 30% reduction in support tickets. Implemented sophisticated state management with Redux, integrated with 12 internal microservices, and established comprehensive testing protocols that caught 95% of bugs before production.",
-            "Architected and developed a mobile-first e-commerce platform serving 100K+ monthly users using Vue.js frontend and Node.js microservices backend. Implemented advanced caching strategies and responsive design principles that improved mobile conversion rates by 60% and reduced page load times from 4.2s to 1.8s. Integrated with multiple payment gateways and shipping APIs to create a seamless checkout experience.",
-            "Took ownership of a critical legacy Java application with technical debt and transformed it into a modern, maintainable system. Refactored over 200K lines of code while maintaining backward compatibility, resulting in 30% performance improvement and 25% reduction in reported bugs. Implemented CI/CD pipelines that reduced deployment time from 2 days to 20 minutes and increased test coverage from 20% to 85%."
+            // Technology
+            "Led a cross-functional team of 5 developers to redesign the company's flagship customer portal using React and GraphQL, resulting in a 45% increase in user engagement and 30% reduction in support tickets. Implemented sophisticated state management with Redux, integrated with 12 internal microservices, and established comprehensive testing protocols that caught 95% of bugs before production. Collaborated with UX designers to optimize user workflows that reduced average task completion time by 40%, receiving recognition for exceptional project delivery from the CTO.",
+            // Healthcare
+            "Served as Charge Nurse in Level I Trauma Center managing the care of 100+ daily patients and supervising a team of 12 nurses and 4 technicians. Implemented evidence-based protocols for sepsis identification that improved early detection by 65% and reduced mortality rates by 15%. Led interdisciplinary initiative to streamline documentation processes, reducing charting time by 25% and increasing direct patient care time. Recognized with Hospital Excellence Award for leadership during COVID-19 surge capacity implementation that maintained high standards of care while accommodating 40% patient volume increase.",
+            // Finance
+            "Directed comprehensive financial analysis for multinational corporation with $500M annual revenue, overseeing team of 8 financial analysts. Developed sophisticated financial models that improved forecast accuracy by 40% and provided critical insights for C-suite decision-making. Led company-wide cost optimization initiative that identified $12M in annual savings through process improvements and strategic vendor renegotiations. Implemented new budgeting system that reduced month-end close process from 10 days to 3 days while improving data accuracy and departmental accountability across 15 business units.",
+            // Marketing
+            "Orchestrated end-to-end rebranding campaign for established B2B company, including market research, positioning strategy, visual identity development, and omnichannel implementation. Managed $1.2M marketing budget and cross-functional team of 12 specialists across creative, digital, and content departments. Campaign resulted in 85% brand recognition improvement, 130% increase in qualified leads, and 45% growth in conversion rates. Implemented sophisticated marketing attribution model that provided granular ROI analysis across 20+ channels, optimizing budget allocation that drove 28% increase in marketing-attributed revenue while maintaining same spend level.",
+            // Education
+            "Transformed underperforming inner-city high school English department as Department Chair, developing comprehensive curriculum redesign incorporating project-based learning and technology integration. Managed team of 12 teachers, implementing mentorship program and professional development initiatives that reduced teacher turnover from 40% to 5%. Created innovative assessment strategies aligned with state standards that improved standardized test passing rates from 65% to 92% over three years. Secured $250,000 grant to establish digital literacy lab serving 1,200+ students annually, which became model program replicated across the district.",
+            // Hospitality
+            "Directed operations for luxury resort property with 350 rooms, 3 restaurants, and conference facilities generating $25M annual revenue. Orchestrated comprehensive service excellence initiative that improved guest satisfaction scores from 85% to 98% and earned property its first Five-Star rating. Led team of 175 staff across departments, implementing career development program that reduced turnover by 45% and promoted 35 employees to leadership positions. Managed $5M renovation project on-time and under budget while maintaining full operations, resulting in 30% ADR increase and 22% boost in group bookings following completion."
           ];
         }
       } else if (activeSection === "skills") {

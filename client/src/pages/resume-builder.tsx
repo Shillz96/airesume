@@ -326,144 +326,29 @@ export default function ResumeBuilder() {
 
               <TabsContent value="contact">
                 <div className="bg-card p-6 rounded-md border shadow-sm">
-                  <h2 className="text-2xl font-semibold mb-4">Contact Information</h2>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="space-y-2">
-                      <label htmlFor="title" className="text-sm font-medium">Resume Title</label>
-                      <input 
-                        type="text"
-                        id="title"
-                        value={resume.title}
-                        onChange={(e) => updateResumeTitle(e.target.value)}
-                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background"
-                        placeholder="e.g., Software Engineer Resume"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
-                    <div className="space-y-2">
-                      <label htmlFor="firstName" className="text-sm font-medium">First Name</label>
-                      <input 
-                        type="text"
-                        id="firstName"
-                        value={resume.personalInfo.firstName}
-                        onChange={(e) => updatePersonalInfo({
-                          ...resume.personalInfo,
-                          firstName: e.target.value
-                        })}
-                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background"
-                        placeholder="John"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="lastName" className="text-sm font-medium">Last Name</label>
-                      <input 
-                        type="text"
-                        id="lastName"
-                        value={resume.personalInfo.lastName}
-                        onChange={(e) => updatePersonalInfo({
-                          ...resume.personalInfo,
-                          lastName: e.target.value
-                        })}
-                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background"
-                        placeholder="Doe"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
-                    <div className="space-y-2">
-                      <label htmlFor="email" className="text-sm font-medium">Email</label>
-                      <input 
-                        type="email"
-                        id="email"
-                        value={resume.personalInfo.email}
-                        onChange={(e) => updatePersonalInfo({
-                          ...resume.personalInfo,
-                          email: e.target.value
-                        })}
-                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background"
-                        placeholder="johndoe@example.com"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="phone" className="text-sm font-medium text-gray-700 dark:text-gray-300">Phone</label>
-                      <input 
-                        type="text"
-                        id="phone"
-                        value={resume.personalInfo.phone}
-                        onChange={(e) => updatePersonalInfo({
-                          ...resume.personalInfo,
-                          phone: e.target.value
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                        placeholder="(123) 456-7890"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2 mt-5">
-                    <label htmlFor="headline" className="text-sm font-medium text-gray-700 dark:text-gray-300">Professional Headline</label>
-                    <input 
-                      type="text"
-                      id="headline"
-                      value={resume.personalInfo.headline}
-                      onChange={(e) => updatePersonalInfo({
-                        ...resume.personalInfo,
-                        headline: e.target.value
-                      })}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                      placeholder="e.g., Senior Software Engineer | Full Stack Developer | Tech Lead"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2 mt-5">
-                    <label htmlFor="summary" className="text-sm font-medium text-gray-700 dark:text-gray-300">Professional Summary</label>
-                    <textarea 
-                      id="summary"
-                      value={resume.personalInfo.summary}
-                      onChange={(e) => updatePersonalInfo({
-                        ...resume.personalInfo,
-                        summary: e.target.value
-                      })}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px] dark:bg-gray-700 dark:text-white"
-                      placeholder="Write a short summary of your skills and experience..."
-                    />
-                  </div>
+                  <ResumeContactSection
+                    personalInfo={resume.personalInfo}
+                    title={resume.title}
+                    onUpdatePersonalInfo={updatePersonalInfo}
+                    onUpdateTitle={updateResumeTitle}
+                  />
                 </div>
               </TabsContent>
 
               <TabsContent value="summary">
                 <div className="bg-card p-6 rounded-md border shadow-sm">
-                  <h2 className="text-2xl font-semibold mb-4">Professional Summary</h2>
-                  <p className="text-muted-foreground mb-5">
-                    Write a compelling summary that highlights your skills, experience, and achievements.
-                  </p>
-                  
-                  <div className="space-y-2">
-                    <label htmlFor="summaryFull" className="text-sm font-medium">Professional Summary</label>
-                    <textarea 
-                      id="summaryFull"
-                      value={resume.personalInfo.summary}
-                      onChange={(e) => updatePersonalInfo({
-                        ...resume.personalInfo,
-                        summary: e.target.value
-                      })}
-                      className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background min-h-[250px]"
-                      placeholder="Write a short summary of your skills and experience..."
-                    />
-                  </div>
+                  <ResumeSummarySection
+                    summary={resume.personalInfo.summary}
+                    onUpdateSummary={(summary) => updatePersonalInfo({
+                      ...resume.personalInfo,
+                      summary
+                    })}
+                  />
                 </div>
               </TabsContent>
 
               <TabsContent value="experience">
-                <div className="cosmic-card p-6 backdrop-blur-sm">
-                  <h2 className="text-2xl font-semibold cosmic-text-gradient mb-4">Work Experience</h2>
-                  <p className="text-gray-600 dark:text-gray-400 mb-5">
-                    Add your relevant work experience, starting with the most recent position.
-                  </p>
+                <div className="bg-card p-6 rounded-md border shadow-sm">
                   <ResumeExperienceSection
                     experiences={resume.experience}
                     onUpdate={updateExperienceList}

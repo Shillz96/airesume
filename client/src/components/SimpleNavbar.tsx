@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useAuthDialog } from "@/hooks/use-auth-dialog";
 import { useTheme } from "@/contexts/ThemeContext";
-import Button from "@/components/ui/modern-button";
+import { Button } from "@/components/ui/button";
 
 // Icons
 import {

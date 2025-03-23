@@ -138,13 +138,29 @@ export default function LandingPage() {
       gsap.fromTo(ctaRef.current, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 1, delay: 0.6 });
     }
 
-    // Feature animations on scroll
+    // Feature animations on scroll with modified approach to prevent circular references
     if (featuresRef.current) {
       const features = featuresRef.current.querySelectorAll('.feature-card');
+      
+      // Use a simple animation without ScrollTrigger to avoid circular references
       gsap.fromTo(features, 
         { opacity: 0, y: 30 }, 
-        { opacity: 1, y: 0, duration: 0.7, stagger: 0.2, scrollTrigger: { trigger: featuresRef.current, start: "top 80%" } }
+        { opacity: 1, y: 0, duration: 0.7, stagger: 0.2, delay: 1.0 }
       );
+      
+      // Optional: Add scroll-based reveal with IntersectionObserver instead of ScrollTrigger
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            gsap.to(entry.target, { opacity: 1, y: 0, duration: 0.5 });
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      
+      features.forEach(feature => {
+        observer.observe(feature);
+      });
     }
 
     // No background cleanup needed since we're using the global CosmicBackground

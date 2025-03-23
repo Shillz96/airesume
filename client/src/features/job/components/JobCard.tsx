@@ -63,10 +63,7 @@ export default function JobCard({ job }: JobCardProps) {
 
   return (
     <div 
-      className={cn(
-        "p-4 rounded-lg border border-border cursor-pointer transition-all",
-        "hover:shadow-md hover:border-primary/30 bg-card"
-      )}
+      className="cosmic-card border border-white/10 cursor-pointer transition-all p-4 rounded-lg"
       onClick={handleClick}
     >
       <div className="flex justify-between items-start">
@@ -170,7 +167,7 @@ export default function JobCard({ job }: JobCardProps) {
             variant="outline"
             size="sm"
             iconRight={<ChevronRight className="h-4 w-4" />}
-            className="text-xs"
+            className="text-xs cosmic-btn-glow"
           >
             View
           </Button>

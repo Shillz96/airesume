@@ -417,7 +417,7 @@ export default function SubscriptionPage() {
                 </CardContent>
                 <CardFooter className="border-t border-[#252a47] ">
                   <Button 
-                    className="w-full bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
+                    className="w-full cosmic-btn-glow"
                     onClick={() => {
                       setSelectedPlan("starter");
                       setActivePlanDialog(true);
@@ -468,7 +468,7 @@ export default function SubscriptionPage() {
                 </CardContent>
                 <CardFooter className="border-t border-[#252a47] ">
                   <Button 
-                    className="w-full bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
+                    className="w-full cosmic-btn-glow"
                     onClick={() => {
                       setSelectedPlan("pro");
                       setActivePlanDialog(true);
@@ -519,7 +519,7 @@ export default function SubscriptionPage() {
                 </CardContent>
                 <CardFooter className="border-t border-[#252a47] ">
                   <Button 
-                    className="w-full bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
+                    className="w-full cosmic-btn-glow"
                     onClick={() => {
                       setSelectedPlan("career_builder");
                       setActivePlanDialog(true);

@@ -237,7 +237,7 @@ export default function ResumesPage() {
   return (
     <>
       
-      <UnifiedContainer className="pb-10 min-h-screen relative z-10" paddingTop="sm">
+      <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4 pb-10 min-h-screen relative z-10">
         <UnifiedPageHeader 
           title="My Resumes"
           subtitle="Manage and organize all your resumes in one place"
@@ -531,7 +531,7 @@ export default function ResumesPage() {
             </div>
           </TabsContent>
         </Tabs>
-      </UnifiedContainer>
+      </div>
     </>
   );
 }

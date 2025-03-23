@@ -103,7 +103,7 @@ export function ResumeExperienceSection({ experiences, onUpdate }: ResumeExperie
         <div className="cosmic-add-button-container flex justify-end mb-4">
           <Button
             onClick={handleAdd}
-            className="cosmic-add-experience bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-500/30"
+            className="cosmic-btn-outline cosmic-btn-glow"
             variant="outline"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
@@ -265,7 +265,7 @@ export function ResumeEducationSection({ education, onUpdate }: ResumeEducationS
         <div className="cosmic-add-button-container flex justify-end mb-4">
           <Button
             onClick={handleAdd}
-            className="cosmic-add-education bg-blue-600/30 hover:bg-blue-600/50 text-white border border-blue-500/30"
+            className="cosmic-btn-outline cosmic-btn-glow"
             variant="outline"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">

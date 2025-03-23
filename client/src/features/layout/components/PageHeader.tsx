@@ -37,9 +37,8 @@ export default function PageHeader({
   const getTitleClasses = () => {
     switch (variant) {
       case 'gradient':
-        return 'cosmic-text-gradient';
       case 'cosmic':
-        return 'text-white animate-glow';
+        return 'cosmic-text-gradient';
       default:
         return 'text-foreground';
     }

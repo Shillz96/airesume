@@ -214,14 +214,14 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
               type="button"
               variant="outline"
               onClick={handleReset}
-              className="px-4"
+              className="px-4 cosmic-btn-glow !bg-transparent"
             >
               Reset
             </Button>
             <Button
               type="submit"
               iconLeft={<Filter className="h-4 w-4" />}
-              className="px-4"
+              className="px-4 cosmic-btn-glow"
             >
               Apply Filters
             </Button>

@@ -323,7 +323,7 @@ export default function JobFinder() {
         <div className="absolute -inset-0.5 rounded-full bg-blue-500 opacity-75 blur-sm group-hover:opacity-100 transition duration-300 animate-pulse"></div>
         <Button
           onClick={() => setIsDialogOpen(!isDialogOpen)}
-          className="relative h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 p-0 shadow-lg group-hover:scale-105 transition duration-300"
+          className="relative h-14 w-14 rounded-full cosmic-btn-glow p-0 shadow-lg group-hover:scale-105 transition duration-300"
           aria-label="Open AI Job Assistant"
         >
           <div className="absolute inset-0 rounded-full border border-white/20 animate-ping opacity-40"></div>

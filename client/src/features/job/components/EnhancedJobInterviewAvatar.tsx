@@ -46,9 +46,9 @@ const Select = ({ value, onValueChange, children }: any) => {
       >
         {children}
       </select>
-      <div className="absolute right-3 top-2.5 pointer-events-none">
+      <span className="absolute right-3 top-2.5 pointer-events-none">
         <ChevronDown className="h-4 w-4 opacity-50" />
-      </div>
+      </span>
     </div>
   );
 };

@@ -43,11 +43,9 @@ export default function SubscriptionStatus() {
           <p>You need to be logged in to view your subscription information.</p>
         </CardContent>
         <CardFooter>
-          <Link href="/auth">
-            <a className="w-full">
-              <Button className="w-full">Sign In</Button>
-            </a>
-          </Link>
+          <Button className="w-full" onClick={() => window.location.href = "/auth"}>
+            Sign In
+          </Button>
         </CardFooter>
       </Card>
     );
@@ -186,22 +184,22 @@ export default function SubscriptionStatus() {
         </div>
       </CardContent>
       <CardFooter className="flex flex-col space-y-2">
-        <Link href="/subscription">
-          <a className="w-full">
-            <Button variant="default" className="w-full">
-              Manage Subscription
-            </Button>
-          </a>
-        </Link>
+        <Button 
+          variant="default" 
+          className="w-full"
+          onClick={() => window.location.href = "/subscription"}
+        >
+          Manage Subscription
+        </Button>
         
         {sub?.planType === 'free' && (
-          <Link href="/subscription?upgrade=true">
-            <a className="w-full">
-              <Button variant="outline" className="w-full">
-                Upgrade Plan
-              </Button>
-            </a>
-          </Link>
+          <Button 
+            variant="outline" 
+            className="w-full"
+            onClick={() => window.location.href = "/subscription?upgrade=true"}
+          >
+            Upgrade Plan
+          </Button>
         )}
       </CardFooter>
     </Card>

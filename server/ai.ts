@@ -15,14 +15,37 @@ export interface ResumeSuggestions {
   suggestions: string[];
 }
 
+// Career path definitions for tailored advice
+export type CareerPath = 
+  | 'software_engineering'
+  | 'data_science'
+  | 'design'
+  | 'marketing'
+  | 'sales'
+  | 'product_management'
+  | 'finance'
+  | 'healthcare'
+  | 'education'
+  | 'customer_service'
+  | 'general';
+
+// Interface for career-specific resume advice
+export interface CareerSpecificAdvice {
+  suggestedSkills: string[];
+  industryKeywords: string[];
+  resumeTips: string[];
+  careerPathDescription: string;
+  certifications: string[];
+}
+
 /**
  * Generate AI-powered suggestions to improve a resume
  */
-export async function generateResumeSuggestions(resume: Resume): Promise<string[]> {
+export async function generateResumeSuggestions(resume: Resume, careerPath?: CareerPath): Promise<string[]> {
   try {
     // If no API key is provided, return sample suggestions
     if (!process.env.OPENAI_API_KEY) {
-      return getSampleResumeSuggestions(resume);
+      return getSampleResumeSuggestions(resume, careerPath);
     }
     
     // Extract resume content for AI analysis
@@ -40,16 +63,25 @@ export async function generateResumeSuggestions(resume: Resume): Promise<string[
       projects
     };
     
+    // Determine career path from resume if not provided
+    let detectedCareerPath = careerPath;
+    if (!detectedCareerPath) {
+      detectedCareerPath = await detectCareerPath(resumeContext);
+    }
+    
+    // Get career-specific system prompt
+    const systemPrompt = getCareerSpecificSystemPrompt(detectedCareerPath);
+    
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
         {
           role: "system",
-          content: "You are an expert resume consultant who helps job seekers improve their resumes. Provide specific, actionable suggestions to enhance this resume. Focus on improvements related to content, structure, achievements, and keywords. Limit your suggestions to 3-5 concise, bullet-point style recommendations. Return the result as JSON."
+          content: systemPrompt
         },
         {
           role: "user",
-          content: `Please analyze this resume and provide suggestions for improvement in JSON format. The response should be a JSON object with a 'suggestions' array containing string recommendations: ${JSON.stringify(resumeContext)}`
+          content: `Please analyze this resume and provide suggestions for improvement in JSON format. The response should be a JSON object with a 'suggestions' array containing string recommendations, focusing specifically on the ${detectedCareerPath.replace('_', ' ')} career path: ${JSON.stringify(resumeContext)}`
         }
       ],
       response_format: { type: "json_object" }
@@ -59,8 +91,91 @@ export async function generateResumeSuggestions(resume: Resume): Promise<string[
     return Array.isArray(result.suggestions) ? result.suggestions : [];
   } catch (error) {
     console.error("Error generating resume suggestions:", error);
-    return getSampleResumeSuggestions(resume);
+    return getSampleResumeSuggestions(resume, careerPath);
   }
+}
+
+/**
+ * Detect the likely career path based on resume content
+ */
+async function detectCareerPath(resumeContext: any): Promise<CareerPath> {
+  try {
+    // Extract relevant information from the resume context
+    const jobTitles = resumeContext.experience.map((exp: any) => exp.title || '').join(', ');
+    const skillNames = resumeContext.skills.map((skill: any) => skill.name || '').join(', ');
+    const summary = resumeContext.personalInfo.summary || '';
+    
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: "You are a career assessment expert. Your task is to analyze resume data and determine the most likely career path from this list: software_engineering, data_science, design, marketing, sales, product_management, finance, healthcare, education, customer_service. Return just the single most appropriate career path as a string value."
+        },
+        {
+          role: "user",
+          content: `Based on the following resume information, identify the most likely career path:
+          Job Titles: ${jobTitles}
+          Skills: ${skillNames}
+          Summary: ${summary}
+          
+          Return only one of these values: software_engineering, data_science, design, marketing, sales, product_management, finance, healthcare, education, customer_service, general`
+        }
+      ],
+      response_format: { type: "text" }
+    });
+    
+    const result = response.choices[0].message.content.trim().toLowerCase();
+    
+    // Check if the result matches one of our career paths
+    const validPaths: CareerPath[] = [
+      'software_engineering', 'data_science', 'design', 'marketing', 
+      'sales', 'product_management', 'finance', 'healthcare', 
+      'education', 'customer_service', 'general'
+    ];
+    
+    if (validPaths.includes(result as CareerPath)) {
+      return result as CareerPath;
+    }
+    
+    return 'general';
+  } catch (error) {
+    console.error("Error detecting career path:", error);
+    return 'general';
+  }
+}
+
+/**
+ * Get career-specific system prompt for tailored resume advice
+ */
+function getCareerSpecificSystemPrompt(careerPath: CareerPath): string {
+  const basePrompt = "You are an expert resume consultant who helps job seekers improve their resumes. Provide specific, actionable suggestions to enhance this resume. Focus on improvements related to content, structure, achievements, and keywords. Limit your suggestions to 3-5 concise, bullet-point style recommendations. Return the result as JSON.";
+  
+  const careerPrompts: Record<CareerPath, string> = {
+    software_engineering: `${basePrompt} Focus on technical skills, developer tools, programming languages, frameworks, and software development methodologies. Emphasize quantifiable improvements to code, systems, or processes. Suggest industry-specific technical certifications if applicable.`,
+    
+    data_science: `${basePrompt} Focus on data analysis tools, programming languages for data (Python, R), statistical methods, machine learning frameworks, and data visualization techniques. Emphasize quantifiable insights derived from data and business impact. Suggest skills related to big data technologies and domain-specific data expertise.`,
+    
+    design: `${basePrompt} Focus on design tools (Adobe Creative Suite, Figma, Sketch), user experience methodologies, and portfolio presentation. Emphasize the impact of designs on users, conversions, or business metrics. Suggest ways to incorporate design thinking and user-centered approaches.`,
+    
+    marketing: `${basePrompt} Focus on marketing platforms, analytical tools, campaign performance metrics, and content creation skills. Emphasize measurable results like growth percentages, engagement rates, or ROI. Suggest digital marketing certifications and multi-channel expertise.`,
+    
+    sales: `${basePrompt} Focus on sales methodologies, CRM software experience, negotiation techniques, and client relationship management. Emphasize quantifiable achievements like revenue growth, quota attainment, and client acquisition. Suggest industry-specific sales certifications.`,
+    
+    product_management: `${basePrompt} Focus on product development methodologies, stakeholder management, and product metrics. Emphasize product launches, feature adoption rates, and business impact. Suggest skills related to user research, roadmapping, and cross-functional team leadership.`,
+    
+    finance: `${basePrompt} Focus on financial analysis tools, accounting software, regulatory knowledge, and financial modeling skills. Emphasize quantifiable financial achievements, cost savings, or revenue growth. Suggest relevant certifications like CFA, CPA, or financial software expertise.`,
+    
+    healthcare: `${basePrompt} Focus on medical terminology, healthcare systems/software, patient care metrics, and compliance requirements. Emphasize patient outcomes, quality improvements, or operational efficiencies. Suggest relevant certifications and continuing education credentials.`,
+    
+    education: `${basePrompt} Focus on instructional methodologies, curriculum development, assessment techniques, and educational technologies. Emphasize student achievement metrics, program development, and innovative teaching approaches. Suggest relevant teaching certifications or specialized educational training.`,
+    
+    customer_service: `${basePrompt} Focus on CRM systems, communication techniques, problem-resolution metrics, and customer satisfaction tools. Emphasize measurable improvements in customer satisfaction, retention rates, or issue resolution times. Suggest customer service certifications and conflict resolution training.`,
+    
+    general: basePrompt
+  };
+  
+  return careerPrompts[careerPath] || basePrompt;
 }
 
 /**

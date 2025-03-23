@@ -138,12 +138,12 @@ export default function LandingPage() {
       gsap.fromTo(ctaRef.current, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 1, delay: 0.6 });
     }
 
-    // Feature animations on scroll
+    // Feature animations on scroll - without scrollTrigger to avoid cyclic reference
     if (featuresRef.current) {
       const features = featuresRef.current.querySelectorAll('.feature-card');
       gsap.fromTo(features, 
         { opacity: 0, y: 30 }, 
-        { opacity: 1, y: 0, duration: 0.7, stagger: 0.2, scrollTrigger: { trigger: featuresRef.current, start: "top 80%" } }
+        { opacity: 1, y: 0, duration: 0.7, stagger: 0.2 }
       );
     }
 

@@ -274,7 +274,7 @@ export function ResumeAIAssistant({
       <div className="flex flex-col h-full bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div className="flex justify-between items-center p-3 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center">
-            <Bot className="h-5 w-5 mr-2 text-blue-500" />
+            <Bot className="h-5 w-5 mr-2 text-primary" />
             <h3 className="font-medium">AI Resume Assistant</h3>
           </div>
           <CosmicButton 
@@ -289,7 +289,7 @@ export function ResumeAIAssistant({
         <div className="flex-grow p-3 overflow-y-auto space-y-4">
           {chatMessages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
-              <Bot className="h-10 w-10 mb-2 text-blue-500" />
+              <Bot className="h-10 w-10 mb-2 text-primary" />
               <p className="text-sm">Ask me anything about improving your resume!</p>
               <div className="mt-4 grid grid-cols-1 gap-2 w-full max-w-xs">
                 <CosmicButton variant="outline" size="sm" onClick={() => {
@@ -592,7 +592,7 @@ export function ResumeAIAssistant({
               </div>
             ) : (
               <div className="flex flex-col items-center text-gray-500">
-                <Bot className="h-8 w-8 mb-2 text-blue-400 opacity-70" />
+                <Bot className="h-8 w-8 mb-2 text-primary opacity-70" />
                 <p className="text-sm">Save your resume to unlock AI-powered suggestions.</p>
               </div>
             )}
@@ -619,13 +619,13 @@ export function ResumeAIAssistant({
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <Bot className="h-4 w-4 text-gradient-primary bg-clip-text from-blue-600 to-indigo-600" />
+          <Bot className="h-4 w-4 text-primary" />
           <h3 className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">AI Resume Assistant</h3>
         </div>
       </div>
       
       <div className="text-center py-8">
-        <Bot className="h-12 w-12 mx-auto mb-3 text-blue-400 opacity-70" />
+        <Bot className="h-12 w-12 mx-auto mb-3 text-primary opacity-70" />
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
           Have questions about your resume? Chat with our AI assistant for personalized advice.
         </p>
@@ -633,7 +633,7 @@ export function ResumeAIAssistant({
           variant="primary"
           onClick={() => setIsChatView(true)}
           className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
-          iconLeft={<MessageCircle className="h-4 w-4" />}
+          iconLeft={<MessageCircle className="h-4 w-4 text-primary" />}
         >
           Chat with AI Assistant
         </CosmicButton>

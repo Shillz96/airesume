@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
+import { CosmicButton } from '@/components/cosmic-button';
 import { Loader2, RefreshCw, X, Bot, Sparkles, MessageCircle, ArrowRight, Search, ChevronDown, ChevronUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
@@ -275,14 +276,13 @@ export function ResumeAIAssistant({
             <Bot className="h-5 w-5 mr-2 text-blue-500" />
             <h3 className="font-medium">AI Resume Assistant</h3>
           </div>
-          <Button 
+          <CosmicButton 
             variant="ghost" 
             size="sm"
             onClick={() => setIsChatView(false)}
             className="h-8 w-8 p-0"
-          >
-            <X className="h-4 w-4" />
-          </Button>
+            iconLeft={<X className="h-4 w-4" />}
+          />
         </div>
         
         <div className="flex-grow p-3 overflow-y-auto space-y-4">

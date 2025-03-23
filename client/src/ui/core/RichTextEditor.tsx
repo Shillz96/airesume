@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Bold, Italic, List, Link, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
-import { Button } from './Button';
+import { Bold, Italic, List, ListOrdered, Underline, AlignLeft, AlignCenter, AlignRight, Link } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getThemeVar, getCosmicColor } from '@/lib/theme-utils';
 
 interface RichTextEditorProps {
   value: string;
@@ -17,183 +17,253 @@ interface RichTextEditorProps {
  * 
  * Uses theme variables for consistent styling across the application
  */
-export function RichTextEditor({
+export default function RichTextEditor({
   value,
   onChange,
   className,
-  placeholder = 'Start typing...',
-  rows = 5,
+  placeholder = 'Type here...',
+  rows = 3,
   label
 }: RichTextEditorProps) {
-  const [isFocused, setIsFocused] = useState(false);
+  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
+  const [linkText, setLinkText] = useState('');
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
-
-  const applyFormat = (format: string) => {
+  
+  const handleFormatClick = (e: React.MouseEvent, formatType: string) => {
+    e.preventDefault();
+    
+    if (!textareaRef.current) return;
+    
     const textarea = textareaRef.current;
-    if (!textarea) return;
-
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const selectedText = value.substring(start, end);
-    let replacement = '';
-
-    switch (format) {
+    
+    let newText = value;
+    let newCursorPos = end;
+    
+    switch (formatType) {
       case 'bold':
-        replacement = `**${selectedText}**`;
+        newText = value.substring(0, start) + `**${selectedText}**` + value.substring(end);
+        newCursorPos = end + 4;
         break;
       case 'italic':
-        replacement = `*${selectedText}*`;
+        newText = value.substring(0, start) + `*${selectedText}*` + value.substring(end);
+        newCursorPos = end + 2;
         break;
-      case 'link':
-        // For links, prompt for URL if text is selected
-        const url = window.prompt('Enter URL:', 'https://');
-        if (url) {
-          replacement = `[${selectedText || 'Link text'}](${url})`;
-        } else {
-          return; // User cancelled the prompt
-        }
+      case 'underline':
+        newText = value.substring(0, start) + `_${selectedText}_` + value.substring(end);
+        newCursorPos = end + 2;
         break;
-      case 'list':
-        // Convert each line to list item
-        if (selectedText.includes('\n')) {
-          replacement = selectedText
-            .split('\n')
-            .map(line => line.trim() ? `- ${line}` : line)
-            .join('\n');
-        } else {
-          replacement = `- ${selectedText}`;
-        }
+      case 'unordered-list':
+        // Add newline if not at the start of text
+        const prefix = start > 0 && value[start - 1] !== '\n' ? '\n' : '';
+        newText = value.substring(0, start) + `${prefix}- ${selectedText}` + value.substring(end);
+        newCursorPos = end + 3 + prefix.length;
+        break;
+      case 'ordered-list':
+        const olPrefix = start > 0 && value[start - 1] !== '\n' ? '\n' : '';
+        newText = value.substring(0, start) + `${olPrefix}1. ${selectedText}` + value.substring(end);
+        newCursorPos = end + 4 + olPrefix.length;
         break;
       case 'align-left':
-      case 'align-center':
-      case 'align-right':
-        // We'll just add a comment for now as actual alignment would require HTML rendering
-        const align = format.replace('align-', '');
-        replacement = `<${align}>${selectedText}</${align}>`;
+        newText = value.substring(0, start) + `<div style="text-align: left">${selectedText}</div>` + value.substring(end);
+        newCursorPos = end + 34;
         break;
-      default:
+      case 'align-center':
+        newText = value.substring(0, start) + `<div style="text-align: center">${selectedText}</div>` + value.substring(end);
+        newCursorPos = end + 36;
+        break;
+      case 'align-right':
+        newText = value.substring(0, start) + `<div style="text-align: right">${selectedText}</div>` + value.substring(end);
+        newCursorPos = end + 35;
+        break;
+      case 'link':
+        setLinkText(selectedText);
+        setIsLinkModalOpen(true);
         return;
     }
-
-    // Replace the text
-    const newValue = value.substring(0, start) + replacement + value.substring(end);
-    onChange(newValue);
-
-    // Set the selection to after the inserted formatting
+    
+    onChange(newText);
+    
+    // After state update, set the cursor position
     setTimeout(() => {
-      textarea.focus();
-      const newCursorPos = start + replacement.length;
-      textarea.setSelectionRange(newCursorPos, newCursorPos);
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        textareaRef.current.selectionStart = newCursorPos;
+        textareaRef.current.selectionEnd = newCursorPos;
+      }
+    }, 0);
+  };
+  
+  const insertLink = () => {
+    if (!textareaRef.current || !linkUrl) return;
+    
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const displayText = linkText || linkUrl;
+    
+    const markdownLink = `[${displayText}](${linkUrl})`;
+    const newText = value.substring(0, start) + markdownLink + value.substring(end);
+    
+    onChange(newText);
+    setIsLinkModalOpen(false);
+    setLinkUrl('');
+    setLinkText('');
+    
+    // Set cursor after the inserted link
+    setTimeout(() => {
+      if (textareaRef.current) {
+        const newPos = start + markdownLink.length;
+        textareaRef.current.focus();
+        textareaRef.current.selectionStart = newPos;
+        textareaRef.current.selectionEnd = newPos;
+      }
     }, 0);
   };
 
   return (
-    <div className={cn("rich-text-editor-container space-y-2", className)}>
+    <div className={cn("rich-text-editor", className)}>
       {label && (
         <label className="block text-sm font-medium text-foreground mb-1">
           {label}
         </label>
       )}
       
-      <div className={cn(
-        "border rounded-md overflow-hidden transition-all duration-200",
-        isFocused ? "border-primary/60 ring-1 ring-primary/20" : "border-border",
-      )}>
-        <div className="rich-text-toolbar bg-background/50 border-b border-border px-2 py-1 flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => applyFormat('bold')}
-            type="button"
+      <div className="border border-border rounded-md overflow-hidden">
+        <div className="flex flex-wrap gap-1 p-1 border-b border-border bg-muted">
+          <button
+            className="p-1 rounded hover:bg-background"
+            onClick={(e) => handleFormatClick(e, 'bold')}
             title="Bold"
           >
-            <Bold className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => applyFormat('italic')}
-            type="button"
+            <Bold className="h-4 w-4 text-muted-foreground" />
+          </button>
+          <button
+            className="p-1 rounded hover:bg-background"
+            onClick={(e) => handleFormatClick(e, 'italic')}
             title="Italic"
           >
-            <Italic className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => applyFormat('link')}
-            type="button"
-            title="Insert Link"
+            <Italic className="h-4 w-4 text-muted-foreground" />
+          </button>
+          <button
+            className="p-1 rounded hover:bg-background"
+            onClick={(e) => handleFormatClick(e, 'underline')}
+            title="Underline"
           >
-            <Link className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm" 
-            className="h-8 w-8 p-0"
-            onClick={() => applyFormat('list')}
-            type="button"
-            title="Bulleted List"
+            <Underline className="h-4 w-4 text-muted-foreground" />
+          </button>
+          <span className="mx-1 text-muted-foreground">|</span>
+          <button
+            className="p-1 rounded hover:bg-background"
+            onClick={(e) => handleFormatClick(e, 'unordered-list')}
+            title="Bulleted list"
           >
-            <List className="w-4 h-4" />
-          </Button>
-          
-          <div className="mx-1 h-5 border-l border-border"></div>
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => applyFormat('align-left')}
-            type="button"
-            title="Align Left"
+            <List className="h-4 w-4 text-muted-foreground" />
+          </button>
+          <button
+            className="p-1 rounded hover:bg-background"
+            onClick={(e) => handleFormatClick(e, 'ordered-list')}
+            title="Numbered list"
           >
-            <AlignLeft className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => applyFormat('align-center')}
-            type="button"
-            title="Align Center"
+            <ListOrdered className="h-4 w-4 text-muted-foreground" />
+          </button>
+          <span className="mx-1 text-muted-foreground">|</span>
+          <button
+            className="p-1 rounded hover:bg-background"
+            onClick={(e) => handleFormatClick(e, 'link')}
+            title="Insert link"
           >
-            <AlignCenter className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => applyFormat('align-right')}
-            type="button"
-            title="Align Right"
+            <Link className="h-4 w-4 text-muted-foreground" />
+          </button>
+          <span className="mx-1 text-muted-foreground">|</span>
+          <button
+            className="p-1 rounded hover:bg-background"
+            onClick={(e) => handleFormatClick(e, 'align-left')}
+            title="Align left"
           >
-            <AlignRight className="w-4 h-4" />
-          </Button>
+            <AlignLeft className="h-4 w-4 text-muted-foreground" />
+          </button>
+          <button
+            className="p-1 rounded hover:bg-background"
+            onClick={(e) => handleFormatClick(e, 'align-center')}
+            title="Align center"
+          >
+            <AlignCenter className="h-4 w-4 text-muted-foreground" />
+          </button>
+          <button
+            className="p-1 rounded hover:bg-background"
+            onClick={(e) => handleFormatClick(e, 'align-right')}
+            title="Align right"
+          >
+            <AlignRight className="h-4 w-4 text-muted-foreground" />
+          </button>
         </div>
         
         <textarea
           ref={textareaRef}
-          className={cn(
-            "w-full px-3 py-2 outline-none text-foreground bg-background resize-none",
-          )}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
           placeholder={placeholder}
           rows={rows}
+          className="w-full p-3 bg-background text-foreground border-none focus:outline-none resize-y"
         />
       </div>
       
-      <div className="text-xs text-muted-foreground">
-        Formatting: **bold**, *italic*, [link](url), - for lists
-      </div>
+      {/* Simple link modal */}
+      {isLinkModalOpen && (
+        <div className="fixed inset-0 bg-background/80 flex items-center justify-center z-50">
+          <div className="bg-card border border-border rounded-lg p-4 w-full max-w-md">
+            <h3 className="font-medium mb-4">Insert Link</h3>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">
+                  Text to display
+                </label>
+                <input
+                  type="text"
+                  value={linkText}
+                  onChange={(e) => setLinkText(e.target.value)}
+                  className="w-full p-2 border border-border rounded-md bg-background"
+                  placeholder="Display text"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">
+                  URL
+                </label>
+                <input
+                  type="text"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  className="w-full p-2 border border-border rounded-md bg-background"
+                  placeholder="https://example.com"
+                />
+              </div>
+              
+              <div className="flex justify-end space-x-2 mt-4">
+                <button
+                  onClick={() => setIsLinkModalOpen(false)}
+                  className="px-4 py-2 text-sm border border-border rounded-md hover:bg-muted"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={insertLink}
+                  className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+                  disabled={!linkUrl}
+                >
+                  Insert
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-export default RichTextEditor;

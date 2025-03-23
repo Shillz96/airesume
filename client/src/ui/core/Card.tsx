@@ -1,30 +1,38 @@
-import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { Loader2 } from 'lucide-react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils';
 
+// Card variant styles using class-variance-authority for theme consistency
 const cardVariants = cva(
-  "rounded-lg border bg-card text-card-foreground shadow-sm",
+  "rounded-lg overflow-hidden transition-all", 
   {
     variants: {
       variant: {
-        default: "",
-        cosmic: "border-white/10 bg-black/30 text-white",
-        elevated: "shadow-lg",
-        outline: "border-2",
-        filled: "bg-accent border-accent/20",
+        default: "bg-card border border-border hover:border-border/80",
+        primary: "bg-primary/5 border border-primary/20 hover:border-primary/30",
+        destructive: "bg-destructive/5 border border-destructive/20 hover:border-destructive/30",
+        outline: "bg-transparent border border-border hover:border-border/80",
+        ghost: "bg-transparent border-none hover:bg-muted/50",
+        cosmic: "bg-black/30 backdrop-blur-sm border border-white/10 hover:border-white/20",
       },
-      padding: {
-        default: "p-6",
-        tight: "p-4",
-        loose: "p-8",
+      size: {
+        sm: "p-3",
+        md: "p-4",
+        lg: "p-6",
+      },
+      glow: {
         none: "",
-      },
+        subtle: "shadow-md",
+        primary: "shadow-md shadow-primary/10",
+        cosmic: "shadow-lg shadow-primary/20",
+      }
     },
     defaultVariants: {
       variant: "default",
-      padding: "default",
-    },
+      size: "md",
+      glow: "none",
+    }
   }
 );
 
@@ -38,81 +46,107 @@ export interface CardProps
  * Unified Card component that integrates with our theme system
  * This component serves as the single card implementation throughout the application
  */
-const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant, padding, isLoading, children, ...props }, ref) => {
-    return (
-      <div
-        ref={ref}
-        className={cn(cardVariants({ variant, padding, className }))}
-        {...props}
-      >
-        {isLoading ? (
-          <div className="flex items-center justify-center p-6 min-h-[100px]">
-            <Loader2 className="h-8 w-8 animate-spin text-primary/60" />
-          </div>
-        ) : (
-          children
-        )}
+export function Card({
+  variant,
+  size,
+  glow,
+  className,
+  isLoading = false,
+  children,
+  ...props
+}: CardProps) {
+  return (
+    <div
+      className={cn(
+        cardVariants({ variant, size, glow }),
+        className,
+        isLoading && "relative"
+      )}
+      {...props}
+    >
+      {isLoading && (
+        <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-10">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      )}
+      <div className={cn(isLoading && "opacity-50")}>
+        {children}
       </div>
-    );
-  }
-);
-Card.displayName = "Card";
+    </div>
+  );
+}
 
-const CardHeader = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-6", className)}
-    {...props}
-  />
-));
-CardHeader.displayName = "CardHeader";
+/**
+ * Card header component
+ */
+export function CardHeader({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn("mb-4", className)}
+      {...props}
+    />
+  );
+}
 
-const CardTitle = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
-  <h3
-    ref={ref}
-    className={cn("text-2xl font-semibold leading-none tracking-tight", className)}
-    {...props}
-  />
-));
-CardTitle.displayName = "CardTitle";
+/**
+ * Card title component
+ */
+export function CardTitle({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h3
+      className={cn("text-lg font-semibold text-foreground", className)}
+      {...props}
+    />
+  );
+}
 
-const CardDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
-  <p
-    ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
-    {...props}
-  />
-));
-CardDescription.displayName = "CardDescription";
+/**
+ * Card description component
+ */
+export function CardDescription({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={cn("text-sm text-muted-foreground", className)}
+      {...props}
+    />
+  );
+}
 
-const CardContent = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
-));
-CardContent.displayName = "CardContent";
+/**
+ * Card content component
+ */
+export function CardContent({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn("", className)}
+      {...props}
+    />
+  );
+}
 
-const CardFooter = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex items-center p-6 pt-0", className)}
-    {...props}
-  />
-));
-CardFooter.displayName = "CardFooter";
-
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, cardVariants };
+/**
+ * Card footer component
+ */
+export function CardFooter({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn("mt-4 pt-4 border-t border-border flex items-center", className)}
+      {...props}
+    />
+  );
+}

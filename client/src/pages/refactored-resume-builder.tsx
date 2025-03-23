@@ -216,7 +216,7 @@ export default function ResumeBuilder() {
   };
 
   return (
-    <div className="min-h-screen cosmic-page relative">
+    <div className="min-h-screen relative">
       <div className="container mx-auto px-4 sm:px-6 py-6">
         <div className="flex justify-between items-center mb-6">
           <div>

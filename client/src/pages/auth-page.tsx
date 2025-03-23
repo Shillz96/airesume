@@ -127,32 +127,12 @@ export default function LandingPage() {
     }
   }
   
-  // Starfield animation
+  // Animation effect without stars (using global CosmicBackground)
   useEffect(() => {
-    const createStar = () => {
-      const star = document.createElement("div");
-      star.className = "cosmic-star absolute rounded-full";
-      const size = Math.random() * 2 + 1;
-      star.style.width = `${size}px`;
-      star.style.height = `${size}px`;
-      star.style.left = `${Math.random() * 100}%`;
-      star.style.top = `${Math.random() * 100}%`;
-      star.style.opacity = `${Math.random() * 0.5 + 0.3}`;
-      const colors = ['#ffffff', '#e1e1ff', '#b3c6ff', '#d6e4ff'];
-      star.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-      document.querySelector('.cosmic-page')?.appendChild(star);
-      return () => {
-        if (star.parentNode) {
-          star.parentNode.removeChild(star);
-        }
-      };
-    };
-
-    const cleanupFns = [];
-    const starCount = window.innerWidth < 768 ? 50 : 100;
-    for (let i = 0; i < starCount; i++) {
-      cleanupFns.push(createStar());
-    }
+    // We no longer need the starfield animation here as we're using
+    // the global CosmicBackground component
+    
+    const cleanupFns: (() => void)[] = [];
     
     if (titleRef.current && subtitleRef.current && ctaRef.current) {
       gsap.fromTo(titleRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1 });
@@ -351,7 +331,7 @@ export default function LandingPage() {
       </Dialog>
       
       {/* Main Content */}
-      <div className="container  pb-10 px-4 md:px-6 mx-auto min-h-screen relative z-10 cosmic-page">
+      <div className="container pb-10 px-4 md:px-6 mx-auto min-h-screen relative z-10">
         {/* Hero Section */}
         <section className="py-12 md:py-20">
           <div className="text-center max-w-3xl mx-auto">

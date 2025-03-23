@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -7,7 +7,6 @@ import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { AuthDialogProvider, useAuthDialog } from "@/hooks/use-auth-dialog";
 import { GuestModeProvider } from "@/hooks/use-guest-mode";
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
-import { initializeTheme } from "@/lib/theme-loader";
 import NotFound from "@/pages/not-found"; 
 import HomePage from "@/pages/home-page";
 import ResumeBuilderNew from "@/pages/resume-builder-new";
@@ -24,7 +23,9 @@ import Navbar from "@/ui/navigation/Navbar";
 import GoAdminLink from "@/features/admin/components/GoAdminLink";
 import QuickLogin from "@/features/auth/components/QuickLogin";
 import AuthDialog from "@/features/auth/components/AuthDialog";
-import CosmicBackground from "@/ui/theme/CosmicBackground";
+
+// Import our simplified components
+import CosmicBackground from "./components/CosmicBackground";
 
 function Router() {
   // Manual check for admin-access path to handle direct navigation
@@ -55,12 +56,11 @@ function AppContent() {
   const { isOpen, activeTab, closeDialog } = useAuthDialog();
   const { isDarkMode } = useTheme();
   
-  // Force show navbar for all pages for testing purposes
-  const showNavbar = true; // Force navbar to always show for testing
+  // Always show navbar for all pages
+  const showNavbar = true;
   
   // Handle browser refresh and direct URL navigation
   React.useEffect(() => {
-    // Get the current pathname from the browser
     const path = window.location.pathname;
     
     // Define valid paths in our application
@@ -84,25 +84,26 @@ function AppContent() {
   }, [location]);
 
   return (
-    <div className={`cosmic-app-container ${isDarkMode ? '' : 'light-mode'}`} style={{ 
-      minHeight: '100vh',
-      position: 'relative',
-      width: '100%'
-    }}>
-      {/* Global Cosmic Background with consistent styling across all pages */}
+    <div className={isDarkMode ? '' : 'light-mode'}>
+      {/* Global Cosmic Background with consistent styling from our unified theme */}
       <CosmicBackground />
       
       {/* Content */}
-      <div className="relative z-10" style={{ minHeight: '100vh' }}>
+      <div className="relative" style={{ zIndex: 1 }}>
         {/* Master Navbar Component */}
         {showNavbar && <Navbar />}
-        <div className="pt-16" style={{ minHeight: 'calc(100vh - 4rem)' }}>
+        
+        {/* Main content area with proper spacing using our unified theme variables */}
+        <main className="page-container">
           <Router />
-        </div>
+        </main>
+        
         {/* Admin access button - always visible */}
         <GoAdminLink />
+        
         {/* Quick login for the admin user */}
         <QuickLogin />
+        
         {/* Auth dialog for login/register */}
         <AuthDialog 
           isOpen={isOpen} 
@@ -115,9 +116,6 @@ function AppContent() {
 }
 
 function App() {
-  // Note: Theme is initialized in main.tsx before the App renders
-  // We no longer need to initialize it here to avoid duplicate initialization
-  
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>

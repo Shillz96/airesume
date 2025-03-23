@@ -223,30 +223,27 @@ export default function ResumeBuilderNew() {
 
   return (
     <>
-      {/* Using global CosmicBackground from App.tsx */}
-      <div className="container pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
+      <div className="page-container">
         <PageHeader
-          title={<h1 className="text-3xl font-bold tracking-tight text-foreground">Resume Builder</h1>}
-          subtitle={<p className="mt-1 text-lg text-muted-foreground">Create and customize your professional resume</p>}
+          title="Resume Builder"
+          subtitle="Create and customize your professional resume"
           actions={
             <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                className="hidden sm:flex"
+              <button
+                className="btn btn-outline hidden sm:flex items-center"
                 disabled={!isDirty}
                 onClick={handleSaveResume}
-                iconLeft={<Save className="h-4 w-4" />}
               >
+                <Save className="h-4 w-4 mr-2" />
                 Save
-              </Button>
-              <Button 
-                variant="default"
-                className="hidden sm:flex"
+              </button>
+              <button 
+                className="btn btn-primary hidden sm:flex items-center"
                 onClick={handleDownload}
-                iconLeft={<Download className="h-4 w-4" />}
               >
+                <Download className="h-4 w-4 mr-2" />
                 Download
-              </Button>
+              </button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="sm:hidden">

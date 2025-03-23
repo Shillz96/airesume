@@ -23,7 +23,9 @@ export default function PageHeader({ title, subtitle, actions }: PageHeaderProps
             title
           )}
           {subtitle && (
-            <p className="page-header-subtitle">{subtitle}</p>
+            <div className="page-header-subtitle">
+              {typeof subtitle === 'string' ? subtitle : subtitle}
+            </div>
           )}
         </div>
         {actions && (

@@ -1200,6 +1200,19 @@ a:hover {
 }
 
 /* --------------------------------
+ * UTILITY CLASSES
+ * -------------------------------- */
+.smooth-scroll {
+  scroll-behavior: smooth;
+}
+
+/* Dialog component styling */
+.cosmic-dialog-content {
+  padding: var(--space-6);
+  gap: var(--space-4);
+}
+
+/* --------------------------------
  * NAVBAR STYLES
  * -------------------------------- */
 .navbar {

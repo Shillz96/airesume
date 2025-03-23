@@ -849,7 +849,7 @@ export default function AIAssistant({
  ) : (
  <>
  {/* Chat messages */}
- <div className="h-80 overflow-y-auto p-3 space-y-3 relative" style={{ scrollBehavior: "smooth" }}>
+ <div className="h-80 overflow-y-auto p-3 space-y-3 relative smooth-scroll">
  <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
  <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
@@ -1030,11 +1030,7 @@ export default function AIAssistant({
  }}>
  <DialogContent
  ref={dialogRef}
- className="sm:max-w-[500px] bg-[rgba(10,12,24,0.95)] backdrop-blur-md border-[rgba(255,255,255,0.1)] text-white"
- style={{
- padding: "var(--space-6)",
- gap: "var(--space-4)",
- }}
+ className="sm:max-w-[500px] bg-[rgba(10,12,24,0.95)] backdrop-blur-md border-[rgba(255,255,255,0.1)] text-white cosmic-dialog-content"
  >
  <DialogHeader>
  <DialogTitle className="flex items-center text-white">

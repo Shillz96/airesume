@@ -216,7 +216,7 @@ export default function ResumeBuilder() {
   };
 
   return (
-    <div className="bg-slate-50 dark:bg-gray-900 min-h-screen">
+    <div className="min-h-screen">
       <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 py-6">
         <div className="flex justify-between items-center mb-6">
           <div>

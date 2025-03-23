@@ -372,10 +372,10 @@ export default function ResumeBuilder() {
             </Tabs>
           </div>
 
-          {/* Right Sidebar - AI Assistant - Always visible on large screens */}
+          {/* Right Sidebar - AI Assistant - Fixed to the screen */}
           <div className="hidden lg:block lg:col-span-1">
-            <div className="sticky top-4">
-              <div className="bg-white dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700 p-5 shadow-md">
+            <div className="fixed top-24 right-10 w-72">
+              <div className="bg-white dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700 p-5 shadow-lg">
                 {/* Using our new ResumeAIAssistant component */}
                 <ResumeAIAssistant 
                   activeSection={activeSection}

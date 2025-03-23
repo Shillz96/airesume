@@ -96,9 +96,9 @@ function AppContent() {
         {/* Master Navbar Component */}
         {showNavbar && <Navbar />}
         
-        {/* Main content area with proper spacing using our unified theme variables */}
+        {/* Main content area matching auth-page styling */}
         <main className="pt-20">
-          <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4">
+          <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4 pb-10 min-h-screen relative z-10">
             <Router />
           </div>
         </main>

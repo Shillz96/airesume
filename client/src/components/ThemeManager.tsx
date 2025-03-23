@@ -1,10 +1,19 @@
 /**
  * ThemeManager Component
  * 
- * A centralized theme management component that loads theme settings from theme.json
- * and provides a UI for changing theme settings at runtime.
+ * THE SINGLE SOURCE OF TRUTH for theme management in the application.
+ * This component loads theme settings from theme.json and applies them consistently
+ * across the entire application.
  * 
- * This component applies theme CSS variables based on the selected theme variant and mode.
+ * It implements the auth-page styling as the standard for all pages and components,
+ * with cosmic-themed CSS classes for:
+ * - cosmic-text-gradient: For gradient text headings
+ * - cosmic-btn-glow: For glowing button effects
+ * - cosmic-card: For consistent card styling with subtle borders
+ * - Dialog styling with backdrop blur and semi-transparent backgrounds
+ * 
+ * Any changes to the application's visual style should be made in this component
+ * or directly in index.css. All other theme-related files are DEPRECATED.
  */
 import React, { useState, useEffect } from 'react';
 import { useUnifiedTheme } from '@/contexts/UnifiedThemeContext';

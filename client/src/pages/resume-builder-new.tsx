@@ -386,7 +386,7 @@ export default function ResumeBuilderNew() {
 
   return (
     <>
-      <Container className="min-h-screen pb-10" paddingY="sm">
+      <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4 pb-10 min-h-screen relative z-10">
         <PageHeader
           title="Resume Builder"
           subtitle="Create and customize your professional resume"
@@ -696,7 +696,7 @@ export default function ResumeBuilderNew() {
             </div>
           </div>
         </div>
-      </Container>
+      </div>
     </>
   );
 }

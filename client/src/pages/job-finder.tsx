@@ -137,37 +137,37 @@ export default function JobFinder() {
 
         {/* Job Status Tabs */}
         <Tabs value={statusFilter} onValueChange={setStatusFilter} className="mb-8 cosmic-tabs">
-          <TabsList className="w-full bg-black/40 border border-white/10 p-1 rounded-lg">
+          <TabsList className="w-full bg-card/90 border border-white/10 p-1 rounded-lg">
             <TabsTrigger 
               value="all" 
-              className="flex-1 data-[state=active]:bg-blue-900/30 data-[state=active]:text-blue-300 text-gray-300"
+              className="flex-1 data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:border-primary/30 text-gray-300"
             >
               All Jobs
             </TabsTrigger>
             <TabsTrigger 
               value="saved" 
-              className="flex-1 data-[state=active]:bg-blue-900/30 data-[state=active]:text-blue-300 text-gray-300"
+              className="flex-1 data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:border-primary/30 text-gray-300"
             >
               <Heart className="h-4 w-4 mr-2" />
               Saved
             </TabsTrigger>
             <TabsTrigger 
               value="applied" 
-              className="flex-1 data-[state=active]:bg-blue-900/30 data-[state=active]:text-blue-300 text-gray-300"
+              className="flex-1 data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:border-primary/30 text-gray-300"
             >
               <Share2 className="h-4 w-4 mr-2" />
               Applied
             </TabsTrigger>
             <TabsTrigger 
               value="interviewing" 
-              className="flex-1 data-[state=active]:bg-blue-900/30 data-[state=active]:text-blue-300 text-gray-300"
+              className="flex-1 data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:border-primary/30 text-gray-300"
             >
               <Building className="h-4 w-4 mr-2" />
               Interviewing
             </TabsTrigger>
             <TabsTrigger 
               value="rejected" 
-              className="flex-1 data-[state=active]:bg-blue-900/30 data-[state=active]:text-blue-300 text-gray-300"
+              className="flex-1 data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:border-primary/30 text-gray-300"
             >
               Rejected
             </TabsTrigger>
@@ -177,7 +177,7 @@ export default function JobFinder() {
         {/* Recommended Jobs Section */}
         {!isLoading && Array.isArray(jobs) && jobs.length > 0 && statusFilter === "all" && (
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-white mb-4 flex items-center">
+            <h2 className="text-xl font-semibold cosmic-text-gradient mb-4 flex items-center">
               <Star className="h-5 w-5 mr-2 text-yellow-400" />
               Recommended for You
             </h2>
@@ -188,14 +188,14 @@ export default function JobFinder() {
                 .map((job: Job) => (
                   <div 
                     key={job.id}
-                    className="cosmic-card border border-white/10 p-5 rounded-lg hover:border-blue-500/50 transition-all duration-300"
+                    className="cosmic-card border border-white/10 p-5 rounded-lg hover:border-primary/50 transition-all duration-300"
                   >
                     <div className="flex justify-between items-start mb-3">
                       <div>
-                        <h3 className="font-medium text-white text-lg">{job.title}</h3>
+                        <h3 className="font-medium cosmic-text-gradient text-lg">{job.title}</h3>
                         <p className="text-sm text-gray-300">{job.company} · {job.location}</p>
                       </div>
-                      <Badge className="bg-gradient-to-r from-green-700/80 to-green-600/80 text-green-100 hover:from-green-600/80 hover:to-green-500/80 border-0">
+                      <Badge className="bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30">
                         {job.match}% Match
                       </Badge>
                     </div>
@@ -206,7 +206,7 @@ export default function JobFinder() {
                         <span>{job.postedAt}</span>
                       </div>
                       <div className="flex space-x-2">
-                        <Badge variant="outline" className="text-xs border-white/20 text-blue-300 bg-blue-900/20">
+                        <Badge variant="outline" className="text-xs border-white/10 text-primary bg-primary/10">
                           {job.type}
                         </Badge>
                       </div>
@@ -272,7 +272,7 @@ export default function JobFinder() {
                       <button 
                         onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : 1)}
                         disabled={currentPage === 1}
-                        className="text-gray-300 hover:text-white border border-white/10 hover:border-blue-400 hover:bg-blue-900/20 px-2.5 py-1.5 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="text-gray-300 hover:text-white border border-white/10 cosmic-btn-glow px-2.5 py-1.5 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Previous
                       </button>
@@ -284,8 +284,8 @@ export default function JobFinder() {
                           onClick={() => setCurrentPage(page)}
                           className={`w-9 h-9 border rounded-md flex items-center justify-center ${
                             currentPage === page
-                              ? 'bg-blue-900/30 text-blue-300 border-blue-500'
-                              : 'text-gray-300 border-white/10 hover:border-blue-400 hover:bg-blue-900/20'
+                              ? 'bg-primary/20 text-primary border-primary/50'
+                              : 'text-gray-300 border-white/10 hover:border-primary/30 cosmic-btn-glow'
                           }`}
                         >
                           {page}
@@ -296,7 +296,7 @@ export default function JobFinder() {
                     <PaginationItem>
                       <button
                         onClick={() => setCurrentPage(currentPage + 1)}
-                        className="text-gray-300 hover:text-white border border-white/10 hover:border-blue-400 hover:bg-blue-900/20 px-2.5 py-1.5 rounded-md"
+                        className="text-gray-300 hover:text-white border border-white/10 cosmic-btn-glow px-2.5 py-1.5 rounded-md"
                       >
                         Next
                       </button>
@@ -335,10 +335,10 @@ export default function JobFinder() {
       {/* AI Assistant Chat Box */}
       {isDialogOpen && (
         <div className="fixed bottom-24 right-6 z-50 w-96 max-w-full shadow-xl rounded-lg overflow-hidden transition-all duration-300 ease-in-out cosmic-card">
-          <div className="bg-gradient-to-r from-blue-900 to-purple-900 p-3 flex justify-between items-center border-b border-blue-500/30">
+          <div className="bg-card/90 p-3 flex justify-between items-center border-b border-white/10">
             <div className="flex items-center">
-              <Cpu className="h-5 w-5 text-blue-300 mr-2" />
-              <h3 className="text-white font-medium">AI Job Assistant</h3>
+              <Cpu className="h-5 w-5 text-primary mr-2" />
+              <h3 className="cosmic-text-gradient font-medium">AI Job Assistant</h3>
             </div>
             <Button 
               variant="ghost" 

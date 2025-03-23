@@ -4,7 +4,8 @@ import { Button } from "@/ui/core/Button";
 import { 
   Download, Mail, Phone, Globe, MapPin, 
   ZoomIn, ZoomOut, Maximize, Minimize, 
-  ArrowUp, ArrowDown, Dices, PanelLeftClose, PanelRightClose
+  ArrowUp, ArrowDown, Dices, PanelLeftClose, PanelRightClose,
+  ChevronLeft, ChevronRight, FileText
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -39,7 +40,49 @@ export default function ResumeTemplate({
   const [compact, setCompact] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [showPlaceholders, setShowPlaceholders] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const contentRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  // Check for content overflow and calculate pages
+  useEffect(() => {
+    if (contentRef.current) {
+      // Get the dimensions of the content
+      const contentHeight = contentRef.current.scrollHeight;
+      const pageHeight = 11 * 96; // 11 inches in pixels (96 DPI)
+      
+      // Calculate how many pages are needed
+      const pages = Math.max(1, Math.ceil(contentHeight / pageHeight));
+      
+      if (pages !== totalPages) {
+        setTotalPages(pages);
+        
+        // Show toast for multi-page resumes
+        if (pages > 1) {
+          toast({
+            title: `Multi-page resume detected`,
+            description: `Your resume content spans ${pages} pages. Use page navigation controls to view all pages.`,
+            duration: 3000
+          });
+        }
+      }
+    }
+  }, [experience, education, skills, projects, compact, zoom]);
+
+  // Function to navigate to the next page
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  // Function to navigate to the previous page
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   // Function to apply smart spacing adjustments
   const applySmartAdjust = () => {
@@ -110,8 +153,43 @@ export default function ResumeTemplate({
     <div className="relative bg-card border border-border rounded-lg overflow-hidden shadow-sm">
       {/* Template header with controls */}
       <div className="p-4 border-b border-border flex justify-between items-center bg-muted/30">
-        <h3 className="font-medium text-foreground">Resume Preview</h3>
+        <div className="flex items-center">
+          <h3 className="font-medium text-foreground">Resume Preview</h3>
+          {totalPages > 1 && (
+            <div className="ml-4 flex items-center gap-1 text-xs">
+              <FileText className="h-3.5 w-3.5 mr-1 text-gray-500" />
+              <span className="font-medium">Page {currentPage} of {totalPages}</span>
+            </div>
+          )}
+        </div>
         <div className="flex items-center gap-2">
+          {/* Page navigation controls - only shown when multiple pages */}
+          {totalPages > 1 && (
+            <div className="flex items-center mr-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={prevPage}
+                disabled={currentPage === 1}
+                aria-label="Previous page"
+                title="Previous page"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={nextPage}
+                disabled={currentPage === totalPages}
+                aria-label="Next page"
+                title="Next page"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+          
           <Button
             variant="ghost"
             size="sm" 
@@ -201,10 +279,16 @@ export default function ResumeTemplate({
         >
           {/* Resume content with adjustable spacing */}
           <div 
+            ref={contentRef}
             className={cn(
               "h-full p-6 overflow-hidden",
               compact ? "space-y-3" : "space-y-6"
             )}
+            style={{
+              // Show correct page based on currentPage (simulate pagination)
+              transform: `translateY(-${(currentPage - 1) * 100}%)`,
+              transition: 'transform 0.3s ease-in-out'
+            }}
           >
             {/* Personal information section */}
             <header className={cn(

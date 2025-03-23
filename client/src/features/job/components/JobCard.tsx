@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import { Bookmark, Clock, MapPin, Star, Award, Building, CheckCircle2, ChevronRight } from 'lucide-react';
 import { Button } from '@/ui/core/Button';
 import { cn } from '@/lib/utils';
-import { format, parseISO, isWithinDays } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Job } from '../types';
@@ -28,7 +28,9 @@ export default function JobCard({ job }: JobCardProps) {
     e.stopPropagation();
     
     try {
-      await apiRequest(`/api/jobs/${job.id}/save`);
+      await apiRequest(`/api/jobs/${job.id}/save`, {
+        method: 'POST'
+      });
       
       // Update the local state optimistically
       queryClient.setQueryData(['/api/jobs'], (old: Job[] | undefined) => {

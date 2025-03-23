@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, MapPin, BriefcaseBusiness, Filter, Graduation, Wifi, DollarSign, Globe } from 'lucide-react';
+import { Search, MapPin, BriefcaseBusiness, Filter, GraduationCap, Wifi, DollarSign, Globe } from 'lucide-react';
 import { Button } from '@/ui/core/Button';
 import { JobFilterValues } from '../types';
 import { cn } from '@/lib/utils';
@@ -140,7 +140,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
           {/* Experience Level */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Graduation className="h-4 w-4 text-muted-foreground" />
+              <GraduationCap className="h-4 w-4 text-muted-foreground" />
             </div>
             <select
               name="experience"

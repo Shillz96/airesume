@@ -219,7 +219,7 @@ export default function ResumeBuilder() {
   return (
     <>
       {/* Using global CosmicBackground from App.tsx */}
-      <div className="container mx-auto px-4 sm:px-6 py-6 pt-6 min-h-screen relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 pb-10 min-h-screen relative z-10">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold cosmic-text-gradient">

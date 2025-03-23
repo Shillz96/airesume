@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, memo } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getCosmicColor } from '@/lib/theme-utils';
 
@@ -10,177 +10,260 @@ import { getCosmicColor } from '@/lib/theme-utils';
  * Properly integrated with the theme system for consistent styling across the application
  */
 function CosmicBackgroundComponent() {
-  const [isClient, setIsClient] = useState(false);
   const { isDarkMode } = useTheme();
-  const [starKey, setStarKey] = useState(0); // Used to force re-generation of stars only when theme changes
-
-  // Get colors from theme system
-  const primaryColor = useMemo(() => getCosmicColor('primary'), []);
-  const accentColor = useMemo(() => getCosmicColor('accent'), []);
-  const tertiaryColor = useMemo(() => getCosmicColor('tertiary'), []);
-
-  // Create stars manually to ensure they're visible
-  // Memoize the stars so they don't regenerate on every render
-  const stars = useMemo(() => {
-    if (!isClient) return [];
-    
-    const starsArray = [];
-    const starCount = isDarkMode ? 200 : 150; // Increase star count for better distribution
-    
-    // True random values for natural star distribution
-    for (let i = 0; i < starCount; i++) {
-      // More variation in star sizes
-      const size = Math.random() * 2.5 + 0.5;
-      const opacity = Math.random() * 0.6 + 0.4;
-      const animDuration = Math.random() * 5 + 2;
-      const animDelay = Math.random() * 3;
-      
-      // Use truly random position across the entire viewport
-      const top = Math.random() * 120 - 10; // Some stars slightly outside the viewport
-      const left = Math.random() * 120 - 10; // For a more natural feel
-      
-      // Slight color variation for more realism
-      const hue = Math.random() > 0.7 ? 
-        Math.floor(Math.random() * 40) + 200 : // Occasional blue tint
-        0; // Mostly white
-
-      starsArray.push(
-        <div
-          key={`star-${i}-${starKey}`}
-          className="star absolute rounded-full"
-          style={{
-            width: `${size}px`,
-            height: `${size}px`,
-            top: `${top}%`,
-            left: `${left}%`,
-            opacity: isDarkMode ? opacity : opacity * 0.6, // More translucent in light mode
-            animation: `twinkle ${animDuration}s infinite ${animDelay}s`,
-            background: isDarkMode 
-              ? (hue === 0 ? 'white' : `hsl(${hue}, 100%, 90%)`) 
-              : `rgba(59, 130, 246, ${opacity * 0.8})`, // Blue-tinted stars in light mode
-            boxShadow: isDarkMode 
-              ? `0 0 ${Math.floor(size * 2)}px rgba(255, 255, 255, 0.3)` 
-              : `0 0 ${Math.floor(size * 2)}px rgba(59, 130, 246, 0.3)`,
-          }}
-        />
-      );
-    }
-    return starsArray;
-  }, [isClient, isDarkMode, starKey]); // Only regenerate when these values change
-
-  // Memoize the nebula layers to prevent re-renders
-  const nebulaLayers = useMemo(() => (
-    <div className="absolute inset-0 pointer-events-none">
-      <div 
-        className="absolute top-[10%] left-[15%] w-[35%] h-[35%] rounded-full filter blur-3xl opacity-25"
-        style={{
-          background: isDarkMode
-            ? `radial-gradient(circle, ${primaryColor}30 0%, ${primaryColor}00 70%)`
-            : `radial-gradient(circle, ${primaryColor}15 0%, ${primaryColor}00 70%)`,
-          animation: 'pulse-slow 8s infinite ease-in-out',
-        }}
-      />
-      <div 
-        className="absolute bottom-[15%] right-[10%] w-[25%] h-[45%] rounded-full filter blur-3xl opacity-20"
-        style={{
-          background: isDarkMode
-            ? `radial-gradient(circle, ${accentColor}30 0%, ${accentColor}00 70%)`
-            : `radial-gradient(circle, ${accentColor}15 0%, ${accentColor}00 70%)`,
-          animation: 'pulse-slow2 10s infinite ease-in-out',
-        }}
-      />
-      <div 
-        className="absolute top-[25%] right-[25%] w-[30%] h-[30%] rounded-full filter blur-3xl opacity-15"
-        style={{
-          background: isDarkMode
-            ? `radial-gradient(circle, ${tertiaryColor}30 0%, ${tertiaryColor}00 70%)`
-            : `radial-gradient(circle, ${tertiaryColor}15 0%, ${tertiaryColor}00 70%)`,
-          animation: 'pulse-slow3 12s infinite ease-in-out',
-        }}
-      />
-    </div>
-  ), [isDarkMode, primaryColor, accentColor, tertiaryColor]);
-
-  // Setup once on component mount
+  const [starsGenerated, setStarsGenerated] = useState(false);
+  const backgroundRef = useRef<HTMLDivElement>(null);
+  
+  // Generate stars and nebulae only once on mount to avoid layout thrashing
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIsClient(true);
+    if (starsGenerated || !backgroundRef.current) return;
+    
+    // Get container dimensions
+    const container = backgroundRef.current;
+    const width = window.innerWidth;
+    const height = window.innerHeight * 1.2; // Extend past viewport to ensure coverage
+    
+    // Star generation function
+    const generateStars = () => {
+      const starCount = Math.min(width * height / 1000, 1000); // Responsive star count
+      let starsHtml = '';
       
-      // Setup shooting stars only once per mount
-      const handleShootingStars = () => {
-        const starfield = document.querySelector('.starfield');
-        if (!starfield) return null;
+      for (let i = 0; i < starCount; i++) {
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+        const size = Math.random() * 2;
+        const opacity = 0.2 + Math.random() * 0.8;
+        const animDuration = 2 + Math.random() * 8;
+        const animDelay = Math.random() * 5;
         
-        const createShootingStar = () => {
-          const star = document.createElement('div');
-          star.className = 'shooting-star';
-          
-          // Set random position and angle
-          const startX = Math.random() * 100;
-          const startY = Math.random() * 30; // Only from top portion
-          const angle = Math.random() * 60 - 30;
-          
-          star.style.top = `${startY}%`;
-          star.style.left = `${startX}%`;
-          star.style.setProperty('--angle', `${angle}deg`);
-          
-          // Add the CSS variable to use in our animation
-          starfield.appendChild(star);
-          
-          // Remove star after animation
-          setTimeout(() => {
-            if (star.parentNode === starfield) {
-              starfield.removeChild(star);
-            }
-          }, 1500); // Match animation duration
-        };
+        starsHtml += `<div class="star" style="
+          left: ${x}%;
+          top: ${y}%;
+          width: ${size}px;
+          height: ${size}px;
+          opacity: ${opacity};
+          animation-duration: ${animDuration}s;
+          animation-delay: ${animDelay}s;
+        "></div>`;
+      }
+      
+      return starsHtml;
+    };
+    
+    // Nebulae generation function
+    const generateNebulae = () => {
+      const nebulaCount = 3;
+      let nebulaeHtml = '';
+      
+      // Get theme colors for nebulae
+      const primaryColor = getCosmicColor('primary');
+      const accentColor = getCosmicColor('accent');
+      const tertiaryColor = getCosmicColor('muted');
+      
+      // Define nebula colors from theme
+      const nebulaColors = [
+        `rgba(${hexToRgb(primaryColor)?.r || 63}, ${hexToRgb(primaryColor)?.g || 81}, ${hexToRgb(primaryColor)?.b || 181}, 0.03)`,
+        `rgba(${hexToRgb(accentColor)?.r || 113}, ${hexToRgb(accentColor)?.g || 47}, ${hexToRgb(accentColor)?.b || 173}, 0.02)`,
+        `rgba(${hexToRgb(tertiaryColor)?.r || 3}, ${hexToRgb(tertiaryColor)?.g || 152}, ${hexToRgb(tertiaryColor)?.b || 158}, 0.015)`
+      ];
+      
+      for (let i = 0; i < nebulaCount; i++) {
+        const x = 10 + Math.random() * 80;
+        const y = 10 + Math.random() * 80;
+        const scale = 0.8 + Math.random() * 1.2;
+        const rotation = Math.random() * 360;
+        const color = nebulaColors[i % nebulaColors.length];
+        const animDuration = 80 + Math.random() * 40;
+        const animDelay = Math.random() * 10;
         
-        // Create shooting stars at random intervals
-        const interval = setInterval(() => {
-          if (Math.random() > 0.7) { // 30% chance each interval
-            createShootingStar();
-          }
-        }, Math.random() * 3000 + 2000);
-        
-        return interval;
-      };
+        nebulaeHtml += `<div class="nebula" style="
+          left: ${x}%;
+          top: ${y}%;
+          transform: scale(${scale}) rotate(${rotation}deg);
+          background: radial-gradient(circle at center, ${color} 0%, transparent 70%);
+          width: 50%;
+          height: 50%;
+          animation-duration: ${animDuration}s;
+          animation-delay: ${animDelay}s;
+        "></div>`;
+      }
       
-      const interval = handleShootingStars();
+      return nebulaeHtml;
+    };
+    
+    // Add generated HTML to the container
+    container.innerHTML = generateStars() + generateNebulae();
+    setStarsGenerated(true);
+    
+    // Add shooting stars at random intervals
+    const shootingStarsInterval = setInterval(() => {
+      if (!backgroundRef.current) return;
       
-      // Theme changes are now managed by the useTheme hook directly
+      const shootingStar = document.createElement('div');
+      shootingStar.className = 'shooting-star';
       
-      return () => {
-        if (interval) clearInterval(interval);
-      };
-    }
-  }, []); // Empty dependency array ensures this only runs once on mount
-
-  // Watch for theme changes to regenerate stars when needed
-  useEffect(() => {
-    setStarKey(prevKey => prevKey + 1);
-  }, [isDarkMode]);
-
-  if (!isClient) return null;
-
+      // Random position and animation
+      const startX = Math.random() * 100;
+      const startY = Math.random() * 100;
+      const angle = Math.random() * 45;
+      const length = 100 + Math.random() * 150;
+      
+      shootingStar.style.left = `${startX}%`;
+      shootingStar.style.top = `${startY}%`;
+      shootingStar.style.transform = `rotate(${angle}deg)`;
+      shootingStar.style.width = `${length}px`;
+      
+      backgroundRef.current.appendChild(shootingStar);
+      
+      // Remove shooting star after animation completes
+      setTimeout(() => {
+        if (shootingStar.parentNode) {
+          shootingStar.parentNode.removeChild(shootingStar);
+        }
+      }, 1000);
+    }, 5000);
+    
+    return () => {
+      clearInterval(shootingStarsInterval);
+    };
+  }, [starsGenerated]);
+  
+  // CSS class based on theme mode
+  const themeClass = isDarkMode ? 'cosmic-dark' : 'cosmic-light';
+  
   return (
-    <div className="cosmic-background fixed inset-0 w-full h-full min-h-screen overflow-hidden z-0" 
-      style={{ 
-        background: isDarkMode ? 'linear-gradient(to bottom, #0f172a, #020617)' : 'linear-gradient(to bottom, #f8fafc, #f1f5f9)'
-      }}
-    >
-      {/* Dynamic stars with JavaScript - now memoized */}
-      <div className="starfield absolute inset-0 pointer-events-none">
-        {stars}
-      </div>
-
-      {/* Enhanced Nebula Layers - Now memoized */}
-      <div className="absolute inset-0">
-        {nebulaLayers}
-      </div>
+    <div className={`cosmic-background ${themeClass}`}>
+      <div className="star-container" ref={backgroundRef}></div>
+      
+      {/* Overlay gradients for atmosphere */}
+      <div className="cosmic-overlay"></div>
+      
+      {/* Base CSS for the cosmic elements */}
+      <style jsx>{`
+        .cosmic-background {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          z-index: 0;
+          transition: background-color 0.5s ease;
+        }
+        
+        .cosmic-dark {
+          background-color: #080b18;
+        }
+        
+        .cosmic-light {
+          background-color: #f0f4ff;
+        }
+        
+        .star-container {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          transform-origin: center;
+        }
+        
+        .star {
+          position: absolute;
+          background-color: #fff;
+          border-radius: 50%;
+          animation: twinkle 5s infinite ease-in-out;
+        }
+        
+        .cosmic-dark .star {
+          background-color: #fff;
+        }
+        
+        .cosmic-light .star {
+          background-color: #8b9dc7;
+        }
+        
+        .nebula {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(40px);
+          opacity: 0.6;
+          mix-blend-mode: screen;
+          pointer-events: none;
+          animation: nebula-drift 100s infinite alternate ease-in-out;
+        }
+        
+        .cosmic-light .nebula {
+          mix-blend-mode: multiply;
+          opacity: 0.2;
+        }
+        
+        .shooting-star {
+          position: absolute;
+          height: 1px;
+          background: linear-gradient(to right, transparent, #fff, transparent);
+          animation: shooting 1s linear;
+          transform-origin: left;
+        }
+        
+        .cosmic-light .shooting-star {
+          background: linear-gradient(to right, transparent, #5b7abb, transparent);
+        }
+        
+        .cosmic-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+        }
+        
+        .cosmic-dark .cosmic-overlay {
+          background: radial-gradient(ellipse at top, rgba(12, 18, 48, 0) 0%, rgba(6, 8, 24, 0.5) 100%);
+        }
+        
+        .cosmic-light .cosmic-overlay {
+          background: radial-gradient(ellipse at top, rgba(240, 244, 255, 0) 0%, rgba(225, 235, 255, 0.8) 100%);
+        }
+        
+        @keyframes twinkle {
+          0%, 100% { opacity: 0.2; }
+          50% { opacity: 1; }
+        }
+        
+        @keyframes nebula-drift {
+          0% { transform: translateX(-10px) translateY(-10px) rotate(0deg); }
+          50% { transform: translateX(10px) translateY(10px) rotate(180deg); }
+          100% { transform: translateX(-10px) translateY(10px) rotate(360deg); }
+        }
+        
+        @keyframes shooting {
+          0% { transform: scaleX(0); opacity: 0; }
+          50% { transform: scaleX(1); opacity: 1; }
+          100% { transform: scaleX(0); opacity: 0; }
+        }
+      `}</style>
     </div>
   );
 }
 
-// Export a memoized version to prevent re-renders when parent components update
+// Helper function to convert HEX to RGB
+function hexToRgb(hex: string) {
+  // Default fallback color if parsing fails
+  if (!hex || typeof hex !== 'string') return { r: 100, g: 149, b: 237 };
+  
+  // Remove # if present
+  hex = hex.replace(/^#/, '');
+  
+  // Parse hex value
+  const bigint = parseInt(hex, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  
+  return { r, g, b };
+}
+
+// Use memo to prevent unnecessary re-renders
 const CosmicBackground = memo(CosmicBackgroundComponent);
+
 export default CosmicBackground;

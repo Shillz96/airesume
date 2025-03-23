@@ -91,35 +91,11 @@ const defaultThemeConfig: ThemeConfig = {
   }
 };
 
-try {
-  // Try to dynamically import the theme.json
-  // In development, use fetch to get theme.json
-  fetch('/theme.json')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to load theme.json');
-      }
-      return response.json();
-    })
-    .then(theme => {
-      if (theme && typeof theme === 'object' && theme.colors) {
-        // Make a deep copy to avoid modifying the imported object
-        themeConfig = JSON.parse(JSON.stringify(theme));
-      } else {
-        themeConfig = theme;
-      }
-    })
-    .catch(error => {
-      console.warn('Failed to fetch theme.json:', error.message);
-      themeConfig = defaultThemeConfig;
-    });
-} catch (error) {
-  // Fallback to default theme config if the fetch fails
-  console.warn('Failed to load theme.json, using default theme configuration');
-  themeConfig = defaultThemeConfig;
-}
+// Use the default theme configuration from our code
+// This ensures consistent styling across the application without relying on external files
+console.log('Using default theme configuration for consistency');
 
-// Ensure themeConfig is initialized even before fetch completes
+// No need to fetch theme.json as we're using our built-in theme
 themeConfig = defaultThemeConfig;
 
 /**

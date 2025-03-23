@@ -58,45 +58,53 @@ export interface ButtonProps
 /**
  * Unified Button component that integrates with our theme system
  * This component serves as the single button implementation throughout the application
+ * Now uses forwardRef to properly handle ref forwarding when used with other components
  */
-export function Button({
-  className,
-  variant,
-  size,
-  glow,
-  isLoading = false,
-  loadingText,
-  iconLeft,
-  iconRight,
-  children,
-  disabled,
-  fullWidth,
-  ...props
-}: ButtonProps) {
-  return (
-    <button
-      className={cn(
-        buttonVariants({ variant, size, glow }),
-        fullWidth && "w-full",
-        className
-      )}
-      disabled={disabled || isLoading}
-      {...props}
-    >
-      {isLoading && (
-        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-      )}
-      {!isLoading && iconLeft && (
-        <span className={cn("mr-2", size === "icon" && "mr-0")}>
-          {iconLeft}
-        </span>
-      )}
-      {isLoading && loadingText ? loadingText : children}
-      {iconRight && (
-        <span className="ml-2">
-          {iconRight}
-        </span>
-      )}
-    </button>
-  );
-}
+// Using forwardRef to allow passing refs to the button element
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      className,
+      variant,
+      size,
+      glow,
+      isLoading = false,
+      loadingText,
+      iconLeft,
+      iconRight,
+      children,
+      disabled,
+      fullWidth,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <button
+        ref={ref}
+        className={cn(
+          buttonVariants({ variant, size, glow }),
+          fullWidth && "w-full",
+          className
+        )}
+        disabled={disabled || isLoading}
+        {...props}
+      >
+        {isLoading && (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        )}
+        {!isLoading && iconLeft && (
+          <span className={cn("mr-2", size === "icon" && "mr-0")}>
+            {iconLeft}
+          </span>
+        )}
+        {isLoading && loadingText ? loadingText : children}
+        {iconRight && (
+          <span className="ml-2">
+            {iconRight}
+          </span>
+        )}
+      </button>
+    );
+  }
+);

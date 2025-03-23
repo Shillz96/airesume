@@ -240,7 +240,7 @@ export default function SubscriptionPage() {
   return (
     <>
       {/* Using global CosmicBackground from App.tsx */}
-      <UnifiedContainer className="pb-10 min-h-screen">
+      <UnifiedContainer className="pb-10 min-h-screen" paddingTop="sm">
         <UnifiedPageHeader
           title="Subscription Management"
           subtitle="Manage your plans, add-ons, and payment history"

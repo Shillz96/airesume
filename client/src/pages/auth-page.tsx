@@ -127,13 +127,8 @@ export default function LandingPage() {
     }
   }
   
-  // Animation effect without stars (using global CosmicBackground)
+  // Text animation effect (using global CosmicBackground from App.tsx)
   useEffect(() => {
-    // We no longer need the starfield animation here as we're using
-    // the global CosmicBackground component
-    
-    const cleanupFns: (() => void)[] = [];
-    
     if (titleRef.current && subtitleRef.current && ctaRef.current) {
       gsap.fromTo(titleRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1 });
       gsap.fromTo(subtitleRef.current, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 1, delay: 0.3 });
@@ -149,7 +144,7 @@ export default function LandingPage() {
     }
     
     return () => {
-      cleanupFns.forEach(fn => fn());
+      // No background cleanup needed
     };
   }, []);
 

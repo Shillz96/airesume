@@ -5,23 +5,7 @@ import { Home, AlertCircle } from "lucide-react";
 export default function NotFound() {
   return (
     <div className="cosmic-error-page">
-      {/* Starfield Background */}
-      <div className="starfield absolute inset-0 pointer-events-none">
-        {[...Array(100)].map((_, i) => (
-          <div
-            key={i}
-            className="star absolute bg-white rounded-full"
-            style={{
-              width: `${Math.random() * 2 + 1}px`,
-              height: `${Math.random() * 2 + 1}px`,
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              opacity: Math.random() * 0.5 + 0.2,
-              animation: `twinkle ${Math.random() * 3 + 2}s infinite`,
-            }}
-          />
-        ))}
-      </div>
+      {/* Using global CosmicBackground from App.tsx */}
       
       <div className="z-10 relative max-w-md mx-auto text-center">
         <div className="cosmic-error-code">404</div>

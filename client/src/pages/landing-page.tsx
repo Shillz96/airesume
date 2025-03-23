@@ -128,46 +128,8 @@ export default function LandingPage() {
     }
   }
 
-  // Starfield animation
+  // Animation for text elements (no starfield - using global CosmicBackground)
   useEffect(() => {
-    const createStar = () => {
-      const star = document.createElement("div");
-      star.className = "cosmic-star absolute rounded-full";
-
-      // Random size between 1-3px
-      const size = Math.random() * 2 + 1;
-      star.style.width = `${size}px`;
-      star.style.height = `${size}px`;
-
-      // Random position
-      star.style.left = `${Math.random() * 100}%`;
-      star.style.top = `${Math.random() * 100}%`;
-
-      // Random opacity
-      star.style.opacity = `${Math.random() * 0.5 + 0.3}`;
-
-      // Random background color - whites and blues
-      const colors = ['#ffffff', '#e1e1ff', '#b3c6ff', '#d6e4ff'];
-      star.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-
-      // We're now using the global CosmicBackground component
-      document.body.appendChild(star);
-
-      // Cleanup function
-      return () => {
-        if (star.parentNode) {
-          star.parentNode.removeChild(star);
-        }
-      };
-    };
-
-    // Create stars
-    const cleanupFns = [];
-    const starCount = window.innerWidth < 768 ? 50 : 100;
-
-    for (let i = 0; i < starCount; i++) {
-      cleanupFns.push(createStar());
-    }
 
     // GSAP animations
     if (titleRef.current && subtitleRef.current && ctaRef.current) {
@@ -185,8 +147,9 @@ export default function LandingPage() {
       );
     }
 
+    // No background cleanup needed since we're using the global CosmicBackground
     return () => {
-      cleanupFns.forEach(fn => fn());
+      // No cleanup needed for removed star animations
     };
   }, []);
 

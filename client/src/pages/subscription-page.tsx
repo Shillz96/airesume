@@ -237,6 +237,7 @@ export default function SubscriptionPage() {
   
   return (
     <div className="min-h-screen w-full flex flex-col relative z-10">
+      {/* Using global CosmicBackground from App.tsx */}
       <div className="container pb-10 px-4 md:px-6 max-w-7xl mx-auto pt-6">
         <PageHeader
           title={

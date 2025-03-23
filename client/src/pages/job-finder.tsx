@@ -256,9 +256,9 @@ export default function JobFinder() {
           ) : filteredJobs.length > 0 ? (
             <>
               <CardContent className="p-0">
-                <ul className="divide-y divide-white/10">
+                <ul className="divide-y divide-white/10 space-y-2">
                   {filteredJobs.map((job: Job) => (
-                    <li key={job.id}>
+                    <li key={job.id} className="pt-2 first:pt-0">
                       <JobCard job={job} />
                     </li>
                   ))}
@@ -349,7 +349,7 @@ export default function JobFinder() {
               <X className="h-4 w-4 text-white" />
             </Button>
           </div>
-          <div className="cosmic-card-inner p-4 h-96 overflow-y-auto border-x border-blue-500/30 border-b">
+          <div className="bg-card/90 p-4 h-96 overflow-y-auto border-x border-white/10 border-b">
             <AIAssistant 
               activeTab="jobs"
             />

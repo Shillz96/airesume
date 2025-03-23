@@ -1,0 +1,201 @@
+/**
+ * Theme Variables CSS
+ * 
+ * This file defines all CSS variables for the application theme.
+ * It loads values from theme.json and makes them available as CSS custom properties.
+ */
+
+:root {
+  /* Base colors */
+  --color-background: var(--background, #050A18);
+  --color-foreground: var(--foreground, #ffffff);
+  --color-card: var(--card, #0A1428);
+  --color-card-foreground: var(--cardForeground, #ffffff);
+  --color-muted: var(--muted, #6b7280);
+  --color-muted-foreground: var(--mutedForeground, #9ca3af);
+  --color-border: var(--border, rgba(255, 255, 255, 0.1));
+  --color-input: var(--input, rgba(255, 255, 255, 0.1));
+  --color-ring: var(--ring, rgba(59, 130, 246, 0.5));
+  
+  /* Brand colors */
+  --color-primary: var(--primary, #3b82f6);
+  --color-primary-foreground: var(--primaryForeground, #ffffff);
+  --color-secondary: var(--secondary, #8b5cf6);
+  --color-secondary-foreground: var(--secondaryForeground, #ffffff);
+  --color-accent: var(--accent, #10b981);
+  --color-accent-foreground: var(--accentForeground, #ffffff);
+  
+  /* Functional colors */
+  --color-success: var(--success, #10b981);
+  --color-warning: var(--warning, #f59e0b);
+  --color-danger: var(--danger, #ef4444);
+  --color-info: var(--info, #3b82f6);
+  
+  /* Cosmic theme specific */
+  --color-cosmic-accent-primary: var(--cosmicAccentPrimary, rgba(59, 130, 246, 0.5));
+  --color-cosmic-accent-secondary: var(--cosmicAccentSecondary, rgba(139, 92, 246, 0.3));
+  --shadow-glow: var(--shadowGlow, 0 0 15px rgba(59, 130, 246, 0.2));
+  
+  /* Spacing system */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.25rem;  /* 20px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2rem;     /* 32px */
+  --space-10: 2.5rem;  /* 40px */
+  --space-12: 3rem;    /* 48px */
+  --space-16: 4rem;    /* 64px */
+  --space-20: 5rem;    /* 80px */
+  --space-24: 6rem;    /* 96px */
+  
+  /* Border radius */
+  --radius-sm: 0.125rem; /* 2px */
+  --radius-md: 0.25rem;  /* 4px */
+  --radius-lg: 0.5rem;   /* 8px */
+  --radius-xl: 0.75rem;  /* 12px */
+  --radius-2xl: 1rem;    /* 16px */
+  --radius-3xl: 1.5rem;  /* 24px */
+  --radius-full: 9999px;
+  
+  /* Typography */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  
+  /* Font sizes */
+  --font-size-xs: 0.75rem;     /* 12px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;    /* 18px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  --font-size-3xl: 1.875rem;   /* 30px */
+  --font-size-4xl: 2.25rem;    /* 36px */
+  --font-size-5xl: 3rem;       /* 48px */
+  
+  /* Font weights */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Line heights */
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
+  
+  /* Animation */
+  --transition-fast: 150ms;
+  --transition-normal: 250ms;
+  --transition-slow: 350ms;
+  --transition-very-slow: 500ms;
+  
+  /* Z-index */
+  --z-0: 0;
+  --z-10: 10;
+  --z-20: 20;
+  --z-30: 30;
+  --z-40: 40;
+  --z-50: 50;
+  --z-auto: auto;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  --shadow-outline: 0 0 0 3px rgba(59, 130, 246, 0.5);
+  
+  /* Cosmic theme specific styles */
+  --cosmic-card-border: linear-gradient(to bottom right, var(--color-cosmic-accent-primary), transparent, var(--color-cosmic-accent-secondary));
+  --cosmic-card-glow: 0 0 15px var(--color-cosmic-accent-primary);
+  --cosmic-button-gradient: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+  --cosmic-active-nav-glow: 0 0 10px var(--color-primary);
+  --cosmic-background-dark: #050A18;
+  --cosmic-starfield-parallax-speed: 0.05;
+}
+
+/* Dark theme overrides - already set as default above, but made explicit for clarity */
+.dark-theme {
+  --color-background: #050A18;
+  --color-foreground: #ffffff;
+  --color-card: #0A1428;
+  --color-card-foreground: #ffffff;
+  --color-muted: #6b7280;
+  --color-muted-foreground: #9ca3af;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-input: rgba(255, 255, 255, 0.1);
+}
+
+/* Light theme overrides */
+.light-theme {
+  --color-background: #f9fafb;
+  --color-foreground: #111827;
+  --color-card: #ffffff;
+  --color-card-foreground: #111827;
+  --color-muted: #9ca3af;
+  --color-muted-foreground: #6b7280;
+  --color-border: rgba(0, 0, 0, 0.1);
+  --color-input: rgba(0, 0, 0, 0.1);
+}
+
+/* Cosmic theme variant */
+.cosmic-theme {
+  --cosmic-card-border: linear-gradient(to bottom right, var(--color-cosmic-accent-primary), transparent, var(--color-cosmic-accent-secondary));
+  --cosmic-card-glow: 0 0 15px var(--color-cosmic-accent-primary);
+  --cosmic-button-gradient: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+  --cosmic-active-nav-glow: 0 0 10px var(--color-primary);
+}
+
+/* Professional theme variant */
+.professional-theme {
+  --cosmic-card-border: none;
+  --cosmic-card-glow: none;
+  --cosmic-button-gradient: none;
+  --cosmic-active-nav-glow: none;
+}
+
+/* Utility classes that use the theme variables */
+.cosmic-glow {
+  box-shadow: var(--cosmic-card-glow);
+}
+
+.border-gradient {
+  position: relative;
+}
+
+.border-gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: var(--cosmic-card-border);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: source-out;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Animations */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--color-cosmic-accent-primary);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--color-cosmic-accent-primary);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

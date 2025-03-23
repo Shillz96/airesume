@@ -44,8 +44,24 @@ export {
   UnifiedGrid 
 } from './Container';
 
+// Export page header component
+export { default as UnifiedPageHeader } from './PageHeader';
+
 // Export our navbar (if it exists)
 export { default as UnifiedNavbar } from './Navbar';
 
 // Export other components
 export { default as CosmicBackground } from '@/ui/theme/CosmicBackground';
+
+// Export text components
+export { default as Text } from './Text';
+export { 
+  Heading1,
+  Heading2,
+  Heading3,
+  Heading4,
+  Heading5,
+  Heading6,
+  Paragraph,
+  GradientText
+} from './Text';

@@ -1,249 +1,195 @@
-import React from 'react';
-import { useUnifiedTheme } from '../../contexts/UnifiedThemeContext';
-
-type TextSize = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl';
-type TextWeight = 'normal' | 'medium' | 'semibold' | 'bold';
-type TextAlign = 'left' | 'center' | 'right';
-type TextElement = 'p' | 'span' | 'div' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'label';
-
-interface TextProps {
-  children: React.ReactNode;
-  as?: TextElement;
-  size?: TextSize;
-  weight?: TextWeight;
-  align?: TextAlign;
-  className?: string;
-  gradient?: boolean;
-  muted?: boolean;
-}
-
 /**
- * Get size class based on the size prop and element type
- */
-const getSizeClass = (size: TextSize = 'md', as: TextElement = 'p'): string => {
-  // Default sizes per element
-  if (!size) {
-    switch (as) {
-      case 'h1': return 'text-4xl md:text-5xl';
-      case 'h2': return 'text-3xl md:text-4xl';
-      case 'h3': return 'text-2xl md:text-3xl';
-      case 'h4': return 'text-xl md:text-2xl';
-      case 'h5': return 'text-lg md:text-xl';
-      case 'h6': return 'text-md md:text-lg';
-      default: return 'text-base';
-    }
-  }
-
-  // Size classes that scale with device
-  const sizeClasses: Record<TextSize, string> = {
-    '2xs': 'text-xs',
-    'xs': 'text-xs md:text-sm',
-    'sm': 'text-sm md:text-base',
-    'md': 'text-base',
-    'lg': 'text-lg',
-    'xl': 'text-xl',
-    '2xl': 'text-xl md:text-2xl',
-    '3xl': 'text-2xl md:text-3xl',
-    '4xl': 'text-3xl md:text-4xl',
-    '5xl': 'text-4xl md:text-5xl',
-    '6xl': 'text-5xl md:text-6xl',
-  };
-
-  return sizeClasses[size];
-};
-
-/**
- * Get weight class based on the weight prop
- */
-const getWeightClass = (weight: TextWeight = 'normal'): string => {
-  const weightClasses: Record<TextWeight, string> = {
-    'normal': 'font-normal',
-    'medium': 'font-medium',
-    'semibold': 'font-semibold',
-    'bold': 'font-bold',
-  };
-
-  return weightClasses[weight];
-};
-
-/**
- * Get alignment class based on the align prop
- */
-const getAlignClass = (align?: TextAlign): string => {
-  if (!align) return '';
-  
-  const alignClasses: Record<TextAlign, string> = {
-    'left': 'text-left',
-    'center': 'text-center',
-    'right': 'text-right',
-  };
-
-  return alignClasses[align];
-};
-
-/**
- * UnifiedText component
+ * Unified Text Components
  * 
- * A typography component with responsive text sizes
- * and consistent styling according to the design system
+ * This file provides text components like headings and paragraphs
+ * with consistent styling based on the unified theme system.
  */
-export function UnifiedText({
-  children,
-  as: Component = 'p',
-  size,
-  weight,
-  align,
-  className = '',
-  gradient = false,
-  muted = false,
-}: TextProps) {
+import React from 'react';
+import { cn } from '@/lib/utils';
+import { useUnifiedTheme } from '@/contexts/UnifiedThemeContext';
+
+// Heading components with different levels
+export function Heading1({ children, className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
   const { config } = useUnifiedTheme();
   
-  const classes = [
-    getSizeClass(size, Component),
-    getWeightClass(weight),
-    getAlignClass(align),
-    gradient ? 'text-gradient' : '',
-    muted ? 'text-muted-foreground' : 'text-foreground',
-    className
-  ].filter(Boolean).join(' ');
-
   return (
-    <Component className={classes}>
-      {children}
-    </Component>
-  );
-}
-
-/**
- * Helper components for common text elements
- */
-
-export function Heading1({ children, className = '', ...props }: Omit<TextProps, 'as' | 'size'>) {
-  return (
-    <UnifiedText
-      as="h1"
-      size="5xl"
-      weight="bold"
-      className={className}
+    <h1 
+      className={cn(
+        "text-3xl font-bold tracking-tight",
+        config.variant === 'cosmic' && "text-foreground",
+        className
+      )}
       {...props}
     >
       {children}
-    </UnifiedText>
+    </h1>
   );
 }
 
-export function Heading2({ children, className = '', ...props }: Omit<TextProps, 'as' | 'size'>) {
+export function Heading2({ children, className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
+  const { config } = useUnifiedTheme();
+  
   return (
-    <UnifiedText
-      as="h2"
-      size="4xl"
-      weight="bold"
-      className={className}
+    <h2 
+      className={cn(
+        "text-2xl font-semibold tracking-tight",
+        config.variant === 'cosmic' && "text-foreground",
+        className
+      )}
       {...props}
     >
       {children}
-    </UnifiedText>
+    </h2>
   );
 }
 
-export function Heading3({ children, className = '', ...props }: Omit<TextProps, 'as' | 'size'>) {
+export function Heading3({ children, className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
+  const { config } = useUnifiedTheme();
+  
   return (
-    <UnifiedText
-      as="h3"
-      size="3xl"
-      weight="semibold"
-      className={className}
+    <h3 
+      className={cn(
+        "text-xl font-semibold tracking-tight",
+        config.variant === 'cosmic' && "text-foreground",
+        className
+      )}
       {...props}
     >
       {children}
-    </UnifiedText>
+    </h3>
   );
 }
 
-export function Heading4({ children, className = '', ...props }: Omit<TextProps, 'as' | 'size'>) {
+export function Heading4({ children, className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
+  const { config } = useUnifiedTheme();
+  
   return (
-    <UnifiedText
-      as="h4"
-      size="2xl"
-      weight="semibold"
-      className={className}
+    <h4 
+      className={cn(
+        "text-lg font-semibold tracking-tight",
+        config.variant === 'cosmic' && "text-foreground",
+        className
+      )}
       {...props}
     >
       {children}
-    </UnifiedText>
+    </h4>
   );
 }
 
-export function Subtitle({ children, className = '', ...props }: Omit<TextProps, 'as' | 'size'>) {
+export function Heading5({ children, className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
+  const { config } = useUnifiedTheme();
+  
   return (
-    <UnifiedText
-      size="lg"
-      className={`text-muted-foreground ${className}`}
+    <h5 
+      className={cn(
+        "text-base font-semibold tracking-tight",
+        config.variant === 'cosmic' && "text-foreground",
+        className
+      )}
       {...props}
     >
       {children}
-    </UnifiedText>
+    </h5>
   );
 }
 
-export function Lead({ children, className = '', ...props }: Omit<TextProps, 'as' | 'size'>) {
+export function Heading6({ children, className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
+  const { config } = useUnifiedTheme();
+  
   return (
-    <UnifiedText
-      size="xl"
-      className={className}
+    <h6 
+      className={cn(
+        "text-sm font-semibold tracking-tight",
+        config.variant === 'cosmic' && "text-foreground",
+        className
+      )}
       {...props}
     >
       {children}
-    </UnifiedText>
+    </h6>
   );
 }
 
-export function Label({ children, className = '', ...props }: Omit<TextProps, 'as'>) {
+export function Paragraph({ children, className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
-    <UnifiedText
-      as="label"
-      size="sm"
-      weight="medium"
-      className={className}
+    <p 
+      className={cn(
+        "leading-7 [&:not(:first-child)]:mt-6",
+        className
+      )}
       {...props}
     >
       {children}
-    </UnifiedText>
+    </p>
   );
 }
 
-export function Code({ children, className = '', ...props }: Omit<TextProps, 'as'>) {
-  return (
-    <code className={`px-1.5 py-0.5 bg-muted rounded text-sm font-mono ${className}`} {...props}>
-      {children}
-    </code>
-  );
-}
+// Text with gradient effect
+type GradientTextProps = {
+  children: React.ReactNode;
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
+  size?: 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl';
+  weight?: 'normal' | 'medium' | 'semibold' | 'bold';
+  className?: string;
+  gradient?: 'primary' | 'secondary' | 'accent' | 'cosmic';
+};
 
-/**
- * Gradient text with cosmic styling
- */
 export function GradientText({ 
   children, 
-  className = '', 
-  as: Component = 'span',
-  size = 'md',
+  as = 'span',
+  size = 'base',
   weight = 'normal',
-  ...props 
-}: TextProps) {
-  const classes = [
-    'cosmic-text-gradient',
-    getSizeClass(size, Component as TextElement),
-    getWeightClass(weight),
-    className
-  ].filter(Boolean).join(' ');
-
+  className,
+  gradient = 'primary',
+  ...props
+}: GradientTextProps) {
+  const { config } = useUnifiedTheme();
+  
+  const sizeClasses = {
+    xs: 'text-xs',
+    sm: 'text-sm',
+    base: 'text-base',
+    lg: 'text-lg',
+    xl: 'text-xl',
+    '2xl': 'text-2xl',
+    '3xl': 'text-3xl',
+    '4xl': 'text-4xl',
+    '5xl': 'text-5xl',
+  };
+  
+  const weightClasses = {
+    normal: 'font-normal',
+    medium: 'font-medium',
+    semibold: 'font-semibold',
+    bold: 'font-bold',
+  };
+  
+  const gradientClasses = {
+    primary: 'from-primary to-primary/80',
+    secondary: 'from-primary to-secondary',
+    accent: 'from-secondary to-accent',
+    cosmic: 'from-primary via-secondary to-accent',
+  };
+  
+  const Component = as;
+  
   return (
-    <Component className={classes} {...props}>
+    <Component
+      className={cn(
+        sizeClasses[size],
+        weightClasses[weight],
+        "bg-clip-text text-transparent bg-gradient-to-r",
+        gradientClasses[gradient],
+        className
+      )}
+      {...props}
+    >
       {children}
     </Component>
   );
 }
 
-export default UnifiedText;
+export default function Text() {
+  return null; // This default export is just to satisfy the requirement
+}

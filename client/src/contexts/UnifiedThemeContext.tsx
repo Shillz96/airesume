@@ -46,9 +46,9 @@ interface ThemeContextType {
 const defaultTheme: ThemeConfig = {
   variant: 'cosmic',
   mode: 'dark',
-  primaryColor: '#3b82f6',
-  secondaryColor: '#8b5cf6',
-  borderRadius: 0.5,
+  primaryColor: '#4f46e5', // Indigo-600 - more vibrant and professional
+  secondaryColor: '#10b981', // Emerald-500 - creates an attractive contrast
+  borderRadius: 0.75, // Slightly more rounded corners
   animations: true,
 };
 

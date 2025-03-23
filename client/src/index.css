@@ -267,6 +267,7 @@ a:hover {
   overflow: hidden;
 }
 
+/* Stars layer */
 .cosmic-background::before {
   content: '';
   position: absolute;
@@ -275,16 +276,19 @@ a:hover {
   top: -50%;
   left: -50%;
   background-image: 
-    radial-gradient(1px 1px at 25% 25%, rgba(255, 255, 255, 0.2) 1px, transparent 0),
-    radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.2) 1px, transparent 0),
-    radial-gradient(1px 1px at 75% 75%, rgba(255, 255, 255, 0.2) 1px, transparent 0),
-    radial-gradient(2px 2px at 10% 10%, rgba(59, 130, 246, 0.1) 1px, transparent 0),
-    radial-gradient(2px 2px at 90% 20%, rgba(139, 92, 246, 0.1) 1px, transparent 0);
-  background-size: 100px 100px, 120px 120px, 170px 170px, 150px 150px, 200px 200px;
+    radial-gradient(1px 1px at 25% 25%, rgba(255, 255, 255, 0.6) 1px, transparent 0),
+    radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.5) 1px, transparent 0),
+    radial-gradient(2px 2px at 75% 75%, rgba(255, 255, 255, 0.4) 1px, transparent 0),
+    radial-gradient(2px 2px at 10% 10%, rgba(var(--primary-rgb), 0.3) 1px, transparent 0),
+    radial-gradient(2px 2px at 90% 20%, rgba(var(--secondary-rgb), 0.3) 1px, transparent 0),
+    radial-gradient(3px 3px at 60% 40%, rgba(16, 185, 129, 0.3) 1px, transparent 0);
+  background-size: 100px 100px, 120px 120px, 170px 170px, 150px 150px, 200px 200px, 250px 250px;
   background-position: 0 0;
   z-index: var(--z-negative);
+  animation: twinkling 10s linear infinite;
 }
 
+/* Nebula effects */
 .cosmic-background::after {
   content: '';
   position: absolute;
@@ -293,8 +297,49 @@ a:hover {
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.03), transparent 30%),
-    radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.03), transparent 30%);
+    radial-gradient(circle at 20% 80%, rgba(var(--primary-rgb), 0.08), transparent 35%),
+    radial-gradient(circle at 80% 20%, rgba(var(--secondary-rgb), 0.08), transparent 35%),
+    radial-gradient(circle at 10% 30%, rgba(16, 185, 129, 0.05), transparent 25%),
+    radial-gradient(circle at 90% 60%, rgba(245, 158, 11, 0.05), transparent 25%);
+  filter: blur(8px);
+  opacity: 0.8;
+}
+
+/* Pulsating stars */
+.cosmic-star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background-color: white;
+  border-radius: 50%;
+  animation: starTwinkle 3s ease-in-out infinite;
+}
+
+.cosmic-star.primary {
+  background-color: var(--primary);
+  width: 3px;
+  height: 3px;
+  box-shadow: 0 0 4px var(--primary);
+}
+
+.cosmic-star.secondary {
+  background-color: var(--secondary);
+  width: 3px;
+  height: 3px;
+  box-shadow: 0 0 4px var(--secondary);
+}
+
+/* Star twinkling animation */
+@keyframes twinkling {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
 }
 
 /* --------------------------------
@@ -305,31 +350,60 @@ a:hover {
   border-radius: var(--radius);
   border: 1px solid var(--border);
   padding: 1.5rem;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
 }
 
+/* Card hover effects */
 .card:hover {
-  border-color: rgba(59, 130, 246, 0.3);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  border-color: rgba(var(--primary-rgb), 0.3);
+  box-shadow: var(--shadow-lg), 0 0 15px rgba(var(--primary-rgb), 0.1);
+  transform: translateY(-3px);
 }
 
+/* Card header styles */
 .card-header {
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .card-title {
   font-size: 1.25rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+  position: relative;
+}
+
+/* Card title hover effect with subtle underline animation */
+.card-title:after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  transition: width 0.3s ease;
+}
+
+.card:hover .card-title:after {
+  width: 100px;
 }
 
 .card-description {
   color: var(--muted-foreground);
   font-size: 0.9rem;
+  line-height: 1.5;
 }
 
 .card-content {
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  position: relative;
+  z-index: 1;
 }
 
 .card-footer {
@@ -341,6 +415,56 @@ a:hover {
   gap: 0.75rem;
 }
 
+/* Cosmic theme card */
+.theme-cosmic .card {
+  background-color: rgba(var(--card-rgb), 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(var(--primary-rgb), 0.2);
+}
+
+.theme-cosmic .card:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.theme-cosmic .card:hover:before {
+  opacity: 1;
+}
+
+.theme-cosmic .card:hover {
+  border-color: rgba(var(--primary-rgb), 0.4);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3),
+              0 0 15px rgba(var(--primary-rgb), 0.2);
+}
+
+/* Professional theme card */
+.theme-professional .card {
+  border-left: 4px solid var(--primary);
+}
+
+.theme-professional .card:hover {
+  border-left-color: var(--secondary);
+}
+
+/* Minimal theme card */
+.theme-minimal .card {
+  box-shadow: none;
+  border: 1px solid var(--border);
+  background-color: transparent;
+}
+
+.theme-minimal .card:hover {
+  background-color: rgba(var(--card-rgb), 0.5);
+  transform: none;
+}
+
 /* --------------------------------
  * BUTTON COMPONENT
  * -------------------------------- */
@@ -348,38 +472,77 @@ a:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius);
+  gap: 0.5rem;
+  border-radius: var(--button-radius);
   font-weight: 500;
   padding: 0.5rem 1rem;
   transition: all var(--transition-fast);
   cursor: pointer;
   outline: none;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.02em;
+  transform: translateZ(0); /* Ensures GPU acceleration */
 }
 
+/* Button Focus State */
 .btn:focus-visible {
-  box-shadow: 0 0 0 2px var(--ring);
+  box-shadow: 0 0 0 2px var(--ring), 0 0 0 4px rgba(var(--primary-rgb), 0.1);
+  outline: none;
 }
 
+/* Button Disabled State */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Button with Icon */
+.btn svg {
+  width: 1em;
+  height: 1em;
+}
+
+/* Primary Button */
 .btn-primary {
   background-color: var(--primary);
   color: var(--primary-foreground);
   border: none;
+  box-shadow: 0 2px 5px rgba(var(--primary-rgb), 0.3);
 }
 
 .btn-primary:hover {
   background-color: color-mix(in srgb, var(--primary) 80%, white);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(var(--primary-rgb), 0.4);
 }
 
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(var(--primary-rgb), 0.2);
+}
+
+/* Secondary Button */
 .btn-secondary {
   background-color: var(--secondary);
   color: var(--secondary-foreground);
   border: none;
+  box-shadow: 0 2px 5px rgba(var(--secondary-rgb), 0.3);
 }
 
 .btn-secondary:hover {
   background-color: color-mix(in srgb, var(--secondary) 80%, white);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(var(--secondary-rgb), 0.4);
 }
 
+.btn-secondary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(var(--secondary-rgb), 0.2);
+}
+
+/* Outline Button */
 .btn-outline {
   background-color: transparent;
   border: 1px solid var(--border);
@@ -389,8 +552,14 @@ a:hover {
 .btn-outline:hover {
   border-color: var(--primary);
   color: var(--primary);
+  background-color: rgba(var(--primary-rgb), 0.05);
 }
 
+.btn-outline:active {
+  background-color: rgba(var(--primary-rgb), 0.1);
+}
+
+/* Ghost Button */
 .btn-ghost {
   background-color: transparent;
   border: none;
@@ -401,44 +570,85 @@ a:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
+.btn-ghost:active {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Success Button */
 .btn-success {
   background-color: var(--success);
   color: white;
   border: none;
+  box-shadow: 0 2px 5px rgba(var(--success-rgb), 0.3);
 }
 
 .btn-success:hover {
   background-color: color-mix(in srgb, var(--success) 80%, white);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(var(--success-rgb), 0.4);
 }
 
+.btn-success:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(var(--success-rgb), 0.2);
+}
+
+/* Danger Button */
 .btn-danger {
   background-color: var(--danger);
   color: white;
   border: none;
+  box-shadow: 0 2px 5px rgba(var(--danger-rgb), 0.3);
 }
 
 .btn-danger:hover {
   background-color: color-mix(in srgb, var(--danger) 80%, white);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(var(--danger-rgb), 0.4);
+}
+
+.btn-danger:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(var(--danger-rgb), 0.2);
 }
 
 /* Button Sizes */
 .btn-sm {
-  padding: 0.25rem 0.5rem;
+  padding: 0.25rem 0.75rem;
   font-size: 0.875rem;
+  height: 2rem;
+}
+
+.btn-md {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  height: 2.5rem;
 }
 
 .btn-lg {
   padding: 0.75rem 1.5rem;
   font-size: 1.125rem;
+  height: 3rem;
 }
 
-/* Cosmic Button Variants */
+.btn-xl {
+  padding: 1rem 2rem;
+  font-size: 1.25rem;
+  height: 3.5rem;
+}
+
+/* Cosmic Button */
+.theme-cosmic .btn-primary,
+.theme-cosmic .btn-secondary,
 .btn-cosmic {
   position: relative;
   overflow: hidden;
   z-index: 1;
+  border: none;
 }
 
+.theme-cosmic .btn-primary::before,
+.theme-cosmic .btn-secondary::before,
 .btn-cosmic::before {
   content: '';
   position: absolute;
@@ -446,21 +656,110 @@ a:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  background: linear-gradient(45deg, 
+    var(--primary), 
+    color-mix(in srgb, var(--primary) 70%, var(--secondary)),
+    var(--secondary));
+  background-size: 200% 200%;
   z-index: -1;
-  transition: opacity var(--transition-fast);
+  transition: all 0.3s ease;
 }
 
+.theme-cosmic .btn-primary:hover::before,
+.theme-cosmic .btn-secondary:hover::before,
 .btn-cosmic:hover::before {
-  opacity: 0.8;
+  animation: cosmicShine 3s linear infinite;
 }
 
+/* Professional Button */
+.theme-professional .btn {
+  border-radius: calc(var(--button-radius) * 0.75);
+  font-weight: 600;
+  letter-spacing: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.theme-professional .btn:hover {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+/* Minimal Button */
+.theme-minimal .btn {
+  border-radius: var(--button-radius);
+  font-weight: 400;
+  box-shadow: none;
+  border-width: 1px;
+}
+
+.theme-minimal .btn:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Glowing Button Effect */
 .btn-glow {
-  box-shadow: var(--shadow-glow);
+  box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3);
 }
 
 .btn-glow:hover {
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.5),
+              0 0 30px rgba(var(--primary-rgb), 0.2);
+}
+
+/* Elegant gradient border effect for buttons */
+.btn-gradient-border {
+  background-color: transparent;
+  color: var(--foreground);
+  position: relative;
+  border: none;
+  padding: calc(0.5rem - 2px) calc(1rem - 2px);
+  z-index: 1;
+}
+
+.btn-gradient-border::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: var(--button-radius);
+  padding: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.btn-gradient-border:hover::before {
+  background: linear-gradient(90deg, var(--secondary), var(--primary));
+}
+
+/* Loading state with animation */
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.btn-loading .btn-text {
+  visibility: hidden;
+}
+
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* --------------------------------

@@ -222,54 +222,48 @@ export default function ResumeBuilder() {
     <>
       {/* Using global CosmicBackground from App.tsx */}
       <div className="container mx-auto px-4 sm:px-6 pb-10 min-h-screen relative z-10">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold cosmic-text-gradient">
-              Resume Builder
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Create and customize your professional resume
-            </p>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            <CosmicButton
-              variant="outline"
-              className="hidden sm:flex"
-              disabled={!isDirty}
-              onClick={handleSaveResume}
-              iconLeft={<Save className="h-4 w-4" />}
-            >
-              Save
-            </CosmicButton>
-            <CosmicButton 
-              variant="primary"
-              className="hidden sm:flex"
-              withGlow
-              onClick={handleDownload}
-              iconLeft={<Download className="h-4 w-4" />}
-            >
-              Download
-            </CosmicButton>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <CosmicButton variant="outline" className="sm:hidden" iconLeft={<ChevronDown className="h-4 w-4" />}>
-                  <span className="hidden sm:inline">Options</span>
-                </CosmicButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="cosmic-dropdown-content">
-                <DropdownMenuItem onClick={handleSaveResume} disabled={!isDirty} className="cosmic-dropdown-item">
-                  <Save className="mr-2 h-4 w-4" />
-                  <span>Save</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleDownload} className="cosmic-dropdown-item">
-                  <Download className="mr-2 h-4 w-4" />
-                  <span>Download</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
+        <PageHeader
+          title={<h1 className="text-2xl sm:text-3xl font-bold">Resume Builder</h1>}
+          subtitle="Create and customize your professional resume"
+          actions={
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                className="hidden sm:flex"
+                disabled={!isDirty}
+                onClick={handleSaveResume}
+              >
+                <Save className="h-4 w-4 mr-2" />
+                Save
+              </Button>
+              <Button 
+                variant="default"
+                className="hidden sm:flex"
+                onClick={handleDownload}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="sm:hidden">
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleSaveResume} disabled={!isDirty}>
+                    <Save className="mr-2 h-4 w-4" />
+                    <span>Save</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleDownload}>
+                    <Download className="mr-2 h-4 w-4" />
+                    <span>Download</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          }
+        />
 
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="flex-1">
@@ -279,46 +273,46 @@ export default function ResumeBuilder() {
               onValueChange={setActiveSection}
               className="w-full"
             >
-              <TabsList className="mb-6 flex flex-wrap h-auto bg-gray-100/80 dark:bg-gray-800/50 p-1 rounded-lg">
+              <TabsList className="mb-6 flex flex-wrap h-auto bg-background border border-border p-1 rounded-lg w-full space-x-1">
                 <TabsTrigger 
                   value="contact" 
-                  className="py-2 data-[state=active]:cosmic-tab-active"
+                  className="py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
                 >
                   Contact
                 </TabsTrigger>
                 <TabsTrigger 
                   value="summary" 
-                  className="py-2 data-[state=active]:cosmic-tab-active"
+                  className="py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
                 >
                   Summary
                 </TabsTrigger>
                 <TabsTrigger 
                   value="experience" 
-                  className="py-2 data-[state=active]:cosmic-tab-active"
+                  className="py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
                 >
                   Experience
                 </TabsTrigger>
                 <TabsTrigger 
                   value="education" 
-                  className="py-2 data-[state=active]:cosmic-tab-active"
+                  className="py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
                 >
                   Education
                 </TabsTrigger>
                 <TabsTrigger 
                   value="skills" 
-                  className="py-2 data-[state=active]:cosmic-tab-active"
+                  className="py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
                 >
                   Skills
                 </TabsTrigger>
                 <TabsTrigger 
                   value="projects" 
-                  className="py-2 data-[state=active]:cosmic-tab-active"
+                  className="py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
                 >
                   Projects
                 </TabsTrigger>
                 <TabsTrigger 
                   value="preview" 
-                  className="py-2 data-[state=active]:cosmic-tab-active"
+                  className="py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
                 >
                   Preview
                 </TabsTrigger>
@@ -357,11 +351,7 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="education">
-                <div className="cosmic-card p-6 backdrop-blur-sm">
-                  <h2 className="text-2xl font-semibold cosmic-text-gradient mb-4">Education</h2>
-                  <p className="text-gray-600 dark:text-gray-400 mb-5">
-                    List your educational qualifications and academic achievements.
-                  </p>
+                <div className="bg-card p-6 rounded-md border shadow-sm">
                   <ResumeEducationSection
                     education={resume.education}
                     onUpdate={updateEducationList}
@@ -370,11 +360,7 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="skills">
-                <div className="cosmic-card p-6 backdrop-blur-sm">
-                  <h2 className="text-2xl font-semibold cosmic-text-gradient mb-4">Skills</h2>
-                  <p className="text-gray-600 dark:text-gray-400 mb-5">
-                    Highlight your technical and soft skills that are relevant to your target roles.
-                  </p>
+                <div className="bg-card p-6 rounded-md border shadow-sm">
                   <ResumeSkillsSection
                     skills={resume.skills}
                     onUpdate={updateSkillsList}
@@ -383,11 +369,7 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="projects">
-                <div className="cosmic-card p-6 backdrop-blur-sm">
-                  <h2 className="text-2xl font-semibold cosmic-text-gradient mb-4">Projects</h2>
-                  <p className="text-gray-600 dark:text-gray-400 mb-5">
-                    Showcase projects that demonstrate your capabilities and accomplishments.
-                  </p>
+                <div className="bg-card p-6 rounded-md border shadow-sm">
                   <ResumeProjectsSection
                     projects={resume.projects}
                     onUpdate={updateProjectsList}
@@ -396,15 +378,15 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="preview">
-                <div className="cosmic-card p-6 backdrop-blur-sm">
-                  <h2 className="text-2xl font-semibold cosmic-text-gradient mb-4">Resume Preview</h2>
-                  <p className="text-gray-600 dark:text-gray-400 mb-5">
-                    See how your resume looks and select from different templates.
+                <div className="bg-card p-6 rounded-md border shadow-sm">
+                  <h3 className="text-xl font-medium text-foreground mb-4">Resume Preview</h3>
+                  <p className="text-muted-foreground mb-5">
+                    See how your resume looks and download the final version.
                   </p>
                   <div className="mt-4">
                     <ResumeTemplate 
                       resume={resume} 
-                      onTemplateChange={updateResumeTemplate}
+                      onDownload={handleDownload}
                     />
                   </div>
                 </div>
@@ -415,7 +397,7 @@ export default function ResumeBuilder() {
           {/* Right Sidebar - AI Assistant */}
           <div className="w-full lg:w-80">
             <div className="sticky top-6">
-              <div className="cosmic-card p-5 backdrop-blur-sm overflow-hidden">
+              <div className="bg-card p-5 border border-border rounded-md shadow-sm overflow-hidden">
                 {/* Using our new ResumeAIAssistant component */}
                 <ResumeAIAssistant 
                   activeSection={activeSection}

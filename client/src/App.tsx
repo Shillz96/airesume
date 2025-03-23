@@ -8,7 +8,7 @@ import { AuthDialogProvider, useAuthDialog } from "@/hooks/use-auth-dialog";
 import { GuestModeProvider } from "@/hooks/use-guest-mode";
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 import { initializeTheme } from "@/lib/theme-loader";
-import NotFound from "@/pages/not-found";
+import NotFound from "@/pages/not-found"; 
 import HomePage from "@/pages/home-page";
 import ResumeBuilder from "@/pages/refactored-resume-builder";
 import ResumesPage from "@/pages/resumes-page";

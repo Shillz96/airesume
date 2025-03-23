@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import JobCard from "@/features/job/components/JobCard";
 import { Job, JobFilterValues } from "@/features/job/types";
 import JobFilter from "@/features/job/components/JobFilter";
+import PageHeader from "@/features/layout/components/PageHeader";
 
 import AIAssistant from "@/features/ai/components/AIAssistant";
 import { AlertTriangle, Cpu, Star, Share2, Heart, Briefcase, Clock, Building, Sparkles, X } from "lucide-react";
@@ -99,14 +100,12 @@ export default function JobFinder() {
     <>
       {/* Using global CosmicBackground from App.tsx */}
       <div className="container pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight cosmic-text-gradient">Job Finder</h1>
-            <p className="text-muted-foreground">
-              AI-matched job opportunities based on your resume profile and skills.
-            </p>
-          </div>
-        </div>
+        <PageHeader 
+          title="Job Finder"
+          subtitle="AI-matched job opportunities based on your resume profile and skills"
+          variant="gradient"
+          borderStyle="gradient"
+        />
         
         {/* Job Search and Filters */}
         <JobFilter initialValues={filterValues} onFilter={handleFilter} />

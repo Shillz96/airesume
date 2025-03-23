@@ -150,8 +150,8 @@ export default function LandingPage() {
       const colors = ['#ffffff', '#e1e1ff', '#b3c6ff', '#d6e4ff'];
       star.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
 
-      // Append to body
-      document.querySelector('.cosmic-page')?.appendChild(star);
+      // We're now using the global CosmicBackground component
+      document.body.appendChild(star);
 
       // Cleanup function
       return () => {

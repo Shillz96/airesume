@@ -399,8 +399,8 @@ export function ResumeAIAssistant({
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <Sparkles className="h-4 w-4 text-gradient-primary bg-clip-text from-blue-600 to-indigo-600" />
-            <h3 className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">AI Skill Suggestions</h3>
+            <Sparkles className="h-4 w-4 cosmic-text-gradient" />
+            <h3 className="text-sm font-semibold cosmic-text-gradient">AI Skill Suggestions</h3>
           </div>
           <Button
             variant="ghost"

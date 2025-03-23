@@ -51,11 +51,11 @@
 .cosmic-tabs .cosmic-tab-trigger[data-state="active"] {
   background-color: transparent;
   color: white;
-  border-bottom: 2px solid #3b82f6;
+  border-bottom: 2px solid var(--primary);
 }
 
 .cosmic-tabs .cosmic-tab-trigger[data-state="active"] svg {
-  color: #3b82f6;
+  color: var(--primary);
 }
 
 .cosmic-tabs .cosmic-tab-trigger[data-state="inactive"] {
@@ -66,7 +66,7 @@
 .cosmic-tabs .cosmic-tab-trigger[data-state="inactive"]:hover {
   color: white;
   background-color: transparent;
-  border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+  border-bottom: 2px solid rgba(var(--primary-rgb), 0.3);
 }
 
 /* Mobile responsiveness for tabs */
@@ -112,7 +112,7 @@
 
 .cosmic-section-title svg {
   margin-right: 0.5rem;
-  color: #60a5fa;
+  color: var(--primary);
 }
 
 .cosmic-assistant-card {
@@ -130,7 +130,7 @@
   right: 0;
   width: 8rem;
   height: 8rem;
-  background-color: rgba(59, 130, 246, 0.1);
+  background-color: rgba(var(--primary-rgb), 0.1);
   border-radius: 100%;
   filter: blur-2xl;
 }
@@ -150,7 +150,7 @@
   height: 1.25rem;
   width: 1.25rem;
   margin-right: 0.5rem;
-  color: #60a5fa;
+  color: var(--primary);
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
@@ -167,8 +167,8 @@
 }
 
 .cosmic-form-control:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.25);
 }
 
 .cosmic-form-label {

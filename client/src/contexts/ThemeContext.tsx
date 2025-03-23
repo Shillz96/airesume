@@ -65,8 +65,18 @@ function isDarkModeActive(): boolean {
 
 // Provider component to wrap application with
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Initialize with the current theme from theme.json
-  const [currentTheme, setCurrentTheme] = useState<ThemeConfig>(getThemeConfig());
+  // Initialize with the current theme from theme.json, but with a safe copy to avoid circular references
+  const [currentTheme, setCurrentTheme] = useState<ThemeConfig>(() => {
+    const config = getThemeConfig();
+    // Create a safe copy without potential circular references
+    return {
+      variant: config.variant || 'professional',
+      primary: config.primary || '#3b82f6',
+      appearance: config.appearance || 'system',
+      radius: config.radius || 0.5,
+      colors: config.colors ? JSON.parse(JSON.stringify(config.colors)) : {}
+    };
+  });
   const [isDarkMode, setIsDarkMode] = useState<boolean>(isDarkModeActive());
   
   // We only need to listen for theme change events, not initialize the theme again
@@ -90,12 +100,22 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // Theme setting functions
   const setThemeVariant = (variant: ThemeVariant) => {
     updateTheme({ variant });
-    setCurrentTheme(prev => ({ ...prev, variant }));
+    // Create a safe copy to avoid potential circular references
+    setCurrentTheme(prev => {
+      const newTheme = { ...prev };
+      newTheme.variant = variant;
+      return newTheme;
+    });
   };
   
   const setThemeAppearance = (appearance: ThemeAppearance) => {
     updateTheme({ appearance });
-    setCurrentTheme(prev => ({ ...prev, appearance }));
+    // Create a safe copy to avoid potential circular references
+    setCurrentTheme(prev => {
+      const newTheme = { ...prev };
+      newTheme.appearance = appearance;
+      return newTheme;
+    });
     
     // Update dark mode state based on new appearance
     if (appearance === 'dark') {
@@ -111,17 +131,42 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   
   const setPrimaryColor = (primary: string) => {
     updateTheme({ primary });
-    setCurrentTheme(prev => ({ ...prev, primary }));
+    // Create a safe copy to avoid potential circular references
+    setCurrentTheme(prev => {
+      const newTheme = { ...prev };
+      newTheme.primary = primary;
+      return newTheme;
+    });
   };
   
   const setThemeRadius = (radius: number) => {
     updateTheme({ radius });
-    setCurrentTheme(prev => ({ ...prev, radius }));
+    // Create a safe copy to avoid potential circular references
+    setCurrentTheme(prev => {
+      const newTheme = { ...prev };
+      newTheme.radius = radius;
+      return newTheme;
+    });
   };
   
   const updateThemeSettings = (updates: ThemeUpdateParams) => {
     updateTheme(updates);
-    setCurrentTheme(prev => ({ ...prev, ...updates }));
+    
+    // Create a safe copy of updates to avoid circular references
+    const safeUpdates: ThemeUpdateParams = { ...updates };
+    
+    // Handle colors separately to avoid potential circular references
+    if (updates.colors) {
+      try {
+        safeUpdates.colors = JSON.parse(JSON.stringify(updates.colors));
+      } catch (err) {
+        // If there's a circular reference, use a simpler approach
+        console.warn('Error parsing colors, using simplified approach');
+        safeUpdates.colors = { ...updates.colors };
+      }
+    }
+    
+    setCurrentTheme(prev => ({ ...prev, ...safeUpdates }));
     
     // If appearance is being updated, update dark mode state
     if (updates.appearance) {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+// Legacy button import (to be removed)
 import { Button } from '@/components/ui/button';
 import { CosmicButton } from '@/components/cosmic-button';
 import { Loader2, RefreshCw, X, Bot, Sparkles, MessageCircle, ArrowRight, Search, ChevronDown, ChevronUp } from 'lucide-react';
@@ -291,7 +292,7 @@ export function ResumeAIAssistant({
               <Bot className="h-10 w-10 mb-2 text-blue-500" />
               <p className="text-sm">Ask me anything about improving your resume!</p>
               <div className="mt-4 grid grid-cols-1 gap-2 w-full max-w-xs">
-                <Button variant="outline" size="sm" onClick={() => {
+                <CosmicButton variant="outline" size="sm" onClick={() => {
                   setUserMessage("How can I improve my resume?");
                   setChatMessages([{ role: 'user', content: "How can I improve my resume?" }]);
                   
@@ -303,8 +304,8 @@ export function ResumeAIAssistant({
                   }, 1000);
                 }}>
                   How can I improve my resume?
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => {
+                </CosmicButton>
+                <CosmicButton variant="outline" size="sm" onClick={() => {
                   setUserMessage("Suggest skills for my experience");
                   setChatMessages([{ role: 'user', content: "Suggest skills for my experience" }]);
                   
@@ -316,8 +317,8 @@ export function ResumeAIAssistant({
                   }, 1000);
                 }}>
                   Suggest skills for my experience
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => {
+                </CosmicButton>
+                <CosmicButton variant="outline" size="sm" onClick={() => {
                   setUserMessage("Write a professional summary for me");
                   setChatMessages([{ role: 'user', content: "Write a professional summary for me" }]);
                   
@@ -329,7 +330,7 @@ export function ResumeAIAssistant({
                   }, 1000);
                 }}>
                   Write a professional summary for me
-                </Button>
+                </CosmicButton>
               </div>
             </div>
           ) : (
@@ -374,17 +375,18 @@ export function ResumeAIAssistant({
               onChange={(e) => setUserMessage(e.target.value)}
               disabled={isSendingMessage}
             />
-            <Button 
+            <CosmicButton 
               type="submit" 
               className="rounded-l-none"
               disabled={isSendingMessage || !userMessage.trim()}
+              variant="primary"
             >
               {isSendingMessage ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <ArrowRight className="h-4 w-4" />
               )}
-            </Button>
+            </CosmicButton>
           </div>
         </form>
       </div>
@@ -442,19 +444,14 @@ export function ResumeAIAssistant({
               <span>Skills to Add</span>
               {suggestionsExpanded ? <ChevronUp className="h-4 w-4 text-blue-500" /> : <ChevronDown className="h-4 w-4 text-blue-500" />}
             </button>
-            <Button 
+            <CosmicButton 
               variant="ghost" 
               size="sm" 
               className="h-8 px-2"
               onClick={generateSkillSuggestions}
               disabled={isLoadingSuggestions}
-            >
-              {isLoadingSuggestions ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <RefreshCw className="h-4 w-4" />
-              )}
-            </Button>
+              iconLeft={isLoadingSuggestions ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+            />
           </div>
           
           {suggestionsExpanded && (

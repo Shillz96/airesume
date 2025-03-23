@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { getThemeVar, getCurrentVariant, ThemeVariant } from "@/lib/theme-utils";
+import { getCurrentVariant } from "@/lib/theme-utils";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
-type CosmicButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
+type CosmicButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'success' | 'gradient-border' | 'animated-gradient';
 type CosmicButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 export interface CosmicButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -19,7 +19,10 @@ export interface CosmicButtonProps extends ButtonHTMLAttributes<HTMLButtonElemen
 
 /**
  * CosmicButton component that applies consistent cosmic theme styling
- * across the application while using shadcn/ui Button as the base.
+ * across the application while using our unified theme system.
+ * 
+ * This component is the recommended way to create buttons throughout the app
+ * as it automatically handles theme variants, accessibility, and responsive design.
  */
 export const CosmicButton = forwardRef<HTMLButtonElement, CosmicButtonProps>(
   ({ 
@@ -36,38 +39,45 @@ export const CosmicButton = forwardRef<HTMLButtonElement, CosmicButtonProps>(
     disabled,
     ...props
   }, ref) => {
-    // Get current theme variant
+    // Get current theme variant for any theme-specific adjustments
     const themeVariant = getCurrentVariant();
     
-    // Determine button styles based on variant and theme
+    // Determine button styles based on variant from unified CSS
     const variantClasses = {
       primary: 'cosmic-button-primary',
       secondary: 'cosmic-button-secondary',
       outline: 'cosmic-button-outline',
       ghost: 'cosmic-button-ghost',
       destructive: 'cosmic-button-destructive',
+      success: 'cosmic-button-success',
+      'gradient-border': 'cosmic-button-gradient-border',
+      'animated-gradient': 'cosmic-button-animated-gradient',
     };
     
-    // Size classes
+    // Size classes from unified CSS
     const sizeClasses = {
       xs: 'cosmic-button-xs',
       sm: 'cosmic-button-sm',
-      md: 'cosmic-button-md',
+      md: '', // Default size doesn't need a class
       lg: 'cosmic-button-lg',
       xl: 'cosmic-button-xl',
     };
 
-    // Icon-only button (square)
-    const isIconOnly = iconLeft && !children && !iconRight;
+    // Icon-only button (square) detection
+    const isIconOnly = (iconLeft && !children && !iconRight) || (!children && !loadingText && (iconLeft || iconRight));
     
-    // Full width class
-    const fullWidthClass = fullWidth ? 'w-full' : '';
+    // Full width class - using unified class
+    const fullWidthClass = fullWidth ? 'cosmic-button-full-width' : '';
     
-    // Glow effect class
+    // Glow effect class - using unified class
     const glowClass = withGlow ? 'cosmic-button-glow' : '';
     
-    // Loading state class
+    // Loading state class - using unified class
     const loadingClass = isLoading ? 'cosmic-button-loading' : '';
+    
+    // Icon positioning classes
+    const iconLeftClass = iconLeft && !isIconOnly ? 'cosmic-button-icon-left' : '';
+    const iconRightClass = iconRight && !isIconOnly ? 'cosmic-button-icon-right' : '';
     
     // Map our custom variants to shadcn/ui Button variants for accessibility and behavior
     const shadcnVariant = variant === 'primary' ? 'default' 
@@ -75,6 +85,9 @@ export const CosmicButton = forwardRef<HTMLButtonElement, CosmicButtonProps>(
       : variant === 'outline' ? 'outline'
       : variant === 'ghost' ? 'ghost'
       : variant === 'destructive' ? 'destructive'
+      : variant === 'success' ? 'default'
+      : variant === 'gradient-border' ? 'outline'
+      : variant === 'animated-gradient' ? 'default'
       : 'default';
 
     return (
@@ -82,44 +95,28 @@ export const CosmicButton = forwardRef<HTMLButtonElement, CosmicButtonProps>(
         ref={ref}
         variant={shadcnVariant}
         className={cn(
-          "cosmic-button", // Add base class for all button styles
+          "cosmic-button", // Base class that applies core styling
           variantClasses[variant],
           sizeClasses[size],
           isIconOnly && 'cosmic-button-icon-only',
+          iconLeftClass,
+          iconRightClass,
           fullWidthClass,
           glowClass,
           loadingClass,
-          "transition-all duration-300", // Use fixed duration instead of CSS variable
           className
         )}
         disabled={isLoading || disabled}
         {...props}
       >
-        {isLoading && (
-          <svg 
-            className="animate-spin -ml-1 mr-2 h-4 w-4" 
-            xmlns="http://www.w3.org/2000/svg" 
-            fill="none" 
-            viewBox="0 0 24 24"
-          >
-            <circle 
-              className="opacity-25" 
-              cx="12" 
-              cy="12" 
-              r="10" 
-              stroke="currentColor" 
-              strokeWidth="4"
-            ></circle>
-            <path 
-              className="opacity-75" 
-              fill="currentColor" 
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
+        {/* We let the CSS handle the spinner for loading state */}
+        {iconLeft && !isLoading && (
+          <span className="cosmic-button-icon">{iconLeft}</span>
         )}
-        {iconLeft && !isLoading && <span className="mr-1">{iconLeft}</span>}
         {isLoading && loadingText ? loadingText : children}
-        {iconRight && <span className="ml-1">{iconRight}</span>}
+        {iconRight && (
+          <span className="cosmic-button-icon">{iconRight}</span>
+        )}
       </Button>
     );
   }

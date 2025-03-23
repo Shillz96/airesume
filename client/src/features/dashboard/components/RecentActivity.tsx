@@ -101,7 +101,8 @@ export default function RecentActivity() {
         Recent Activity
       </h2>
       
-      <Card className="cosmic-card border border-white/10 bg-black/30 mt-4 flex-1 flex flex-col hover:border-blue-500/50 transition-all duration-300" ref={cardRef}>
+      <div ref={cardRef}>
+        <Card className="cosmic-card border border-white/10 bg-black/30 mt-4 flex-1 flex flex-col hover:border-blue-500/50 transition-all duration-300">
         <CardHeader className="pb-2 flex-shrink-0">
           <CardTitle className="text-lg text-white font-medium">Activity Timeline</CardTitle>
         </CardHeader>
@@ -228,7 +229,8 @@ export default function RecentActivity() {
             </div>
           )}
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 }

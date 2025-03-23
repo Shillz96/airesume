@@ -64,7 +64,7 @@ export const CosmicButton = forwardRef<HTMLButtonElement, CosmicButtonProps>(
     const fullWidthClass = fullWidth ? 'w-full' : '';
     
     // Glow effect class
-    const glowClass = withGlow ? 'cosmic-glow' : '';
+    const glowClass = withGlow ? 'cosmic-button-glow' : '';
     
     // Loading state class
     const loadingClass = isLoading ? 'cosmic-button-loading' : '';
@@ -82,6 +82,7 @@ export const CosmicButton = forwardRef<HTMLButtonElement, CosmicButtonProps>(
         ref={ref}
         variant={shadcnVariant}
         className={cn(
+          "cosmic-button", // Add base class for all button styles
           variantClasses[variant],
           sizeClasses[size],
           isIconOnly && 'cosmic-button-icon-only',

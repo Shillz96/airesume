@@ -1127,10 +1127,10 @@ export default function AIAssistant({
  ) : (
  <Tabs value={chatMode} onValueChange={(value) => setChatMode(value as "general" | "job-specific")} className="w-full">
  <TabsList className="grid grid-cols-2 mb-4 bg-[rgba(255,255,255,0.05)]">
- <TabsTrigger value="general" className="text-sm text-gray-200 data-[state=active]:bg-blue-900/40 data-[state=active]:text-white">
+ <TabsTrigger value="general" className="text-sm text-gray-200 data-[state=active]:bg-primary/20 data-[state=active]:text-white">
  <Sparkles className="h-4 w-4 mr-1" /> General Assistance
  </TabsTrigger>
- <TabsTrigger value="job-specific" className="text-sm text-gray-200 data-[state=active]:bg-blue-900/40 data-[state=active]:text-white">
+ <TabsTrigger value="job-specific" className="text-sm text-gray-200 data-[state=active]:bg-primary/20 data-[state=active]:text-white">
  <Briefcase className="h-4 w-4 mr-1" /> Job Targeting
  </TabsTrigger>
  </TabsList>

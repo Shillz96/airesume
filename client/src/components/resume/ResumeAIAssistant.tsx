@@ -587,7 +587,7 @@ export function ResumeAIAssistant({
           <div className="text-center py-6">
             {resumeId ? (
               <div className="flex flex-col items-center text-gray-500">
-                <Sparkles className="h-8 w-8 mb-2 text-blue-400 opacity-70" />
+                <Sparkles className="h-8 w-8 mb-2 text-primary opacity-70" />
                 <p className="text-sm">Click an option above to generate AI-powered suggestions.</p>
               </div>
             ) : (
@@ -605,7 +605,7 @@ export function ResumeAIAssistant({
             size="sm" 
             className="text-xs bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-indigo-700 px-0 font-medium"
             onClick={() => setIsChatView(true)}
-            iconLeft={<MessageCircle className="h-3.5 w-3.5 text-blue-500" />}
+            iconLeft={<MessageCircle className="h-3.5 w-3.5 text-primary" />}
           >
             Chat with AI for tailored advice
           </CosmicButton>

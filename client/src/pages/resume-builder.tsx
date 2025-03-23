@@ -221,7 +221,7 @@ export default function ResumeBuilder() {
   return (
     <>
       {/* Using global CosmicBackground from App.tsx */}
-      <div className="container mx-auto px-2 sm:px-6 pb-10 min-h-screen relative z-10">
+      <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4 pb-10 min-h-screen relative z-10">
         <PageHeader
           title="Resume Builder"
           subtitle="Create and customize your professional resume"

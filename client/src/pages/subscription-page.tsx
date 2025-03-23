@@ -256,21 +256,21 @@ export default function SubscriptionPage() {
           }
         />
         
-        <Tabs defaultValue="subscription" className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-3 bg-[#151830] rounded-md border border-[#252a47] p-0.5 mb-4">
+        <Tabs defaultValue="subscription" className="w-full mt-6 cosmic-tabs">
+          <TabsList className="cosmic-tabs-list">
             <TabsTrigger 
               value="subscription" 
-              className="data-[state=active]:bg-[#2a2f4e] rounded-sm py-2 text-sm">
+              className="cosmic-tab-trigger">
               Plans
             </TabsTrigger>
             <TabsTrigger 
               value="addons" 
-              className="data-[state=active]:bg-[#2a2f4e] rounded-sm py-2 text-sm">
+              className="cosmic-tab-trigger">
               Add-ons
             </TabsTrigger>
             <TabsTrigger 
               value="billing" 
-              className="data-[state=active]:bg-[#2a2f4e] rounded-sm py-2 text-sm">
+              className="cosmic-tab-trigger">
               Billing
             </TabsTrigger>
           </TabsList>

@@ -16,7 +16,7 @@ import {
 } from "@/components/unified";
 
 import AIAssistant from "@/features/ai/components/AIAssistant";
-import { AlertTriangle, Cpu, Star, Share2, Heart, Briefcase, Clock, Building, Sparkles, X } from "lucide-react";
+import { AlertTriangle, Cpu, Star, Share2, Heart, Briefcase, Clock, Building, Sparkles, X, XCircle } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -137,38 +137,39 @@ export default function JobFinder() {
 
         {/* Job Status Tabs */}
         <Tabs value={statusFilter} onValueChange={setStatusFilter} className="mb-8 cosmic-tabs">
-          <TabsList className="w-full bg-card/90 border border-white/10 p-1 rounded-lg">
+          <TabsList className="cosmic-tabs-list">
             <TabsTrigger 
               value="all" 
-              className="flex-1 data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:border-primary/30 text-gray-300"
+              className="cosmic-tab-trigger"
             >
               All Jobs
             </TabsTrigger>
             <TabsTrigger 
               value="saved" 
-              className="flex-1 data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:border-primary/30 text-gray-300"
+              className="cosmic-tab-trigger"
             >
               <Heart className="h-4 w-4 mr-2" />
               Saved
             </TabsTrigger>
             <TabsTrigger 
               value="applied" 
-              className="flex-1 data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:border-primary/30 text-gray-300"
+              className="cosmic-tab-trigger"
             >
               <Share2 className="h-4 w-4 mr-2" />
               Applied
             </TabsTrigger>
             <TabsTrigger 
               value="interviewing" 
-              className="flex-1 data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:border-primary/30 text-gray-300"
+              className="cosmic-tab-trigger"
             >
               <Building className="h-4 w-4 mr-2" />
               Interviewing
             </TabsTrigger>
             <TabsTrigger 
               value="rejected" 
-              className="flex-1 data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:border-primary/30 text-gray-300"
+              className="cosmic-tab-trigger"
             >
+              <XCircle className="h-4 w-4 mr-2" />
               Rejected
             </TabsTrigger>
           </TabsList>

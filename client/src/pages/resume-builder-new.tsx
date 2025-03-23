@@ -504,46 +504,46 @@ export default function ResumeBuilderNew() {
               onValueChange={setActiveSection}
               className="w-full"
             >
-              <TabsList className="mb-6 flex flex-wrap h-auto bg-black/30 border border-white/10 rounded-lg w-full gap-0">
+              <TabsList className="cosmic-tabs-list mb-6">
                 <TabsTrigger 
                   value="contact" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-white"
+                  className="cosmic-tab-trigger"
                 >
                   Contact
                 </TabsTrigger>
                 <TabsTrigger 
                   value="summary" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-white"
+                  className="cosmic-tab-trigger"
                 >
                   Summary
                 </TabsTrigger>
                 <TabsTrigger 
                   value="experience" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-white"
+                  className="cosmic-tab-trigger"
                 >
                   Experience
                 </TabsTrigger>
                 <TabsTrigger 
                   value="education" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-white"
+                  className="cosmic-tab-trigger"
                 >
                   Education
                 </TabsTrigger>
                 <TabsTrigger 
                   value="skills" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-white"
+                  className="cosmic-tab-trigger"
                 >
                   Skills
                 </TabsTrigger>
                 <TabsTrigger 
                   value="projects" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-white"
+                  className="cosmic-tab-trigger"
                 >
                   Projects
                 </TabsTrigger>
                 <TabsTrigger 
                   value="preview" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-white"
+                  className="cosmic-tab-trigger"
                 >
                   Preview
                 </TabsTrigger>

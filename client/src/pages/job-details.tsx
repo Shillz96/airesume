@@ -68,19 +68,19 @@ export default function JobDetails() {
   // Show loading state
   if (isLoading) {
     return (
-      <UnifiedContainer className="pb-10 min-h-screen flex items-center justify-center">
+      <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4 pb-10 min-h-screen relative z-10 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-10 w-10 animate-spin text-blue-400 mx-auto mb-4" />
           <p className="text-gray-300">Loading job details...</p>
         </div>
-      </UnifiedContainer>
+      </div>
     );
   }
   
   // Show error state
   if (error || !job) {
     return (
-      <UnifiedContainer className="pb-10 min-h-screen">
+      <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4 pb-10 min-h-screen relative z-10">
         <UnifiedPageHeader
           title="Job Not Found"
           subtitle="The job you're looking for doesn't exist or was removed"
@@ -98,12 +98,12 @@ export default function JobDetails() {
             Back to Jobs
           </Button>
         </div>
-      </UnifiedContainer>
+      </div>
     );
   }
 
   return (
-    <UnifiedContainer className="pb-10 min-h-screen">
+    <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4 pb-10 min-h-screen relative z-10">
       <UnifiedPageHeader
         title={job.title}
         subtitle={`${job.company} · ${job.location}`}
@@ -128,6 +128,6 @@ export default function JobDetails() {
           onTailoredResumeApplied={handleTailoredResumeApplied}
         />
       </div>
-    </UnifiedContainer>
+    </div>
   );
 }

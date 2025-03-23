@@ -209,7 +209,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen relative z-10">
+    <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4 pb-10 min-h-screen relative z-10">
       {/* We're letting App.tsx handle the background */}
 
       {/* Login Dialog */}
@@ -380,7 +380,7 @@ export default function LandingPage() {
       </Dialog>
 
       {/* Main Content */}
-      <div className="container pt-24 pb-10 px-4 md:px-6 mx-auto min-h-screen relative z-10">
+      <div className="pt-24 pb-10 mx-auto relative z-10">
         {/* Hero Section */}
         <section className="py-12 md:py-20">
           <div className="text-center max-w-3xl mx-auto">

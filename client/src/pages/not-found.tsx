@@ -6,7 +6,7 @@ export default function NotFound() {
   return (
     <>
       {/* Using global CosmicBackground from App.tsx */}
-      <div className="cosmic-error-page min-h-screen relative z-10">
+      <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4 pb-10 min-h-screen relative z-10 cosmic-error-page">
         <div className="z-10 relative max-w-md mx-auto text-center">
           <div className="cosmic-error-code">404</div>
           

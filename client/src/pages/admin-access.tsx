@@ -154,7 +154,7 @@ export default function AdminAccess() {
     return (
       <>
         
-        <div className="container pt-24 pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
+        <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4 pb-10 min-h-screen relative z-10">
           <div className="flex flex-col items-center justify-center h-[60vh]">
             <h2 className="text-xl font-semibold mb-2">Authentication Required</h2>
             <p className="text-muted-foreground mb-4">You need to be logged in to access this page.</p>
@@ -168,7 +168,7 @@ export default function AdminAccess() {
   return (
     <>
       
-      <div className="container pt-24 pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
+      <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4 pb-10 min-h-screen relative z-10">
         <PageHeader
           title="Admin Dashboard"
           subtitle="Manage your application and users"

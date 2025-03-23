@@ -1,3 +1,9 @@
+/**
+ * COMPONENT MIGRATED: This component has been moved to ui/theme/CosmicStarfield.tsx
+ * Please use the new component from the theme directory
+ * This file will be removed in a future update
+ */
+
 import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -12,6 +18,8 @@ interface CosmicStarfieldProps {
  * CosmicStarfield component creates an animated starfield background
  * with nebulas and shooting stars, leveraging our theme variables
  * Now using memoization to prevent background regeneration on re-renders
+ * 
+ * @deprecated Use the component from ui/theme/CosmicStarfield.tsx instead
  */
 export default function CosmicStarfield({
   starsCount = 150,

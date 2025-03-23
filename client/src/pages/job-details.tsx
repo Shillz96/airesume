@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 
-import JobListing from "@/components/job-listing";
-import { Job } from "@/components/job-card";
+import JobListing from "@/features/job/components/JobListing";
+import { Job } from "@/features/job/types";
 import { getQueryFn } from "@/lib/queryClient";
 import { 
   ArrowLeft, 

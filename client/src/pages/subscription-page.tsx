@@ -25,9 +25,9 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Loader2, CreditCardIcon, ArrowRightIcon, GiftIcon, PlusCircleIcon, ArrowLeft, CheckIcon } from "lucide-react";
 
-import { AdminControls } from "@/components/admin-tools";
+import { AdminControls } from "@/features/admin/components/AdminTools";
 
-import PageHeader from "@/components/page-header";
+import PageHeader from "@/features/layout/components/PageHeader";
 
 interface Subscription {
   id: number;

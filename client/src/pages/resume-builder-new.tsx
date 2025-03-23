@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import PageHeader from "@/components/page-header";
+import PageHeader from "@/features/layout/components/PageHeader";
 
 // Import from new organized structure
 import { Button } from "@/ui/core/Button";
@@ -20,7 +20,7 @@ import {
   ResumeContactSection,
   ResumeSummarySection
 } from "@/features/resume/components/ResumeSections";
-import ResumeTemplate from "@/components/resume-template"; // This will be migrated later
+import ResumeTemplate from "@/features/resume/components/ResumeTemplate"; // Now using feature-based import
 
 /**
  * New and improved Resume Builder that connects to our new component organization

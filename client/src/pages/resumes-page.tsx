@@ -14,11 +14,10 @@ import {
   Trash2,
   Upload
 } from 'lucide-react';
-import Navbar from '@/components/navbar';
-// Import our new modern Button component
-import Button from '@/components/ui/modern-button';
-// Keep the CosmicButton for backward compatibility during transition
-import { CosmicButton } from '@/components/cosmic-button';
+// Using the UI components from the new feature-based architecture
+import { Button } from '@/ui/core/Button';
+// CosmicButton is now in the ui/core directory
+import { CosmicButton } from '@/ui/core/CosmicButton';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -28,7 +27,7 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Resume as ResumeType } from '@shared/schema';
 // Import the default resume template component
-import ResumeTemplate from '@/components/resume-template';
+import ResumeTemplate from '@/features/resume/components/ResumeTemplate';
 
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';

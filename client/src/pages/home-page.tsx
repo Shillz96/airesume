@@ -1,12 +1,12 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { useAuth } from "@/hooks/use-auth";
-import DashboardStats from "@/components/dashboard-stats";
-import RecentActivity from "@/components/recent-activity";
-import JobSearchProgress from "@/components/job-search-progress";
-import JobInterviewAvatar from "@/components/job-interview-avatar";
-import SubscriptionStatus from "@/components/subscription-status";
-import PageHeader from "@/components/page-header";
+import DashboardStats from "@/features/dashboard/components/DashboardStats";
+import RecentActivity from "@/features/dashboard/components/RecentActivity";
+import JobSearchProgress from "@/features/job/components/JobSearchProgress";
+import JobInterviewAvatar from "@/features/job/components/JobInterviewAvatar";
+import SubscriptionStatus from "@/features/subscription/components/SubscriptionStatus";
+import PageHeader from "@/features/layout/components/PageHeader";
 import { Rocket, User, LayoutDashboard, UserCheck, Calendar, Search, Clock, Briefcase } from "lucide-react";
 
 export default function HomePage() {

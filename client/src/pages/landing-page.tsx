@@ -20,7 +20,7 @@ import {
   Rocket
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CosmicButton } from "@/components/cosmic-button";
+import { CosmicButton } from "@/ui/core/CosmicButton";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

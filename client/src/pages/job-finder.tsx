@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import JobCard, { Job } from "@/components/job-card";
-import JobFilter, { JobFilterValues } from "@/components/job-filter";
+import JobCard from "@/features/job/components/JobCard";
+import { Job, JobFilterValues } from "@/features/job/types";
+import JobFilter from "@/features/job/components/JobFilter";
 
-import AIAssistant from "@/components/ai-assistant";
+import AIAssistant from "@/features/ai/components/AIAssistant";
 import { AlertTriangle, Cpu, Star, Share2, Heart, Briefcase, Clock, Building, Sparkles, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";

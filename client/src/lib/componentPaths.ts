@@ -10,12 +10,13 @@
 // UI Components
 export const UI = {
   // Modern UI Components (new system)
-  Button: '@/components/ui/modern-button',
-  Card: '@/components/ui/modern-card',
+  Button: '@/ui/core/Button',
+  Card: '@/ui/core/Card',
   
-  // Legacy UI Components (for backward compatibility)
-  CosmicButton: '@/components/cosmic-button',
-  CosmicStarfield: '@/components/cosmic-starfield',
+  // Theme Components
+  CosmicButton: '@/ui/core/CosmicButton',
+  CosmicStarfield: '@/ui/theme/CosmicStarfield',
+  CosmicBackground: '@/ui/theme/CosmicBackground',
 
   // Standard ShadCN UI Components
   Input: '@/components/ui/input',
@@ -30,38 +31,46 @@ export const UI = {
   Badge: '@/components/ui/badge',
   Avatar: '@/components/ui/avatar',
   Toast: '@/components/ui/toast',
+  
+  // Core Components
+  RichTextEditor: '@/ui/core/RichTextEditor',
+  ButtonGuide: '@/ui/core/ButtonGuide',
 };
 
 // Layout Components
 export const Layout = {
-  Background: '@/components/layout/background',
-  Navbar: '@/components/layout/modern-navbar',
-  LegacyNavbar: '@/components/navbar',
-  PageHeader: '@/components/page-header',
+  Navbar: '@/ui/navigation/Navbar',
+  SimpleNavbar: '@/ui/navigation/SimpleNavbar',
+  PageHeader: '@/features/layout/components/PageHeader',
+  Masthead: '@/features/layout/components/Masthead',
 };
 
 // Resume Components
 export const Resume = {
-  Template: '@/components/resume-template',
-  ResumeSection: '@/components/resume-section',
-  AIAssistant: '@/components/ai-assistant',
+  Template: '@/features/resume/components/ResumeTemplate',
+  ResumeSection: '@/features/resume/components/ResumeSections',
+  AIAssistant: '@/features/ai/components/AIAssistant',
+  ResumeTips: '@/features/resume/components/ResumeTips',
 };
 
 // Job Components
 export const Job = {
-  JobCard: '@/components/job-card',
-  JobFilter: '@/components/job-filter',
-  JobListing: '@/components/job-listing',
+  Card: '@/features/job/components/JobCard',
+  Filter: '@/features/job/components/JobFilter',
+  Listing: '@/features/job/components/JobListing',
+  InterviewAvatar: '@/features/job/components/JobInterviewAvatar',
+  SearchProgress: '@/features/job/components/JobSearchProgress',
 };
 
 // Auth Components
 export const Auth = {
-  AuthDialog: '@/components/auth-dialog',
-  QuickLogin: '@/components/quick-login',
+  Dialog: '@/features/auth/components/AuthDialog',
+  QuickLogin: '@/features/auth/components/QuickLogin',
 };
 
 // Dashboard Components
 export const Dashboard = {
-  Stats: '@/components/dashboard-stats',
-  RecentActivity: '@/components/recent-activity',
+  Stats: '@/features/dashboard/components/DashboardStats',
+  RecentActivity: '@/features/dashboard/components/RecentActivity',
+  SubscriptionStatus: '@/features/subscription/components/SubscriptionStatus',
 };

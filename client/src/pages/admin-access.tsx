@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 
 
-import PageHeader from "@/components/page-header";
+import PageHeader from "@/features/layout/components/PageHeader";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery } from "@tanstack/react-query";

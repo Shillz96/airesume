@@ -11,7 +11,7 @@ import { CosmicButton } from "@/components/cosmic-button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ResumeAIAssistant } from "@/components/resume/ResumeAIAssistant";
 
-import PageHeader from "@/components/page-header";
+import PageHeader from "@/features/layout/components/PageHeader";
 import { 
   ResumeExperienceSection, 
   ResumeEducationSection, 

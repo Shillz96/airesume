@@ -1,13 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { 
   Mic, Play, Pause, RotateCcw, ArrowRight, ArrowLeft, 
-  Send, ChevronDown, Briefcase, Sparkles, BookOpen
+  Send, ChevronDown, Briefcase, Sparkles, BookOpen,
+  FileSearch, Download, User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/ui/core/Button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/ui/core/Card';
 import { CareerPath } from '@/features/career/types';
 import { useToast } from '@/hooks/use-toast';
+import { apiRequest } from '@/lib/queryClient';
 
 // Basic UI components - we'll customize these since not all shadcn components may be available
 const Textarea = ({ 
@@ -131,12 +133,17 @@ export default function EnhancedJobInterviewAvatar({ job, className }: EnhancedJ
   const [userResponse, setUserResponse] = useState('');
   const [feedback, setFeedback] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingResume, setLoadingResume] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [selectedCareerPath, setSelectedCareerPath] = useState<CareerPath>('general');
   const [jobTitle, setJobTitle] = useState('');
   const [company, setCompany] = useState('');
   const [difficultyLevel, setDifficultyLevel] = useState<'basic' | 'intermediate' | 'advanced'>('intermediate');
   const [interviewStage, setInterviewStage] = useState<'screening' | 'technical' | 'behavioral' | 'final'>('behavioral');
+  
+  // User resume data
+  const [userResume, setUserResume] = useState<any>(null);
+  const [hasLoadedResume, setHasLoadedResume] = useState(false);
   
   const responseRef = useRef<HTMLTextAreaElement>(null);
   
@@ -181,6 +188,14 @@ export default function EnhancedJobInterviewAvatar({ job, className }: EnhancedJ
     }
   }, [job]);
   
+  // Add a new useEffect to check if we have a resume loaded when component mounts
+  useEffect(() => {
+    // On component mount, try to load the user's latest resume if they're logged in
+    if (!hasLoadedResume) {
+      loadLatestResume();
+    }
+  }, []);
+
   useEffect(() => {
     // Generate new questions when career path, job title, or interview settings change
     const newQuestions = generateInterviewQuestions(selectedCareerPath, jobTitle, company, difficultyLevel, interviewStage);
@@ -190,6 +205,119 @@ export default function EnhancedJobInterviewAvatar({ job, className }: EnhancedJ
     setFeedback('');
     setShowFeedback(false);
   }, [selectedCareerPath, jobTitle, company, difficultyLevel, interviewStage]);
+  
+  // Function to load the user's latest resume and detect career path
+  const loadLatestResume = async () => {
+    setLoadingResume(true);
+    try {
+      // Fetch the user's latest resume
+      const response = await apiRequest('/api/resumes/latest', { method: 'GET' });
+      if (response.ok) {
+        const resumeData = await response.json();
+        setUserResume(resumeData);
+        
+        // Use AI to detect career path from resume content
+        detectCareerPathFromResume(resumeData);
+        
+        // Set the flag to indicate we've loaded a resume
+        setHasLoadedResume(true);
+        
+        toast({
+          title: "Resume loaded",
+          description: "Your resume has been analyzed to personalize interview questions.",
+        });
+      } else if (response.status === 401) {
+        // User is not logged in, show a message
+        toast({
+          title: "Resume not loaded",
+          description: "Log in to load your resume for personalized questions.",
+          variant: "default"
+        });
+      } else if (response.status === 404) {
+        // No resume found
+        toast({
+          title: "No resume found",
+          description: "Create a resume first to get personalized interview questions.",
+          variant: "default"
+        });
+      }
+    } catch (error) {
+      console.error('Error loading resume:', error);
+      toast({
+        title: "Error loading resume",
+        description: "There was an error loading your resume. Using generic questions instead.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoadingResume(false);
+    }
+  };
+  
+  // Function to detect career path from resume content
+  const detectCareerPathFromResume = (resumeData: any) => {
+    if (!resumeData) return;
+    
+    // Extract content from resume sections to analyze
+    const skills = resumeData?.skills?.map((s: any) => s.name || s).join(' ').toLowerCase() || '';
+    const experience = resumeData?.experience?.map((e: any) => 
+      `${e.title} ${e.company} ${e.description}`
+    ).join(' ').toLowerCase() || '';
+    const summary = resumeData?.personalInfo?.summary?.toLowerCase() || '';
+    
+    // Combine all text for analysis
+    const allText = `${skills} ${experience} ${summary}`;
+    
+    // Check for keywords that suggest career paths
+    if (allText.includes('software') || allText.includes('developer') || 
+        allText.includes('programming') || allText.includes('code') || 
+        allText.includes('engineer') || allText.includes('javascript') || 
+        allText.includes('python') || allText.includes('java')) {
+      setSelectedCareerPath('software_engineering');
+    } else if (allText.includes('data') || allText.includes('analytics') || 
+              allText.includes('statistics') || allText.includes('machine learning') || 
+              allText.includes('sql') || allText.includes('analysis')) {
+      setSelectedCareerPath('data_science');
+    } else if (allText.includes('design') || allText.includes('ux') || 
+              allText.includes('ui') || allText.includes('user experience') || 
+              allText.includes('photoshop') || allText.includes('illustrator')) {
+      setSelectedCareerPath('design');
+    } else if (allText.includes('marketing') || allText.includes('social media') || 
+              allText.includes('seo') || allText.includes('content') || 
+              allText.includes('campaign') || allText.includes('brand')) {
+      setSelectedCareerPath('marketing');
+    } else if (allText.includes('sales') || allText.includes('client') || 
+              allText.includes('account manager') || allText.includes('business development') || 
+              allText.includes('revenue') || allText.includes('quota')) {
+      setSelectedCareerPath('sales');
+    } else if (allText.includes('product') || allText.includes('roadmap') || 
+              allText.includes('agile') || allText.includes('scrum') || 
+              allText.includes('backlog') || allText.includes('requirements')) {
+      setSelectedCareerPath('product_management');
+    } else if (allText.includes('finance') || allText.includes('accounting') || 
+              allText.includes('financial') || allText.includes('budget') || 
+              allText.includes('investment') || allText.includes('audit')) {
+      setSelectedCareerPath('finance');
+    } else if (allText.includes('health') || allText.includes('patient') || 
+              allText.includes('medical') || allText.includes('nurse') || 
+              allText.includes('doctor') || allText.includes('clinical')) {
+      setSelectedCareerPath('healthcare');
+    } else if (allText.includes('teach') || allText.includes('education') || 
+              allText.includes('student') || allText.includes('curriculum') || 
+              allText.includes('learning') || allText.includes('school')) {
+      setSelectedCareerPath('education');
+    } else if (allText.includes('customer') || allText.includes('support') || 
+              allText.includes('service') || allText.includes('client success') || 
+              allText.includes('helpdesk') || allText.includes('call center')) {
+      setSelectedCareerPath('customer_service');
+    }
+    
+    // If we have job experience, extract job title from most recent position
+    if (resumeData?.experience?.length > 0) {
+      const mostRecentJob = resumeData.experience[0];
+      setJobTitle(mostRecentJob.title || '');
+      setCompany(mostRecentJob.company || '');
+    }
+  };
   
   const generateInterviewQuestions = (
     careerPath: CareerPath, 

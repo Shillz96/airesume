@@ -613,13 +613,45 @@ export default function ResumeBuilderNew() {
                   <div className="card-header">
                     <h3 className="card-title">Resume Preview</h3>
                     <div className="card-description">
-                      See how your resume looks and download the final version.
+                      See how your resume looks with our advanced preview features. Use smart adjust to optimize spacing.
                     </div>
                   </div>
                   <div className="card-content">
                     <ResumeTemplate 
                       resume={resume} 
                       onDownload={handleDownload}
+                      editable={true}
+                      onResumeEdit={(field, value) => {
+                        // Handle direct edits to resume fields
+                        const [section, fieldName] = field.split('.');
+                        
+                        if (section === 'personalInfo') {
+                          updatePersonalInfo({
+                            ...resume.personalInfo,
+                            [fieldName]: value
+                          });
+                        } else if (section === 'experience' && resume.experience.length > 0) {
+                          // For simplicity, update the first item
+                          const updatedExperience = [...resume.experience];
+                          updatedExperience[0] = {
+                            ...updatedExperience[0],
+                            [fieldName]: value
+                          };
+                          updateExperienceList(updatedExperience);
+                        } else if (section === 'education' && resume.education.length > 0) {
+                          const updatedEducation = [...resume.education];
+                          updatedEducation[0] = {
+                            ...updatedEducation[0],
+                            [fieldName]: value
+                          };
+                          updateEducationList(updatedEducation);
+                        }
+                        
+                        toast({
+                          title: "Resume updated",
+                          description: "Your changes have been applied to the resume."
+                        });
+                      }}
                     />
                   </div>
                 </div>

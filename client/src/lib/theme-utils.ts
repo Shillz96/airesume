@@ -43,37 +43,84 @@ declare global {
 // This is a simplified approach for the current development phase
 let themeConfig: ThemeConfig;
 
-try {
-  // Try to import the theme.json from the root directory
-  const theme = require('../../../theme.json');
-  
-  // Convert RGB and HSL colors to hex where needed
-  if (theme && typeof theme === 'object' && theme.colors) {
-    // Make a deep copy to avoid modifying the imported object
-    themeConfig = JSON.parse(JSON.stringify(theme));
-  } else {
-    themeConfig = theme;
-  }
-} catch (error) {
-  // Fallback to default theme config
-  console.warn('Failed to load theme.json, using default theme configuration');
-  themeConfig = {
-    variant: 'professional',
+// Default cosmic theme configuration that matches our design
+const defaultThemeConfig: ThemeConfig = {
+  variant: 'professional',
+  primary: '#3b82f6',
+  appearance: 'dark', // Default to dark mode for cosmic theme
+  radius: 0.5,
+  colors: {
+    // Core colors
+    background: '#050A18',
+    foreground: '#ffffff',
+    card: '#0A1428',
+    cardHover: '#0F1A30',
+    muted: '#6b7280',
+    mutedForeground: '#9ca3af',
+    
+    // Brand colors
     primary: '#3b82f6',
-    appearance: 'system',
-    radius: 0.5,
-    colors: {
-      primary: '#3b82f6',
-      secondary: '#8b5cf6',
-      accent: '#10b981',
-      background: '#050A18',
-      foreground: '#ffffff',
-      border: 'rgba(255, 255, 255, 0.1)',
-      card: 'rgba(255, 255, 255, 0.05)',
-      muted: '#6b7280'
-    }
-  };
+    secondary: '#8b5cf6',
+    accent: '#10b981',
+    
+    // UI element colors
+    border: 'rgba(255, 255, 255, 0.1)',
+    input: 'rgba(255, 255, 255, 0.1)',
+    ring: 'rgba(59, 130, 246, 0.5)',
+    
+    // Status colors
+    destructive: '#ef4444',
+    destructiveForeground: '#ffffff',
+    success: '#10b981',
+    successForeground: '#ffffff',
+    warning: '#f59e0b',
+    warningForeground: '#ffffff',
+    error: '#ef4444',
+    errorForeground: '#ffffff',
+    info: '#3b82f6',
+    infoForeground: '#ffffff',
+    
+    // Additional UI elements
+    popover: '#0A1428',
+    popoverForeground: '#ffffff',
+    
+    // Gradient definitions
+    gradientPrimary: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+    gradientAccent: 'linear-gradient(135deg, #10b981, #3b82f6)',
+    gradientBackground: 'linear-gradient(135deg, #050A18, #0A1428)'
+  }
+};
+
+try {
+  // Try to dynamically import the theme.json
+  // In development, use fetch to get theme.json
+  fetch('/theme.json')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to load theme.json');
+      }
+      return response.json();
+    })
+    .then(theme => {
+      if (theme && typeof theme === 'object' && theme.colors) {
+        // Make a deep copy to avoid modifying the imported object
+        themeConfig = JSON.parse(JSON.stringify(theme));
+      } else {
+        themeConfig = theme;
+      }
+    })
+    .catch(error => {
+      console.warn('Failed to fetch theme.json:', error.message);
+      themeConfig = defaultThemeConfig;
+    });
+} catch (error) {
+  // Fallback to default theme config if the fetch fails
+  console.warn('Failed to load theme.json, using default theme configuration');
+  themeConfig = defaultThemeConfig;
 }
+
+// Ensure themeConfig is initialized even before fetch completes
+themeConfig = defaultThemeConfig;
 
 /**
  * Helper to access our theme configuration

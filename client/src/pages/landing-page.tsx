@@ -209,7 +209,8 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <>
+    <div className="min-h-screen relative z-10">
+      {/* We're letting App.tsx handle the background */}
 
       {/* Login Dialog */}
       <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
@@ -769,6 +770,6 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-    </>
+    </div>
   );
 }

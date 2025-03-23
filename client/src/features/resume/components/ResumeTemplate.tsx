@@ -152,20 +152,50 @@ export default function ResumeTemplate({
   return (
     <div className="relative bg-card border border-border rounded-lg overflow-hidden shadow-sm">
       {/* Template header with controls */}
-      <div className="p-4 border-b border-border flex justify-between items-center bg-muted/30">
-        <div className="flex items-center">
-          <h3 className="font-medium text-foreground">Resume Preview</h3>
-          {totalPages > 1 && (
-            <div className="ml-4 flex items-center gap-1 text-xs">
-              <FileText className="h-3.5 w-3.5 mr-1 text-gray-500" />
-              <span className="font-medium">Page {currentPage} of {totalPages}</span>
-            </div>
+      <div className="p-3 sm:p-4 border-b border-border bg-muted/30">
+        <div className="flex justify-between items-center mb-2 sm:mb-0">
+          <div className="flex items-center">
+            <h3 className="font-medium text-foreground text-sm sm:text-base">Resume Preview</h3>
+            {totalPages > 1 && (
+              <div className="ml-2 sm:ml-4 flex items-center gap-1 text-xs">
+                <FileText className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 text-gray-500" />
+                <span className="font-medium">Page {currentPage} of {totalPages}</span>
+              </div>
+            )}
+          </div>
+          
+          {/* Download button - always visible */}
+          {onDownload && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onDownload}
+              className="h-8 px-2 sm:px-3"
+            >
+              <Download className="h-3.5 w-3.5 sm:mr-2" />
+              <span className="hidden sm:inline">Download</span>
+            </Button>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        
+        {/* Primary controls - mobile optimized */}
+        <div className="flex flex-wrap items-center gap-2 mt-2">
           {/* Page navigation controls - only shown when multiple pages */}
           {totalPages > 1 && (
-            <div className="flex items-center mr-2">
+            <div className="flex items-center gap-1 mr-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                aria-label="First page"
+                title="First page"
+                className="h-8 w-8 p-0"
+              >
+                <ChevronLeft className="h-3.5 w-3.5 mr-[-5px]" />
+                <ChevronLeft className="h-3.5 w-3.5" />
+              </Button>
+              
               <Button
                 variant="ghost"
                 size="sm"
@@ -173,9 +203,14 @@ export default function ResumeTemplate({
                 disabled={currentPage === 1}
                 aria-label="Previous page"
                 title="Previous page"
+                className="h-8 w-8 p-0"
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft className="h-3.5 w-3.5" />
               </Button>
+              
+              <span className="text-xs px-2">
+                {currentPage}/{totalPages}
+              </span>
               
               <Button
                 variant="ghost"
@@ -184,122 +219,120 @@ export default function ResumeTemplate({
                 disabled={currentPage === totalPages}
                 aria-label="Next page"
                 title="Next page"
+                className="h-8 w-8 p-0"
               >
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-3.5 w-3.5" />
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+                aria-label="Last page"
+                title="Last page"
+                className="h-8 w-8 p-0"
+              >
+                <ChevronRight className="h-3.5 w-3.5 ml-[-5px]" />
+                <ChevronRight className="h-3.5 w-3.5" />
               </Button>
             </div>
           )}
           
-          <div className="group relative">
+          {/* Zoom controls */}
+          <div className="flex items-center gap-1 mr-1">
             <Button
               variant="ghost"
               size="sm" 
               onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
               aria-label="Zoom out"
               title="Zoom out"
+              className="h-8 w-8 p-0"
             >
-              <ZoomOut className="h-4 w-4" />
+              <ZoomOut className="h-3.5 w-3.5" />
             </Button>
-            <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-black/80 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-              Zoom out to view more content
-            </div>
-          </div>
-          
-          <span className="text-xs font-mono px-2 py-1 rounded bg-muted">{Math.round(zoom * 100)}%</span>
-          
-          <div className="group relative">
+            
+            <span className="text-xs font-mono px-2 py-0.5 rounded bg-muted">{Math.round(zoom * 100)}%</span>
+            
             <Button
               variant="ghost"
               size="sm" 
               onClick={() => setZoom(Math.min(2, zoom + 0.1))}
               aria-label="Zoom in"
               title="Zoom in"
+              className="h-8 w-8 p-0"
             >
-              <ZoomIn className="h-4 w-4" />
+              <ZoomIn className="h-3.5 w-3.5" />
             </Button>
-            <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-black/80 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-              Zoom in for a closer look
-            </div>
           </div>
           
-          <div className="group relative">
+          {/* Action buttons */}
+          <div className="flex items-center gap-1">
             <Button
               variant="ghost"
               size="sm" 
               onClick={() => setFullscreen(!fullscreen)}
               aria-label="Toggle fullscreen"
               title={fullscreen ? "Exit fullscreen" : "Fullscreen view"}
+              className="h-8 w-8 p-0"
             >
-              {fullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+              {fullscreen ? <Minimize className="h-3.5 w-3.5" /> : <Maximize className="h-3.5 w-3.5" />}
             </Button>
-            <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-black/80 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-              {fullscreen ? "Exit fullscreen mode" : "View in fullscreen mode"}
-            </div>
-          </div>
-          
-          <div className="group relative">
+            
             <Button
               variant="ghost"
               size="sm" 
               onClick={applySmartAdjust}
               aria-label="Smart adjust"
               title="Smart adjust (optimize layout)"
-              className="relative"
+              className="relative h-8 w-8 p-0"
             >
-              <Dices className="h-4 w-4" />
+              <Dices className="h-3.5 w-3.5" />
               <span className="absolute -top-1 -right-1 bg-primary h-2 w-2 rounded-full"></span>
-              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-black/80 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none w-48 text-center">
-                Smart Adjust: Automatically optimize spacing to fit more content on a single page
-              </div>
             </Button>
-          </div>
-          
-          <div className="group relative">
+            
             <Button
               variant="ghost"
               size="sm" 
               onClick={() => setShowPlaceholders(!showPlaceholders)}
               aria-label="Toggle placeholders"
               title={showPlaceholders ? "Hide placeholders" : "Show placeholders"}
+              className="h-8 w-8 p-0"
             >
-              {showPlaceholders ? <PanelLeftClose className="h-4 w-4" /> : <PanelRightClose className="h-4 w-4" />}
-              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-black/80 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none w-48 text-center">
-                {showPlaceholders ? "Hide example content" : "Show example content to guide you"}
-              </div>
+              {showPlaceholders ? <PanelLeftClose className="h-3.5 w-3.5" /> : <PanelRightClose className="h-3.5 w-3.5" />}
+            </Button>
+            
+            {/* Test pages button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setTotalPages(Math.max(2, totalPages));
+                toast({
+                  title: "Multi-page mode activated",
+                  description: "The resume preview now shows multiple pages for testing.",
+                  duration: 3000
+                });
+              }}
+              title="Test multi-page view"
+              className="h-8 w-8 p-0"
+            >
+              <FileText className="h-3.5 w-3.5" />
             </Button>
           </div>
-          
-          {onDownload && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onDownload}
-              iconLeft={<Download className="h-4 w-4" />}
-            >
-              Download
-            </Button>
-          )}
-          
-          {/* Test button for simulating a multi-page resume */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              // Simulate detecting multiple pages by directly setting the state
-              setTotalPages(Math.max(2, totalPages));
-              
-              toast({
-                title: "Multi-page mode activated",
-                description: "The resume preview now shows multiple pages for testing. Use the pagination controls to navigate between pages.",
-                duration: 5000
-              });
-            }}
-            title="Test multi-page view"
-            className="ml-2"
-          >
-            <FileText className="h-4 w-4" />
-            <span className="ml-1 text-xs">Test Pages</span>
-          </Button>
+        </div>
+        
+        {/* Feature tooltips - Only shown on larger screens */}
+        <div className="hidden lg:flex items-center gap-2 mt-3 text-xs text-muted-foreground">
+          <div className="flex items-center">
+            <Dices className="h-3.5 w-3.5 mr-1 text-primary" />
+            <span>Smart Adjust: Optimize spacing</span>
+          </div>
+          <div className="h-3 w-[1px] bg-muted-foreground/30"></div>
+          <div className="flex items-center">
+            <FileText className="h-3.5 w-3.5 mr-1" />
+            <span>Test Pages: Try pagination</span>
+          </div>
         </div>
       </div>
 

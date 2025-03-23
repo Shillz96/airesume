@@ -95,15 +95,15 @@ export default function RecentActivity() {
     <div className="h-full flex flex-col">
       <h2 
         ref={titleRef}
-        className="cosmic-page-title text-2xl flex items-center"
+        className="cosmic-page-title text-2xl flex items-center mb-4"
       >
         <Activity className="mr-2 h-5 w-5 text-blue-400" />
         Recent Activity
       </h2>
       
       <div ref={cardRef}>
-        <Card className="cosmic-card border border-white/10 bg-black/30 mt-4 flex-1 flex flex-col hover:border-blue-500/50 transition-all duration-300">
-        <CardHeader className="pb-2 flex-shrink-0">
+        <Card className="cosmic-card border border-white/10 bg-black/30 flex-1 flex flex-col hover:border-blue-500/50 transition-all duration-300">
+        <CardHeader className="pb-2 flex-shrink-0 bg-gradient-to-r from-blue-900/30 to-purple-900/30">
           <CardTitle className="text-lg text-white font-medium">Activity Timeline</CardTitle>
         </CardHeader>
         <CardContent className="p-0 flex-1 overflow-auto">

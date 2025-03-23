@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { CreditCard, CheckCircle, AlertCircle, Calendar } from 'lucide-react';
+import { CreditCard, CheckCircle, AlertCircle, Calendar, Sparkles, Zap } from 'lucide-react';
 import { Button } from '@/ui/core/Button';
 import { Link } from 'wouter';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/ui/core/Card';
 import { useAuth } from '@/hooks/use-auth';
 import { format } from 'date-fns';
+import gsap from 'gsap';
 
 interface Subscription {
   id: number;
@@ -26,66 +27,129 @@ interface Subscription {
  */
 export default function SubscriptionStatus() {
   const { user } = useAuth();
+  const cardRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
   
   const { data: subscription, isLoading, error } = useQuery({
     queryKey: ['/api/subscription'],
     enabled: !!user,
   });
   
+  useEffect(() => {
+    if (titleRef.current) {
+      gsap.fromTo(
+        titleRef.current,
+        { y: 10, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, delay: 0.2, ease: "power2.out" }
+      );
+    }
+    
+    if (cardRef.current) {
+      gsap.fromTo(
+        cardRef.current,
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, delay: 0.3, ease: "power2.out" }
+      );
+    }
+  }, []);
+  
   if (!user) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Subscription Status</CardTitle>
-          <CardDescription>Sign in to view your subscription details</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p>You need to be logged in to view your subscription information.</p>
-        </CardContent>
-        <CardFooter>
-          <Button className="w-full" onClick={() => window.location.href = "/auth"}>
-            Sign In
-          </Button>
-        </CardFooter>
-      </Card>
+      <div className="h-full flex flex-col">
+        <h2 
+          ref={titleRef}
+          className="cosmic-page-title text-2xl flex items-center mb-4"
+        >
+          <CreditCard className="mr-2 h-5 w-5 text-blue-400" />
+          Subscription
+        </h2>
+        
+        <div ref={cardRef}>
+          <Card className="cosmic-card border border-white/10 bg-black/30 hover:border-blue-500/50 transition-all duration-300">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg text-white">Subscription Status</CardTitle>
+              <CardDescription className="text-gray-300">Sign in to view your subscription details</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-300">You need to be logged in to view your subscription information.</p>
+            </CardContent>
+            <CardFooter>
+              <Button 
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                onClick={() => window.location.href = "/auth"}
+              >
+                Sign In
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
     );
   }
   
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Subscription Status</CardTitle>
-          <CardDescription>Loading your subscription details...</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center h-32">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="h-full flex flex-col">
+        <h2 
+          ref={titleRef}
+          className="cosmic-page-title text-2xl flex items-center mb-4"
+        >
+          <CreditCard className="mr-2 h-5 w-5 text-blue-400" />
+          Subscription
+        </h2>
+        
+        <div ref={cardRef}>
+          <Card className="cosmic-card border border-white/10 bg-black/30 hover:border-blue-500/50 transition-all duration-300">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg text-white">Subscription Status</CardTitle>
+              <CardDescription className="text-gray-300">Loading your subscription details...</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-center h-32">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     );
   }
   
   if (error) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Subscription Status</CardTitle>
-          <CardDescription>There was an error retrieving your subscription</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center space-x-2 text-red-500">
-            <AlertCircle className="h-5 w-5" />
-            <span>Failed to load subscription details. Please try again later.</span>
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button onClick={() => window.location.reload()} variant="outline">
-            Retry
-          </Button>
-        </CardFooter>
-      </Card>
+      <div className="h-full flex flex-col">
+        <h2 
+          ref={titleRef}
+          className="cosmic-page-title text-2xl flex items-center mb-4"
+        >
+          <CreditCard className="mr-2 h-5 w-5 text-blue-400" />
+          Subscription
+        </h2>
+        
+        <div ref={cardRef}>
+          <Card className="cosmic-card border border-white/10 bg-black/30 hover:border-blue-500/50 transition-all duration-300">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg text-white">Subscription Status</CardTitle>
+              <CardDescription className="text-gray-300">There was an error retrieving your subscription</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center space-x-2 text-red-400">
+                <AlertCircle className="h-5 w-5" />
+                <span>Failed to load subscription details. Please try again later.</span>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button 
+                onClick={() => window.location.reload()}
+                variant="outline"
+                className="w-full border-white/10 text-gray-200 hover:bg-white/10 hover:text-white"
+              >
+                Retry
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
     );
   }
   
@@ -103,20 +167,23 @@ export default function SubscriptionStatus() {
     free: {
       title: 'Free Plan',
       description: 'Basic access with limited features',
-      color: 'text-slate-500',
-      bgColor: 'bg-slate-100',
+      icon: <CreditCard className="h-5 w-5 text-gray-300" />,
+      color: 'text-gray-300',
+      badgeColor: 'bg-gray-900/60 text-gray-300 border-gray-700'
     },
     pro: {
       title: 'Pro Plan',
       description: 'Full access to all features',
-      color: 'text-indigo-500',
-      bgColor: 'bg-indigo-100',
+      icon: <Sparkles className="h-5 w-5 text-blue-400" />,
+      color: 'text-blue-400',
+      badgeColor: 'bg-blue-900/60 text-blue-300 border-blue-700'
     },
     premium: {
       title: 'Premium Plan',
       description: 'Priority access and advanced features',
-      color: 'text-amber-500',
-      bgColor: 'bg-amber-100',
+      icon: <Zap className="h-5 w-5 text-amber-400" />,
+      color: 'text-amber-400',
+      badgeColor: 'bg-amber-900/60 text-amber-300 border-amber-700'
     },
   };
   
@@ -124,84 +191,95 @@ export default function SubscriptionStatus() {
   const plan = sub?.planType ? planInfo[sub.planType as keyof typeof planInfo] : planInfo.free;
   
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Subscription Status</CardTitle>
-            <CardDescription>Your current plan and status</CardDescription>
-          </div>
-          <div className={`rounded-full px-3 py-1 text-xs font-medium ${isActive ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-            {isActive ? 'Active' : 'Inactive'}
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className={`rounded-lg p-4 ${plan.bgColor} flex items-center space-x-3`}>
-          <div className={`rounded-full p-2 ${plan.color} bg-white`}>
-            <CreditCard className="h-6 w-6" />
-          </div>
-          <div>
-            <h3 className="font-medium">{plan.title}</h3>
-            <p className="text-sm text-muted-foreground">{plan.description}</p>
-          </div>
-        </div>
-        
-        <div className="space-y-3">
-          <div className="flex justify-between items-center py-2 border-b border-border">
-            <div className="flex items-center space-x-2">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">Start Date</span>
+    <div className="h-full flex flex-col">
+      <h2 
+        ref={titleRef}
+        className="cosmic-page-title text-2xl flex items-center mb-4"
+      >
+        <CreditCard className="mr-2 h-5 w-5 text-blue-400" />
+        Subscription
+      </h2>
+      
+      <div ref={cardRef}>
+        <Card className="cosmic-card border border-white/10 bg-black/30 hover:border-blue-500/50 transition-all duration-300">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg text-white">Subscription Status</CardTitle>
+                <CardDescription className="text-gray-300">Your current plan and status</CardDescription>
+              </div>
+              <div className={`rounded-full px-3 py-1 text-xs font-medium border ${isActive ? 'bg-green-900/60 text-green-300 border-green-700' : 'bg-amber-900/60 text-amber-300 border-amber-700'}`}>
+                {isActive ? 'Active' : 'Inactive'}
+              </div>
             </div>
-            <span className="text-sm font-medium">{startDate}</span>
-          </div>
-          
-          <div className="flex justify-between items-center py-2 border-b border-border">
-            <div className="flex items-center space-x-2">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">End Date</span>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className={`rounded-lg p-4 bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-white/10 flex items-center space-x-3`}>
+              <div className="p-2 bg-white/5 rounded-full">
+                {plan.icon}
+              </div>
+              <div>
+                <h3 className={`font-medium ${plan.color}`}>{plan.title}</h3>
+                <p className="text-sm text-gray-300">{plan.description}</p>
+              </div>
             </div>
-            <span className="text-sm font-medium">{endDate}</span>
-          </div>
-          
-          <div className="flex justify-between items-center py-2 border-b border-border">
-            <div className="flex items-center space-x-2">
-              <CheckCircle className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">Auto Renewal</span>
+            
+            <div className="space-y-3">
+              <div className="flex justify-between items-center py-2 border-b border-white/10">
+                <div className="flex items-center space-x-2">
+                  <Calendar className="h-4 w-4 text-blue-400" />
+                  <span className="text-sm text-gray-300">Start Date</span>
+                </div>
+                <span className="text-sm font-medium text-white">{startDate}</span>
+              </div>
+              
+              <div className="flex justify-between items-center py-2 border-b border-white/10">
+                <div className="flex items-center space-x-2">
+                  <Calendar className="h-4 w-4 text-blue-400" />
+                  <span className="text-sm text-gray-300">End Date</span>
+                </div>
+                <span className="text-sm font-medium text-white">{endDate}</span>
+              </div>
+              
+              <div className="flex justify-between items-center py-2 border-b border-white/10">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="h-4 w-4 text-blue-400" />
+                  <span className="text-sm text-gray-300">Auto Renewal</span>
+                </div>
+                <span className="text-sm font-medium text-white">{sub?.autoRenew ? 'Enabled' : 'Disabled'}</span>
+              </div>
+              
+              <div className="flex justify-between items-center py-2">
+                <div className="flex items-center space-x-2">
+                  <CreditCard className="h-4 w-4 text-blue-400" />
+                  <span className="text-sm text-gray-300">Payment Method</span>
+                </div>
+                <span className="text-sm font-medium text-white">
+                  {sub?.paymentMethod || 'None'}
+                </span>
+              </div>
             </div>
-            <span className="text-sm font-medium">{sub?.autoRenew ? 'Enabled' : 'Disabled'}</span>
-          </div>
-          
-          <div className="flex justify-between items-center py-2">
-            <div className="flex items-center space-x-2">
-              <CreditCard className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">Payment Method</span>
-            </div>
-            <span className="text-sm font-medium">
-              {sub?.paymentMethod || 'None'}
-            </span>
-          </div>
-        </div>
-      </CardContent>
-      <CardFooter className="flex flex-col space-y-2">
-        <Button 
-          variant="default" 
-          className="w-full"
-          onClick={() => window.location.href = "/subscription"}
-        >
-          Manage Subscription
-        </Button>
-        
-        {sub?.planType === 'free' && (
-          <Button 
-            variant="outline" 
-            className="w-full"
-            onClick={() => window.location.href = "/subscription?upgrade=true"}
-          >
-            Upgrade Plan
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-3">
+            <Button 
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              onClick={() => window.location.href = "/subscription"}
+            >
+              Manage Subscription
+            </Button>
+            
+            {sub?.planType === 'free' && (
+              <Button 
+                variant="outline"
+                className="w-full border-white/10 text-gray-200 hover:bg-white/10 hover:text-white"
+                onClick={() => window.location.href = "/subscription?upgrade=true"}
+              >
+                Upgrade Plan
+              </Button>
+            )}
+          </CardFooter>
+        </Card>
+      </div>
+    </div>
   );
 }

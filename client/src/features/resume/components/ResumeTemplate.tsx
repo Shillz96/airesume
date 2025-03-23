@@ -151,9 +151,9 @@ export default function ResumeTemplate({
 
   return (
     <div className="relative bg-card border border-border rounded-lg overflow-hidden shadow-sm">
-      {/* Template header with controls */}
-      <div className="p-3 sm:p-4 border-b border-border bg-muted/30">
-        <div className="flex justify-between items-center mb-2 sm:mb-0">
+      {/* Template header with controls - Better mobile optimization */}
+      <div className="p-2 sm:p-4 border-b border-border bg-muted/30">
+        <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
             <h3 className="font-medium text-foreground text-sm sm:text-base">Resume Preview</h3>
             {totalPages > 1 && (
@@ -170,7 +170,7 @@ export default function ResumeTemplate({
               variant="outline"
               size="sm"
               onClick={onDownload}
-              className="h-8 px-2 sm:px-3"
+              className="h-8 w-8 sm:h-8 sm:w-auto sm:px-3"
             >
               <Download className="h-3.5 w-3.5 sm:mr-2" />
               <span className="hidden sm:inline">Download</span>
@@ -178,11 +178,11 @@ export default function ResumeTemplate({
           )}
         </div>
         
-        {/* Primary controls - mobile optimized */}
-        <div className="flex flex-wrap items-center gap-2 mt-2">
-          {/* Page navigation controls - only shown when multiple pages */}
-          {totalPages > 1 && (
-            <div className="flex items-center gap-1 mr-1">
+        {/* Mobile-friendly controls with reduced spacing and optimized layout */}
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-1 sm:gap-2 mt-2">
+          {/* Grid area 1: Page Controls - only shown when multiple pages */}
+          {totalPages > 1 ? (
+            <div className="flex items-center justify-start gap-1">
               <Button
                 variant="ghost"
                 size="sm"
@@ -190,10 +190,10 @@ export default function ResumeTemplate({
                 disabled={currentPage === 1}
                 aria-label="First page"
                 title="First page"
-                className="h-8 w-8 p-0"
+                className="h-7 w-7 p-0"
               >
-                <ChevronLeft className="h-3.5 w-3.5 mr-[-5px]" />
-                <ChevronLeft className="h-3.5 w-3.5" />
+                <ChevronLeft className="h-3 w-3 mr-[-3px]" />
+                <ChevronLeft className="h-3 w-3" />
               </Button>
               
               <Button
@@ -203,12 +203,12 @@ export default function ResumeTemplate({
                 disabled={currentPage === 1}
                 aria-label="Previous page"
                 title="Previous page"
-                className="h-8 w-8 p-0"
+                className="h-7 w-7 p-0"
               >
-                <ChevronLeft className="h-3.5 w-3.5" />
+                <ChevronLeft className="h-3 w-3" />
               </Button>
               
-              <span className="text-xs px-2">
+              <span className="text-xs px-1 min-w-[30px] text-center">
                 {currentPage}/{totalPages}
               </span>
               
@@ -219,9 +219,9 @@ export default function ResumeTemplate({
                 disabled={currentPage === totalPages}
                 aria-label="Next page"
                 title="Next page"
-                className="h-8 w-8 p-0"
+                className="h-7 w-7 p-0"
               >
-                <ChevronRight className="h-3.5 w-3.5" />
+                <ChevronRight className="h-3 w-3" />
               </Button>
               
               <Button
@@ -231,28 +231,30 @@ export default function ResumeTemplate({
                 disabled={currentPage === totalPages}
                 aria-label="Last page"
                 title="Last page"
-                className="h-8 w-8 p-0"
+                className="h-7 w-7 p-0"
               >
-                <ChevronRight className="h-3.5 w-3.5 ml-[-5px]" />
-                <ChevronRight className="h-3.5 w-3.5" />
+                <ChevronRight className="h-3 w-3 ml-[-3px]" />
+                <ChevronRight className="h-3 w-3" />
               </Button>
             </div>
+          ) : (
+            <div className="flex-1 sm:hidden"></div>
           )}
           
-          {/* Zoom controls */}
-          <div className="flex items-center gap-1 mr-1">
+          {/* Grid area 2: Zoom controls */}
+          <div className="flex items-center justify-end sm:justify-start gap-1">
             <Button
               variant="ghost"
               size="sm" 
               onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
               aria-label="Zoom out"
               title="Zoom out"
-              className="h-8 w-8 p-0"
+              className="h-7 w-7 p-0"
             >
-              <ZoomOut className="h-3.5 w-3.5" />
+              <ZoomOut className="h-3 w-3" />
             </Button>
             
-            <span className="text-xs font-mono px-2 py-0.5 rounded bg-muted">{Math.round(zoom * 100)}%</span>
+            <span className="text-xs font-mono px-1 py-0.5 rounded bg-muted">{Math.round(zoom * 100)}%</span>
             
             <Button
               variant="ghost"
@@ -260,23 +262,23 @@ export default function ResumeTemplate({
               onClick={() => setZoom(Math.min(2, zoom + 0.1))}
               aria-label="Zoom in"
               title="Zoom in"
-              className="h-8 w-8 p-0"
+              className="h-7 w-7 p-0"
             >
-              <ZoomIn className="h-3.5 w-3.5" />
+              <ZoomIn className="h-3 w-3" />
             </Button>
           </div>
           
-          {/* Action buttons */}
-          <div className="flex items-center gap-1">
+          {/* Grid area 3: Main action buttons - first row on mobile */}
+          <div className="flex items-center justify-start col-span-2 sm:col-span-1 gap-1 mt-1 sm:mt-0 sm:ml-auto">
             <Button
               variant="ghost"
               size="sm" 
               onClick={() => setFullscreen(!fullscreen)}
               aria-label="Toggle fullscreen"
               title={fullscreen ? "Exit fullscreen" : "Fullscreen view"}
-              className="h-8 w-8 p-0"
+              className="h-7 w-7 p-0 flex-1 sm:flex-none"
             >
-              {fullscreen ? <Minimize className="h-3.5 w-3.5" /> : <Maximize className="h-3.5 w-3.5" />}
+              {fullscreen ? <Minimize className="h-3 w-3" /> : <Maximize className="h-3 w-3" />}
             </Button>
             
             <Button
@@ -285,10 +287,10 @@ export default function ResumeTemplate({
               onClick={applySmartAdjust}
               aria-label="Smart adjust"
               title="Smart adjust (optimize layout)"
-              className="relative h-8 w-8 p-0"
+              className="relative h-7 w-7 p-0 flex-1 sm:flex-none"
             >
-              <Dices className="h-3.5 w-3.5" />
-              <span className="absolute -top-1 -right-1 bg-primary h-2 w-2 rounded-full"></span>
+              <Dices className="h-3 w-3" />
+              <span className="absolute -top-1 -right-1 bg-primary h-1.5 w-1.5 rounded-full"></span>
             </Button>
             
             <Button
@@ -297,9 +299,9 @@ export default function ResumeTemplate({
               onClick={() => setShowPlaceholders(!showPlaceholders)}
               aria-label="Toggle placeholders"
               title={showPlaceholders ? "Hide placeholders" : "Show placeholders"}
-              className="h-8 w-8 p-0"
+              className="h-7 w-7 p-0 flex-1 sm:flex-none"
             >
-              {showPlaceholders ? <PanelLeftClose className="h-3.5 w-3.5" /> : <PanelRightClose className="h-3.5 w-3.5" />}
+              {showPlaceholders ? <PanelLeftClose className="h-3 w-3" /> : <PanelRightClose className="h-3 w-3" />}
             </Button>
             
             {/* Test pages button */}
@@ -315,15 +317,15 @@ export default function ResumeTemplate({
                 });
               }}
               title="Test multi-page view"
-              className="h-8 w-8 p-0"
+              className="h-7 w-7 p-0 flex-1 sm:flex-none"
             >
-              <FileText className="h-3.5 w-3.5" />
+              <FileText className="h-3 w-3" />
             </Button>
           </div>
         </div>
         
         {/* Feature tooltips - Only shown on larger screens */}
-        <div className="hidden lg:flex items-center gap-2 mt-3 text-xs text-muted-foreground">
+        <div className="hidden md:flex items-center gap-2 mt-3 text-xs text-muted-foreground">
           <div className="flex items-center">
             <Dices className="h-3.5 w-3.5 mr-1 text-primary" />
             <span>Smart Adjust: Optimize spacing</span>

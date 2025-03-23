@@ -397,16 +397,16 @@ export function ResumeAIAssistant({
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <Sparkles className="h-4 w-4 text-blue-500" />
-            <h3 className="text-sm font-semibold">AI Skill Suggestions</h3>
+            <Sparkles className="h-4 w-4 text-gradient-primary bg-clip-text from-blue-600 to-indigo-600" />
+            <h3 className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">AI Skill Suggestions</h3>
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setIsChatView(true)}
-            className="h-8 w-8 p-0"
+            className="h-7 w-7 p-0 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30"
           >
-            <MessageCircle className="h-4 w-4" />
+            <MessageCircle className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
           </Button>
         </div>
       
@@ -436,11 +436,11 @@ export function ResumeAIAssistant({
         <div className="mt-4">
           <div className="flex items-center justify-between mb-2">
             <button 
-              className="flex items-center space-x-1 text-sm font-medium hover:text-blue-600"
+              className="flex items-center space-x-1 text-sm font-medium bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-indigo-700"
               onClick={() => setSuggestionsExpanded(!suggestionsExpanded)}
             >
               <span>Skills to Add</span>
-              {suggestionsExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              {suggestionsExpanded ? <ChevronUp className="h-4 w-4 text-blue-500" /> : <ChevronDown className="h-4 w-4 text-blue-500" />}
             </button>
             <Button 
               variant="ghost" 
@@ -622,8 +622,8 @@ export function ResumeAIAssistant({
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <Bot className="h-4 w-4 text-blue-500" />
-          <h3 className="text-sm font-semibold">AI Resume Assistant</h3>
+          <Bot className="h-4 w-4 text-gradient-primary bg-clip-text from-blue-600 to-indigo-600" />
+          <h3 className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">AI Resume Assistant</h3>
         </div>
       </div>
       
@@ -632,7 +632,10 @@ export function ResumeAIAssistant({
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
           Have questions about your resume? Chat with our AI assistant for personalized advice.
         </p>
-        <Button onClick={() => setIsChatView(true)}>
+        <Button 
+          onClick={() => setIsChatView(true)}
+          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+        >
           <MessageCircle className="h-4 w-4 mr-2" />
           Chat with AI Assistant
         </Button>

@@ -70,8 +70,8 @@ export default function JobCard({ job }: JobCardProps) {
         <div className="flex-1">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-foreground truncate">{job.title}</h3>
-              <p className="text-sm text-muted-foreground">{job.company}</p>
+              <h3 className="text-lg font-medium cosmic-text-gradient truncate">{job.title}</h3>
+              <p className="text-sm text-gray-300">{job.company}</p>
             </div>
             {typeof job.match === 'number' && (
               <div className="flex items-center space-x-1 bg-primary/10 text-primary px-2 py-1 rounded-full text-xs font-medium">
@@ -83,32 +83,32 @@ export default function JobCard({ job }: JobCardProps) {
           
           <div className="flex flex-wrap gap-2 mt-2 mb-3">
             {job.location && (
-              <div className="flex items-center text-xs text-muted-foreground">
-                <MapPin className="h-3.5 w-3.5 mr-1" />
+              <div className="flex items-center text-xs text-gray-400">
+                <MapPin className="h-3.5 w-3.5 mr-1 text-primary" />
                 <span>{job.location}</span>
               </div>
             )}
             {job.type && (
-              <div className="flex items-center text-xs text-muted-foreground">
-                <Building className="h-3.5 w-3.5 mr-1" />
+              <div className="flex items-center text-xs text-gray-400">
+                <Building className="h-3.5 w-3.5 mr-1 text-primary" />
                 <span>{job.type}</span>
               </div>
             )}
             {job.salary && (
-              <div className="flex items-center text-xs text-muted-foreground">
-                <Award className="h-3.5 w-3.5 mr-1" />
+              <div className="flex items-center text-xs text-gray-400">
+                <Award className="h-3.5 w-3.5 mr-1 text-primary" />
                 <span>{job.salary}</span>
               </div>
             )}
             {job.postedAt && (
-              <div className="flex items-center text-xs text-muted-foreground">
-                <Clock className="h-3.5 w-3.5 mr-1" />
+              <div className="flex items-center text-xs text-gray-400">
+                <Clock className="h-3.5 w-3.5 mr-1 text-primary" />
                 <span>{formattedDate}</span>
               </div>
             )}
           </div>
           
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+          <p className="text-sm text-gray-400 line-clamp-2 mb-3">
             {job.description}
           </p>
           
@@ -117,13 +117,13 @@ export default function JobCard({ job }: JobCardProps) {
               {job.skills.slice(0, 3).map((skill, index) => (
                 <span 
                   key={index} 
-                  className="px-2 py-0.5 bg-card/90 text-foreground rounded-full text-xs border border-white/10"
+                  className="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs border border-primary/30"
                 >
                   {skill}
                 </span>
               ))}
               {job.skills.length > 3 && (
-                <span className="px-2 py-0.5 bg-card/90 text-muted-foreground rounded-full text-xs border border-white/10">
+                <span className="px-2 py-0.5 bg-card/90 text-gray-400 rounded-full text-xs border border-white/10">
                   +{job.skills.length - 3} more
                 </span>
               )}
@@ -135,12 +135,12 @@ export default function JobCard({ job }: JobCardProps) {
       <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/10">
         <div className="flex items-center space-x-2">
           {job.isNew && (
-            <span className="px-2 py-0.5 bg-green-500/10 text-green-500 rounded-full text-xs font-medium border border-green-500/20">
+            <span className="px-2 py-0.5 bg-green-500/10 text-green-500 rounded-full text-xs font-medium border border-green-500/30">
               New
             </span>
           )}
           {job.remote && (
-            <span className="px-2 py-0.5 bg-blue-500/10 text-blue-500 rounded-full text-xs font-medium border border-blue-500/20">
+            <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs font-medium border border-primary/30">
               Remote
             </span>
           )}
@@ -158,7 +158,7 @@ export default function JobCard({ job }: JobCardProps) {
             size="sm"
             onClick={toggleSave}
             iconLeft={<Bookmark className={cn("h-4 w-4", job.saved && "fill-primary text-primary")} />}
-            className="text-xs"
+            className="text-xs hover:text-primary hover:bg-primary/10"
           >
             {job.saved ? 'Saved' : 'Save'}
           </Button>

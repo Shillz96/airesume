@@ -162,16 +162,42 @@ function CosmicBackgroundComponent() {
   if (!isClient) return null;
 
   return (
-    <div className="cosmic-background fixed inset-0 w-full h-full min-h-screen overflow-hidden z-0" style={{ height: '100vh' }}>
+    <div className="cosmic-background fixed inset-0 w-full min-h-screen overflow-hidden z-0" style={{ 
+      position: 'fixed', 
+      top: 0, 
+      left: 0,
+      right: 0,
+      bottom: 0,
+      width: '100%',
+      height: '100%'
+    }}>
       {/* Starfield is handled via CSS ::before in animations.css */}
       
       {/* Dynamic stars with JavaScript - now memoized */}
-      <div className="starfield absolute inset-0 pointer-events-none" style={{ minHeight: '100vh' }}>
+      <div className="starfield absolute inset-0 pointer-events-none" style={{ 
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%'
+      }}>
         {stars}
       </div>
 
       {/* Enhanced Nebula Layers - Now memoized */}
-      {nebulaLayers}
+      <div style={{ 
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%'
+      }}>
+        {nebulaLayers}
+      </div>
     </div>
   );
 }

@@ -1,12 +1,13 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { useAuth } from "@/hooks/use-auth";
+import { useUnifiedTheme } from "@/contexts/UnifiedThemeContext";
 import DashboardStats from "@/features/dashboard/components/DashboardStats";
 import RecentActivity from "@/features/dashboard/components/RecentActivity";
 import JobSearchProgress from "@/features/job/components/JobSearchProgress";
 import JobInterviewAvatar from "@/features/job/components/JobInterviewAvatar";
 import SubscriptionStatus from "@/features/subscription/components/SubscriptionStatus";
-import PageHeader from "@/features/layout/components/PageHeader";
+import { UnifiedPageHeader, Heading1, GradientText, UnifiedContainer } from "@/components/unified";
 import { Rocket, User, LayoutDashboard, UserCheck, Calendar, Search, Clock, Briefcase } from "lucide-react";
 
 export default function HomePage() {
@@ -77,21 +78,31 @@ export default function HomePage() {
     }
   }, []);
   
+  const { config } = useUnifiedTheme();
+  
   return (
     <>
-      <div className="container pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
+      <UnifiedContainer className="pb-10 min-h-screen relative z-10">
         <div ref={welcomeRef}>
-          <PageHeader
+          <UnifiedPageHeader
             title={
-              <span className="cosmic-text-gradient">
-                Welcome back, {user?.username}!
-              </span>
+              config.variant === 'cosmic' ? (
+                <GradientText as="h1" size="4xl" weight="bold">
+                  Welcome back, {user?.username}!
+                </GradientText>
+              ) : (
+                <Heading1>
+                  Welcome back, {user?.username}!
+                </Heading1>
+              )
             }
             subtitle="Navigate your career journey with AI-powered tools and insights."
+            variant={config.variant === 'cosmic' ? 'cosmic' : 'default'}
+            borderStyle={config.variant === 'cosmic' ? 'gradient' : 'subtle'}
             actions={
               <div ref={rocketRef}>
-                <div className="bg-[hsl(260,100%,60%)] bg-opacity-20 p-3 rounded-full cosmic-glow">
-                  <Rocket size={24} className="text-white" />
+                <div className={`p-3 rounded-full ${config.variant === 'cosmic' ? 'bg-primary/30 cosmic-glow animate-pulse' : 'bg-primary/20'}`}>
+                  <Rocket size={24} className={config.variant === 'cosmic' ? 'text-primary-foreground' : 'text-primary'} />
                 </div>
               </div>
             }
@@ -120,7 +131,7 @@ export default function HomePage() {
         <div className="mt-16 mb-12 ">
           <JobSearchProgress />
         </div>
-      </div>
+      </UnifiedContainer>
     </>
   );
 }

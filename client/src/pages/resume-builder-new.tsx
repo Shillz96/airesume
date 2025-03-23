@@ -7,10 +7,9 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
-import { UnifiedPageHeader, UnifiedContainer } from "@/components/unified";
+import { PageHeader, Container, Button } from "@/components/unified";
 
 // Import from new organized structure
-import { Button } from "@/ui/core/Button";
 import { useResumeData } from "@/features/resume/hooks/useResumeData";
 import { Resume } from "@/features/resume/types";
 import { 
@@ -387,8 +386,8 @@ export default function ResumeBuilderNew() {
 
   return (
     <>
-      <UnifiedContainer className="min-h-screen pb-10" paddingTop="sm">
-        <UnifiedPageHeader
+      <Container className="min-h-screen pb-10" paddingY="sm">
+        <PageHeader
           title="Resume Builder"
           subtitle="Create and customize your professional resume"
           variant="cosmic"
@@ -697,7 +696,7 @@ export default function ResumeBuilderNew() {
             </div>
           </div>
         </div>
-      </UnifiedContainer>
+      </Container>
     </>
   );
 }

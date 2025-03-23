@@ -273,7 +273,7 @@ export default function ResumeBuilder() {
               onValueChange={setActiveSection}
               className="w-full"
             >
-              <TabsList className="mb-6 flex flex-wrap h-auto bg-black/90 border border-white/10 rounded-lg w-full gap-0">
+              <TabsList className="mb-6 flex flex-wrap h-auto bg-black/30 border border-white/10 rounded-lg w-full gap-0">
                 <TabsTrigger 
                   value="contact" 
                   className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"

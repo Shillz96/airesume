@@ -38,10 +38,10 @@ export function UnifiedContainer({
   const getPaddingTopClass = () => {
     switch (paddingTop) {
       case 'none': return '';
-      case 'sm': return 'pt-2';
-      case 'md': return 'pt-4 sm:pt-6';
-      case 'lg': return 'pt-6 sm:pt-8';
-      default: return 'pt-4 sm:pt-6';
+      case 'sm': return 'pt-0';
+      case 'md': return 'pt-1 sm:pt-2';
+      case 'lg': return 'pt-2 sm:pt-4';
+      default: return 'pt-1 sm:pt-2';
     }
   };
   

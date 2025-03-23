@@ -87,7 +87,7 @@ export async function generateResumeSuggestions(resume: Resume, careerPath?: Car
       response_format: { type: "json_object" }
     });
     
-    const result = JSON.parse(response.choices[0].message.content);
+    const result = JSON.parse(response.choices[0].message.content || "{}");
     return Array.isArray(result.suggestions) ? result.suggestions : [];
   } catch (error) {
     console.error("Error generating resume suggestions:", error);
@@ -100,10 +100,23 @@ export async function generateResumeSuggestions(resume: Resume, careerPath?: Car
  */
 async function detectCareerPath(resumeContext: any): Promise<CareerPath> {
   try {
-    // Extract relevant information from the resume context
-    const jobTitles = resumeContext.experience.map((exp: any) => exp.title || '').join(', ');
-    const skillNames = resumeContext.skills.map((skill: any) => skill.name || '').join(', ');
-    const summary = resumeContext.personalInfo.summary || '';
+    // Extract relevant information from the resume context with safeguards
+    const experience = resumeContext.experience || [];
+    const skills = resumeContext.skills || [];
+    const personalInfo = resumeContext.personalInfo || {};
+    
+    // Create safe strings for each field
+    const jobTitles = Array.isArray(experience) 
+      ? experience.map((exp: any) => (exp && exp.title) || '').join(', ')
+      : '';
+      
+    const skillNames = Array.isArray(skills)
+      ? skills.map((skill: any) => (skill && skill.name) || '').join(', ')
+      : '';
+      
+    const summary = personalInfo && typeof personalInfo === 'object' && personalInfo.summary 
+      ? personalInfo.summary 
+      : '';
     
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
@@ -125,7 +138,9 @@ async function detectCareerPath(resumeContext: any): Promise<CareerPath> {
       response_format: { type: "text" }
     });
     
-    const result = response.choices[0].message.content.trim().toLowerCase();
+    // Safely handle null content
+    const contentStr = response.choices[0].message.content || "";
+    const result = contentStr.trim().toLowerCase();
     
     // Check if the result matches one of our career paths
     const validPaths: CareerPath[] = [
@@ -188,10 +203,18 @@ export async function matchJobsWithResume(jobs: Job[], resume: Resume): Promise<
       return calculateSimpleMatchScores(jobs, resume);
     }
     
-    // Extract resume content for job matching
-    const personalInfo = resume.content?.personalInfo || {};
-    const experience = resume.content?.experience || [];
-    const skills = resume.content?.skills || [];
+    // Safely extract resume content for job matching
+    const resumeContent = resume.content || {};
+    const personalInfo = resumeContent.personalInfo || {};
+    const experience = Array.isArray(resumeContent.experience) ? resumeContent.experience : [];
+    const skills = Array.isArray(resumeContent.skills) ? resumeContent.skills : [];
+    
+    // Detect career path for more accurate matching
+    const careerPath = await detectCareerPath({
+      personalInfo,
+      experience,
+      skills
+    });
     
     // For each job, calculate match score using OpenAI
     const enhancedJobs = await Promise.all(jobs.map(async (job) => {
@@ -201,7 +224,7 @@ export async function matchJobsWithResume(jobs: Job[], resume: Resume): Promise<
           messages: [
             {
               role: "system",
-              content: "You are an expert job matching algorithm. You will analyze a job description and a candidate's resume to calculate a match percentage between 0-100. Consider skills, experience, and fit. Return your response as JSON."
+              content: `You are an expert job matching algorithm specializing in ${careerPath.replace('_', ' ')} careers. You will analyze a job description and a candidate's resume to calculate a match percentage between 0-100. Consider skills, experience, and fit. Return your response as JSON.`
             },
             {
               role: "user",
@@ -213,6 +236,7 @@ export async function matchJobsWithResume(jobs: Job[], resume: Resume): Promise<
               Skills: ${JSON.stringify(skills)}
               Experience: ${JSON.stringify(experience)}
               Personal Info: ${JSON.stringify(personalInfo)}
+              Career Path: ${careerPath}
               
               Return your response in JSON format with a match field, for example: {"match": 85}`
             }
@@ -220,7 +244,16 @@ export async function matchJobsWithResume(jobs: Job[], resume: Resume): Promise<
           response_format: { type: "json_object" }
         });
         
-        const result = JSON.parse(response.choices[0].message.content);
+        // Safely parse the response with fallback
+        const contentStr = response.choices[0].message.content || "{}";
+        let result;
+        try {
+          result = JSON.parse(contentStr);
+        } catch (parseError) {
+          console.error("Error parsing JSON response:", parseError);
+          result = { match: 70 }; // Default value if parsing fails
+        }
+        
         const matchPercentage = Math.min(Math.max(result.match || 0, 0), 100);
         
         return {
@@ -316,14 +349,93 @@ function calculateSimpleMatchScores(jobs: Job[], resume: Resume): Job[] {
 }
 
 // Provide sample resume suggestions when API key is not available
-function getSampleResumeSuggestions(resume: Resume): string[] {
-  return [
+function getSampleResumeSuggestions(resume: Resume, careerPath?: CareerPath): string[] {
+  // General suggestions for all career paths
+  const generalSuggestions = [
     "Add more measurable achievements to your work experience with specific metrics and results.",
     "Include keywords from the job descriptions you're targeting to improve ATS compatibility.",
     "Strengthen your professional summary to highlight your unique value proposition.",
     "Add relevant certifications or training to showcase your continuous learning.",
     "Consider reorganizing your skills section to prioritize the most in-demand technologies."
   ];
+  
+  // Career-specific suggestions
+  const careerSuggestions: Record<CareerPath, string[]> = {
+    software_engineering: [
+      "Highlight specific programming languages, frameworks, and development tools you've mastered.",
+      "Quantify your coding achievements with metrics like performance improvements or reduced bug rates.",
+      "Include links to your GitHub profile or portfolio of projects.",
+      "Mention specific software methodologies you're proficient in (Agile, Scrum, etc.).",
+      "Add technical certifications like AWS, Microsoft, or language-specific credentials."
+    ],
+    data_science: [
+      "Emphasize your experience with data analysis tools like Python, R, SQL, and visualization libraries.",
+      "Quantify the impact of your data analysis with business results and metrics.",
+      "Showcase machine learning models you've built and their accuracy rates.",
+      "Mention experience with big data technologies like Hadoop, Spark, or cloud platforms.",
+      "Include relevant certifications in data science, statistics, or machine learning."
+    ],
+    design: [
+      "Create a visually appealing portfolio link that demonstrates your design capabilities.",
+      "Specify design tools you're proficient in (Adobe Creative Suite, Figma, Sketch, etc.).",
+      "Quantify design impacts with engagement metrics, conversion improvements, or user feedback.",
+      "Include examples of design problems you've solved and your approach.",
+      "Mention experience with different design methodologies (UI/UX, design thinking, etc.)."
+    ],
+    marketing: [
+      "Quantify your marketing achievements with specific metrics like ROI, growth rates, or conversion improvements.",
+      "List specific marketing platforms and tools you're experienced with.",
+      "Highlight your expertise across different marketing channels (social, email, content, etc.).",
+      "Include relevant marketing certifications (Google Ads, HubSpot, etc.).",
+      "Demonstrate your experience with analytics and data-driven marketing strategies."
+    ],
+    sales: [
+      "Quantify your sales achievements with specific revenue numbers and percentage over targets.",
+      "Highlight your experience with CRM platforms and sales technology.",
+      "Showcase your closing rates, customer retention, or account growth metrics.",
+      "Mention specific sales methodologies you've mastered.",
+      "Include relevant sales certifications or training."
+    ],
+    product_management: [
+      "Highlight product launches and improvements you've led with specific metrics.",
+      "Detail your experience with product development methodologies.",
+      "Quantify the business impact of your product decisions.",
+      "Showcase your cross-functional team leadership abilities.",
+      "Mention your experience with product analytics and user feedback integration."
+    ],
+    finance: [
+      "Include specific financial models, software, and analysis tools you're proficient with.",
+      "Quantify financial improvements you've contributed to.",
+      "Highlight relevant certifications (CFA, CPA, etc.).",
+      "Mention your experience with financial regulations and compliance.",
+      "Showcase your experience with financial planning, analysis, or investment strategies."
+    ],
+    healthcare: [
+      "List relevant medical software systems you're experienced with.",
+      "Include any specialized medical training or certifications.",
+      "Highlight patient care improvements or healthcare metrics you've influenced.",
+      "Mention experience with healthcare regulations and compliance.",
+      "Showcase your knowledge of medical terminology and procedures."
+    ],
+    education: [
+      "Highlight teaching methodologies and educational technologies you're experienced with.",
+      "Quantify educational outcomes and student achievement metrics.",
+      "Include curriculum development or instructional design experience.",
+      "Mention educational certifications and specialized training.",
+      "Showcase your experience with learning management systems and educational software."
+    ],
+    customer_service: [
+      "Quantify customer satisfaction improvements and resolution rates.",
+      "Highlight experience with customer service platforms and CRM systems.",
+      "Showcase conflict resolution and problem-solving achievements.",
+      "Include relevant customer service certifications.",
+      "Mention experience with customer feedback implementation and service improvements."
+    ],
+    general: generalSuggestions
+  };
+  
+  // Return career-specific suggestions if a career path is provided, otherwise return general suggestions
+  return careerPath && careerSuggestions[careerPath] ? careerSuggestions[careerPath] : generalSuggestions;
 }
 
 /**

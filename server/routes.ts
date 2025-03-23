@@ -832,9 +832,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
       } else {
-        // Generate general resume improvement suggestions using OpenAI
-        const suggestions = await generateResumeSuggestions(resume);
-        return res.json({ success: true, suggestions });
+        // Get career path from query param if provided
+        const careerPathParam = req.query.careerPath as string | undefined;
+        let careerPath: CareerPath | undefined = undefined;
+        
+        if (careerPathParam) {
+          // Validate if the provided career path is valid
+          const validPaths: string[] = [
+            'software_engineering', 'data_science', 'design', 'marketing', 
+            'sales', 'product_management', 'finance', 'healthcare', 
+            'education', 'customer_service', 'general'
+          ];
+          
+          if (validPaths.includes(careerPathParam)) {
+            careerPath = careerPathParam as CareerPath;
+          }
+        }
+        
+        // Generate career-specific resume improvement suggestions using OpenAI
+        const suggestions = await generateResumeSuggestions(resume, careerPath);
+        
+        // If a career path was detected but not provided, include it in the response
+        // This helps the frontend know which career path was used for suggestions
+        const detectedCareerPath = careerPath || 'general';
+        
+        return res.json({ 
+          success: true, 
+          suggestions,
+          careerPath: detectedCareerPath 
+        });
       }
     } catch (error) {
       console.error("Error generating resume suggestions:", error);

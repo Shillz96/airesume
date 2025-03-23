@@ -323,18 +323,18 @@ export default function ResumeBuilder() {
               </TabsList>
 
               <TabsContent value="contact">
-                <div className="cosmic-card p-6 backdrop-blur-sm">
-                  <h2 className="text-2xl font-semibold cosmic-text-gradient mb-4">Contact Information</h2>
+                <div className="bg-card p-6 rounded-md border shadow-sm">
+                  <h2 className="text-2xl font-semibold mb-4">Contact Information</h2>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-2">
-                      <label htmlFor="title" className="text-sm font-medium text-gray-700 dark:text-gray-300">Resume Title</label>
+                      <label htmlFor="title" className="text-sm font-medium">Resume Title</label>
                       <input 
                         type="text"
                         id="title"
                         value={resume.title}
                         onChange={(e) => updateResumeTitle(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background"
                         placeholder="e.g., Software Engineer Resume"
                       />
                     </div>
@@ -342,7 +342,7 @@ export default function ResumeBuilder() {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
                     <div className="space-y-2">
-                      <label htmlFor="firstName" className="text-sm font-medium text-gray-700 dark:text-gray-300">First Name</label>
+                      <label htmlFor="firstName" className="text-sm font-medium">First Name</label>
                       <input 
                         type="text"
                         id="firstName"
@@ -351,7 +351,7 @@ export default function ResumeBuilder() {
                           ...resume.personalInfo,
                           firstName: e.target.value
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background"
                         placeholder="John"
                       />
                     </div>
@@ -434,14 +434,14 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="summary">
-                <div className="cosmic-card p-6 backdrop-blur-sm">
-                  <h2 className="text-2xl font-semibold cosmic-text-gradient mb-4">Professional Summary</h2>
-                  <p className="text-gray-600 dark:text-gray-400 mb-5">
+                <div className="bg-card p-6 rounded-md border shadow-sm">
+                  <h2 className="text-2xl font-semibold mb-4">Professional Summary</h2>
+                  <p className="text-muted-foreground mb-5">
                     Write a compelling summary that highlights your skills, experience, and achievements.
                   </p>
                   
                   <div className="space-y-2">
-                    <label htmlFor="summaryFull" className="text-sm font-medium text-gray-700 dark:text-gray-300">Professional Summary</label>
+                    <label htmlFor="summaryFull" className="text-sm font-medium">Professional Summary</label>
                     <textarea 
                       id="summaryFull"
                       value={resume.personalInfo.summary}
@@ -449,7 +449,7 @@ export default function ResumeBuilder() {
                         ...resume.personalInfo,
                         summary: e.target.value
                       })}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[250px] dark:bg-gray-700 dark:text-white"
+                      className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background min-h-[250px]"
                       placeholder="Write a short summary of your skills and experience..."
                     />
                   </div>

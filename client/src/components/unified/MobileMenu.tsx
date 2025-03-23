@@ -61,10 +61,10 @@ export default function MobileMenu({ className = '' }: MobileMenuProps) {
 
       {/* Mobile Menu Overlay */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 bg-background shadow-xl">
-          <div className="flex flex-col h-full">
+        <div className="fixed inset-0 z-50 bg-background shadow-xl min-h-screen h-full overflow-y-auto">
+          <div className="flex flex-col min-h-screen">
             {/* Menu Header */}
-            <div className="flex justify-between items-center p-4 border-b border-border bg-primary text-primary-foreground">
+            <div className="sticky top-0 flex justify-between items-center p-4 border-b border-border bg-primary text-primary-foreground z-10">
               <h2 className="text-xl font-semibold">
                 Menu
               </h2>
@@ -136,7 +136,7 @@ export default function MobileMenu({ className = '' }: MobileMenuProps) {
             </nav>
 
             {/* User and Theme Actions */}
-            <div className="border-t border-border p-4 space-y-4 bg-muted/5">
+            <div className="border-t border-border p-4 space-y-4 bg-muted/5 pb-24">
               {/* Theme Toggle */}
               <button 
                 onClick={toggleDarkMode}
@@ -168,7 +168,7 @@ export default function MobileMenu({ className = '' }: MobileMenuProps) {
 
               {/* User Info */}
               {user && (
-                <div className="flex items-center gap-4 p-4 mt-4 rounded-lg bg-card shadow-sm">
+                <div className="flex items-center gap-4 p-4 mt-4 mb-6 rounded-lg bg-card shadow-sm">
                   <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-lg font-bold">
                     {user.username.charAt(0).toUpperCase()}
                   </div>

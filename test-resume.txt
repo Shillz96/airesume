@@ -1,0 +1,31 @@
+John Doe
+Software Engineer
+Email: john.doe@example.com
+Phone: (555) 123-4567
+
+SUMMARY
+Experienced software engineer with expertise in JavaScript, TypeScript, and React.
+Passionate about creating user-friendly applications with clean, maintainable code.
+
+EXPERIENCE
+Senior Software Engineer
+ABC Tech Solutions
+Jan 2021 - Present
+- Developed responsive web applications using React and TypeScript
+- Collaborated with cross-functional teams to implement new features
+- Improved application performance by 30% through code optimization
+
+Software Developer
+XYZ Digital
+Jun 2018 - Dec 2020
+- Built interactive user interfaces with JavaScript and React
+- Implemented RESTful APIs using Node.js and Express
+- Participated in code reviews and maintained coding standards
+
+EDUCATION
+Bachelor of Science in Computer Science
+University of Technology
+2014 - 2018
+
+SKILLS
+JavaScript, TypeScript, React, Node.js, Express, HTML, CSS, Git, Agile Methodology

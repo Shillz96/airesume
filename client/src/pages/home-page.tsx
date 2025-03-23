@@ -111,11 +111,11 @@ export default function HomePage() {
         
         <SubscriptionStatus />
         
-        <div className="mt-6">
+        <div className="mt-10">
           <DashboardStats />
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[600px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 min-h-[600px] mt-10">
           <div className="md:col-span-1 flex flex-col h-full">
             <div className="flex-1 h-full">
               <EnhancedJobInterviewAvatar />
@@ -128,7 +128,7 @@ export default function HomePage() {
           </div>
         </div>
         
-        <div className="mt-16 mb-12 ">
+        <div className="mt-20 mb-12 ">
           <JobSearchProgress />
         </div>
       </UnifiedContainer>

@@ -16,7 +16,9 @@ import {
   ResumeExperienceSection, 
   ResumeEducationSection, 
   ResumeSkillsSection, 
-  ResumeProjectsSection 
+  ResumeProjectsSection,
+  ResumeContactSection,
+  ResumeSummarySection
 } from "@/components/resume-section";
 import ResumeTemplate from "@/components/resume-template";
 
@@ -356,7 +358,7 @@ export default function ResumeBuilder() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="lastName" className="text-sm font-medium text-gray-700 dark:text-gray-300">Last Name</label>
+                      <label htmlFor="lastName" className="text-sm font-medium">Last Name</label>
                       <input 
                         type="text"
                         id="lastName"
@@ -365,7 +367,7 @@ export default function ResumeBuilder() {
                           ...resume.personalInfo,
                           lastName: e.target.value
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background"
                         placeholder="Doe"
                       />
                     </div>
@@ -373,7 +375,7 @@ export default function ResumeBuilder() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
                     <div className="space-y-2">
-                      <label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                      <label htmlFor="email" className="text-sm font-medium">Email</label>
                       <input 
                         type="email"
                         id="email"
@@ -382,7 +384,7 @@ export default function ResumeBuilder() {
                           ...resume.personalInfo,
                           email: e.target.value
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-background"
                         placeholder="johndoe@example.com"
                       />
                     </div>

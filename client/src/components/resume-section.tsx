@@ -4,6 +4,14 @@ import { Trash, Plus, PenSquare, ChevronDown, ChevronUp } from 'lucide-react';
 import RichTextEditor from "@/components/rich-text-editor";
 
 // Types
+export interface PersonalInfo {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  headline: string;
+  summary: string;
+}
 export interface ExperienceItem {
   id: string;
   title: string;
@@ -443,6 +451,131 @@ export function ResumeSkillsSection({ skills, onUpdate }: ResumeSkillsSectionPro
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+// Contact Information Section Component
+interface ResumeContactSectionProps {
+  personalInfo: PersonalInfo;
+  title: string;
+  onUpdatePersonalInfo: (updates: Partial<PersonalInfo>) => void;
+  onUpdateTitle: (title: string) => void;
+}
+
+export function ResumeContactSection({ 
+  personalInfo, 
+  title, 
+  onUpdatePersonalInfo, 
+  onUpdateTitle 
+}: ResumeContactSectionProps) {
+  return (
+    <div className="space-y-6">
+      <h3 className="text-xl font-medium text-foreground">Contact Information</h3>
+      
+      <div className="space-y-5">
+        <div>
+          <label htmlFor="title" className="block text-sm font-medium mb-1">Resume Title</label>
+          <input 
+            type="text"
+            id="title"
+            value={title}
+            onChange={(e) => onUpdateTitle(e.target.value)}
+            className="w-full px-3 py-2 border border-border rounded-md bg-card text-foreground"
+            placeholder="e.g., Software Engineer Resume"
+          />
+        </div>
+      
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label htmlFor="firstName" className="block text-sm font-medium mb-1">First Name</label>
+            <input 
+              type="text"
+              id="firstName"
+              value={personalInfo.firstName}
+              onChange={(e) => onUpdatePersonalInfo({ firstName: e.target.value })}
+              className="w-full px-3 py-2 border border-border rounded-md bg-card text-foreground"
+              placeholder="John"
+            />
+          </div>
+          <div>
+            <label htmlFor="lastName" className="block text-sm font-medium mb-1">Last Name</label>
+            <input 
+              type="text"
+              id="lastName"
+              value={personalInfo.lastName}
+              onChange={(e) => onUpdatePersonalInfo({ lastName: e.target.value })}
+              className="w-full px-3 py-2 border border-border rounded-md bg-card text-foreground"
+              placeholder="Doe"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
+            <input 
+              type="email"
+              id="email"
+              value={personalInfo.email}
+              onChange={(e) => onUpdatePersonalInfo({ email: e.target.value })}
+              className="w-full px-3 py-2 border border-border rounded-md bg-card text-foreground"
+              placeholder="johndoe@example.com"
+            />
+          </div>
+          <div>
+            <label htmlFor="phone" className="block text-sm font-medium mb-1">Phone</label>
+            <input 
+              type="text"
+              id="phone"
+              value={personalInfo.phone}
+              onChange={(e) => onUpdatePersonalInfo({ phone: e.target.value })}
+              className="w-full px-3 py-2 border border-border rounded-md bg-card text-foreground"
+              placeholder="(123) 456-7890"
+            />
+          </div>
+        </div>
+        
+        <div>
+          <label htmlFor="headline" className="block text-sm font-medium mb-1">Professional Headline</label>
+          <input 
+            type="text"
+            id="headline"
+            value={personalInfo.headline}
+            onChange={(e) => onUpdatePersonalInfo({ headline: e.target.value })}
+            className="w-full px-3 py-2 border border-border rounded-md bg-card text-foreground"
+            placeholder="e.g., Senior Software Engineer | Full Stack Developer | Tech Lead"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Professional Summary Section Component
+interface ResumeSummarySectionProps {
+  summary: string;
+  onUpdateSummary: (summary: string) => void;
+}
+
+export function ResumeSummarySection({ summary, onUpdateSummary }: ResumeSummarySectionProps) {
+  return (
+    <div className="space-y-6">
+      <h3 className="text-xl font-medium text-foreground">Professional Summary</h3>
+      <p className="text-muted-foreground">
+        Write a compelling summary that highlights your skills, experience, and achievements.
+      </p>
+      
+      <div>
+        <label htmlFor="summaryFull" className="block text-sm font-medium mb-1">Professional Summary</label>
+        <textarea 
+          id="summaryFull"
+          value={summary}
+          onChange={(e) => onUpdateSummary(e.target.value)}
+          className="w-full px-3 py-2 border border-border rounded-md bg-card text-foreground min-h-[250px]"
+          placeholder="Write a short summary of your skills and experience..."
+        />
       </div>
     </div>
   );

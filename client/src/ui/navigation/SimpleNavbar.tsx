@@ -3,7 +3,7 @@ import { Link, useLocation } from 'wouter';
 import { Menu, X, Home, Briefcase, FileText, User, LogOut, Moon, Sun, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/use-auth';
-import { useTheme } from '@/contexts/ThemeContext';
+import { useUnifiedTheme } from '@/contexts/UnifiedThemeContext';
 
 /**
  * Modern SimpleNavbar component with updated styling to match the new theme

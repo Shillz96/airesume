@@ -108,7 +108,7 @@ export async function generateResumeSuggestions(resume: Resume, careerPath?: Car
 /**
  * Detect the likely career path based on resume content
  */
-async function detectCareerPath(resumeContext: any): Promise<CareerPath> {
+export async function detectCareerPath(resumeContext: any): Promise<CareerPath> {
   try {
     // Extract relevant information from the resume context with safeguards
     const experience = resumeContext.experience || [];
@@ -168,6 +168,437 @@ async function detectCareerPath(resumeContext: any): Promise<CareerPath> {
     console.error("Error detecting career path:", error);
     return 'general';
   }
+}
+
+/**
+ * Get career-specific advice for a particular career path
+ */
+export async function getCareerAdvice(careerPath: CareerPath): Promise<CareerSpecificAdvice> {
+  try {
+    // If no API key is provided, return sample career advice
+    if (!process.env.OPENAI_API_KEY) {
+      return getSampleCareerAdvice(careerPath);
+    }
+    
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: `You are a career advisor specializing in the ${careerPath.replace('_', ' ')} field. Provide detailed, specific, and actionable advice for someone pursuing this career path.`
+        },
+        {
+          role: "user",
+          content: `Provide career-specific advice for the ${careerPath.replace('_', ' ')} field in JSON format with these fields:
+          {
+            "suggestedSkills": ["skill1", "skill2", ...], // List 10-15 most valuable skills for this career
+            "industryKeywords": ["keyword1", "keyword2", ...], // List 10-15 important keywords for ATS systems and job descriptions
+            "resumeTips": ["tip1", "tip2", ...], // List 5-7 specific resume tips for this career
+            "careerPathDescription": "A detailed description of this career path", // 2-3 paragraphs
+            "certifications": ["cert1", "cert2", ...] // List 5-7 valuable certifications for this career
+          }`
+        }
+      ],
+      response_format: { type: "json_object" }
+    });
+    
+    // Safely handle the response
+    const contentStr = response.choices[0].message.content || "{}";
+    try {
+      const result = JSON.parse(contentStr);
+      return {
+        suggestedSkills: Array.isArray(result.suggestedSkills) ? result.suggestedSkills : [],
+        industryKeywords: Array.isArray(result.industryKeywords) ? result.industryKeywords : [],
+        resumeTips: Array.isArray(result.resumeTips) ? result.resumeTips : [],
+        careerPathDescription: result.careerPathDescription || "",
+        certifications: Array.isArray(result.certifications) ? result.certifications : []
+      };
+    } catch (parseError) {
+      console.error("Error parsing career advice JSON:", parseError);
+      return getSampleCareerAdvice(careerPath);
+    }
+  } catch (error) {
+    console.error("Error generating career advice:", error);
+    return getSampleCareerAdvice(careerPath);
+  }
+}
+
+/**
+ * Get sample career-specific advice when API is unavailable
+ */
+function getSampleCareerAdvice(careerPath: CareerPath): CareerSpecificAdvice {
+  // Generic career advice that could apply to most fields
+  const genericAdvice: CareerSpecificAdvice = {
+    suggestedSkills: [
+      "Communication", "Leadership", "Problem-solving", "Critical thinking",
+      "Project management", "Time management", "Team collaboration",
+      "Microsoft Office", "Adaptability", "Attention to detail"
+    ],
+    industryKeywords: [
+      "Professional", "Experienced", "Team player", "Self-motivated",
+      "Results-oriented", "Strategic", "Innovative", "Analytical",
+      "Collaborative", "Organized", "Dedicated", "Efficient"
+    ],
+    resumeTips: [
+      "Quantify your achievements with metrics and specific results",
+      "Tailor your resume for each job application",
+      "Use action verbs to begin bullet points",
+      "Keep your resume concise and focused on relevant experience",
+      "Include keywords from the job description for ATS compatibility"
+    ],
+    careerPathDescription: "This career path offers opportunities for professionals with diverse skills and experience levels. Success in this field typically requires a combination of technical knowledge, soft skills, and industry awareness. Professionals can advance by developing specialized expertise, taking on leadership roles, or expanding their skill set to adapt to changing industry demands.",
+    certifications: [
+      "Basic industry certification",
+      "Advanced professional certification",
+      "Leadership certification",
+      "Project management certification",
+      "Industry-specific software certification"
+    ]
+  };
+  
+  // Career-specific advice for each path
+  const careerAdvice: Record<CareerPath, CareerSpecificAdvice> = {
+    software_engineering: {
+      suggestedSkills: [
+        "JavaScript", "Python", "React", "Node.js", "RESTful APIs",
+        "Git/GitHub", "SQL/NoSQL databases", "Cloud services (AWS/Azure/GCP)",
+        "Docker/Kubernetes", "CI/CD pipelines", "System design",
+        "Test-driven development", "Microservices architecture",
+        "Data structures & algorithms", "DevOps practices"
+      ],
+      industryKeywords: [
+        "Full-stack", "Backend", "Frontend", "API", "Microservices",
+        "Agile", "Scrum", "DevOps", "Cloud-native", "Containerization",
+        "Scalability", "Distributed systems", "Object-oriented", "CI/CD",
+        "Version control", "Test automation", "Code review"
+      ],
+      resumeTips: [
+        "Include links to your GitHub profile and deployed projects",
+        "Highlight specific programming languages, frameworks, and tools you've mastered",
+        "Quantify performance improvements or optimizations you've implemented",
+        "Mention experience with specific methodologies (Agile, Scrum, Kanban)",
+        "Showcase problem-solving skills with specific technical challenges you've overcome",
+        "Include both personal projects and professional experience to demonstrate passion for coding"
+      ],
+      careerPathDescription: "Software engineering is a dynamic field focused on designing, developing, and maintaining software systems and applications. Engineers work across various domains, from web and mobile applications to systems software and embedded systems. The field rewards continuous learning, problem-solving abilities, and adaptability as technologies rapidly evolve.\n\nCareer progression typically moves from junior developer to senior engineer, and then potentially to technical lead, architect, or engineering management roles. Specialization in areas like frontend, backend, full-stack, DevOps, or specific domains (fintech, healthtech, etc.) is common. The field offers excellent remote work opportunities and competitive compensation.",
+      certifications: [
+        "AWS Certified Developer",
+        "Microsoft Certified: Azure Developer Associate",
+        "Google Cloud Professional Developer",
+        "Certified Kubernetes Administrator (CKA)",
+        "Oracle Certified Professional: Java SE Programmer",
+        "Certified Scrum Developer",
+        "CompTIA Security+"
+      ]
+    },
+    data_science: {
+      suggestedSkills: [
+        "Python", "R", "SQL", "Machine Learning", "Statistical Analysis",
+        "Data Visualization (Tableau/PowerBI)", "Deep Learning",
+        "Natural Language Processing", "Big Data (Hadoop/Spark)",
+        "Data Cleaning & Preprocessing", "Feature Engineering",
+        "A/B Testing", "Predictive Modeling", "Time Series Analysis",
+        "Data Ethics & Privacy"
+      ],
+      industryKeywords: [
+        "Machine Learning", "Predictive Analytics", "Statistical Modeling",
+        "Data Mining", "Big Data", "Artificial Intelligence", "Neural Networks",
+        "Data Pipelines", "ETL", "Business Intelligence", "Regression Analysis",
+        "Clustering", "Classification", "Hypothesis Testing", "Data Warehousing"
+      ],
+      resumeTips: [
+        "Describe data science projects with their business impact and metrics",
+        "Include specific algorithms and models you've implemented",
+        "Quantify improvements in accuracy, efficiency, or business metrics",
+        "Mention experience with large datasets and big data technologies",
+        "Highlight domain expertise in specific industries (fintech, healthcare, retail, etc.)",
+        "Showcase both technical skills and business acumen"
+      ],
+      careerPathDescription: "Data science combines statistics, mathematics, programming, and domain expertise to extract actionable insights from data. Professionals in this field analyze complex datasets to solve business problems, develop predictive models, and drive data-informed decision making. The field requires both technical prowess and strong communication skills to translate findings for non-technical stakeholders.\n\nCareer progression typically moves from data analyst to data scientist, then to senior data scientist or specialized roles like machine learning engineer, AI researcher, or data science manager. Many professionals specialize in particular industries (healthcare, finance, retail) or techniques (computer vision, NLP, time series analysis).",
+      certifications: [
+        "IBM Data Science Professional Certificate",
+        "Microsoft Certified: Azure Data Scientist Associate",
+        "Google Professional Data Engineer",
+        "AWS Certified Data Analytics - Specialty",
+        "TensorFlow Developer Certificate",
+        "Cloudera Certified Associate: Data Analyst",
+        "SAS Certified Data Scientist"
+      ]
+    },
+    design: {
+      suggestedSkills: [
+        "UI/UX Design", "Adobe Creative Suite", "Figma/Sketch", "Typography",
+        "Color Theory", "Responsive Design", "Prototyping", "Wireframing",
+        "User Research", "Information Architecture", "Interaction Design",
+        "Visual Communication", "Design Systems", "Accessibility (WCAG)",
+        "Design Thinking"
+      ],
+      industryKeywords: [
+        "User-centered", "Responsive", "Wireframes", "Mockups", "Prototypes",
+        "User Experience", "User Interface", "Usability Testing", "A/B Testing",
+        "Information Architecture", "Interaction Design", "Visual Design",
+        "Mobile-first", "Accessibility", "Design Systems"
+      ],
+      resumeTips: [
+        "Include a link to your portfolio showcasing your best design work",
+        "Describe design challenges and your process for solving them",
+        "Quantify the impact of your designs on user engagement, conversion rates, or satisfaction",
+        "Highlight collaboration with cross-functional teams (developers, product managers, etc.)",
+        "Mention experience with user research and implementing feedback",
+        "Showcase both aesthetic skills and problem-solving abilities"
+      ],
+      careerPathDescription: "Design encompasses various disciplines focused on creating visually appealing, functional, and user-friendly products and experiences. From graphic design to user experience design, professionals in this field combine creativity with technical skills to communicate effectively and solve problems. The field rewards both artistic talent and strategic thinking about user needs and business goals.\n\nCareer progression may move from junior designer to senior designer, and then to design lead, art director, or creative director. Specialization in UI/UX, product design, brand design, or motion design is common. The industry increasingly values designers who understand technical constraints and can collaborate effectively with development teams.",
+      certifications: [
+        "Adobe Certified Professional",
+        "Google UX Design Professional Certificate",
+        "Certified User Experience Professional (CUXP)",
+        "Interaction Design Foundation Certification",
+        "Nielsen Norman Group UX Certification",
+        "Certified Web Accessibility Specialist (WAS)",
+        "InVision Design System Certification"
+      ]
+    },
+    marketing: {
+      suggestedSkills: [
+        "Digital Marketing", "Content Strategy", "SEO/SEM", "Social Media Marketing",
+        "Email Marketing", "Marketing Analytics", "A/B Testing",
+        "CRM Management", "Copywriting", "Brand Development",
+        "Campaign Management", "Marketing Automation", "Google Analytics",
+        "Data Visualization", "Customer Journey Mapping"
+      ],
+      industryKeywords: [
+        "ROI", "Conversion Rate", "Lead Generation", "Customer Acquisition",
+        "KPI", "Market Research", "Brand Awareness", "Target Audience",
+        "Engagement Rate", "Funnel Optimization", "Growth Hacking",
+        "Customer Segmentation", "Retention", "CRM", "Attribution"
+      ],
+      resumeTips: [
+        "Quantify marketing achievements with specific metrics (ROI, conversion rates, subscriber growth)",
+        "Highlight experience with specific marketing platforms and tools",
+        "Showcase successful campaigns and their business impact",
+        "Demonstrate experience across multiple marketing channels",
+        "Include examples of data-driven decisions and their outcomes",
+        "Mention experience with marketing budgets and resource allocation"
+      ],
+      careerPathDescription: "Marketing is focused on promoting products, services, and brands to attract and retain customers. Professionals in this field develop strategies to understand customer needs, communicate value propositions, and drive sales or engagement. The field combines creativity with analytical thinking and increasingly relies on digital tools and data analysis to optimize campaigns.\n\nCareer paths include specializations in digital marketing, content marketing, social media, SEO/SEM, marketing analytics, or brand management. Progression typically moves from marketing coordinator to marketing manager, and potentially to marketing director or CMO. The most successful marketers blend creative communication skills with data literacy and strategic thinking.",
+      certifications: [
+        "Google Analytics Certification",
+        "HubSpot Content Marketing Certification",
+        "Facebook Blueprint Certification",
+        "Google Ads Certification",
+        "Hootsuite Social Marketing Certification",
+        "American Marketing Association Professional Certified Marketer",
+        "Digital Marketing Institute Certification"
+      ]
+    },
+    sales: {
+      suggestedSkills: [
+        "Consultative Selling", "Negotiation", "CRM Software (Salesforce)",
+        "Pipeline Management", "Needs Assessment", "Solution Selling",
+        "Relationship Building", "Customer Success", "Sales Analytics",
+        "Territory Management", "Objection Handling", "Cold Calling/Outreach",
+        "Account Management", "Value Proposition Development", "Sales Enablement"
+      ],
+      industryKeywords: [
+        "Revenue Generation", "Quota Attainment", "Pipeline", "Lead Qualification",
+        "Closing Rate", "Customer Acquisition", "Account Management",
+        "Upselling", "Cross-selling", "Client Relationship", "Solution Selling",
+        "B2B", "B2C", "SaaS", "Enterprise Sales"
+      ],
+      resumeTips: [
+        "Quantify sales achievements as percentages above quota or revenue generated",
+        "Highlight experience with specific CRM systems and sales technologies",
+        "Showcase your largest deals or accounts and how you won them",
+        "Demonstrate consistent performance across different sales cycles",
+        "Include examples of relationship building and long-term customer success",
+        "Mention experience training or mentoring other sales professionals"
+      ],
+      careerPathDescription: "Sales professionals drive business growth by identifying prospects, understanding their needs, and convincing them of the value of products or services. The field requires strong interpersonal skills, resilience, strategic thinking, and increasingly, technical knowledge of complex products and CRM systems. Successful salespeople balance relationship building with systematic processes to consistently achieve results.\n\nCareer progression typically includes roles like sales development representative, account executive, senior account executive, and eventually sales manager, director, or VP. Specialization by industry, product type (SaaS, hardware, services), or sales approach (inside sales, field sales, enterprise) is common.",
+      certifications: [
+        "Certified Professional Sales Person (CPSP)",
+        "Certified Inside Sales Professional (CISP)",
+        "Salesforce Certified Administrator",
+        "MEDDIC Sales Methodology Certification",
+        "Challenger Sales Certification",
+        "Sandler Training Certification",
+        "HubSpot Sales Software Certification"
+      ]
+    },
+    product_management: {
+      suggestedSkills: [
+        "Product Strategy", "Roadmap Planning", "Agile/Scrum", "User Stories",
+        "Market Research", "Competitive Analysis", "Product Analytics",
+        "A/B Testing", "Stakeholder Management", "User Interviews",
+        "Product Lifecycle Management", "Prioritization Frameworks",
+        "Technical Communication", "Product Marketing", "Feature Specification"
+      ],
+      industryKeywords: [
+        "Product-Market Fit", "MVP", "User Story", "Backlog", "Sprint",
+        "KPI", "OKR", "Customer Journey", "Feature Prioritization",
+        "Agile", "Scrum", "Kanban", "User Feedback", "Roadmap",
+        "Product Vision", "Go-to-Market"
+      ],
+      resumeTips: [
+        "Describe products you've managed with metrics on user growth or revenue impact",
+        "Highlight experience with product development methodologies (Agile, Scrum, etc.)",
+        "Showcase how you prioritized features based on user needs and business goals",
+        "Include examples of cross-functional team leadership and stakeholder management",
+        "Quantify the business impact of product decisions you've made",
+        "Mention experience with both technical and business aspects of product development"
+      ],
+      careerPathDescription: "Product management sits at the intersection of business, technology, and user experience, focusing on guiding products from conception to market success. Product managers identify opportunities, define requirements, and coordinate cross-functional teams to deliver solutions that meet customer needs while achieving business objectives. The role requires a blend of strategic thinking, technical understanding, and excellent communication skills.\n\nCareer progression typically moves from associate product manager to product manager, senior product manager, and potentially to director of product, VP of product, or CPO. Some product managers specialize in particular industries, product types (B2B vs. B2C), or aspects of product management (technical, growth, or innovation).",
+      certifications: [
+        "Certified Scrum Product Owner (CSPO)",
+        "Product Management Certificate (PMC)",
+        "Professional Scrum Product Owner (PSPO)",
+        "Pragmatic Marketing Certified",
+        "Product School Certification",
+        "Agile Certified Product Manager",
+        "Google Product Management Certificate"
+      ]
+    },
+    finance: {
+      suggestedSkills: [
+        "Financial Analysis", "Excel/Advanced Modeling", "Financial Reporting",
+        "Budgeting & Forecasting", "Risk Assessment", "Investment Analysis",
+        "Accounting Principles", "Financial Statement Analysis", "Tax Planning",
+        "Portfolio Management", "Regulatory Compliance", "Financial Software",
+        "Cash Flow Management", "Business Valuation", "Financial Strategy"
+      ],
+      industryKeywords: [
+        "ROI", "P&L", "Balance Sheet", "Cash Flow", "GAAP", "IFRS",
+        "Variance Analysis", "Capital Expenditure", "Liquidity", "Solvency",
+        "Financial Planning", "Risk Management", "Due Diligence", 
+        "Asset Management", "Profit Optimization", "Cost Reduction"
+      ],
+      resumeTips: [
+        "Highlight financial models or analysis that led to significant business decisions",
+        "Quantify the financial impact of your recommendations or initiatives",
+        "Showcase experience with specific financial software or systems",
+        "Mention experience with regulatory compliance and risk management",
+        "Demonstrate both analytical skills and strategic financial thinking",
+        "Include examples of effectively communicating complex financial information"
+      ],
+      careerPathDescription: "Finance professionals manage, analyze, and optimize financial resources for individuals, organizations, or institutions. The field encompasses various specializations including corporate finance, investment banking, financial planning, risk management, and accounting. Success requires analytical rigor, attention to detail, ethical judgment, and increasingly, technological proficiency as financial systems become more complex and automated.\n\nCareer progression often begins with analyst roles, advancing to senior analyst, manager, director, and eventually CFO or other executive positions. Specialization in areas like investment banking, corporate finance, risk management, or financial technology is common. Many roles require professional certifications and continuing education to stay current with regulations and best practices.",
+      certifications: [
+        "Certified Public Accountant (CPA)",
+        "Chartered Financial Analyst (CFA)",
+        "Certified Financial Planner (CFP)",
+        "Financial Risk Manager (FRM)",
+        "Chartered Alternative Investment Analyst (CAIA)",
+        "Certified Management Accountant (CMA)",
+        "Certified Treasury Professional (CTP)"
+      ]
+    },
+    healthcare: {
+      suggestedSkills: [
+        "Medical Terminology", "Patient Care", "Electronic Health Records (EHR)",
+        "Healthcare Regulations (HIPAA)", "Clinical Documentation",
+        "Health Insurance & Billing", "Patient Assessment", "Care Coordination",
+        "Medical Software Systems", "Infection Control", "Case Management",
+        "Medical Ethics", "Quality Improvement", "Healthcare Analytics",
+        "Interprofessional Collaboration"
+      ],
+      industryKeywords: [
+        "Patient-centered", "Evidence-based", "Clinical Outcomes", "Quality of Care",
+        "Preventive Care", "Continuity of Care", "Healthcare Compliance",
+        "Population Health", "Value-based Care", "Integrated Care",
+        "Patient Safety", "Medical Coding", "Treatment Planning",
+        "Healthcare Informatics", "Telehealth"
+      ],
+      resumeTips: [
+        "Highlight specific medical systems or EHR platforms you're experienced with",
+        "Showcase patient care improvements or efficiency measures you've implemented",
+        "Mention experience with healthcare regulations and compliance",
+        "Include examples of interdisciplinary team collaboration",
+        "Quantify achievements with patient outcomes or healthcare metrics",
+        "Demonstrate both technical healthcare knowledge and soft skills for patient interaction"
+      ],
+      careerPathDescription: "Healthcare encompasses a wide range of roles focused on patient care, health promotion, and medical services. From direct clinical roles to healthcare administration and support functions, professionals in this field work to improve health outcomes and deliver quality care. The industry combines scientific knowledge with compassion and increasingly relies on technology to enhance efficiency and patient experience.\n\nCareer paths vary widely depending on specialization – clinical practitioners may advance through increasing specialization and expertise, while administrators might progress from department management to executive leadership. The field offers stability, purpose-driven work, and opportunities to make meaningful impacts on individual and community health.",
+      certifications: [
+        "Registered Nurse (RN)",
+        "Certified Medical Assistant (CMA)",
+        "Certified Professional in Healthcare Quality (CPHQ)",
+        "Certified Healthcare Information Systems Professional (CHISP)",
+        "Certified Case Manager (CCM)",
+        "Certified Professional in Healthcare Risk Management (CPHRM)",
+        "Certified in Public Health (CPH)"
+      ]
+    },
+    education: {
+      suggestedSkills: [
+        "Curriculum Development", "Instructional Design", "Assessment Methods",
+        "Classroom Management", "Differentiated Instruction", "Educational Technology",
+        "Learning Management Systems", "Student Engagement Strategies",
+        "Special Education Principles", "Lesson Planning", "Educational Psychology",
+        "Cultural Competence", "Data-Driven Instruction", "Project-Based Learning",
+        "Formative Assessment"
+      ],
+      industryKeywords: [
+        "Student-centered", "Differentiated Learning", "Formative Assessment",
+        "Summative Assessment", "Pedagogy", "Andragogy", "Blended Learning",
+        "E-Learning", "Learning Outcomes", "Curriculum Standards",
+        "Instructional Strategies", "Educational Leadership", "Professional Development",
+        "Classroom Management", "Academic Achievement"
+      ],
+      resumeTips: [
+        "Highlight specific teaching methodologies and educational technologies you utilize",
+        "Quantify student achievement or improvement under your instruction",
+        "Showcase curriculum development or educational materials you've created",
+        "Include examples of adapting teaching strategies for diverse learners",
+        "Mention experience with assessment design and data-driven instruction",
+        "Demonstrate both subject matter expertise and effective teaching skills"
+      ],
+      careerPathDescription: "Education professionals facilitate learning and development for students of all ages in various settings. From classroom teaching to educational administration, curriculum design, and educational technology, this field focuses on effective knowledge transfer, skill development, and fostering critical thinking. Successful educators combine subject matter expertise with understanding of learning processes and strong communication skills.\n\nCareer paths include K-12 teaching, higher education, corporate training, educational technology, administration, and curriculum development. Progression may include moving from teacher to department head, instructional coach, principal, or other administrative roles. Many educators also develop specializations in areas like special education, educational technology, or specific subject domains.",
+      certifications: [
+        "Teaching Certification/License (state-specific)",
+        "National Board for Professional Teaching Standards Certification",
+        "Google Certified Educator",
+        "Microsoft Certified Educator",
+        "TESOL/TEFL Certification (for ESL teaching)",
+        "International Baccalaureate Educator Certificates",
+        "Certified Higher Education Professional (CHEP)"
+      ]
+    },
+    customer_service: {
+      suggestedSkills: [
+        "Communication", "Active Listening", "Problem Resolution",
+        "CRM Software", "De-escalation Techniques", "Product Knowledge",
+        "Empathy", "Ticket Management", "Multichannel Support",
+        "Customer Success Principles", "Technical Troubleshooting",
+        "Quality Assurance", "Process Improvement", "Customer Feedback Analysis",
+        "Service Level Agreement Management"
+      ],
+      industryKeywords: [
+        "Customer Satisfaction", "First Contact Resolution", "Service Level Agreement",
+        "Customer Experience", "Call Handling", "Ticket Resolution",
+        "Quality Assurance", "Upselling/Cross-selling", "Customer Retention",
+        "Voice of Customer", "Support Tiers", "Complaint Management",
+        "Customer Journey", "Knowledge Base", "Customer Loyalty"
+      ],
+      resumeTips: [
+        "Quantify your customer service performance with metrics (CSAT, NPS, resolution time)",
+        "Highlight experience with specific CRM systems and customer service tools",
+        "Showcase successful handling of difficult situations or de-escalations",
+        "Include examples of process improvements that enhanced customer experience",
+        "Mention experience training or mentoring other customer service representatives",
+        "Demonstrate both technical knowledge and strong interpersonal skills"
+      ],
+      careerPathDescription: "Customer service professionals represent organizations to their customers, providing assistance, resolving issues, and ensuring positive experiences. From frontline support to customer success management, these roles focus on building customer relationships, addressing concerns efficiently, and gathering feedback to improve products and services. The field requires excellent communication skills, problem-solving abilities, and emotional intelligence.\n\nCareer paths may progress from customer service representative to senior representative, team lead, supervisor, and potentially to customer service manager or director of customer experience. Specialization in technical support, customer success, quality assurance, or specific industries is common. As businesses increasingly prioritize customer experience as a competitive advantage, customer service roles have gained strategic importance.",
+      certifications: [
+        "Certified Customer Service Professional (CCSP)",
+        "HDI Customer Service Representative",
+        "Certified Customer Experience Professional (CCXP)",
+        "ICMI Certified Contact Center Professional",
+        "Salesforce Service Cloud Consultant",
+        "Customer Service Institute of America Certification",
+        "Support Center Institute Service Desk Analyst"
+      ]
+    },
+    general: genericAdvice
+  };
+  
+  return careerAdvice[careerPath] || genericAdvice;
 }
 
 /**

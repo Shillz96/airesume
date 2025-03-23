@@ -558,6 +558,126 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get career-specific advice and insights
+  app.get("/api/careers/:path/advice", async (req, res) => {
+    try {
+      const careerPath = req.params.path as CareerPath;
+      
+      // Validate career path
+      const validPaths: CareerPath[] = [
+        'software_engineering', 'data_science', 'design', 'marketing', 
+        'sales', 'product_management', 'finance', 'healthcare', 
+        'education', 'customer_service', 'general'
+      ];
+      
+      if (!validPaths.includes(careerPath)) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "Invalid career path specified",
+          validPaths
+        });
+      }
+      
+      // Get career-specific advice
+      const advice = await getCareerAdvice(careerPath);
+      
+      return res.json({
+        success: true,
+        careerPath,
+        advice
+      });
+    } catch (error) {
+      console.error("Error getting career advice:", error);
+      return res.status(500).json({ 
+        success: false, 
+        error: "Failed to generate career advice" 
+      });
+    }
+  });
+  
+  // Detect career path from a resume
+  app.post("/api/careers/detect", async (req, res) => {
+    try {
+      const { resume } = req.body;
+      
+      if (!resume || typeof resume !== 'object') {
+        return res.status(400).json({ 
+          success: false, 
+          error: "Resume data is required"
+        });
+      }
+      
+      // Extract resume content safely
+      const resumeContent = resume.content || {};
+      
+      // Detect career path
+      const careerPath = await detectCareerPath({
+        personalInfo: (resumeContent as any).personalInfo || {},
+        experience: (resumeContent as any).experience || [],
+        skills: (resumeContent as any).skills || []
+      });
+      
+      // Get career-specific advice
+      const advice = await getCareerAdvice(careerPath);
+      
+      return res.json({
+        success: true,
+        careerPath,
+        advice
+      });
+    } catch (error) {
+      console.error("Error detecting career path:", error);
+      return res.status(500).json({ 
+        success: false, 
+        error: "Failed to detect career path" 
+      });
+    }
+  });
+  
+  // Detect career path from a user's saved resume
+  app.get("/api/resumes/:id/career-path", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const userId = req.user!.id;
+      const resumeId = parseInt(req.params.id);
+      
+      // Get the resume
+      const resume = await storage.getResume(resumeId, userId);
+      if (!resume) {
+        return res.status(404).json({ 
+          success: false, 
+          error: "Resume not found" 
+        });
+      }
+      
+      // Extract resume content safely
+      const resumeContent = resume.content || {};
+      
+      // Detect career path
+      const careerPath = await detectCareerPath({
+        personalInfo: (resumeContent as any).personalInfo || {},
+        experience: (resumeContent as any).experience || [],
+        skills: (resumeContent as any).skills || []
+      });
+      
+      // Get career-specific advice
+      const advice = await getCareerAdvice(careerPath);
+      
+      return res.json({
+        success: true,
+        careerPath,
+        advice
+      });
+    } catch (error) {
+      console.error("Error detecting career path:", error);
+      return res.status(500).json({ 
+        success: false, 
+        error: "Failed to detect career path" 
+      });
+    }
+  });
+  
   // Get AI suggestions for improving a resume
   app.get("/api/resumes/:id/suggestions", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);

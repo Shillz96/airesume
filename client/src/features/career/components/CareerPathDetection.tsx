@@ -21,8 +21,9 @@ export default function CareerPathDetection({ resumeId, onAdviceReceived }: Care
   
   // Query for resume data if resumeId is provided
   const resumeQuery = useQuery({
-    queryKey: resumeId ? ['/api/resumes', resumeId] : null,
-    enabled: !!resumeId
+    queryKey: resumeId ? ['/api/resumes', resumeId] : [],
+    enabled: !!resumeId,
+    queryFn: !!resumeId ? undefined : () => Promise.resolve(null)
   });
   
   // Mutation to detect career path from resume

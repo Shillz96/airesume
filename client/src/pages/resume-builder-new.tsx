@@ -22,6 +22,8 @@ import {
   ResumeSummarySection
 } from "@/features/resume/components/ResumeSections";
 import ResumeTemplate from "@/features/resume/components/ResumeTemplate"; // Now using feature-based import
+import CareerPathDetection from "@/features/career/components/CareerPathDetection";
+import { CareerSpecificAdvice, CareerPath } from "@/features/career/types";
 
 /**
  * New and improved Resume Builder that connects to our new component organization
@@ -31,6 +33,8 @@ export default function ResumeBuilderNew() {
   // States for resume data and UI controls
   const [activeSection, setActiveSection] = useState<string>("contact");
   const [skillSearchQuery, setSkillSearchQuery] = useState<string>("");
+  const [detectedCareerPath, setDetectedCareerPath] = useState<CareerPath | null>(null);
+  const [careerAdvice, setCareerAdvice] = useState<CareerSpecificAdvice | null>(null);
   const { toast } = useToast();
   const { 
     resume, 
@@ -61,6 +65,24 @@ export default function ResumeBuilderNew() {
     // Clear any local state if needed
     setSkillSearchQuery('');
   }, [activeSection]);
+  
+  // Handle career advice received from the CareerPathDetection component
+  const handleCareerAdviceReceived = (careerPath: CareerPath, advice: CareerSpecificAdvice) => {
+    setDetectedCareerPath(careerPath);
+    setCareerAdvice(advice);
+    
+    // Show a toast notification about the detected career path
+    toast({
+      title: "Career Path Detected",
+      description: `Your resume matches the ${careerPath.replace('_', ' ')} career path. Career-specific advice has been generated.`,
+    });
+    
+    // You could also apply suggestions based on the career path
+    if (advice.suggestedSkills.length > 0 && activeSection === 'skills') {
+      // Suggest adding first skill from career advice
+      applySuggestion(advice.suggestedSkills[0]);
+    }
+  };
 
   // Function to handle download
   const handleDownload = () => {
@@ -397,32 +419,40 @@ export default function ResumeBuilderNew() {
             </Tabs>
           </div>
 
-          {/* Right Sidebar - Temporary placeholder for AI Assistant */}
-          <div className="w-full lg:w-80">
+          {/* Right Sidebar - Career Path Detection & Analysis */}
+          <div className="w-full lg:w-96">
             <div className="sticky top-6">
-              <div className="card">
-                <div className="card-header">
-                  <div className="flex items-center">
-                    <Bot className="h-5 w-5 mr-2 text-primary" />
-                    <h3 className="card-title">AI Assistant</h3>
-                  </div>
-                </div>
-                
-                <div className="card-content">
-                  <p className="mb-4">
-                    Getting intelligent suggestions for your resume...
-                  </p>
-                  
-                  <div className="flex justify-center my-6">
-                    <RefreshCw className="h-8 w-8 animate-spin text-primary opacity-50" />
+              {/* Only show the CareerPathDetection component if we have a valid resumed saved */}
+              {resume && resume.id ? (
+                <CareerPathDetection 
+                  resumeId={resume.id} 
+                  onAdviceReceived={handleCareerAdviceReceived} 
+                />
+              ) : (
+                <div className="card">
+                  <div className="card-header">
+                    <div className="flex items-center">
+                      <Bot className="h-5 w-5 mr-2 text-primary" />
+                      <h3 className="card-title">Career Analysis</h3>
+                    </div>
                   </div>
                   
-                  <div className="text-xs text-muted text-center">
-                    The AI Assistant feature is being migrated to the new component structure. 
-                    It will be available soon!
+                  <div className="card-content">
+                    <p className="mb-4">
+                      Save your resume to get AI-powered career path detection and tailored advice.
+                    </p>
+                    
+                    <Button 
+                      onClick={handleSaveResume} 
+                      disabled={!isDirty}
+                      className="w-full"
+                    >
+                      <Save className="h-4 w-4 mr-2" />
+                      Save Resume to Continue
+                    </Button>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

@@ -7,6 +7,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import PageHeader from "@/features/layout/components/PageHeader";
+import PageContainer from "@/components/PageContainer";
 
 // Import from new organized structure
 import { Button } from "@/ui/core/Button";

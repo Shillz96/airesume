@@ -84,18 +84,20 @@ function AppContent() {
   }, [location]);
 
   return (
-    <div className={isDarkMode ? '' : 'light-mode'}>
+    <div className={isDarkMode ? 'dark' : 'light'}>
       {/* Global Cosmic Background with consistent styling from our unified theme */}
       <CosmicBackground />
       
       {/* Content */}
-      <div className="relative" style={{ zIndex: 1 }}>
+      <div className="relative z-10">
         {/* Master Navbar Component */}
         {showNavbar && <Navbar />}
         
         {/* Main content area with proper spacing using our unified theme variables */}
-        <main className="page-container">
-          <Router />
+        <main>
+          <div className="container page-container">
+            <Router />
+          </div>
         </main>
         
         {/* Admin access button - always visible */}

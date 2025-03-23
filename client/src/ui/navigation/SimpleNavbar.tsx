@@ -12,7 +12,11 @@ export default function SimpleNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
-  const { isDarkMode, toggleDarkMode } = useTheme();
+  const { isDarkMode, setMode } = useUnifiedTheme();
+  
+  const toggleDarkMode = () => {
+    setMode(isDarkMode ? 'light' : 'dark');
+  };
   const dropdownRef = useRef<HTMLDivElement>(null);
   
   // Handle click outside to close mobile menu

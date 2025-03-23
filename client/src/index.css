@@ -1338,6 +1338,19 @@ a:hover {
   overflow-x: auto;
 }
 
+/* Remove scrollbar while keeping functionality */
+.cosmic-tablist::-webkit-scrollbar {
+  height: 0;
+  width: 0;
+  display: none;
+}
+
+/* Specific update for the resume builder to display all tabs properly */
+.resume-builder-tabs {
+  flex-wrap: wrap;
+  padding: 0.75rem 1.5rem;
+}
+
 .cosmic-tab {
   font-weight: 600;
   font-size: 0.75rem;
@@ -1349,4 +1362,23 @@ a:hover {
   border-bottom: 2px solid transparent;
   border-radius: 0;
   text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+/* Active and hover states for cosmic tabs */
+.cosmic-tab[data-state="active"] {
+  color: white;
+  border-bottom: 2px solid var(--primary);
+}
+
+.cosmic-tab[data-state="active"] svg {
+  color: var(--primary);
+}
+
+.cosmic-tab:hover {
+  color: white;
+}
+
+.cosmic-tab:hover:not([data-state="active"]) {
+  border-bottom-color: rgba(255, 255, 255, 0.2);
 }

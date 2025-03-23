@@ -504,7 +504,7 @@ export default function ResumeBuilderNew() {
               onValueChange={setActiveSection}
               className="w-full"
             >
-              <TabsList className="cosmic-tablist mb-6">
+              <TabsList className="cosmic-tablist resume-builder-tabs mb-6">
                 <TabsTrigger 
                   value="contact" 
                   className="cosmic-tab"

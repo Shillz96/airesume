@@ -35,8 +35,6 @@ import { cn } from "@/lib/utils";
 import { insertUserSchema } from "@shared/schema";
 import { useGuestMode } from "@/hooks/use-guest-mode";
 import gsap from "gsap";
-// Import ScrollTrigger separately to avoid JSON serialization issues
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // Login form schema
 const loginSchema = z.object({
@@ -130,29 +128,29 @@ export default function LandingPage() {
     }
   }
 
-  // Animation for text elements - ultra simple for mobile compatibility
+  // Animation for text elements (no starfield - using global CosmicBackground)
   useEffect(() => {
-    // Initial hero animations - minimal animations for all devices
+
+    // GSAP animations
     if (titleRef.current && subtitleRef.current && ctaRef.current) {
-      // Simple fade in for the hero section
-      gsap.fromTo(
-        [titleRef.current, subtitleRef.current, ctaRef.current], 
-        { opacity: 0 }, 
-        { opacity: 1, duration: 0.8, stagger: 0.2 }
+      gsap.fromTo(titleRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1 });
+      gsap.fromTo(subtitleRef.current, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 1, delay: 0.3 });
+      gsap.fromTo(ctaRef.current, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 1, delay: 0.6 });
+    }
+
+    // Feature animations on scroll - without scrollTrigger to avoid cyclic reference
+    if (featuresRef.current) {
+      const features = featuresRef.current.querySelectorAll('.feature-card');
+      gsap.fromTo(features, 
+        { opacity: 0, y: 30 }, 
+        { opacity: 1, y: 0, duration: 0.7, stagger: 0.2 }
       );
     }
 
-    // Show all feature cards immediately
-    if (featuresRef.current) {
-      const features = featuresRef.current.querySelectorAll('.feature-card');
-      
-      // Simple opacity animation for all cards
-      gsap.fromTo(
-        features, 
-        { opacity: 0 }, 
-        { opacity: 1, duration: 0.5, stagger: 0.1 }
-      );
-    }
+    // No background cleanup needed since we're using the global CosmicBackground
+    return () => {
+      // No cleanup needed for removed star animations
+    };
   }, []);
 
   const handleLoginClick = () => {
@@ -407,81 +405,81 @@ export default function LandingPage() {
         </section>
 
         {/* Features Section */}
-        <section className="py-10 md:py-16 relative z-10" ref={featuresRef}>
+        <section className="py-20 relative z-10" ref={featuresRef}>
           <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-8 md:mb-12">
-              <h2 className="text-2xl md:text-3xl font-bold cosmic-text-gradient">
-                Features to Supercharge Your Job Search
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold cosmic-text-gradient">
+                Powerful Features to Supercharge Your Job Search
               </h2>
-              <p className="mt-2 text-base md:text-lg text-gray-300">
-                Create professional resumes and find your dream job
+              <p className="mt-4 text-xl text-gray-300">
+                Everything you need to create professional resumes and find your dream job
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {/* Feature 1 */}
-              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-4">
-                <div className="h-10 w-10 rounded-full bg-blue-500/20 flex items-center justify-center mb-3">
-                  <FileText className="h-5 w-5 text-blue-400" />
+              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
+                <div className="h-12 w-12 rounded-full bg-blue-500/20 flex items-center justify-center mb-4">
+                  <FileText className="h-6 w-6 text-blue-400" />
                 </div>
-                <h3 className="text-lg font-semibold mb-1">AI Resume Builder</h3>
-                <p className="text-sm text-gray-300">
-                  Create ATS-optimized resumes with intelligent suggestions.
+                <h3 className="text-xl font-semibold mb-2">AI Resume Builder</h3>
+                <p className="text-gray-300">
+                  Create ATS-optimized resumes with intelligent suggestions for every section, customizable templates, and real-time feedback.
                 </p>
               </div>
 
               {/* Feature 2 */}
-              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-4">
-                <div className="h-10 w-10 rounded-full bg-purple-500/20 flex items-center justify-center mb-3">
-                  <Bot className="h-5 w-5 text-purple-400" />
+              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
+                <div className="h-12 w-12 rounded-full bg-purple-500/20 flex items-center justify-center mb-4">
+                  <Bot className="h-6 w-6 text-purple-400" />
                 </div>
-                <h3 className="text-lg font-semibold mb-1">AI Tailor Resume</h3>
-                <p className="text-sm text-gray-300">
-                  Automatically optimize your resume for specific job descriptions.
+                <h3 className="text-xl font-semibold mb-2">AI Tailor Resume</h3>
+                <p className="text-gray-300">
+                  Automatically optimize your resume for specific job descriptions, increasing your chances of getting interviews.
                 </p>
               </div>
 
               {/* Feature 3 */}
-              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-4">
-                <div className="h-10 w-10 rounded-full bg-pink-500/20 flex items-center justify-center mb-3">
-                  <Briefcase className="h-5 w-5 text-pink-400" />
+              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
+                <div className="h-12 w-12 rounded-full bg-pink-500/20 flex items-center justify-center mb-4">
+                  <Briefcase className="h-6 w-6 text-pink-400" />
                 </div>
-                <h3 className="text-lg font-semibold mb-1">Job Matching</h3>
-                <p className="text-sm text-gray-300">
-                  Discover jobs that match your skills and experience.
+                <h3 className="text-xl font-semibold mb-2">Intelligent Job Matching</h3>
+                <p className="text-gray-300">
+                  Discover jobs that match your skills and experience with our AI-powered job search and matching algorithm.
                 </p>
               </div>
 
               {/* Feature 4 */}
-              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-4">
-                <div className="h-10 w-10 rounded-full bg-green-500/20 flex items-center justify-center mb-3">
-                  <Star className="h-5 w-5 text-green-400" />
+              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
+                <div className="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
+                  <Star className="h-6 w-6 text-green-400" />
                 </div>
-                <h3 className="text-lg font-semibold mb-1">Multiple Versions</h3>
-                <p className="text-sm text-gray-300">
-                  Create multiple resume versions for different job types.
+                <h3 className="text-xl font-semibold mb-2">Multiple Resume Versions</h3>
+                <p className="text-gray-300">
+                  Create and manage multiple resume versions for different job types, industries, or career paths.
                 </p>
               </div>
 
               {/* Feature 5 */}
-              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-4">
-                <div className="h-10 w-10 rounded-full bg-yellow-500/20 flex items-center justify-center mb-3">
-                  <Search className="h-5 w-5 text-yellow-400" />
+              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
+                <div className="h-12 w-12 rounded-full bg-yellow-500/20 flex items-center justify-center mb-4">
+                  <Search className="h-6 w-6 text-yellow-400" />
                 </div>
-                <h3 className="text-lg font-semibold mb-1">ATS Analysis</h3>
-                <p className="text-sm text-gray-300">
-                  Identify missing keywords to pass Applicant Tracking Systems.
+                <h3 className="text-xl font-semibold mb-2">ATS Keyword Analysis</h3>
+                <p className="text-gray-300">
+                  Identify missing keywords and optimize your resume to pass through Applicant Tracking Systems.
                 </p>
               </div>
 
               {/* Feature 6 */}
-              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-4">
-                <div className="h-10 w-10 rounded-full bg-red-500/20 flex items-center justify-center mb-3">
-                  <Zap className="h-5 w-5 text-red-400" />
+              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
+                <div className="h-12 w-12 rounded-full bg-red-500/20 flex items-center justify-center mb-4">
+                  <Zap className="h-6 w-6 text-red-400" />
                 </div>
-                <h3 className="text-lg font-semibold mb-1">Application Tracking</h3>
-                <p className="text-sm text-gray-300">
-                  Keep track of job applications in a centralized dashboard.
+                <h3 className="text-xl font-semibold mb-2">Job Application Tracking</h3>
+                <p className="text-gray-300">
+                  Keep track of your job applications, status, and follow-ups in one centralized dashboard.
                 </p>
               </div>
             </div>
@@ -489,18 +487,18 @@ export default function LandingPage() {
         </section>
 
 {/* Pricing Section */}
-<section id="pricing" className="py-10 md:py-16 relative z-10">
+<section id="pricing" className="py-20 relative z-10">
   <div className="max-w-5xl mx-auto">
-    <div className="text-center mb-6 md:mb-10">
-      <h2 className="text-2xl md:text-3xl font-bold cosmic-text-gradient">
-        Simple Pricing
+    <div className="text-center mb-16">
+      <h2 className="text-3xl md:text-4xl font-bold cosmic-text-gradient">
+        Simple, Transparent Pricing
       </h2>
-      <p className="mt-2 text-base md:text-lg text-gray-300">
-        Choose a plan that fits your needs
+      <p className="mt-4 text-lg text-gray-300">
+        Choose the plan that fits your needs. All plans include our core features.
       </p>
     </div>
 
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
       {/* Free Plan */}
       <Card className="relative flex flex-col h-full bg-gradient-to-b from-blue-900/50 to-purple-900/50 border border-white/10 rounded-xl">
         <CardHeader className="pb-4">
@@ -635,65 +633,65 @@ export default function LandingPage() {
 </section>
 
         {/* Testimonials Section */}
-        <section className="py-10 md:py-16 relative z-10">
+        <section className="py-20 relative z-10">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-8 md:mb-10">
-              <h2 className="text-2xl md:text-3xl font-bold cosmic-text-gradient">
-                User Success Stories
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold cosmic-text-gradient">
+                What Our Users Say
               </h2>
-              <p className="mt-2 text-base md:text-lg text-gray-300">
-                See how AIreHire has helped professionals
+              <p className="mt-4 text-lg text-gray-300">
+                Join thousands of professionals who have accelerated their careers with AIreHire
               </p>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 md:gap-6 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
               {/* Testimonial 1 */}
-              <div className="cosmic-card border border-white/10 rounded-lg p-4">
-                <div className="flex items-center mb-3">
-                  <div className="mr-3">
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">JM</span>
+              <div className="cosmic-card border border-white/10 rounded-lg p-6">
+                <div className="flex items-center mb-4">
+                  <div className="mr-4">
+                    <div className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+                      <span className="text-white font-bold">JM</span>
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-medium text-sm">James Mitchell</h4>
-                    <p className="text-xs text-gray-400">Software Developer</p>
+                    <h4 className="font-medium">James Mitchell</h4>
+                    <p className="text-sm text-gray-400">Software Developer</p>
                   </div>
                 </div>
-                <p className="text-sm text-gray-300">
-                  "The AI resume tailoring feature is a game-changer. I saw an immediate increase in interview callbacks."
+                <p className="text-gray-300">
+                  "The AI resume tailoring feature is a game-changer. I saw an immediate increase in interview callbacks after optimizing my resume for each job application."
                 </p>
-                <div className="mt-2 flex text-yellow-400">
-                  <Star className="h-4 w-4 fill-current" />
-                  <Star className="h-4 w-4 fill-current" />
-                  <Star className="h-4 w-4 fill-current" />
-                  <Star className="h-4 w-4 fill-current" />
-                  <Star className="h-4 w-4 fill-current" />
+                <div className="mt-4 flex text-yellow-400">
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
                 </div>
               </div>
 
               {/* Testimonial 2 */}
-              <div className="cosmic-card border border-white/10 rounded-lg p-4">
-                <div className="flex items-center mb-3">
-                  <div className="mr-3">
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">SR</span>
+              <div className="cosmic-card border border-white/10 rounded-lg p-6">
+                <div className="flex items-center mb-4">
+                  <div className="mr-4">
+                    <div className="h-12 w-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                      <span className="text-white font-bold">SR</span>
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-medium text-sm">Sarah Rodriguez</h4>
-                    <p className="text-xs text-gray-400">Marketing Manager</p>
+                    <h4 className="font-medium">Sarah Rodriguez</h4>
+                    <p className="text-sm text-gray-400">Marketing Manager</p>
                   </div>
                 </div>
-                <p className="text-sm text-gray-300">
-                  "The job matching algorithm found opportunities perfectly aligned with my skills. I landed my dream job!"
+                <p className="text-gray-300">
+                  "The job matching algorithm found opportunities that perfectly aligned with my skills and career goals. I landed my dream job within a month!"
                 </p>
-                <div className="mt-2 flex text-yellow-400">
-                  <Star className="h-4 w-4 fill-current" />
-                  <Star className="h-4 w-4 fill-current" />
-                  <Star className="h-4 w-4 fill-current" />
-                  <Star className="h-4 w-4 fill-current" />
-                  <Star className="h-4 w-4 fill-current" />
+                <div className="mt-4 flex text-yellow-400">
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
+                  <Star className="h-5 w-5 fill-current" />
                 </div>
               </div>
             </div>
@@ -701,21 +699,22 @@ export default function LandingPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-10 md:py-16 relative z-10">
+        <section className="py-16 relative z-10">
           <div className="max-w-4xl mx-auto">
-            <div className="cosmic-card border border-white/10 rounded-lg p-4 md:p-6 text-center bg-gradient-to-r from-blue-900/40 to-purple-900/40">
-              <h2 className="text-xl md:text-2xl font-bold mb-2 cosmic-text-gradient">
-                Start Your Career Journey
+            <div className="cosmic-card border border-white/10 rounded-lg p-8 text-center bg-gradient-to-r from-blue-900/40 to-purple-900/40">
+              <h2 className="text-3xl font-bold mb-4 cosmic-text-gradient">
+                Ready to Accelerate Your Career?
               </h2>
-              <p className="text-sm md:text-base text-gray-300 mb-4 max-w-2xl mx-auto">
-                Join thousands of professionals who use AIreHire's AI-powered tools.
+              <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+                Join thousands of professionals who have transformed their job search with AIreHire's AI-powered tools.
               </p>
-              <div className="flex justify-center">
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Button 
-                  className="px-4 py-2 text-sm cosmic-btn-glow"
+                  size="lg" 
+                  className="px-8 py-6 text-lg cosmic-btn-glow"
                   onClick={() => setIsRegisterOpen(true)}
                 >
-                  Get Started <Rocket className="ml-2 h-4 w-4" />
+                  Get Started Today <Rocket className="ml-2 h-5 w-5" />
                 </Button>
               </div>
             </div>

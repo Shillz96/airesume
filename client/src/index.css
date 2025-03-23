@@ -1,8 +1,13 @@
 /**
- * Main CSS Entry Point - Fresh, Simplified Implementation
+ * UNIFIED THEME SYSTEM
  * 
- * This file serves as the single source of truth for styling in our application.
- * No more imports from multiple files - everything is defined here for clarity.
+ * This is the single source of truth for all styling in the application.
+ * It provides a comprehensive set of CSS variables that power the entire UI.
+ * 
+ * The system is designed to be:
+ * 1. Consistent - one place for all theme definitions
+ * 2. Flexible - supports multiple variants and appearance modes
+ * 3. Maintainable - clear organization and naming conventions
  */
 
 @tailwind base;
@@ -10,54 +15,37 @@
 @tailwind utilities;
 
 /* --------------------------------
- * ROOT VARIABLES - Theme System
+ * ROOT VARIABLES - Light/Dark Mode Support
  * -------------------------------- */
 :root {
-  /* Core Spacing */
+  /* ========== LAYOUT & SPACING ========== */
   --container-padding: 1.5rem;
   --page-padding: 1rem;
   --content-max-width: 1200px;
-  
-  /* Colors */
-  --background: #050A18;
-  --foreground: #ffffff;
-  --muted: #6b7280;
-  --muted-foreground: #9ca3af;
-  --card: #0A1428;
-  --card-foreground: #ffffff;
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.1);
-  --ring: rgba(59, 130, 246, 0.5);
-  
-  /* Brand Colors */
-  --primary: #3b82f6;
-  --primary-rgb: 59, 130, 246;
-  --primary-dark: #2563eb;
-  --primary-dark-rgb: 37, 99, 235;
-  --primary-foreground: #ffffff;
-  --secondary: #8b5cf6;
-  --secondary-rgb: 139, 92, 246;
-  --secondary-foreground: #ffffff;
-  --accent: #10b981;
-  --accent-rgb: 16, 185, 129;
-  --accent-foreground: #ffffff;
-  
-  /* Status Colors */
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --info: #3b82f6;
-  
-  /* UI Properties */
-  --radius: 0.5rem;
   --header-height: 4rem;
+  --sidebar-width: 280px;
   
-  /* Animation & Transitions */
+  /* ========== BORDERS & RADIUSES ========== */
+  --radius: 0.5rem;
+  --radius-sm: 0.25rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+  
+  /* ========== SHADOWS ========== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+  --shadow-cosmic: 0 0 15px rgba(var(--primary-rgb), 0.3);
+  
+  /* ========== TRANSITIONS & ANIMATIONS ========== */
   --transition-fast: 0.2s;
   --transition-normal: 0.3s;
   --transition-slow: 0.5s;
+  --animation-speed: 1; /* Multiplier to adjust animation speeds */
   
-  /* Z-index Layers */
+  /* ========== Z-INDEX LAYERS ========== */
   --z-negative: -1;
   --z-background: -1;
   --z-default: 1;
@@ -68,10 +56,111 @@
   --z-popover: 50;
   --z-tooltip: 60;
   
-  /* Cosmic Theme Variables */
-  --cosmic-accent-primary: rgba(59, 130, 246, 0.5);
-  --cosmic-accent-secondary: rgba(139, 92, 246, 0.3);
-  --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.2);
+  /* ========== THEME VARIANTS ========== */
+  /* These can be themed per-variant by the UnifiedThemeContext */
+  --card-shadow: var(--shadow-md);
+  --card-glow: none;
+  --button-radius: var(--radius);
+  --animation-emphasis: 1;
+  
+  /* ========== STATUS COLORS ========== */
+  /* These remain consistent across all themes */
+  --success: #10b981;
+  --success-rgb: 16, 185, 129;
+  --warning: #f59e0b;
+  --warning-rgb: 245, 158, 11;
+  --danger: #ef4444;
+  --danger-rgb: 239, 68, 68;
+  --info: #3b82f6;
+  --info-rgb: 59, 130, 246;
+}
+
+/* ========== DARK MODE THEME ========== */
+.dark {
+  /* Core Colors */
+  --background: #050A18;
+  --background-rgb: 5, 10, 24;
+  --foreground: #ffffff;
+  --foreground-rgb: 255, 255, 255;
+  
+  /* UI Element Colors */
+  --card: #0A1428;
+  --card-rgb: 10, 20, 40;
+  --card-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: rgba(59, 130, 246, 0.5);
+  
+  /* Text Colors */
+  --muted: #6b7280;
+  --muted-rgb: 107, 114, 128;
+  --muted-foreground: #9ca3af;
+  
+  /* Brand Colors - Defaults that can be overridden by theme.json */
+  --primary: #3b82f6;
+  --primary-rgb: 59, 130, 246;
+  --primary-foreground: #ffffff;
+  --secondary: #8b5cf6;
+  --secondary-rgb: 139, 92, 246;
+  --secondary-foreground: #ffffff;
+  --accent: #10b981;
+  --accent-rgb: 16, 185, 129;
+  --accent-foreground: #ffffff;
+  
+  /* Dark Mode Shadow Adjustments */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.3);
+  
+  /* Dark Mode Component Adjustments */
+  --navbar-bg: rgba(5, 10, 24, 0.8);
+  --dropdown-bg: rgba(10, 20, 40, 0.95);
+  --modal-backdrop: rgba(0, 0, 0, 0.7);
+}
+
+/* ========== LIGHT MODE THEME ========== */
+.light {
+  /* Core Colors */
+  --background: #f9fafb;
+  --background-rgb: 249, 250, 251;
+  --foreground: #1f2937;
+  --foreground-rgb: 31, 41, 55;
+  
+  /* UI Element Colors */
+  --card: #ffffff;
+  --card-rgb: 255, 255, 255;
+  --card-foreground: #1f2937;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: rgba(0, 0, 0, 0.1);
+  --ring: rgba(59, 130, 246, 0.5);
+  
+  /* Text Colors */
+  --muted: #6b7280;
+  --muted-rgb: 107, 114, 128;
+  --muted-foreground: #4b5563;
+  
+  /* Brand Colors - Same defaults as dark mode */
+  --primary: #3b82f6;
+  --primary-rgb: 59, 130, 246;
+  --primary-foreground: #ffffff;
+  --secondary: #8b5cf6;
+  --secondary-rgb: 139, 92, 246;
+  --secondary-foreground: #ffffff;
+  --accent: #10b981;
+  --accent-rgb: 16, 185, 129;
+  --accent-foreground: #ffffff;
+  
+  /* Light Mode Shadow Adjustments */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.05);
+  
+  /* Light Mode Component Adjustments */
+  --navbar-bg: rgba(249, 250, 251, 0.8);
+  --dropdown-bg: rgba(255, 255, 255, 0.95);
+  --modal-backdrop: rgba(0, 0, 0, 0.5);
 }
 
 /* --------------------------------

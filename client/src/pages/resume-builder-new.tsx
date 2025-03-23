@@ -387,7 +387,7 @@ export default function ResumeBuilderNew() {
 
   return (
     <>
-      <UnifiedContainer className="min-h-screen pb-10 pt-4">
+      <UnifiedContainer className="min-h-screen pb-10">
         <UnifiedPageHeader
           title="Resume Builder"
           subtitle="Create and customize your professional resume"

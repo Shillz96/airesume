@@ -30,12 +30,12 @@ export function UnifiedPageHeader({
   const getBorderClasses = () => {
     switch (borderStyle) {
       case 'subtle':
-        return 'border-b border-border/40 pb-3 mb-4';
+        return 'border-b border-border/40 pb-2 mb-2';
       case 'gradient':
-        return 'border-b-2 border-gradient pb-3 mb-4';
+        return 'border-b-[1px] border-gradient pb-2 mb-2';
       case 'none':
       default:
-        return 'mb-4';
+        return 'mb-2';
     }
   };
   

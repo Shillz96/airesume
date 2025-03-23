@@ -19,7 +19,7 @@ We have implemented the core infrastructure for our feature-based architecture:
 - [x] RichTextEditor.tsx → ui/core/RichTextEditor.tsx
 - [ ] cosmic-button.tsx → ui/core/CosmicButton.tsx (archive after migration)
 - [ ] cosmic-button-refactored.tsx → (archive/remove - redundant)
-- [ ] button-guide.tsx → ui/core/ButtonGuide.tsx
+- [x] button-guide.tsx → ui/core/ButtonGuide.tsx
 
 ### UI Theme Components
 - [x] cosmic-background.tsx → ui/theme/CosmicBackground.tsx
@@ -52,10 +52,10 @@ We have implemented the core infrastructure for our feature-based architecture:
 - [ ] quick-login.tsx → features/auth/components/QuickLogin.tsx
 
 ### Common Feature Components
-- [ ] admin-tools.tsx → features/admin/components/AdminTools.tsx
-- [ ] go-admin-link.tsx → features/admin/components/GoAdminLink.tsx
-- [ ] ai-assistant.tsx → features/ai/components/AIAssistant.tsx
-- [ ] subscription-status.tsx → features/subscription/components/SubscriptionStatus.tsx
+- [x] admin-tools.tsx → features/admin/components/AdminTools.tsx
+- [x] go-admin-link.tsx → features/admin/components/GoAdminLink.tsx
+- [x] ai-assistant.tsx → features/ai/components/AIAssistant.tsx
+- [x] subscription-status.tsx → features/subscription/components/SubscriptionStatus.tsx
 
 ## Migration Process
 1. Create the new component in the appropriate feature directory

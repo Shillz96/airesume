@@ -1,13 +1,13 @@
 import React from 'react';
-import { ThemeButton } from '@/components/ui/ThemeButton';
+import { Button } from '@/ui/core/Button';
 import { 
-  ThemeCard, 
-  ThemeCardHeader, 
-  ThemeCardBody, 
-  ThemeCardFooter,
-  ThemeCardTitle,
-  ThemeCardDescription
-} from '@/components/ui/ThemeCard';
+  Card, 
+  CardHeader, 
+  CardContent, 
+  CardFooter,
+  CardTitle,
+  CardDescription
+} from '@/ui/core/Card';
 
 // Icons for demo purposes
 import { 

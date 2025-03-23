@@ -231,15 +231,15 @@ export default function ResumeBuilder() {
           <div className="flex items-center gap-3">
             <Button
               variant="outline"
-              className="hidden sm:flex border-blue-300 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/30"
+              className="hidden sm:flex cosmic-btn-outline"
               disabled={!isDirty}
               onClick={handleSaveResume}
             >
-              <Save className="mr-2 h-4 w-4 text-blue-600" />
-              <span className="text-blue-700 dark:text-blue-400">Save</span>
+              <Save className="mr-2 h-4 w-4" />
+              <span>Save</span>
             </Button>
             <Button 
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 hidden sm:flex hover:from-blue-700 hover:to-indigo-700 text-white shadow-sm"
+              className="cosmic-btn-primary hidden sm:flex cosmic-btn-glow"
               onClick={handleDownload}
             >
               <Download className="mr-2 h-4 w-4" />
@@ -247,19 +247,19 @@ export default function ResumeBuilder() {
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="sm:hidden border-blue-300 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/30">
-                  <ChevronDown className="h-4 w-4 sm:mr-2 text-blue-600" />
-                  <span className="hidden sm:inline text-blue-700 dark:text-blue-400">Options</span>
+                <Button variant="outline" className="sm:hidden cosmic-btn-outline">
+                  <ChevronDown className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Options</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="border-blue-200 dark:border-blue-800">
-                <DropdownMenuItem onClick={handleSaveResume} disabled={!isDirty} className="hover:bg-blue-50 dark:hover:bg-blue-900/20">
-                  <Save className="mr-2 h-4 w-4 text-blue-600" />
-                  <span className="text-blue-700 dark:text-blue-400">Save</span>
+              <DropdownMenuContent align="end" className="cosmic-dropdown-content">
+                <DropdownMenuItem onClick={handleSaveResume} disabled={!isDirty} className="cosmic-dropdown-item">
+                  <Save className="mr-2 h-4 w-4" />
+                  <span>Save</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleDownload} className="hover:bg-blue-50 dark:hover:bg-blue-900/20">
-                  <Download className="mr-2 h-4 w-4 text-blue-600" />
-                  <span className="text-blue-700 dark:text-blue-400">Download</span>
+                <DropdownMenuItem onClick={handleDownload} className="cosmic-dropdown-item">
+                  <Download className="mr-2 h-4 w-4" />
+                  <span>Download</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -277,43 +277,43 @@ export default function ResumeBuilder() {
               <TabsList className="mb-6 flex flex-wrap h-auto bg-gray-100/80 dark:bg-gray-800/50 p-1 rounded-lg">
                 <TabsTrigger 
                   value="contact" 
-                  className="py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-sm"
+                  className="py-2 data-[state=active]:cosmic-tab-active"
                 >
                   Contact
                 </TabsTrigger>
                 <TabsTrigger 
                   value="summary" 
-                  className="py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-sm"
+                  className="py-2 data-[state=active]:cosmic-tab-active"
                 >
                   Summary
                 </TabsTrigger>
                 <TabsTrigger 
                   value="experience" 
-                  className="py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-sm"
+                  className="py-2 data-[state=active]:cosmic-tab-active"
                 >
                   Experience
                 </TabsTrigger>
                 <TabsTrigger 
                   value="education" 
-                  className="py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-sm"
+                  className="py-2 data-[state=active]:cosmic-tab-active"
                 >
                   Education
                 </TabsTrigger>
                 <TabsTrigger 
                   value="skills" 
-                  className="py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-sm"
+                  className="py-2 data-[state=active]:cosmic-tab-active"
                 >
                   Skills
                 </TabsTrigger>
                 <TabsTrigger 
                   value="projects" 
-                  className="py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-sm"
+                  className="py-2 data-[state=active]:cosmic-tab-active"
                 >
                   Projects
                 </TabsTrigger>
                 <TabsTrigger 
                   value="preview" 
-                  className="py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-sm"
+                  className="py-2 data-[state=active]:cosmic-tab-active"
                 >
                   Preview
                 </TabsTrigger>
@@ -506,8 +506,8 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="preview">
-                <div className="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-                  <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">Resume Preview</h2>
+                <div className="cosmic-card p-6 backdrop-blur-sm">
+                  <h2 className="text-2xl font-semibold cosmic-text-gradient mb-4">Resume Preview</h2>
                   <p className="text-gray-600 dark:text-gray-400 mb-5">
                     See how your resume looks and select from different templates.
                   </p>
@@ -525,7 +525,7 @@ export default function ResumeBuilder() {
           {/* Right Sidebar - AI Assistant */}
           <div className="w-full lg:w-80">
             <div className="sticky top-6">
-              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5 shadow-md overflow-hidden">
+              <div className="cosmic-card p-5 backdrop-blur-sm overflow-hidden">
                 {/* Using our new ResumeAIAssistant component */}
                 <ResumeAIAssistant 
                   activeSection={activeSection}

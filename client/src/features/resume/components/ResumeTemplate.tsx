@@ -6,12 +6,6 @@ import {
   ZoomIn, ZoomOut, Maximize, Minimize, 
   ArrowUp, ArrowDown, Dices, PanelLeftClose, PanelRightClose
 } from 'lucide-react';
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipTrigger,
-  TooltipProvider 
-} from '@radix-ui/react-tooltip';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -118,77 +112,59 @@ export default function ResumeTemplate({
       <div className="p-4 border-b border-border flex justify-between items-center bg-muted/30">
         <h3 className="font-medium text-foreground">Resume Preview</h3>
         <div className="flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm" 
-                onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
-                aria-label="Zoom out"
-              >
-                <ZoomOut className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Zoom out</TooltipContent>
-          </Tooltip>
+          <Button
+            variant="ghost"
+            size="sm" 
+            onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
+            aria-label="Zoom out"
+            title="Zoom out"
+          >
+            <ZoomOut className="h-4 w-4" />
+          </Button>
           
           <span className="text-xs font-mono px-2 py-1 rounded bg-muted">{Math.round(zoom * 100)}%</span>
           
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm" 
-                onClick={() => setZoom(Math.min(2, zoom + 0.1))}
-                aria-label="Zoom in"
-              >
-                <ZoomIn className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Zoom in</TooltipContent>
-          </Tooltip>
+          <Button
+            variant="ghost"
+            size="sm" 
+            onClick={() => setZoom(Math.min(2, zoom + 0.1))}
+            aria-label="Zoom in"
+            title="Zoom in"
+          >
+            <ZoomIn className="h-4 w-4" />
+          </Button>
           
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm" 
-                onClick={() => setFullscreen(!fullscreen)}
-                aria-label="Toggle fullscreen"
-              >
-                {fullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{fullscreen ? "Exit fullscreen" : "Fullscreen"}</TooltipContent>
-          </Tooltip>
+          <Button
+            variant="ghost"
+            size="sm" 
+            onClick={() => setFullscreen(!fullscreen)}
+            aria-label="Toggle fullscreen"
+            title={fullscreen ? "Exit fullscreen" : "Fullscreen"}
+          >
+            {fullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+          </Button>
           
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm" 
-                onClick={applySmartAdjust}
-                aria-label="Smart adjust"
-              >
-                <Dices className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Smart adjust (optimize layout)</TooltipContent>
-          </Tooltip>
+          <Button
+            variant="ghost"
+            size="sm" 
+            onClick={applySmartAdjust}
+            aria-label="Smart adjust"
+            title="Smart adjust (optimize layout)"
+            className="relative"
+          >
+            <Dices className="h-4 w-4" />
+            <span className="absolute -top-1 -right-1 bg-primary h-2 w-2 rounded-full"></span>
+          </Button>
           
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm" 
-                onClick={() => setShowPlaceholders(!showPlaceholders)}
-                aria-label="Toggle placeholders"
-              >
-                {showPlaceholders ? <PanelLeftClose className="h-4 w-4" /> : <PanelRightClose className="h-4 w-4" />}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{showPlaceholders ? "Hide placeholders" : "Show placeholders"}</TooltipContent>
-          </Tooltip>
+          <Button
+            variant="ghost"
+            size="sm" 
+            onClick={() => setShowPlaceholders(!showPlaceholders)}
+            aria-label="Toggle placeholders"
+            title={showPlaceholders ? "Hide placeholders" : "Show placeholders"}
+          >
+            {showPlaceholders ? <PanelLeftClose className="h-4 w-4" /> : <PanelRightClose className="h-4 w-4" />}
+          </Button>
           
           {onDownload && (
             <Button

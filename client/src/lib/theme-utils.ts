@@ -115,12 +115,22 @@ export function getVariantClasses(
  * @returns true if the theme is in dark mode
  */
 export function isDarkMode(): boolean {
+  // Check if we're in a browser environment
+  if (typeof document !== 'undefined') {
+    // Check if the dark class is applied to the html element
+    return document.documentElement.classList.contains('dark');
+  }
+  
+  // Fallback to check from theme configuration
   const appearance = getCurrentAppearance();
   
   if (appearance === 'system') {
-    // In a browser environment, we would check the system preference
-    // For now, we'll default to dark mode for "system" setting
-    return true;
+    // If we can't access DOM, check media query if available
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    // Default to light mode if we can't determine
+    return false;
   }
   
   return appearance === 'dark';

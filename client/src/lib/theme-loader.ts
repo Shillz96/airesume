@@ -28,24 +28,112 @@ export function initializeTheme(): void {
   // Set data-theme-variant attribute for CSS selectors
   root.setAttribute('data-theme-variant', variant);
   
+  // Check for saved theme preference in localStorage
+  const savedAppearance = localStorage.getItem('theme-appearance');
+  console.log("Initializing theme, saved appearance:", savedAppearance);
+  
   // Apply theme class based on appearance
-  if (appearance === 'dark') {
+  if (savedAppearance === 'dark') {
+    // User explicitly chose dark mode previously
     root.classList.add('dark');
     root.classList.remove('light');
-  } else if (appearance === 'light') {
+    
+    // Also apply dark mode CSS variables
+    root.style.setProperty('--color-primary-hsl', '210 95% 65%');
+    root.style.setProperty('--color-background-hsl', '220 40% 13%');
+    root.style.setProperty('--color-foreground-hsl', '210 15% 95%');
+    root.style.setProperty('--color-card-hsl', '220 35% 18%');
+    root.style.setProperty('--color-muted-hsl', '215 20% 70%');
+    root.style.setProperty('--color-border-hsl', '220 25% 25%');
+    root.style.setProperty('--color-input-hsl', '220 25% 25%');
+  } else if (savedAppearance === 'light') {
+    // User explicitly chose light mode previously
     root.classList.add('light');
     root.classList.remove('dark');
+    
+    // Also apply light mode CSS variables
+    root.style.setProperty('--color-primary-hsl', '210 95% 60%');
+    root.style.setProperty('--color-background-hsl', '210 25% 99%');
+    root.style.setProperty('--color-foreground-hsl', '220 25% 10%');
+    root.style.setProperty('--color-card-hsl', '0 0% 100%');
+    root.style.setProperty('--color-muted-hsl', '215 20% 65%');
+    root.style.setProperty('--color-border-hsl', '220 25% 94%');
+    root.style.setProperty('--color-input-hsl', '220 25% 94%');
+  } else if (appearance === 'dark') {
+    // No saved preference, use theme.json default
+    root.classList.add('dark');
+    root.classList.remove('light');
+    
+    // Also apply dark mode CSS variables
+    root.style.setProperty('--color-primary-hsl', '210 95% 65%');
+    root.style.setProperty('--color-background-hsl', '220 40% 13%');
+    root.style.setProperty('--color-foreground-hsl', '210 15% 95%');
+    root.style.setProperty('--color-card-hsl', '220 35% 18%');
+    root.style.setProperty('--color-muted-hsl', '215 20% 70%');
+    root.style.setProperty('--color-border-hsl', '220 25% 25%');
+    root.style.setProperty('--color-input-hsl', '220 25% 25%');
+  } else if (appearance === 'light') {
+    // No saved preference, use theme.json default
+    root.classList.add('light');
+    root.classList.remove('dark');
+    
+    // Also apply light mode CSS variables
+    root.style.setProperty('--color-primary-hsl', '210 95% 60%');
+    root.style.setProperty('--color-background-hsl', '210 25% 99%');
+    root.style.setProperty('--color-foreground-hsl', '220 25% 10%');
+    root.style.setProperty('--color-card-hsl', '0 0% 100%');
+    root.style.setProperty('--color-muted-hsl', '215 20% 65%');
+    root.style.setProperty('--color-border-hsl', '220 25% 94%');
+    root.style.setProperty('--color-input-hsl', '220 25% 94%');
   } else {
     // Handle 'system' preference by checking user's system preference
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     root.classList.toggle('dark', prefersDark);
     root.classList.toggle('light', !prefersDark);
     
+    // Apply appropriate CSS variables based on system preference
+    if (prefersDark) {
+      root.style.setProperty('--color-primary-hsl', '210 95% 65%');
+      root.style.setProperty('--color-background-hsl', '220 40% 13%');
+      root.style.setProperty('--color-foreground-hsl', '210 15% 95%');
+      root.style.setProperty('--color-card-hsl', '220 35% 18%');
+      root.style.setProperty('--color-muted-hsl', '215 20% 70%');
+      root.style.setProperty('--color-border-hsl', '220 25% 25%');
+      root.style.setProperty('--color-input-hsl', '220 25% 25%');
+    } else {
+      root.style.setProperty('--color-primary-hsl', '210 95% 60%');
+      root.style.setProperty('--color-background-hsl', '210 25% 99%');
+      root.style.setProperty('--color-foreground-hsl', '220 25% 10%');
+      root.style.setProperty('--color-card-hsl', '0 0% 100%');
+      root.style.setProperty('--color-muted-hsl', '215 20% 65%');
+      root.style.setProperty('--color-border-hsl', '220 25% 94%');
+      root.style.setProperty('--color-input-hsl', '220 25% 94%');
+    }
+    
     // Add listener for system preference changes
     const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     darkModeMediaQuery.addEventListener('change', (e) => {
       root.classList.toggle('dark', e.matches);
       root.classList.toggle('light', !e.matches);
+      
+      // Update CSS variables when system preference changes
+      if (e.matches) {
+        root.style.setProperty('--color-primary-hsl', '210 95% 65%');
+        root.style.setProperty('--color-background-hsl', '220 40% 13%');
+        root.style.setProperty('--color-foreground-hsl', '210 15% 95%');
+        root.style.setProperty('--color-card-hsl', '220 35% 18%');
+        root.style.setProperty('--color-muted-hsl', '215 20% 70%');
+        root.style.setProperty('--color-border-hsl', '220 25% 25%');
+        root.style.setProperty('--color-input-hsl', '220 25% 25%');
+      } else {
+        root.style.setProperty('--color-primary-hsl', '210 95% 60%');
+        root.style.setProperty('--color-background-hsl', '210 25% 99%');
+        root.style.setProperty('--color-foreground-hsl', '220 25% 10%');
+        root.style.setProperty('--color-card-hsl', '0 0% 100%');
+        root.style.setProperty('--color-muted-hsl', '215 20% 65%');
+        root.style.setProperty('--color-border-hsl', '220 25% 94%');
+        root.style.setProperty('--color-input-hsl', '220 25% 94%');
+      }
       
       // Dispatch theme change event
       const themeChangeEvent = new CustomEvent('theme-change', {
@@ -58,7 +146,7 @@ export function initializeTheme(): void {
   // Convert primary color to RGB values
   const rgbPrimary = hexToRgb(primary);
   if (rgbPrimary) {
-    root.style.setProperty('--color-primary', `${rgbPrimary.r} ${rgbPrimary.g} ${rgbPrimary.b}`);
+    root.style.setProperty('--color-primary-rgb', `${rgbPrimary.r}, ${rgbPrimary.g}, ${rgbPrimary.b}`);
   }
   
   // Set border radius from theme
@@ -73,7 +161,7 @@ export function initializeTheme(): void {
     // Convert hex colors to RGB values
     const rgbColor = hexToRgb(value);
     if (rgbColor) {
-      root.style.setProperty(`--color-${name}`, `${rgbColor.r} ${rgbColor.g} ${rgbColor.b}`);
+      root.style.setProperty(`--color-${name}-rgb`, `${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}`);
     } else {
       root.style.setProperty(`--color-${name}`, value);
     }
@@ -172,12 +260,39 @@ export function toggleDarkMode(): void {
   const isDark = isDarkMode();
   const root = document.documentElement;
   
+  console.log("Toggling dark mode, current isDark:", isDark);
+  
   if (isDark) {
     root.classList.remove('dark');
     root.classList.add('light');
+    // Update the appearance in localStorage to maintain selection across reloads
+    localStorage.setItem('theme-appearance', 'light');
   } else {
     root.classList.add('dark');
     root.classList.remove('light');
+    // Update the appearance in localStorage to maintain selection across reloads
+    localStorage.setItem('theme-appearance', 'dark');
+  }
+  
+  // Apply variable changes for dark/light mode
+  if (!isDark) {
+    // We're switching to dark mode
+    root.style.setProperty('--color-primary-hsl', '210 95% 65%');
+    root.style.setProperty('--color-background-hsl', '220 40% 13%');
+    root.style.setProperty('--color-foreground-hsl', '210 15% 95%');
+    root.style.setProperty('--color-card-hsl', '220 35% 18%');
+    root.style.setProperty('--color-muted-hsl', '215 20% 70%');
+    root.style.setProperty('--color-border-hsl', '220 25% 25%');
+    root.style.setProperty('--color-input-hsl', '220 25% 25%');
+  } else {
+    // We're switching to light mode
+    root.style.setProperty('--color-primary-hsl', '210 95% 60%');
+    root.style.setProperty('--color-background-hsl', '210 25% 99%');
+    root.style.setProperty('--color-foreground-hsl', '220 25% 10%');
+    root.style.setProperty('--color-card-hsl', '0 0% 100%');
+    root.style.setProperty('--color-muted-hsl', '215 20% 65%');
+    root.style.setProperty('--color-border-hsl', '220 25% 94%');
+    root.style.setProperty('--color-input-hsl', '220 25% 94%');
   }
   
   // Dispatch a custom event that components can listen for

@@ -26,11 +26,11 @@ function StatsCard({
 }: StatsCardProps) {
   return (
     <Card
-      variant="outline"
+      variant="cosmic"
+      glow="cosmic"
       className={cn(
-        "overflow-hidden h-full flex flex-col justify-between",
-        "transition-all duration-300 hover:shadow-md",
-        "border hover:border-primary/20"
+        "cosmic-card overflow-hidden h-full flex flex-col justify-between",
+        "transition-all duration-300"
       )}
     >
       <div className="p-5">
@@ -53,7 +53,7 @@ function StatsCard({
           </div>
         </div>
 
-        <h3 className="text-lg font-bold">{value}</h3>
+        <h3 className="text-lg font-bold cosmic-text-gradient">{value}</h3>
         <p className="text-sm text-muted-foreground">{title}</p>
       </div>
 

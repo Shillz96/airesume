@@ -327,34 +327,62 @@ export function toggleDarkMode(): void {
  * @returns RGB color object or null if invalid
  */
 function hexToRgb(hex: string | any): { r: number; g: number; b: number } | null {
-  // Handle non-string values or undefined/null values
-  if (!hex || typeof hex !== 'string') {
-    console.warn('Invalid hex color value:', hex);
+  try {
+    // Handle non-string values or undefined/null values
+    if (!hex || typeof hex !== 'string') {
+      console.warn('Invalid hex color value:', hex);
+      return null;
+    }
+    
+    // If hex doesn't start with #, check if it's an rgb or rgba value
+    if (!hex.startsWith('#')) {
+      // Try to match rgb() or rgba() format
+      const rgbMatch = hex.match(/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+      const rgbaMatch = hex.match(/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*[\d.]+\s*\)$/i);
+      
+      if (rgbMatch || rgbaMatch) {
+        const match = rgbMatch || rgbaMatch;
+        if (match && match[1] && match[2] && match[3]) {
+          return {
+            r: parseInt(match[1], 10),
+            g: parseInt(match[2], 10),
+            b: parseInt(match[3], 10)
+          };
+        }
+      }
+      
+      // Not a recognized color format
+      return null;
+    }
+    
+    // Remove # if present
+    hex = hex.replace('#', '');
+    
+    // Handle shorthand hex (e.g. #fff)
+    if (hex.length === 3) {
+      hex = hex.split('').map((char: string) => char + char).join('');
+    }
+    
+    // Check for valid hex length after processing
+    if (hex.length !== 6) {
+      console.warn('Invalid hex length after processing:', hex);
+      return null;
+    }
+    
+    // Parse hex to RGB
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    
+    // Check if valid RGB values
+    if (isNaN(r) || isNaN(g) || isNaN(b)) {
+      console.warn('Invalid RGB values from hex:', hex);
+      return null;
+    }
+    
+    return { r, g, b };
+  } catch (err) {
+    console.error('Error in hexToRgb function:', err);
     return null;
   }
-  
-  // If hex is a named color, return null (can't convert)
-  if (!hex.startsWith('#')) {
-    return null;
-  }
-  
-  // Remove # if present
-  hex = hex.replace('#', '');
-  
-  // Handle shorthand hex (e.g. #fff)
-  if (hex.length === 3) {
-    hex = hex.split('').map((char: string) => char + char).join('');
-  }
-  
-  // Parse hex to RGB
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-  
-  // Check if valid RGB values
-  if (isNaN(r) || isNaN(g) || isNaN(b)) {
-    return null;
-  }
-  
-  return { r, g, b };
 }

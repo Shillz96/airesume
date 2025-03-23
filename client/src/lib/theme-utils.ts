@@ -41,12 +41,19 @@ declare global {
 
 // Load theme configuration dynamically
 // This is a simplified approach for the current development phase
-let themeConfig: any;
+let themeConfig: ThemeConfig;
 
 try {
   // Try to import the theme.json from the root directory
   const theme = require('../../../theme.json');
-  themeConfig = theme;
+  
+  // Convert RGB and HSL colors to hex where needed
+  if (theme && typeof theme === 'object' && theme.colors) {
+    // Make a deep copy to avoid modifying the imported object
+    themeConfig = JSON.parse(JSON.stringify(theme));
+  } else {
+    themeConfig = theme;
+  }
 } catch (error) {
   // Fallback to default theme config
   console.warn('Failed to load theme.json, using default theme configuration');
@@ -56,13 +63,14 @@ try {
     appearance: 'system',
     radius: 0.5,
     colors: {
-      cosmic: {
-        primary: '#3b82f6',
-        secondary: '#8b5cf6',
-        accent: '#10b981',
-        background: '#050A18',
-        foreground: '#ffffff'
-      }
+      primary: '#3b82f6',
+      secondary: '#8b5cf6',
+      accent: '#10b981',
+      background: '#050A18',
+      foreground: '#ffffff',
+      border: 'rgba(255, 255, 255, 0.1)',
+      card: 'rgba(255, 255, 255, 0.05)',
+      muted: '#6b7280'
     }
   };
 }
@@ -101,12 +109,36 @@ export function getCurrentAppearance(): ThemeAppearance {
 
 /**
  * Get a cosmic theme color from theme.json colors object
+ * Supports dot notation for nested color access, e.g. "cosmic.primary"
  * @param colorName The name of the color from theme.json colors object
  * @returns The color value or a fallback
  */
 export function getCosmicColor(colorName: string): string {
+  if (!colorName) return "";
+  
   const { colors } = getThemeConfig();
-  return colors[colorName] || "";
+  if (!colors) return "";
+  
+  // Handle dot notation for nested colors
+  if (colorName.includes('.')) {
+    const parts = colorName.split('.');
+    let current: any = colors;
+    
+    // Navigate through nested properties
+    for (const part of parts) {
+      if (current && typeof current === 'object' && part in current) {
+        current = current[part];
+      } else {
+        return ""; // Return empty string if path doesn't exist
+      }
+    }
+    
+    // Return the color if it's a string
+    return typeof current === 'string' ? current : "";
+  }
+  
+  // Simple property access
+  return typeof colors[colorName] === 'string' ? colors[colorName] : "";
 }
 
 /**

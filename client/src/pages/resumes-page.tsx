@@ -28,6 +28,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Resume as ResumeType } from '@shared/schema';
 // Import the default resume template component
 import ResumeTemplate from '@/features/resume/components/ResumeTemplate';
+import PageHeader from '@/features/layout/components/PageHeader';
 
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
@@ -236,16 +237,14 @@ export default function ResumesPage() {
   return (
     <>
       
-      <div className="container  pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight cosmic-text-gradient">My Resumes</h1>
-            <p className="text-muted-foreground">
-              Manage and organize all your resumes in one place
-            </p>
-          </div>
-
-          <div className="flex space-x-3">
+      <div className="container pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
+        <PageHeader
+          title="My Resumes"
+          subtitle="Manage and organize all your resumes in one place"
+          variant="gradient"
+          borderStyle="gradient"
+          actions={
+            <div className="flex space-x-3">
             <CosmicButton 
               variant="outline" 
               size="sm"
@@ -299,7 +298,8 @@ export default function ResumesPage() {
               </DialogContent>
             </Dialog>
           </div>
-        </div>
+          }
+        />
 
         <div className="mb-8">
           <div className="relative">

@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useAuthDialog } from "@/hooks/use-auth-dialog";
 import { useTheme } from "@/contexts/ThemeContext";
+import { Button } from "@/components/ui/button";
 import {
   Menu,
   X,
@@ -10,14 +11,13 @@ import {
   Sun,
   User,
   LogOut,
-  Rocket,
   FileText,
   LayoutTemplate,
   Home,
   LogIn,
   CreditCard,
   Search,
-  Briefcase
+  ChevronDown
 } from "lucide-react";
 
 // Simple Navbar with minimal styling and vanilla JavaScript for dropdown
@@ -59,21 +59,15 @@ export default function Navbar() {
     logoutMutation.mutate();
   };
 
-  // Toggle profile dropdown manually with vanilla JavaScript
-  const toggleProfileDropdown = () => {
-    const dropdown = document.getElementById('profile-dropdown');
-    if (dropdown) {
-      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-    }
-  };
-
+  // Use React state for dropdown toggle
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  
   // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as Element;
-      if (!target.closest('#profile-dropdown') && !target.closest('#profile-button')) {
-        const dropdown = document.getElementById('profile-dropdown');
-        if (dropdown) dropdown.style.display = 'none';
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
       }
     };
     
@@ -82,129 +76,139 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-900 text-white py-2 px-4 shadow-md">
-      <div className="container mx-auto flex justify-between items-center">
-        {/* Logo */}
-        <div className="flex items-center">
-          <a href="/" className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
-            AIreHire
-          </a>
-        </div>
-
-        {/* Desktop Menu */}
-        <div className="hidden md:flex space-x-6">
-          {navItems.map((item) => (
-            <a
-              key={item.path}
-              href={item.path}
-              className={`flex items-center space-x-1 px-3 py-2 rounded ${
-                location === item.path
-                  ? "text-blue-400 bg-blue-500/10"
-                  : "text-gray-300 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              <span className={location === item.path ? "text-blue-400" : "text-gray-400"}>
-                {item.icon}
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-sm border-b border-border shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex justify-between h-16">
+          {/* Logo */}
+          <div className="flex items-center">
+            <a href="/" className="flex-shrink-0 flex items-center">
+              <span className="text-xl font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                AIreHire
               </span>
-              <span>{item.label}</span>
             </a>
-          ))}
-        </div>
+            
+            {/* Desktop Menu */}
+            <div className="hidden md:ml-8 md:flex md:space-x-4">
+              {navItems.map((item) => (
+                <a
+                  key={item.path}
+                  href={item.path}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    location === item.path
+                      ? "text-primary bg-primary/10"
+                      : "text-foreground/80 hover:text-foreground hover:bg-card"
+                  }`}
+                >
+                  <span className={location === item.path ? "text-primary" : "text-foreground/60"}>
+                    {item.icon}
+                  </span>
+                  <span>{item.label}</span>
+                </a>
+              ))}
+            </div>
+          </div>
 
-        {/* Right side actions */}
-        <div className="hidden md:flex items-center space-x-4">
-          {/* Dark mode toggle */}
-          <button 
-            onClick={toggleDarkMode}
-            className="p-2 rounded-full hover:bg-white/10"
-            aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
-          >
-            {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </button>
-
-          {/* Profile Button */}
-          <div className="relative">
+          {/* Right side actions */}
+          <div className="hidden md:flex md:items-center md:space-x-4">
+            {/* Dark mode toggle */}
             <button
-              id="profile-button"
-              onClick={toggleProfileDropdown}
-              className="flex items-center space-x-2 p-2 rounded-full hover:bg-white/10"
+              onClick={toggleDarkMode}
+              className="p-2 rounded-md text-foreground/70 hover:text-foreground hover:bg-card transition-colors"
+              aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
             >
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
-                {initials}
-              </div>
+              {isDarkMode ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
             </button>
 
-            {/* Profile Dropdown */}
-            <div 
-              id="profile-dropdown"
-              className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 py-1"
-              style={{ display: 'none', zIndex: 50 }}
-            >
-              {user ? (
-                <>
-                  <div className="px-4 py-2 text-sm text-gray-300 font-medium border-b border-gray-700">
-                    {user.username}
-                  </div>
-                  <a href="/profile" className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 flex items-center">
-                    <User className="mr-2 h-4 w-4 text-blue-400" /> 
-                    Profile
-                  </a>
-                  <a href="/subscription" className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 flex items-center">
-                    <CreditCard className="mr-2 h-4 w-4 text-purple-400" /> 
-                    Subscription
-                  </a>
-                  <div className="border-t border-gray-700 my-1"></div>
-                  <button 
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-900/20"
-                  >
-                    <span className="flex items-center">
-                      <LogOut className="mr-2 h-4 w-4" /> 
-                      Logout
-                    </span>
-                  </button>
-                </>
-              ) : (
-                <>
-                  <div className="px-4 py-2 text-sm text-gray-300 font-medium border-b border-gray-700">
-                    Guest Mode
-                  </div>
-                  <button 
-                    onClick={openLogin}
-                    className="block w-full text-left px-4 py-2 text-sm text-blue-400 hover:bg-blue-900/20"
-                  >
-                    <span className="flex items-center">
-                      <LogIn className="mr-2 h-4 w-4" /> 
-                      Log In
-                    </span>
-                  </button>
-                  <button
-                    onClick={openRegister}
-                    className="block w-full text-left px-4 py-2 text-sm text-green-400 hover:bg-green-900/20"
-                  >
-                    <span className="flex items-center">
-                      <User className="mr-2 h-4 w-4" /> 
-                      Sign Up
-                    </span>
-                  </button>
-                </>
+            {/* Profile Button */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="flex items-center space-x-2 p-2 rounded-md hover:bg-card transition-colors"
+              >
+                <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                  {initials}
+                </div>
+                {user && (
+                  <>
+                    <span className="text-sm font-medium hidden lg:block">{user.username}</span>
+                    <ChevronDown className="h-4 w-4 text-foreground/70" />
+                  </>
+                )}
+              </button>
+
+              {/* Profile Dropdown */}
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 py-2 bg-card rounded-md shadow-lg border border-border z-10">
+                  {user ? (
+                    <>
+                      <div className="px-4 py-2 text-sm text-foreground/70">
+                        Signed in as <span className="font-medium text-foreground">{user.username}</span>
+                      </div>
+                      <div className="border-t border-border my-1"></div>
+                      <a href="/profile" className="flex items-center px-4 py-2 text-sm text-foreground/80 hover:bg-primary/10 hover:text-primary">
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </a>
+                      <a href="/subscription" className="flex items-center px-4 py-2 text-sm text-foreground/80 hover:bg-primary/10 hover:text-primary">
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        Subscription
+                      </a>
+                      <div className="border-t border-border my-1"></div>
+                      <button
+                        onClick={handleLogout}
+                        className="flex w-full items-center px-4 py-2 text-sm text-error/80 hover:bg-error/10 hover:text-error"
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Sign Out
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <div className="px-4 py-2 text-sm text-foreground/70 font-medium">
+                        Guest Mode
+                      </div>
+                      <div className="border-t border-border my-1"></div>
+                      <button
+                        onClick={openLogin}
+                        className="flex w-full items-center px-4 py-2 text-sm text-primary/80 hover:bg-primary/10 hover:text-primary"
+                      >
+                        <LogIn className="mr-2 h-4 w-4" />
+                        Log In
+                      </button>
+                      <button
+                        onClick={openRegister}
+                        className="flex w-full items-center px-4 py-2 text-sm text-success/80 hover:bg-success/10 hover:text-success"
+                      >
+                        <User className="mr-2 h-4 w-4" />
+                        Sign Up
+                      </button>
+                    </>
+                  )}
+                </div>
               )}
             </div>
           </div>
-        </div>
 
-        {/* Mobile menu button */}
-        <div className="md:hidden">
-          <button 
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-md text-gray-300 hover:text-white hover:bg-white/10"
-          >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </button>
+          {/* Mobile menu button */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="inline-flex items-center justify-center p-2 rounded-md text-foreground/70 hover:text-foreground hover:bg-card transition-colors"
+              aria-controls="mobile-menu"
+              aria-expanded="false"
+            >
+              <span className="sr-only">Open main menu</span>
+              {mobileMenuOpen ? (
+                <X className="block h-6 w-6" aria-hidden="true" />
+              ) : (
+                <Menu className="block h-6 w-6" aria-hidden="true" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 

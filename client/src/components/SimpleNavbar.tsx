@@ -280,19 +280,18 @@ export default function SimpleNavbar() {
                         setMobileMenuOpen(false);
                         openLogin();
                       }}
-                      iconLeft={<LogIn className="h-4 w-4" />}
-                      fullWidth
+                      className="w-full"
                     >
+                      <LogIn className="h-4 w-4 mr-2" />
                       Log In
                     </Button>
                     <Button
-                      variant="primary"
+                      variant="default"
                       onClick={() => {
                         setMobileMenuOpen(false);
                         openRegister();
                       }}
-                      iconLeft={<User className="h-4 w-4" />}
-                      fullWidth
+                      className="w-full"
                     >
                       Sign Up
                     </Button>

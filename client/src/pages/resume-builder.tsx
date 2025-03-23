@@ -319,89 +319,75 @@ export default function ResumeBuilder() {
               </TabsList>
 
               <TabsContent value="contact">
-                <div className="bg-background border border-border rounded-md shadow-sm p-6">
-                  <div className="bg-card rounded-md border border-border p-6">
-                    <ResumeContactSection
-                      personalInfo={resume.personalInfo}
-                      title={resume.title}
-                      onUpdatePersonalInfo={updatePersonalInfo}
-                      onUpdateTitle={updateResumeTitle}
-                    />
-                  </div>
+                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                  <ResumeContactSection
+                    personalInfo={resume.personalInfo}
+                    title={resume.title}
+                    onUpdatePersonalInfo={updatePersonalInfo}
+                    onUpdateTitle={updateResumeTitle}
+                  />
                 </div>
               </TabsContent>
 
               <TabsContent value="summary">
-                <div className="bg-background border border-border rounded-md shadow-sm p-6">
-                  <div className="bg-card rounded-md border border-border p-6">
-                    <ResumeSummarySection
-                      summary={resume.personalInfo.summary}
-                      onUpdateSummary={(summary) => updatePersonalInfo({
-                        ...resume.personalInfo,
-                        summary
-                      })}
-                    />
-                  </div>
+                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                  <ResumeSummarySection
+                    summary={resume.personalInfo.summary}
+                    onUpdateSummary={(summary) => updatePersonalInfo({
+                      ...resume.personalInfo,
+                      summary
+                    })}
+                  />
                 </div>
               </TabsContent>
 
               <TabsContent value="experience">
-                <div className="bg-background border border-border rounded-md shadow-sm p-6">
-                  <div className="bg-card rounded-md border border-border p-6">
-                    <ResumeExperienceSection
-                      experiences={resume.experience}
-                      onUpdate={updateExperienceList}
-                    />
-                  </div>
+                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                  <ResumeExperienceSection
+                    experiences={resume.experience}
+                    onUpdate={updateExperienceList}
+                  />
                 </div>
               </TabsContent>
 
               <TabsContent value="education">
-                <div className="bg-background border border-border rounded-md shadow-sm p-6">
-                  <div className="bg-card rounded-md border border-border p-6">
-                    <ResumeEducationSection
-                      education={resume.education}
-                      onUpdate={updateEducationList}
-                    />
-                  </div>
+                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                  <ResumeEducationSection
+                    education={resume.education}
+                    onUpdate={updateEducationList}
+                  />
                 </div>
               </TabsContent>
 
               <TabsContent value="skills">
-                <div className="bg-background border border-border rounded-md shadow-sm p-6">
-                  <div className="bg-card rounded-md border border-border p-6">
-                    <ResumeSkillsSection
-                      skills={resume.skills}
-                      onUpdate={updateSkillsList}
-                    />
-                  </div>
+                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                  <ResumeSkillsSection
+                    skills={resume.skills}
+                    onUpdate={updateSkillsList}
+                  />
                 </div>
               </TabsContent>
 
               <TabsContent value="projects">
-                <div className="bg-background border border-border rounded-md shadow-sm p-6">
-                  <div className="bg-card rounded-md border border-border p-6">
-                    <ResumeProjectsSection
-                      projects={resume.projects}
-                      onUpdate={updateProjectsList}
-                    />
-                  </div>
+                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                  <ResumeProjectsSection
+                    projects={resume.projects}
+                    onUpdate={updateProjectsList}
+                  />
                 </div>
               </TabsContent>
 
               <TabsContent value="preview">
-                <div className="bg-background border border-border rounded-md shadow-sm p-6">
-                  <div className="bg-card rounded-md border border-border p-6">
-                    <h3 className="text-xl font-medium text-foreground mb-4">Resume Preview</h3>
-                    <p className="text-muted-foreground mb-5">
-                      See how your resume looks and download the final version.
-                    </p>
-                    <div className="mt-4">
-                      <ResumeTemplate 
-                        resume={resume} 
-                        onDownload={handleDownload}
-                      />
-                    </div>
+                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                  <h3 className="text-xl font-medium text-foreground mb-4">Resume Preview</h3>
+                  <p className="text-muted-foreground mb-5">
+                    See how your resume looks and download the final version.
+                  </p>
+                  <div className="mt-4">
+                    <ResumeTemplate 
+                      resume={resume} 
+                      onDownload={handleDownload}
+                    />
                   </div>
                 </div>
               </TabsContent>
@@ -411,17 +397,15 @@ export default function ResumeBuilder() {
           {/* Right Sidebar - AI Assistant */}
           <div className="w-full lg:w-80">
             <div className="sticky top-6">
-              <div className="bg-background border border-border rounded-md shadow-sm p-6">
-                <div className="bg-card rounded-md border border-border p-5 overflow-hidden">
-                  {/* Using our new ResumeAIAssistant component */}
-                  <ResumeAIAssistant 
-                    activeSection={activeSection}
-                    skillSearchQuery={skillSearchQuery}
-                    setSkillSearchQuery={setSkillSearchQuery}
-                    onApplySuggestion={applySuggestion}
-                    resumeId={resume?.id}
-                  />
-                </div>
+              <div className="bg-black/30 border border-white/10 rounded-md p-6 overflow-hidden">
+                {/* Using our new ResumeAIAssistant component */}
+                <ResumeAIAssistant 
+                  activeSection={activeSection}
+                  skillSearchQuery={skillSearchQuery}
+                  setSkillSearchQuery={setSkillSearchQuery}
+                  onApplySuggestion={applySuggestion}
+                  resumeId={resume?.id}
+                />
               </div>
             </div>
           </div>

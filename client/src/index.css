@@ -1344,9 +1344,19 @@ a:hover {
   display: none;
 }
 
-/* Specific update for the resume builder to display all tabs properly */
+/* Specific update for the resume builder to display all tabs on a single line */
 .resume-builder-tabs {
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  padding: 0 2rem;
+  overflow-x: auto;
+}
+
+.resume-builder-tabs .cosmic-tab {
+  padding: 0.75rem 0.65rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .cosmic-tab {

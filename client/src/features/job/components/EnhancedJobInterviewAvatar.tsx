@@ -211,7 +211,7 @@ export default function EnhancedJobInterviewAvatar({ job, className }: EnhancedJ
     setLoadingResume(true);
     try {
       // Fetch the user's latest resume
-      const response = await apiRequest('/api/resumes/latest', { method: 'GET' });
+      const response = await apiRequest('/api/resumes/latest');
       if (response.ok) {
         const resumeData = await response.json();
         setUserResume(resumeData);
@@ -643,12 +643,57 @@ export default function EnhancedJobInterviewAvatar({ job, className }: EnhancedJ
     return (
       <Card className={cn("w-full h-full", className)}>
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold flex items-center">
-            <Mic className="mr-2 h-5 w-5 text-primary" />
-            AI Interview Coach
-          </CardTitle>
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-2xl font-bold flex items-center">
+              <Mic className="mr-2 h-5 w-5 text-primary" />
+              AI Interview Coach
+            </CardTitle>
+            
+            {userResume ? (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-green-500 flex items-center gap-1">
+                  <User className="h-3 w-3" /> Resume analyzed
+                </span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={loadLatestResume}>
+                        <RotateCcw className="h-3.5 w-3.5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Reload your resume</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            ) : (
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="text-xs" 
+                onClick={loadLatestResume}
+                disabled={loadingResume}
+              >
+                {loadingResume ? (
+                  <span className="flex items-center gap-1">
+                    <span className="h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    Loading...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1">
+                    <FileSearch className="h-3.5 w-3.5" />
+                    Load Resume
+                  </span>
+                )}
+              </Button>
+            )}
+          </div>
+          
           <p className="text-sm text-muted-foreground">
-            Practice interviews for your next job with our AI-powered coach.
+            {userResume 
+              ? `Questions personalized for your ${careerPathLabels[selectedCareerPath]} profile.`
+              : "Practice interviews for your next job with our AI-powered coach."}
           </p>
         </CardHeader>
         <CardContent className="space-y-4">

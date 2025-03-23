@@ -243,22 +243,22 @@ export default function ResumeBuilder() {
                 className="hidden sm:flex cosmic-glow"
                 onClick={handleDownload}
               >
-                <Download className="h-4 w-4 mr-2" />
+                <Download className="h-4 w-4 mr-2 text-primary" />
                 Download
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="sm:hidden h-9 w-9 p-0">
-                    <ChevronDown className="h-4 w-4" />
+                    <ChevronDown className="h-4 w-4 text-primary" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={handleSaveResume} disabled={!isDirty}>
-                    <Save className="mr-2 h-4 w-4" />
+                    <Save className="mr-2 h-4 w-4 text-primary" />
                     <span>Save</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleDownload}>
-                    <Download className="mr-2 h-4 w-4" />
+                    <Download className="mr-2 h-4 w-4 text-primary" />
                     <span>Download</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -459,7 +459,7 @@ export default function ResumeBuilder() {
                   onClick={handleSaveResume}
                   disabled={!isDirty}
                 >
-                  <Save size={18} />
+                  <Save size={18} className="text-primary" />
                 </Button>
                 <Button 
                   variant="ghost"
@@ -467,7 +467,7 @@ export default function ResumeBuilder() {
                   className="h-9 w-9 p-0 rounded-full bg-white/10"
                   onClick={handleDownload}
                 >
-                  <Download size={18} />
+                  <Download size={18} className="text-primary" />
                 </Button>
               </div>
               
@@ -481,7 +481,7 @@ export default function ResumeBuilder() {
                     document.getElementById('mobile-ai-assistant')?.scrollIntoView({ behavior: 'smooth' });
                   }}
                 >
-                  <Bot size={16} className="mr-2" />
+                  <Bot size={16} className="mr-2 text-primary" />
                   AI Help
                 </Button>
                 {activeSection !== 'preview' ? (
@@ -525,7 +525,7 @@ export default function ResumeBuilder() {
           {/* Mobile AI Assistant (separate section at bottom) */}
           <div id="mobile-ai-assistant" className="block lg:hidden w-full mt-6 pt-6 border-t border-white/10">
             <h3 className="text-lg font-medium mb-3 flex items-center">
-              <Bot size={18} className="mr-2" /> AI Resume Assistant
+              <Bot size={18} className="mr-2 text-primary" /> AI Resume Assistant
             </h3>
             <div className="bg-black/30 border border-white/10 rounded-md p-3 sm:p-4 overflow-hidden">
               <div className="mb-2 text-sm text-white/80">

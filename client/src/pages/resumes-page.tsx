@@ -251,7 +251,7 @@ export default function ResumesPage() {
           </div>
 
           <div className="flex space-x-3">
-            <Button 
+            <CosmicButton 
               variant="outline" 
               size="sm"
               onClick={() => handleResumeAction('upload')}
@@ -259,14 +259,14 @@ export default function ResumesPage() {
             >
               <Upload className="mr-2 h-4 w-4 text-blue-400" />
               Upload Resume
-            </Button>
+            </CosmicButton>
 
             <Dialog>
               <DialogTrigger asChild>
-                <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                <CosmicButton size="sm" variant="primary" withGlow>
                   <Plus className="mr-2 h-4 w-4" />
                   Create New Resume
-                </Button>
+                </CosmicButton>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[600px] cosmic-card border-white/10">
                 <DialogHeader>
@@ -293,13 +293,13 @@ export default function ResumesPage() {
                 </div>
 
                 <DialogFooter>
-                  <Button 
+                  <CosmicButton 
                     variant="outline" 
                     onClick={() => handleCreateNewResume('blank')}
                     className="border-white/10 text-gray-200 hover:bg-white/10 hover:text-white"
                   >
                     Start from Scratch
-                  </Button>
+                  </CosmicButton>
                 </DialogFooter>
               </DialogContent>
             </Dialog>

@@ -372,22 +372,17 @@ export default function ResumeBuilder() {
             </Tabs>
           </div>
 
-          {/* Right Sidebar - AI Assistant - Only visible on large screens and only for non-preview tabs */}
-          <div className={`hidden lg:block lg:col-span-1 ${activeSection === 'preview' || activeSection === 'contact' || activeSection === 'education' || activeSection === 'projects' ? 'hidden' : ''}`}>
+          {/* Right Sidebar - AI Assistant - Always visible on large screens */}
+          <div className="hidden lg:block lg:col-span-1">
             <div className="sticky top-4">
-              <div className="bg-[#161f36] rounded-md border border-[#2a325a] p-5 shadow-md">
-                <div className="flex items-center gap-2 mb-4">
-                  <Bot className="h-5 w-5 text-blue-400" />
-                  <h3 className="text-lg font-medium">AI Assistant</h3>
-                </div>
-                
+              <div className="bg-white dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700 p-5 shadow-md">
                 {/* Using our new ResumeAIAssistant component */}
                 <ResumeAIAssistant 
                   activeSection={activeSection}
                   skillSearchQuery={skillSearchQuery}
                   setSkillSearchQuery={setSkillSearchQuery}
                   onApplySuggestion={applySuggestion}
-                  isHidden={activeSection === 'preview' || activeSection === 'contact' || activeSection === 'education' || activeSection === 'projects'}
+                  resumeId={resume?.id}
                 />
               </div>
             </div>

@@ -216,19 +216,18 @@ export default function ResumeBuilder() {
   };
 
   return (
-    <div className="container px-4 pb-10 mt-6">
-      <PageHeader
-        title={
-          <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-            Resume Builder
-          </span>
-        }
-        subtitle={
-          <span className="text-gray-600 dark:text-gray-400 mt-1">
-            Create and customize your professional resume
-          </span>
-        }
-        actions={
+    <div className="bg-slate-50 dark:bg-gray-900 min-h-screen">
+      <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 py-6">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              Resume Builder
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
+              Create and customize your professional resume
+            </p>
+          </div>
+          
           <div className="flex items-center gap-3">
             <Button
               variant="outline"
@@ -265,12 +264,10 @@ export default function ResumeBuilder() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        }
-      />
+        </div>
 
-      <div className="mt-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
+        <div className="flex flex-col lg:flex-row gap-6">
+          <div className="flex-1">
             <Tabs 
               defaultValue="contact" 
               value={activeSection}
@@ -457,45 +454,77 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="experience">
-                <ResumeExperienceSection
-                  experiences={resume.experience}
-                  onUpdate={updateExperienceList}
-                />
+                <div className="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">Work Experience</h2>
+                  <p className="text-gray-600 dark:text-gray-400 mb-5">
+                    Add your relevant work experience, starting with the most recent position.
+                  </p>
+                  <ResumeExperienceSection
+                    experiences={resume.experience}
+                    onUpdate={updateExperienceList}
+                  />
+                </div>
               </TabsContent>
 
               <TabsContent value="education">
-                <ResumeEducationSection
-                  education={resume.education}
-                  onUpdate={updateEducationList}
-                />
+                <div className="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">Education</h2>
+                  <p className="text-gray-600 dark:text-gray-400 mb-5">
+                    List your educational qualifications and academic achievements.
+                  </p>
+                  <ResumeEducationSection
+                    education={resume.education}
+                    onUpdate={updateEducationList}
+                  />
+                </div>
               </TabsContent>
 
               <TabsContent value="skills">
-                <ResumeSkillsSection
-                  skills={resume.skills}
-                  onUpdate={updateSkillsList}
-                />
+                <div className="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">Skills</h2>
+                  <p className="text-gray-600 dark:text-gray-400 mb-5">
+                    Highlight your technical and soft skills that are relevant to your target roles.
+                  </p>
+                  <ResumeSkillsSection
+                    skills={resume.skills}
+                    onUpdate={updateSkillsList}
+                  />
+                </div>
               </TabsContent>
 
               <TabsContent value="projects">
-                <ResumeProjectsSection
-                  projects={resume.projects}
-                  onUpdate={updateProjectsList}
-                />
+                <div className="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">Projects</h2>
+                  <p className="text-gray-600 dark:text-gray-400 mb-5">
+                    Showcase projects that demonstrate your capabilities and accomplishments.
+                  </p>
+                  <ResumeProjectsSection
+                    projects={resume.projects}
+                    onUpdate={updateProjectsList}
+                  />
+                </div>
               </TabsContent>
 
-              <TabsContent value="preview" className="px-0">
-                <ResumeTemplate 
-                  resume={resume} 
-                  onTemplateChange={updateResumeTemplate}
-                />
+              <TabsContent value="preview">
+                <div className="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">Resume Preview</h2>
+                  <p className="text-gray-600 dark:text-gray-400 mb-5">
+                    See how your resume looks and select from different templates.
+                  </p>
+                  <div className="mt-4">
+                    <ResumeTemplate 
+                      resume={resume} 
+                      onTemplateChange={updateResumeTemplate}
+                    />
+                  </div>
+                </div>
               </TabsContent>
             </Tabs>
           </div>
 
-          {/* Right Sidebar - AI Assistant - Fixed to the screen */}
-          <div className="hidden lg:block lg:col-span-1">
-            <div className="fixed top-20 right-8 w-80">
+          {/* Right Sidebar - AI Assistant */}
+          <div className="w-full lg:w-80">
+            <div className="sticky top-6">
               <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5 shadow-md overflow-hidden">
                 {/* Using our new ResumeAIAssistant component */}
                 <ResumeAIAssistant 

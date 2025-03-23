@@ -25,7 +25,10 @@ import QuickLogin from "@/features/auth/components/QuickLogin";
 import AuthDialog from "@/features/auth/components/AuthDialog";
 
 // Import our unified components
-import { UnifiedNavbar, CosmicBackground, UnifiedContainer } from "@/components/unified";
+import CosmicBackground from "@/ui/theme/CosmicBackground";
+
+// Temporary importing existing navbar until we create the unified one
+import Navbar from "@/ui/navigation/Navbar";
 
 function Router() {
   // Manual check for admin-access path to handle direct navigation
@@ -90,14 +93,14 @@ function AppContent() {
       
       {/* Content */}
       <div className="relative z-10">
-        {/* Master Navbar Component - Using our unified navbar */}
-        {showNavbar && <UnifiedNavbar />}
+        {/* Master Navbar Component */}
+        {showNavbar && <Navbar />}
         
         {/* Main content area with proper spacing using our unified theme variables */}
         <main className="pt-20">
-          <UnifiedContainer className="page-container">
+          <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4">
             <Router />
-          </UnifiedContainer>
+          </div>
         </main>
         
         {/* Admin access button - always visible */}

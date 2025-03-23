@@ -7,7 +7,7 @@ import RecentActivity from "@/features/dashboard/components/RecentActivity";
 import JobSearchProgress from "@/features/job/components/JobSearchProgress";
 import EnhancedJobInterviewAvatar from "@/features/job/components/EnhancedJobInterviewAvatar";
 import SubscriptionStatus from "@/features/subscription/components/SubscriptionStatus";
-import { UnifiedPageHeader, Heading1, GradientText, UnifiedContainer } from "@/components/unified";
+import PageHeader from "@/features/layout/components/PageHeader";
 import { Rocket, User, LayoutDashboard, UserCheck, Calendar, Search, Clock, Briefcase } from "lucide-react";
 
 export default function HomePage() {
@@ -82,20 +82,10 @@ export default function HomePage() {
   
   return (
     <>
-      <UnifiedContainer className="pb-10 min-h-screen relative z-10" paddingTop="sm">
+      <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4 pb-10 min-h-screen relative z-10">
         <div ref={welcomeRef}>
-          <UnifiedPageHeader
-            title={
-              config.variant === 'cosmic' ? (
-                <GradientText as="h1" size="4xl" weight="bold">
-                  Welcome back, {user?.username}!
-                </GradientText>
-              ) : (
-                <Heading1>
-                  Welcome back, {user?.username}!
-                </Heading1>
-              )
-            }
+          <PageHeader
+            title={`Welcome back, ${user?.username}!`}
             subtitle="Navigate your career journey with AI-powered tools and insights."
             variant={config.variant === 'cosmic' ? 'cosmic' : 'default'}
             borderStyle={config.variant === 'cosmic' ? 'gradient' : 'subtle'}
@@ -131,7 +121,7 @@ export default function HomePage() {
         <div className="mt-20 mb-12 ">
           <JobSearchProgress />
         </div>
-      </UnifiedContainer>
+      </div>
     </>
   );
 }

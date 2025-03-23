@@ -1,7 +1,14 @@
+/**
+ * Unified Page Header Component
+ * 
+ * A flexible page header component with multiple variants and styling options.
+ * Designed to be consistent with our unified theme system.
+ */
 import React from 'react';
-import { useUnifiedTheme } from '../../contexts/UnifiedThemeContext';
+import { cn } from '@/lib/utils';
+import { useUnifiedTheme } from '@/contexts/UnifiedThemeContext';
 
-interface PageHeaderProps {
+export interface PageHeaderProps {
   title: React.ReactNode;
   subtitle?: React.ReactNode;
   actions?: React.ReactNode;
@@ -10,79 +17,60 @@ interface PageHeaderProps {
   borderStyle?: 'none' | 'subtle' | 'gradient';
 }
 
-/**
- * UnifiedPageHeader component
- * 
- * A consistent page header that works well on all screen sizes
- * and supports multiple visual variants.
- */
-export function UnifiedPageHeader({
+export default function UnifiedPageHeader({ 
   title,
   subtitle,
   actions,
   variant = 'default',
-  className = '',
+  className,
   borderStyle = 'none',
 }: PageHeaderProps) {
   const { config } = useUnifiedTheme();
   
-  // Determine border styling
-  const getBorderClasses = () => {
-    switch (borderStyle) {
-      case 'subtle':
-        return 'border-b border-border/40 pb-2 mb-6';
-      case 'gradient':
-        return 'border-b-[1px] border-gradient pb-2 mb-6';
-      case 'none':
-      default:
-        return 'mb-6';
-    }
+  const borderClasses = {
+    none: '',
+    subtle: 'border-b border-border/40 pb-6',
+    gradient: 'border-b border-gradient-to-r from-primary/50 via-primary/20 to-primary/50 pb-6'
   };
   
-  // Determine variant-specific styles
-  const getVariantClasses = () => {
-    switch (variant) {
-      case 'gradient':
-        return 'bg-gradient-to-r from-primary/10 to-secondary/10 p-4 rounded-lg';
-      case 'cosmic':
-        return 'bg-black/20 backdrop-blur-sm p-4 rounded-lg cosmic-glow';
-      case 'default':
-      default:
-        return '';
-    }
+  const variantClasses = {
+    default: 'bg-card',
+    gradient: 'bg-gradient-to-r from-card/50 to-card',
+    cosmic: 'bg-black/40 backdrop-blur-sm rounded-lg'
   };
-  
-  // Base classes that are applied regardless of variant
-  const baseClasses = [
-    'w-full',
-    getBorderClasses(),
-    getVariantClasses(),
-    className
-  ].filter(Boolean).join(' ');
   
   return (
-    <div className={baseClasses}>
-      {/* Responsive layout that stacks on mobile but shows actions side-by-side on desktop */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="space-y-1">
-          {/* Title with responsive sizing */}
-          <div className="text-2xl font-bold md:text-3xl">{title}</div>
-          
-          {/* Optional subtitle */}
-          {subtitle && (
-            <div className="text-muted-foreground">{subtitle}</div>
-          )}
-        </div>
+    <div className={cn(
+      "flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8",
+      borderStyle && borderClasses[borderStyle],
+      className
+    )}>
+      <div className="space-y-1">
+        {typeof title === 'string' ? (
+          <h1 className={cn(
+            "text-2xl font-bold tracking-tight",
+            config.variant === 'cosmic' && "text-primary"
+          )}>
+            {title}
+          </h1>
+        ) : (
+          title
+        )}
         
-        {/* Optional actions - right-aligned on desktop, full-width on mobile */}
-        {actions && (
-          <div className="flex md:justify-end items-center mt-2 md:mt-0">
-            {actions}
-          </div>
+        {subtitle && (
+          <p className="text-muted-foreground">
+            {subtitle}
+          </p>
         )}
       </div>
+      
+      {actions && (
+        <div className="flex items-center gap-2 mt-4 sm:mt-0">
+          {actions}
+        </div>
+      )}
     </div>
   );
 }
 
-export default UnifiedPageHeader;
+export { UnifiedPageHeader };

@@ -1,39 +1,51 @@
 /**
- * Unified Component Library
+ * Unified Components Barrel File
  * 
- * This file exports all unified components to simplify imports.
- * When using these components, you can import multiple components in a single line:
- * 
- * import { UnifiedButton, UnifiedCard, UnifiedContainer } from '@/components/unified';
+ * This file exports all the unified components for easy importing
  */
 
-// Core components
-export { default as UnifiedButton } from './Button';
+// Export card components
+export { default as Card } from './Card';
 export { 
-  default as UnifiedCard,
+  UnifiedCard, 
   UnifiedCardHeader, 
   UnifiedCardTitle, 
   UnifiedCardDescription, 
   UnifiedCardContent, 
-  UnifiedCardFooter
+  UnifiedCardFooter 
 } from './Card';
-export { default as UnifiedContainer } from './Container';
-export { 
-  default as UnifiedText, 
-  Heading1, 
-  Heading2, 
-  Heading3, 
-  Heading4, 
-  Subtitle, 
-  Lead, 
-  Label, 
-  Code,
-  GradientText 
-} from './Text';
-export { default as UnifiedPageHeader } from './PageHeader';
-export { default as ThemeSwitcher } from './ThemeSwitcher';
-export { default as CosmicBackground } from './CosmicBackground';
-export { default as UnifiedNavbar } from './Navbar';
-export { default as MobileMenu } from './MobileMenu';
 
-// Add other components as they are created
+// Export button components
+export { default as Button, UnifiedButton } from './Button';
+
+// Export input components
+export { default as FormControls } from './Input';
+export { 
+  UnifiedInput, 
+  UnifiedTextarea, 
+  UnifiedLabel, 
+  Input, 
+  Textarea 
+} from './Input';
+
+// Export select components
+export { default as SelectControls } from './Select';
+export { 
+  UnifiedSelect, 
+  UnifiedSelectOption, 
+  Select 
+} from './Select';
+
+// Export layout components
+export { default as Layout } from './Container';
+export { 
+  UnifiedContainer, 
+  UnifiedSection, 
+  UnifiedGrid 
+} from './Container';
+
+// Export our navbar (if it exists)
+export { default as UnifiedNavbar } from './Navbar';
+
+// Export other components
+export { default as CosmicBackground } from '@/ui/theme/CosmicBackground';

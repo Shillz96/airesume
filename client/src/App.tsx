@@ -10,7 +10,7 @@ import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 import { initializeTheme } from "@/lib/theme-loader";
 import NotFound from "@/pages/not-found"; 
 import HomePage from "@/pages/home-page";
-import ResumeBuilder from "@/pages/refactored-resume-builder";
+import ResumeBuilder from "@/pages/resume-builder";
 import ResumesPage from "@/pages/resumes-page";
 import JobFinder from "@/pages/job-finder";
 import JobDetails from "@/pages/job-details";

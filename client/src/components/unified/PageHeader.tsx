@@ -1,14 +1,14 @@
 /**
- * Unified Page Header Component
+ * Unified PageHeader Component
  * 
- * A flexible page header component with multiple variants and styling options.
- * Designed to be consistent with our unified theme system.
+ * A consistent header component for all pages with support for title, subtitle, and actions
+ * Integrates with the central theme system via CSS variables
  */
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { useUnifiedTheme } from '@/contexts/UnifiedThemeContext';
+import { Heading1, Heading2, GradientText } from './Text';
 
-export interface PageHeaderProps {
+interface PageHeaderProps {
   title: React.ReactNode;
   subtitle?: React.ReactNode;
   actions?: React.ReactNode;
@@ -17,60 +17,63 @@ export interface PageHeaderProps {
   borderStyle?: 'none' | 'subtle' | 'gradient';
 }
 
-export default function UnifiedPageHeader({ 
+export default function PageHeader({
   title,
   subtitle,
   actions,
   variant = 'default',
   className,
-  borderStyle = 'none',
+  borderStyle = 'subtle',
 }: PageHeaderProps) {
-  const { config } = useUnifiedTheme();
-  
+  // Different classes based on variant
+  const variantClasses = {
+    default: '',
+    gradient: '',
+    cosmic: 'bg-black/10 backdrop-blur-sm bg-opacity-60 rounded-xl'
+  };
+
+  // Border style classes
   const borderClasses = {
     none: '',
-    subtle: 'border-b border-border/40 pb-6',
-    gradient: 'border-b border-gradient-to-r from-primary/50 via-primary/20 to-primary/50 pb-6'
-  };
-  
-  const variantClasses = {
-    default: 'bg-card',
-    gradient: 'bg-gradient-to-r from-card/50 to-card',
-    cosmic: 'bg-black/40 backdrop-blur-sm rounded-lg'
+    subtle: 'border-b border-border',
+    gradient: 'border-b border-gradient-to-r from-primary via-secondary to-transparent'
   };
   
   return (
     <div className={cn(
-      "flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8",
-      borderStyle && borderClasses[borderStyle],
+      'flex flex-col md:flex-row justify-between items-start md:items-center py-4 mb-6',
+      borderClasses[borderStyle],
+      variantClasses[variant],
       className
     )}>
       <div className="space-y-1">
-        {typeof title === 'string' ? (
-          <h1 className={cn(
-            "text-2xl font-bold tracking-tight",
-            config.variant === 'cosmic' && "text-primary"
+        {variant === 'gradient' ? (
+          <GradientText as="h1" size="3xl" weight="bold" gradient="cosmic" className="tracking-tight">
+            {title}
+          </GradientText>
+        ) : (
+          <Heading1 className={cn(
+            variant === 'cosmic' && 'text-white'
           )}>
             {title}
-          </h1>
-        ) : (
-          title
+          </Heading1>
         )}
         
         {subtitle && (
-          <p className="text-muted-foreground">
+          <Heading2 className={cn(
+            'font-normal text-muted-foreground',
+            variant === 'cosmic' && 'text-white/70'
+          )}>
             {subtitle}
-          </p>
+          </Heading2>
         )}
       </div>
       
       {actions && (
-        <div className="flex items-center gap-2 mt-4 sm:mt-0">
+        <div className="flex gap-2 mt-4 md:mt-0">
           {actions}
         </div>
       )}
     </div>
   );
 }
-
-export { UnifiedPageHeader };

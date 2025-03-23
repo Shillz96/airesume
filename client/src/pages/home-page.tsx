@@ -7,7 +7,7 @@ import RecentActivity from "@/features/dashboard/components/RecentActivity";
 import JobSearchProgress from "@/features/job/components/JobSearchProgress";
 import EnhancedJobInterviewAvatar from "@/features/job/components/EnhancedJobInterviewAvatar";
 import SubscriptionStatus from "@/features/subscription/components/SubscriptionStatus";
-import PageHeader from "@/features/layout/components/PageHeader";
+import { PageHeader } from "@/components/unified";
 import { Rocket, User, LayoutDashboard, UserCheck, Calendar, Search, Clock, Briefcase } from "lucide-react";
 
 export default function HomePage() {

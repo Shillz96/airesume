@@ -1,67 +1,31 @@
 /**
- * Unified Components Barrel File
+ * Unified Components Index
  * 
- * This file exports all the unified components for easy importing
+ * This file exports all components from the unified system to provide a single import path.
+ * Import components from here rather than individual files for better organization.
+ * 
+ * Example:
+ * import { PageHeader, Container, Heading1 } from '@/components/unified';
  */
 
-// Export card components
-export { default as Card } from './Card';
-export { 
-  UnifiedCard, 
-  UnifiedCardHeader, 
-  UnifiedCardTitle, 
-  UnifiedCardDescription, 
-  UnifiedCardContent, 
-  UnifiedCardFooter 
-} from './Card';
+// Layout components
+export { default as PageHeader } from './PageHeader';
+export { default as Container } from './Container';
 
-// Export button components
-export { default as Button, UnifiedButton } from './Button';
-
-// Export input components
-export { default as FormControls } from './Input';
-export { 
-  UnifiedInput, 
-  UnifiedTextarea, 
-  UnifiedLabel, 
-  Input, 
-  Textarea 
-} from './Input';
-
-// Export select components
-export { default as SelectControls } from './Select';
-export { 
-  UnifiedSelect, 
-  UnifiedSelectOption, 
-  Select 
-} from './Select';
-
-// Export layout components
-export { default as Layout } from './Container';
-export { 
-  UnifiedContainer, 
-  UnifiedSection, 
-  UnifiedGrid 
-} from './Container';
-
-// Export page header component
+// For backward compatibility with existing code
 export { default as UnifiedPageHeader } from './PageHeader';
+export { default as UnifiedContainer } from './Container';
 
-// Export our navbar (if it exists)
-export { default as UnifiedNavbar } from './Navbar';
-
-// Export other components
-export { default as CosmicBackground } from '@/ui/theme/CosmicBackground';
-
-// Export text components
-export { default as Text } from './Text';
-export { 
+// Typography components
+export {
   Heading1,
   Heading2,
   Heading3,
   Heading4,
-  Heading5,
-  Heading6,
-  Paragraph,
   GradientText
 } from './Text';
+
+// Export additional typography components if needed - currently Heading5, Heading6 and Paragraph
+// need special handling as they're not exported correctly from Text.tsx
+
+// Import more unified components as they are created

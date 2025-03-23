@@ -31,11 +31,15 @@
   
   /* Brand Colors */
   --primary: #3b82f6;
+  --primary-rgb: 59, 130, 246;
   --primary-dark: #2563eb;
+  --primary-dark-rgb: 37, 99, 235;
   --primary-foreground: #ffffff;
   --secondary: #8b5cf6;
+  --secondary-rgb: 139, 92, 246;
   --secondary-foreground: #ffffff;
   --accent: #10b981;
+  --accent-rgb: 16, 185, 129;
   --accent-foreground: #ffffff;
   
   /* Status Colors */

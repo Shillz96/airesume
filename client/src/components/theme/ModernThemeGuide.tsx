@@ -1,13 +1,13 @@
 import React from 'react';
-import { Button } from '@/ui/core/Button';
+import { ThemeButton } from './ModernThemeButton';
 import { 
-  Card, 
-  CardHeader, 
-  CardContent, 
-  CardFooter,
-  CardTitle,
-  CardDescription
-} from '@/ui/core/Card';
+  ThemeCard, 
+  ThemeCardHeader, 
+  ThemeCardContent, 
+  ThemeCardFooter,
+  ThemeCardTitle,
+  ThemeCardDescription
+} from './ModernThemeCard';
 
 // Icons for demo purposes
 import { 
@@ -22,13 +22,13 @@ import {
 } from 'lucide-react';
 
 /**
- * Modern ThemeGuide component
+ * ModernThemeGuide component
  * 
  * This component serves as a live demonstration of the unified theme system.
  * It showcases all the button and card variants, as well as their various states.
  * It can be used as a reference for developers implementing new components.
  * 
- * Updated to use the new Button and Card components from our unified theme system.
+ * Uses the modern ThemeButton and ThemeCard components from our unified theme system.
  */
 export default function ModernThemeGuide() {
   return (
@@ -43,214 +43,226 @@ export default function ModernThemeGuide() {
       {/* Button Variants Section */}
       <section className="space-y-6">
         <h2 className="text-2xl font-semibold">Button Variants</h2>
-        <Card>
-          <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-6">
+        <ThemeCard>
+          <ThemeCardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 py-6">
             <div className="space-y-2">
               <p className="text-sm font-medium">Primary</p>
-              <Button variant="default">Primary Button</Button>
+              <ThemeButton variant="primary">Primary Button</ThemeButton>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium">Secondary</p>
-              <Button variant="secondary">Secondary Button</Button>
+              <ThemeButton variant="secondary">Secondary Button</ThemeButton>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium">Outline</p>
-              <Button variant="outline">Outline Button</Button>
+              <ThemeButton variant="outline">Outline Button</ThemeButton>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium">Destructive</p>
-              <Button variant="destructive">Destructive Button</Button>
+              <ThemeButton variant="destructive">Destructive Button</ThemeButton>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium">Ghost</p>
-              <Button variant="ghost">Ghost Button</Button>
+              <ThemeButton variant="ghost">Ghost Button</ThemeButton>
             </div>
             <div className="space-y-2">
-              <p className="text-sm font-medium">Link</p>
-              <Button variant="link">Link Button</Button>
+              <p className="text-sm font-medium">Success</p>
+              <ThemeButton variant="success">Success Button</ThemeButton>
             </div>
-          </CardContent>
-        </Card>
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Gradient Border</p>
+              <ThemeButton variant="gradient-border">Gradient Button</ThemeButton>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Animated Gradient</p>
+              <ThemeButton variant="animated-gradient">Animated Button</ThemeButton>
+            </div>
+          </ThemeCardContent>
+        </ThemeCard>
       </section>
 
       {/* Button Sizes Section */}
       <section className="space-y-6">
         <h2 className="text-2xl font-semibold">Button Sizes</h2>
-        <Card>
-          <CardContent className="flex flex-wrap items-end gap-4 py-6">
+        <ThemeCard>
+          <ThemeCardContent className="flex flex-wrap items-end gap-4 py-6">
             <div className="space-y-2">
               <p className="text-sm font-medium">Small (sm)</p>
-              <Button size="sm">Small</Button>
+              <ThemeButton size="sm">Small</ThemeButton>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium">Default</p>
-              <Button>Default</Button>
+              <ThemeButton>Default</ThemeButton>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium">Large (lg)</p>
-              <Button size="lg">Large</Button>
+              <ThemeButton size="lg">Large</ThemeButton>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium">Icon</p>
-              <Button size="icon"><Plus className="h-4 w-4" /></Button>
+              <ThemeButton size="icon"><Plus className="h-4 w-4" /></ThemeButton>
             </div>
-          </CardContent>
-        </Card>
+          </ThemeCardContent>
+        </ThemeCard>
       </section>
       
       {/* Button States Section */}
       <section className="space-y-6">
         <h2 className="text-2xl font-semibold">Button States</h2>
-        <Card>
-          <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 py-6">
+        <ThemeCard>
+          <ThemeCardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 py-6">
             <div className="space-y-2">
               <p className="text-sm font-medium">Default</p>
-              <Button>Default State</Button>
+              <ThemeButton>Default State</ThemeButton>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium">Disabled</p>
-              <Button disabled>Disabled State</Button>
+              <ThemeButton disabled>Disabled State</ThemeButton>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium">Loading</p>
-              <Button isLoading>Loading State</Button>
+              <ThemeButton isLoading>Loading State</ThemeButton>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium">Loading with Text</p>
-              <Button isLoading loadingText="Loading...">
+              <ThemeButton isLoading loadingText="Loading...">
                 Processing
-              </Button>
+              </ThemeButton>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm font-medium">With Glow Effect</p>
+              <ThemeButton withGlow>Glowing Button</ThemeButton>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium">Full Width</p>
-              <Button fullWidth>Full Width Button</Button>
+              <ThemeButton fullWidth>Full Width Button</ThemeButton>
             </div>
-          </CardContent>
-        </Card>
+          </ThemeCardContent>
+        </ThemeCard>
       </section>
 
       {/* Buttons with Icons Section */}
       <section className="space-y-6">
         <h2 className="text-2xl font-semibold">Buttons with Icons</h2>
-        <Card>
-          <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 py-6">
+        <ThemeCard>
+          <ThemeCardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 py-6">
             <div className="space-y-2">
               <p className="text-sm font-medium">Icon Left</p>
-              <Button iconLeft={<Plus size={16} />}>
+              <ThemeButton iconLeft={<Plus size={16} />}>
                 Add New
-              </Button>
+              </ThemeButton>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium">Icon Right</p>
-              <Button iconRight={<ArrowRight size={16} />}>
+              <ThemeButton iconRight={<ArrowRight size={16} />}>
                 Next Step
-              </Button>
+              </ThemeButton>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium">Both Icons</p>
-              <Button 
+              <ThemeButton 
                 iconLeft={<User size={16} />}
                 iconRight={<ChevronRight size={16} />}
               >
                 User Profile
-              </Button>
+              </ThemeButton>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium">Icon Only</p>
               <div className="flex gap-2">
-                <Button size="icon" aria-label="Add"><Plus size={16} /></Button>
-                <Button size="icon" aria-label="Favorite"><Star size={16} /></Button>
-                <Button size="icon" aria-label="Settings"><Settings size={16} /></Button>
+                <ThemeButton size="icon"><Plus size={16} /></ThemeButton>
+                <ThemeButton size="icon"><Star size={16} /></ThemeButton>
+                <ThemeButton size="icon"><Settings size={16} /></ThemeButton>
               </div>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium">Icon with Variant</p>
               <div className="flex gap-2">
-                <Button
-                  variant="default" 
+                <ThemeButton 
+                  variant="primary" 
                   iconLeft={<Save size={16} />}
                 >
                   Save
-                </Button>
-                <Button 
+                </ThemeButton>
+                <ThemeButton 
                   variant="destructive" 
                   iconLeft={<Trash2 size={16} />}
                 >
                   Delete
-                </Button>
+                </ThemeButton>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </ThemeCardContent>
+        </ThemeCard>
       </section>
 
       {/* Card Variants Section */}
       <section className="space-y-6">
         <h2 className="text-2xl font-semibold">Card Variants</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Default Card</CardTitle>
-              <CardDescription>
+          <ThemeCard>
+            <ThemeCardHeader>
+              <ThemeCardTitle>Default Card</ThemeCardTitle>
+              <ThemeCardDescription>
                 The standard card with a subtle border
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </ThemeCardDescription>
+            </ThemeCardHeader>
+            <ThemeCardContent>
               This is the default card variant used for most content throughout the application.
-            </CardContent>
-            <CardFooter>
-              <Button variant="ghost">Cancel</Button>
-              <Button>Save</Button>
-            </CardFooter>
-          </Card>
+            </ThemeCardContent>
+            <ThemeCardFooter>
+              <ThemeButton variant="ghost">Cancel</ThemeButton>
+              <ThemeButton>Save</ThemeButton>
+            </ThemeCardFooter>
+          </ThemeCard>
 
-          <Card className="border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>Elevated Card</CardTitle>
-              <CardDescription>
+          <ThemeCard className="border-0 shadow-lg">
+            <ThemeCardHeader>
+              <ThemeCardTitle>Elevated Card</ThemeCardTitle>
+              <ThemeCardDescription>
                 Card with pronounced shadow for emphasis
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </ThemeCardDescription>
+            </ThemeCardHeader>
+            <ThemeCardContent>
               The elevated card variant is used to highlight important content or to create a hierarchy.
-            </CardContent>
-            <CardFooter>
-              <Button variant="ghost">Cancel</Button>
-              <Button>Save</Button>
-            </CardFooter>
-          </Card>
+            </ThemeCardContent>
+            <ThemeCardFooter>
+              <ThemeButton variant="ghost">Cancel</ThemeButton>
+              <ThemeButton>Save</ThemeButton>
+            </ThemeCardFooter>
+          </ThemeCard>
 
-          <Card className="border border-primary/20 bg-transparent">
-            <CardHeader>
-              <CardTitle>Outlined Card</CardTitle>
-              <CardDescription>
+          <ThemeCard className="border border-primary/20 bg-transparent">
+            <ThemeCardHeader>
+              <ThemeCardTitle>Outlined Card</ThemeCardTitle>
+              <ThemeCardDescription>
                 Card with transparent background and border
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </ThemeCardDescription>
+            </ThemeCardHeader>
+            <ThemeCardContent>
               The outlined card is useful for content that doesn't need to stand out as much.
-            </CardContent>
-            <CardFooter>
-              <Button variant="ghost">Cancel</Button>
-              <Button>Save</Button>
-            </CardFooter>
-          </Card>
+            </ThemeCardContent>
+            <ThemeCardFooter>
+              <ThemeButton variant="ghost">Cancel</ThemeButton>
+              <ThemeButton>Save</ThemeButton>
+            </ThemeCardFooter>
+          </ThemeCard>
 
-          <Card className="border-0 shadow-none">
-            <CardHeader>
-              <CardTitle>Flat Card</CardTitle>
-              <CardDescription>
+          <ThemeCard className="border-0 shadow-none">
+            <ThemeCardHeader>
+              <ThemeCardTitle>Flat Card</ThemeCardTitle>
+              <ThemeCardDescription>
                 Card without border or shadow
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </ThemeCardDescription>
+            </ThemeCardHeader>
+            <ThemeCardContent>
               The flat card blends more with the background and works well for content that needs minimal separation.
-            </CardContent>
-            <CardFooter>
-              <Button variant="ghost">Cancel</Button>
-              <Button>Save</Button>
-            </CardFooter>
-          </Card>
+            </ThemeCardContent>
+            <ThemeCardFooter>
+              <ThemeButton variant="ghost">Cancel</ThemeButton>
+              <ThemeButton>Save</ThemeButton>
+            </ThemeCardFooter>
+          </ThemeCard>
         </div>
       </section>
 
@@ -258,26 +270,26 @@ export default function ModernThemeGuide() {
       <section className="space-y-6">
         <h2 className="text-2xl font-semibold">Card Hover States</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="transition-all duration-300 hover:shadow-lg cursor-pointer">
-            <CardContent className="pt-6">
-              <CardTitle>Interactive Card</CardTitle>
+          <ThemeCard isInteractive>
+            <ThemeCardContent className="pt-6">
+              <ThemeCardTitle>Interactive Card</ThemeCardTitle>
               <p className="mt-2">This card has a hover and click effect, indicating it's clickable.</p>
-            </CardContent>
-          </Card>
+            </ThemeCardContent>
+          </ThemeCard>
 
-          <Card className="transition-all duration-300 hover:border-primary/50">
-            <CardContent className="pt-6">
-              <CardTitle>Hover Border Card</CardTitle>
+          <ThemeCard isHoverable>
+            <ThemeCardContent className="pt-6">
+              <ThemeCardTitle>Hover Border Card</ThemeCardTitle>
               <p className="mt-2">This card has a subtle hover effect that highlights the border.</p>
-            </CardContent>
-          </Card>
+            </ThemeCardContent>
+          </ThemeCard>
 
-          <Card className="border border-primary/20 shadow-[0_0_10px_rgba(var(--primary-rgb),0.2)]">
-            <CardContent className="pt-6">
-              <CardTitle>Glowing Card</CardTitle>
+          <ThemeCard withGlow>
+            <ThemeCardContent className="pt-6">
+              <ThemeCardTitle>Glowing Card</ThemeCardTitle>
               <p className="mt-2">This card has a subtle glow effect around the border.</p>
-            </CardContent>
-          </Card>
+            </ThemeCardContent>
+          </ThemeCard>
         </div>
       </section>
 
@@ -285,14 +297,14 @@ export default function ModernThemeGuide() {
       <section className="space-y-6">
         <h2 className="text-2xl font-semibold">Usage Examples</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Sign In</CardTitle>
-              <CardDescription>
+          <ThemeCard>
+            <ThemeCardHeader>
+              <ThemeCardTitle>Sign In</ThemeCardTitle>
+              <ThemeCardDescription>
                 Enter your credentials to access your account
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+              </ThemeCardDescription>
+            </ThemeCardHeader>
+            <ThemeCardContent className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Email</label>
                 <input 
@@ -309,22 +321,22 @@ export default function ModernThemeGuide() {
                   placeholder="********"
                 />
               </div>
-            </CardContent>
-            <CardFooter>
-              <Button variant="link" className="mr-auto">Forgot password?</Button>
-              <Button variant="ghost">Cancel</Button>
-              <Button>Sign In</Button>
-            </CardFooter>
-          </Card>
+            </ThemeCardContent>
+            <ThemeCardFooter>
+              <ThemeButton variant="ghost" className="mr-auto">Forgot password?</ThemeButton>
+              <ThemeButton variant="ghost">Cancel</ThemeButton>
+              <ThemeButton>Sign In</ThemeButton>
+            </ThemeCardFooter>
+          </ThemeCard>
 
-          <Card className="border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>Feature Highlight</CardTitle>
-              <CardDescription>
+          <ThemeCard className="border-0 shadow-lg">
+            <ThemeCardHeader>
+              <ThemeCardTitle>Feature Highlight</ThemeCardTitle>
+              <ThemeCardDescription>
                 Upgrade your account to access premium features
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </ThemeCardDescription>
+            </ThemeCardHeader>
+            <ThemeCardContent>
               <ul className="space-y-2">
                 <li className="flex items-center gap-2">
                   <Star size={16} className="text-yellow-500" />
@@ -339,13 +351,13 @@ export default function ModernThemeGuide() {
                   <span>Priority customer support</span>
                 </li>
               </ul>
-            </CardContent>
-            <CardFooter>
-              <Button fullWidth className="bg-gradient-to-r from-primary to-primary-dark hover:opacity-90">
+            </ThemeCardContent>
+            <ThemeCardFooter>
+              <ThemeButton fullWidth className="bg-gradient-to-r from-primary to-primary-dark hover:opacity-90">
                 Upgrade Now
-              </Button>
-            </CardFooter>
-          </Card>
+              </ThemeButton>
+            </ThemeCardFooter>
+          </ThemeCard>
         </div>
       </section>
       

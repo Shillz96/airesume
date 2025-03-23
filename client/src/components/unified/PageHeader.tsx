@@ -1,21 +1,7 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
-import { useUnifiedTheme } from '@/contexts/UnifiedThemeContext';
+import { useUnifiedTheme } from '../../contexts/UnifiedThemeContext';
 
-/**
- * Unified PageHeader Component
- * 
- * This component provides a consistent page header layout throughout the application
- * with support for different visual styles based on the theme system.
- * 
- * Features:
- * - Multiple variant support (default, gradient, cosmic)
- * - Support for title, subtitle, and actions
- * - Consistent spacing and layout
- * - Border style options
- */
-
-interface UnifiedPageHeaderProps {
+interface PageHeaderProps {
   title: React.ReactNode;
   subtitle?: React.ReactNode;
   actions?: React.ReactNode;
@@ -24,65 +10,73 @@ interface UnifiedPageHeaderProps {
   borderStyle?: 'none' | 'subtle' | 'gradient';
 }
 
+/**
+ * UnifiedPageHeader component
+ * 
+ * A consistent page header that works well on all screen sizes
+ * and supports multiple visual variants.
+ */
 export function UnifiedPageHeader({
   title,
   subtitle,
   actions,
   variant = 'default',
-  className,
-  borderStyle = 'subtle',
-}: UnifiedPageHeaderProps) {
-  const { config, getThemeClass } = useUnifiedTheme();
+  className = '',
+  borderStyle = 'none',
+}: PageHeaderProps) {
+  const { config } = useUnifiedTheme();
   
-  // Base classes for the header
-  const headerClasses = cn(
-    'mb-8 pb-4',
-    borderStyle === 'none' ? '' : 
-    borderStyle === 'subtle' ? 'border-b border-border' : 
-    'border-b-2 border-gradient',
-    
-    // Apply theme variant specific classes
-    variant === 'cosmic' && config.variant === 'cosmic' ? 'cosmic-header' : '',
-    variant === 'gradient' ? 'gradient-header' : '',
-    
-    // Allow custom classes to override defaults
+  // Determine border styling
+  const getBorderClasses = () => {
+    switch (borderStyle) {
+      case 'subtle':
+        return 'border-b border-border/40 pb-4 mb-6';
+      case 'gradient':
+        return 'border-b-2 border-gradient pb-4 mb-6';
+      case 'none':
+      default:
+        return 'mb-6';
+    }
+  };
+  
+  // Determine variant-specific styles
+  const getVariantClasses = () => {
+    switch (variant) {
+      case 'gradient':
+        return 'bg-gradient-to-r from-primary/10 to-secondary/10 p-6 rounded-lg';
+      case 'cosmic':
+        return 'bg-black/20 backdrop-blur-sm p-6 rounded-lg cosmic-glow';
+      case 'default':
+      default:
+        return '';
+    }
+  };
+  
+  // Base classes that are applied regardless of variant
+  const baseClasses = [
+    'w-full',
+    getBorderClasses(),
+    getVariantClasses(),
     className
-  );
-  
-  // Classes for the title
-  const titleClasses = cn(
-    'text-2xl font-bold tracking-tight',
-    variant === 'gradient' ? 'text-gradient' : '',
-    variant === 'cosmic' && config.variant === 'cosmic' ? 'cosmic-text-gradient animate-pulse' : ''
-  );
-  
-  // Classes for the subtitle
-  const subtitleClasses = cn(
-    'text-muted-foreground mt-1',
-    variant === 'cosmic' && config.variant === 'cosmic' ? 'text-blue-300' : ''
-  );
+  ].filter(Boolean).join(' ');
   
   return (
-    <div className={headerClasses}>
-      <div className="flex items-center justify-between">
-        <div>
-          {typeof title === 'string' ? (
-            <h1 className={titleClasses}>{title}</h1>
-          ) : (
-            title
-          )}
+    <div className={baseClasses}>
+      {/* Responsive layout that stacks on mobile but shows actions side-by-side on desktop */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="space-y-1">
+          {/* Title with responsive sizing */}
+          <div className="text-2xl font-bold md:text-3xl">{title}</div>
           
+          {/* Optional subtitle */}
           {subtitle && (
-            typeof subtitle === 'string' ? (
-              <p className={subtitleClasses}>{subtitle}</p>
-            ) : (
-              subtitle
-            )
+            <div className="text-muted-foreground">{subtitle}</div>
           )}
         </div>
         
+        {/* Optional actions - right-aligned on desktop, full-width on mobile */}
         {actions && (
-          <div className="flex items-center gap-2">
+          <div className="flex md:justify-end items-center mt-2 md:mt-0">
             {actions}
           </div>
         )}

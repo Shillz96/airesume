@@ -1,169 +1,102 @@
-import React from 'react';
-import { Sun, Moon, Monitor, Paintbrush, Cog } from 'lucide-react';
-import { useUnifiedTheme } from '@/contexts/UnifiedThemeContext';
-import { cn } from '@/lib/utils';
-import { UnifiedButton } from './Button';
+import React, { useState } from 'react';
+import { Moon, Sun, Laptop } from 'lucide-react';
+import { useUnifiedTheme } from '../../contexts/UnifiedThemeContext';
 
 /**
- * Unified ThemeSwitcher Component
+ * ThemeSwitcher component
  * 
- * This component provides controls for changing the theme appearance and variant.
- * 
- * Features:
- * - Toggle between light, dark, and system modes
- * - Select theme variants (cosmic, professional, minimal)
- * - Compact and expanded display options
+ * Allows users to toggle between dark mode, light mode, and system preference
+ * with a stylish dropdown menu that matches the current theme.
  */
-
-interface ThemeSwitcherProps {
-  className?: string;
-  compact?: boolean; // Only show appearance toggle in compact mode
-  showVariants?: boolean; // Show variant selector
-  showSettings?: boolean; // Show settings button that navigates to theme settings page
-  buttonVariant?: 'default' | 'outline' | 'ghost';
-  buttonSize?: 'default' | 'sm' | 'lg';
-}
-
-export function ThemeSwitcher({
-  className,
-  compact = false,
-  showVariants = false,
-  showSettings = false,
-  buttonVariant = 'outline',
-  buttonSize = 'default',
-}: ThemeSwitcherProps) {
-  const { 
-    config, 
-    isDarkMode, 
-    toggleDarkMode, 
-    setMode, 
-    setVariant 
-  } = useUnifiedTheme();
+export default function ThemeSwitcher() {
+  const [isOpen, setIsOpen] = useState(false);
+  const { config, setMode } = useUnifiedTheme();
   
-  // Get the current appearance icon
-  const AppearanceIcon = isDarkMode ? Moon : 
-                        config.mode === 'system' ? Monitor : Sun;
-  
-  // Handle appearance toggle
-  const handleAppearanceToggle = () => {
-    toggleDarkMode();
+  // Toggle dropdown
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
   };
   
-  // Handle appearance selection
-  const handleAppearanceSelect = (mode: 'light' | 'dark' | 'system') => {
+  // Close dropdown when user selects an option
+  const handleModeChange = (mode: 'dark' | 'light' | 'system') => {
     setMode(mode);
+    setIsOpen(false);
   };
   
-  // Handle variant selection
-  const handleVariantSelect = (variant: 'cosmic' | 'professional' | 'minimal') => {
-    setVariant(variant);
+  // Get icon based on current mode
+  const getCurrentIcon = () => {
+    switch (config.mode) {
+      case 'dark':
+        return <Moon size={18} />;
+      case 'light':
+        return <Sun size={18} />;
+      case 'system':
+        return <Laptop size={18} />;
+      default:
+        return <Moon size={18} />;
+    }
   };
   
-  // Compact mode (just the appearance toggle)
-  if (compact) {
-    return (
-      <UnifiedButton
-        variant={buttonVariant}
-        size={buttonSize}
-        onClick={handleAppearanceToggle}
-        className={className}
+  return (
+    <div className="relative">
+      {/* Toggle Button */}
+      <button
+        onClick={toggleDropdown}
+        className="p-2 rounded-md hover:bg-muted/30 transition-colors flex items-center gap-2 text-sm"
         aria-label="Toggle theme"
       >
-        <AppearanceIcon className="h-[1.2rem] w-[1.2rem]" />
-      </UnifiedButton>
-    );
-  }
-  
-  // Full mode with all options
-  return (
-    <div className={cn("flex items-center gap-2", className)}>
-      {/* Appearance toggles */}
-      <div className="flex rounded-md border border-border p-1">
-        <UnifiedButton
-          variant={config.mode === 'light' ? 'default' : 'ghost'}
-          size="sm"
-          onClick={() => handleAppearanceSelect('light')}
-          className="px-3"
-          aria-label="Light mode"
-        >
-          <Sun className="h-4 w-4 mr-1" />
-          {!compact && <span>Light</span>}
-        </UnifiedButton>
-        
-        <UnifiedButton
-          variant={config.mode === 'dark' ? 'default' : 'ghost'}
-          size="sm"
-          onClick={() => handleAppearanceSelect('dark')}
-          className="px-3"
-          aria-label="Dark mode"
-        >
-          <Moon className="h-4 w-4 mr-1" />
-          {!compact && <span>Dark</span>}
-        </UnifiedButton>
-        
-        <UnifiedButton
-          variant={config.mode === 'system' ? 'default' : 'ghost'}
-          size="sm"
-          onClick={() => handleAppearanceSelect('system')}
-          className="px-3"
-          aria-label="System mode"
-        >
-          <Monitor className="h-4 w-4 mr-1" />
-          {!compact && <span>System</span>}
-        </UnifiedButton>
-      </div>
+        {getCurrentIcon()}
+      </button>
       
-      {/* Theme variant selector */}
-      {showVariants && (
-        <div className="flex rounded-md border border-border p-1">
-          <UnifiedButton
-            variant={config.variant === 'cosmic' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => handleVariantSelect('cosmic')}
-            className="px-3"
-            aria-label="Cosmic theme"
-          >
-            <span className="animate-cosmic-shine bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-              Cosmic
-            </span>
-          </UnifiedButton>
+      {/* Dropdown Menu */}
+      {isOpen && (
+        <>
+          {/* Backdrop for closing when clicking outside */}
+          <div 
+            className="fixed inset-0 z-40"
+            onClick={() => setIsOpen(false)} 
+          />
           
-          <UnifiedButton
-            variant={config.variant === 'professional' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => handleVariantSelect('professional')}
-            className="px-3"
-            aria-label="Professional theme"
-          >
-            Professional
-          </UnifiedButton>
-          
-          <UnifiedButton
-            variant={config.variant === 'minimal' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => handleVariantSelect('minimal')}
-            className="px-3"
-            aria-label="Minimal theme"
-          >
-            Minimal
-          </UnifiedButton>
-        </div>
-      )}
-      
-      {/* Settings button */}
-      {showSettings && (
-        <UnifiedButton
-          variant="ghost"
-          size={buttonSize}
-          className="ml-1"
-          aria-label="Theme settings"
-          onClick={() => { /* Navigate to theme settings page */ }}
-        >
-          <Cog className="h-4 w-4" />
-        </UnifiedButton>
+          {/* Dropdown content */}
+          <div className="absolute right-0 mt-2 z-50 w-40 bg-card border border-border rounded-md shadow-lg overflow-hidden">
+            <div className="py-1">
+              <button
+                onClick={() => handleModeChange('light')}
+                className={`flex items-center gap-2 w-full px-4 py-2 text-sm ${
+                  config.mode === 'light' 
+                    ? 'text-primary bg-primary/10' 
+                    : 'text-foreground hover:bg-muted/30'
+                }`}
+              >
+                <Sun size={16} />
+                <span>Light</span>
+              </button>
+              <button
+                onClick={() => handleModeChange('dark')}
+                className={`flex items-center gap-2 w-full px-4 py-2 text-sm ${
+                  config.mode === 'dark' 
+                    ? 'text-primary bg-primary/10' 
+                    : 'text-foreground hover:bg-muted/30'
+                }`}
+              >
+                <Moon size={16} />
+                <span>Dark</span>
+              </button>
+              <button
+                onClick={() => handleModeChange('system')}
+                className={`flex items-center gap-2 w-full px-4 py-2 text-sm ${
+                  config.mode === 'system' 
+                    ? 'text-primary bg-primary/10' 
+                    : 'text-foreground hover:bg-muted/30'
+                }`}
+              >
+                <Laptop size={16} />
+                <span>System</span>
+              </button>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
 }
-
-export default ThemeSwitcher;

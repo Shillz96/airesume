@@ -1,63 +1,56 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
-import { useUnifiedTheme } from '@/contexts/UnifiedThemeContext';
+import { useUnifiedTheme } from '../../contexts/UnifiedThemeContext';
 
-/**
- * Unified Container Component
- * 
- * This component provides a consistent container layout throughout the application
- * with predictable spacing and maximum width.
- * 
- * Features:
- * - Consistent max-width and padding
- * - Theme-aware styling
- * - Support for full-width and centered layouts
- */
-
-interface UnifiedContainerProps {
+interface ContainerProps {
   children: React.ReactNode;
   className?: string;
   fullWidth?: boolean;
-  noPadding?: boolean;
-  centered?: boolean;
+  noGutter?: boolean;
+  centerContent?: boolean;
+  as?: React.ElementType;
 }
 
+/**
+ * UnifiedContainer component
+ * 
+ * A responsive container that adapts to different screen sizes
+ * and provides consistent padding across the application.
+ * 
+ * Features:
+ * - Responsive padding based on screen size
+ * - Option for full width or max-width constraint
+ * - Support for custom HTML element type
+ * - Configurable gutters and content alignment
+ */
 export function UnifiedContainer({
   children,
-  className,
+  className = '',
   fullWidth = false,
-  noPadding = false,
-  centered = false,
-}: UnifiedContainerProps) {
+  noGutter = false,
+  centerContent = false,
+  as: Component = 'div'
+}: ContainerProps) {
   const { config } = useUnifiedTheme();
   
-  // Base classes for the container
-  const containerClasses = cn(
-    // Apply max-width unless fullWidth is true
-    !fullWidth ? 'max-w-[var(--content-max-width)]' : '',
+  // Base container classes
+  const baseClasses = [
+    // Padding that adapts to screen size
+    noGutter ? '' : 'px-4 sm:px-6 md:px-8',
     
-    // Apply padding unless noPadding is true
-    !noPadding ? 'px-[var(--container-padding)]' : '',
+    // Max width constraints (unless fullWidth is true)
+    fullWidth ? 'w-full' : 'max-w-7xl mx-auto w-full',
     
-    // Center the container if centered or not fullWidth
-    (centered || !fullWidth) ? 'mx-auto' : '',
+    // Centering content if requested
+    centerContent ? 'flex flex-col items-center' : '',
     
-    // Apply width
-    'w-full',
-    
-    // Theme variant specific classes (add if needed)
-    config.variant === 'cosmic' ? 'cosmic-container' : '',
-    config.variant === 'professional' ? 'professional-container' : '',
-    config.variant === 'minimal' ? 'minimal-container' : '',
-    
-    // Allow custom classes to override defaults
+    // Apply any additional custom classes
     className
-  );
+  ].filter(Boolean).join(' ');
   
   return (
-    <div className={containerClasses}>
+    <Component className={baseClasses}>
       {children}
-    </div>
+    </Component>
   );
 }
 

@@ -32,8 +32,9 @@ export {
   GradientText 
 } from './Text';
 export { UnifiedPageHeader } from './PageHeader';
-export { ThemeSwitcher } from './ThemeSwitcher';
-export { CosmicBackground } from './CosmicBackground';
-export { UnifiedNavbar } from './Navbar';
+export { default as ThemeSwitcher } from './ThemeSwitcher';
+export { default as CosmicBackground } from './CosmicBackground';
+export { default as UnifiedNavbar } from './Navbar';
+export { default as MobileMenu } from './MobileMenu';
 
 // Add other components as they are created

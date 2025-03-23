@@ -5,10 +5,14 @@
  * Base styles are applied first, followed by components, layout, animations and utilities.
  */
 
-/* Import modern theme - single source of truth for styling */
-@import './styles/modern/theme.css'; /* Modern theme styling - our new system */
+/* Import unified theme system - single source of truth for styling */
+@import './styles/theme/index.css';     /* Core theme variables and base styles */
+@import './styles/theme/buttons.css';   /* Unified button styles */
+@import './styles/theme/cards.css';     /* Unified card styles */
 
 /* Legacy theme imports kept for backward compatibility during transition */
+/* These will be eventually removed once all components are migrated to the unified theme */
+@import './styles/modern/theme.css';    /* Modern theme (will be deprecated) */
 @import './styles/cosmic-theme-unified.css'; 
 @import './styles/base/variables.css';
 @import './styles/base/base.css';
@@ -20,7 +24,7 @@
 @import './styles/components/unified-forms.css';     /* Combined form styles */
 @import './styles/components/unified-dropdowns.css'; /* Combined dropdown styles */
 
-/* Legacy imports - these will eventually be phased out in favor of the modern theme */
+/* Legacy imports - these will eventually be phased out in favor of the unified theme */
 /* Only keeping for backwards compatibility during transition */
 @import './styles/components/cosmic-components.css';
 @import './styles/cosmic-resume.css';

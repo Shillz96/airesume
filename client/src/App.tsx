@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -18,7 +18,6 @@ import SubscriptionPage from "@/pages/subscription-page";
 import LandingPage from "@/pages/landing-page";
 import AdminAccess from "@/pages/admin-access";
 import { ProtectedRoute } from "./lib/protected-route";
-import { useEffect, useRef } from "react";
 
 // Import components
 import Navbar from "@/components/navbar";

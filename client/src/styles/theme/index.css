@@ -8,44 +8,44 @@
 
 :root {
   /* Base Colors - Light Mode */
-  --color-primary-hsl: 210 100% 55%; /* Brighter Blue */
-  --color-background-hsl: 210 30% 98%;
-  --color-foreground-hsl: 210 15% 15%;
+  --color-primary-hsl: 210 100% 60%; /* Even Brighter Blue */
+  --color-background-hsl: 210 40% 99%;
+  --color-foreground-hsl: 210 20% 10%;
   --color-card-hsl: 0 0% 100%;
-  --color-muted-hsl: 210 15% 65%;
-  --color-border-hsl: 210 20% 92%;
-  --color-input-hsl: 210 20% 92%;
+  --color-muted-hsl: 210 20% 70%;
+  --color-border-hsl: 210 25% 94%;
+  --color-input-hsl: 210 25% 94%;
 
   /* Semantic Colors */
-  --color-success-hsl: 142 80% 35%;
-  --color-warning-hsl: 38 95% 55%;
-  --color-danger-hsl: 358 90% 60%;
-  --color-info-hsl: 200 100% 45%;
+  --color-success-hsl: 142 85% 40%;
+  --color-warning-hsl: 38 100% 60%;
+  --color-danger-hsl: 358 95% 65%;
+  --color-info-hsl: 200 100% 50%;
 
   /* Accent Colors */
-  --color-accent-1-hsl: 262 90% 62%; /* Brighter Purple */
-  --color-accent-2-hsl: 326 85% 55%; /* Brighter Pink */
-  --color-accent-3-hsl: 29 100% 55%; /* Brighter Orange */
+  --color-accent-1-hsl: 262 95% 68%; /* Even Brighter Purple */
+  --color-accent-2-hsl: 326 95% 60%; /* Even Brighter Pink */
+  --color-accent-3-hsl: 29 100% 60%; /* Even Brighter Orange */
   
   /* Converted HSL colors to RGB format for use with opacity */
-  --color-primary-rgb: 26, 115, 255;
-  --color-background-rgb: 248, 250, 252;
-  --color-foreground-rgb: 35, 38, 45;
+  --color-primary-rgb: 51, 133, 255;
+  --color-background-rgb: 250, 252, 255;
+  --color-foreground-rgb: 20, 25, 35;
   --color-card-rgb: 255, 255, 255;
-  --color-muted-rgb: 155, 167, 180;
-  --color-border-rgb: 232, 236, 241;
-  --color-input-rgb: 232, 236, 241;
+  --color-muted-rgb: 165, 180, 195;
+  --color-border-rgb: 238, 242, 247;
+  --color-input-rgb: 238, 242, 247;
 
   /* Semantic Colors RGB */
-  --color-success-rgb: 22, 163, 74;
-  --color-warning-rgb: 245, 158, 11;
-  --color-danger-rgb: 239, 68, 68;
-  --color-info-rgb: 2, 132, 199;
+  --color-success-rgb: 35, 180, 85;
+  --color-warning-rgb: 255, 170, 30;
+  --color-danger-rgb: 255, 80, 80;
+  --color-info-rgb: 30, 145, 255;
 
   /* Accent Colors RGB */
-  --color-accent-1-rgb: 124, 58, 237;
-  --color-accent-2-rgb: 217, 38, 169;
-  --color-accent-3-rgb: 255, 128, 0;
+  --color-accent-1-rgb: 145, 70, 255;
+  --color-accent-2-rgb: 235, 50, 180;
+  --color-accent-3-rgb: 255, 140, 30;
 
   /* Border Radius */
   --border-radius-sm: 0.125rem;

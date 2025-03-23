@@ -221,12 +221,13 @@ export default function ResumeBuilder() {
   return (
     <>
       {/* Using global CosmicBackground from App.tsx */}
-      <div className="container mx-auto px-4 sm:px-6 pb-10 min-h-screen relative z-10">
+      <div className="container mx-auto px-2 sm:px-6 pb-10 min-h-screen relative z-10">
         <PageHeader
           title="Resume Builder"
           subtitle="Create and customize your professional resume"
+          className="py-4 mb-2 sm:mb-4"
           actions={
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 className="hidden sm:flex"
@@ -246,7 +247,7 @@ export default function ResumeBuilder() {
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="sm:hidden">
+                  <Button variant="outline" className="sm:hidden h-9 w-9 p-0">
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -266,22 +267,35 @@ export default function ResumeBuilder() {
         />
 
         {/* Mobile progress indicator */}
-        <div className="block lg:hidden mt-2 mb-6">
-          <div className="bg-black/30 border border-white/10 rounded-lg p-4">
-            <h3 className="text-sm font-medium text-white/90 mb-2">Resume Progress</h3>
-            <div className="flex gap-1 mb-3">
-              {['contact', 'summary', 'experience', 'education', 'skills', 'projects', 'preview'].map((section) => (
-                <div 
+        <div className="block lg:hidden mt-2 mb-4">
+          <div className="bg-black/30 border border-white/10 rounded-lg p-3">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-medium text-white/90">Resume Progress</h3>
+              <span className="text-xs text-primary font-medium">
+                Step {['contact', 'summary', 'experience', 'education', 'skills', 'projects', 'preview'].indexOf(activeSection) + 1} of 7
+              </span>
+            </div>
+            <div className="flex gap-1 mb-2">
+              {['contact', 'summary', 'experience', 'education', 'skills', 'projects', 'preview'].map((section, index) => (
+                <button 
                   key={section}
-                  className={`h-1.5 flex-1 rounded-full ${
+                  onClick={() => setActiveSection(section)}
+                  className={`group h-1.5 flex-1 rounded-full relative ${
                     section === activeSection ? 'bg-primary' : 'bg-white/20'
                   }`}
-                />
+                >
+                  <span className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-200 bottom-full mb-1 left-1/2 -translate-x-1/2 bg-black/80 text-white text-[10px] px-1.5 py-0.5 rounded whitespace-nowrap pointer-events-none">
+                    {section.charAt(0).toUpperCase() + section.slice(1)}
+                  </span>
+                </button>
               ))}
             </div>
             <div className="flex justify-between text-xs text-white/60">
-              <span>Contact Info</span>
-              <span>Preview</span>
+              <span className="text-[10px]">Contact Info</span>
+              <span className="text-[10px]">
+                {activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}
+              </span>
+              <span className="text-[10px]">Preview</span>
             </div>
           </div>
         </div>
@@ -294,53 +308,71 @@ export default function ResumeBuilder() {
               onValueChange={setActiveSection}
               className="w-full"
             >
-              <TabsList className="mb-6 flex flex-wrap h-auto bg-black/30 border border-white/10 rounded-lg w-full gap-0 overflow-x-auto scrollbar-thin">
+              {/* Desktop tabs list */}
+              <TabsList className="mb-6 hidden md:flex flex-wrap h-auto bg-black/30 border border-white/10 rounded-lg w-full gap-0">
                 <TabsTrigger 
                   value="contact" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white whitespace-nowrap min-w-[80px] flex-shrink-0"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
                 >
                   Contact
                 </TabsTrigger>
                 <TabsTrigger 
                   value="summary" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white whitespace-nowrap min-w-[80px] flex-shrink-0"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
                 >
                   Summary
                 </TabsTrigger>
                 <TabsTrigger 
                   value="experience" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white whitespace-nowrap min-w-[80px] flex-shrink-0"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
                 >
                   Experience
                 </TabsTrigger>
                 <TabsTrigger 
                   value="education" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white whitespace-nowrap min-w-[80px] flex-shrink-0"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
                 >
                   Education
                 </TabsTrigger>
                 <TabsTrigger 
                   value="skills" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white whitespace-nowrap min-w-[80px] flex-shrink-0"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
                 >
                   Skills
                 </TabsTrigger>
                 <TabsTrigger 
                   value="projects" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white whitespace-nowrap min-w-[80px] flex-shrink-0"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
                 >
                   Projects
                 </TabsTrigger>
                 <TabsTrigger 
                   value="preview" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white whitespace-nowrap min-w-[80px] flex-shrink-0"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
                 >
                   Preview
                 </TabsTrigger>
               </TabsList>
+              
+              {/* Mobile tabs - optimized for touch */}
+              <div className="md:hidden mb-4 flex overflow-x-auto scrollbar-none -mx-2 px-2 pb-1">
+                {['contact', 'summary', 'experience', 'education', 'skills', 'projects', 'preview'].map((section) => (
+                  <button
+                    key={section}
+                    onClick={() => setActiveSection(section)}
+                    className={`py-2 px-4 mr-2 text-sm font-medium whitespace-nowrap rounded-full flex-shrink-0 transition-colors ${
+                      section === activeSection
+                        ? 'bg-primary text-white'
+                        : 'bg-black/30 text-white/70 border border-white/10'
+                    }`}
+                  >
+                    {section.charAt(0).toUpperCase() + section.slice(1)}
+                  </button>
+                ))}
+              </div>
 
               <TabsContent value="contact">
-                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                <div className="bg-black/30 border border-white/10 rounded-md p-3 sm:p-6">
                   <ResumeContactSection
                     personalInfo={resume.personalInfo}
                     title={resume.title}
@@ -351,7 +383,7 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="summary">
-                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                <div className="bg-black/30 border border-white/10 rounded-md p-3 sm:p-6">
                   <ResumeSummarySection
                     summary={resume.personalInfo.summary}
                     onUpdateSummary={(summary) => updatePersonalInfo({
@@ -363,7 +395,7 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="experience">
-                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                <div className="bg-black/30 border border-white/10 rounded-md p-3 sm:p-6">
                   <ResumeExperienceSection
                     experiences={resume.experience}
                     onUpdate={updateExperienceList}
@@ -372,7 +404,7 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="education">
-                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                <div className="bg-black/30 border border-white/10 rounded-md p-3 sm:p-6">
                   <ResumeEducationSection
                     education={resume.education}
                     onUpdate={updateEducationList}
@@ -381,7 +413,7 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="skills">
-                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                <div className="bg-black/30 border border-white/10 rounded-md p-3 sm:p-6">
                   <ResumeSkillsSection
                     skills={resume.skills}
                     onUpdate={updateSkillsList}
@@ -390,7 +422,7 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="projects">
-                <div className="bg-black/30 border border-white/10 rounded-md p-6">
+                <div className="bg-black/30 border border-white/10 rounded-md p-3 sm:p-6">
                   <ResumeProjectsSection
                     projects={resume.projects}
                     onUpdate={updateProjectsList}
@@ -399,12 +431,12 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="preview">
-                <div className="bg-black/30 border border-white/10 rounded-md p-6">
-                  <h3 className="text-xl font-medium text-foreground mb-4">Resume Preview</h3>
-                  <p className="text-muted-foreground mb-5">
+                <div className="bg-black/30 border border-white/10 rounded-md p-3 sm:p-6">
+                  <h3 className="text-xl font-medium text-foreground mb-2 sm:mb-4">Resume Preview</h3>
+                  <p className="text-muted-foreground mb-3 sm:mb-5 text-sm sm:text-base">
                     See how your resume looks and download the final version.
                   </p>
-                  <div className="mt-4">
+                  <div className="mt-2 sm:mt-4">
                     <ResumeTemplate 
                       resume={resume} 
                       onDownload={handleDownload}
@@ -490,11 +522,14 @@ export default function ResumeBuilder() {
           </div>
           
           {/* Mobile AI Assistant (separate section at bottom) */}
-          <div id="mobile-ai-assistant" className="block lg:hidden w-full mt-8 pt-8 border-t border-white/10">
-            <h3 className="text-lg font-medium mb-4 flex items-center">
+          <div id="mobile-ai-assistant" className="block lg:hidden w-full mt-6 pt-6 border-t border-white/10">
+            <h3 className="text-lg font-medium mb-3 flex items-center">
               <Bot size={18} className="mr-2" /> AI Resume Assistant
             </h3>
-            <div className="bg-black/30 border border-white/10 rounded-md p-6 overflow-hidden">
+            <div className="bg-black/30 border border-white/10 rounded-md p-3 sm:p-4 overflow-hidden">
+              <div className="mb-2 text-sm text-white/80">
+                Based on your current section: <span className="font-medium text-primary">{activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}</span>
+              </div>
               <ResumeAIAssistant 
                 activeSection={activeSection}
                 skillSearchQuery={skillSearchQuery}

@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, hashPassword, comparePasswords } from "./auth";
 import { z } from "zod";
-import { ResumeSuggestions, generateResumeSuggestions, matchJobsWithResume, parseResumeFile, openai } from "./ai";
+import { ResumeSuggestions, generateResumeSuggestions, matchJobsWithResume, parseResumeFile, openai, CareerPath, CareerSpecificAdvice } from "./ai";
 import multer from "multer";
 import path from "path";
 import fs from "fs";

@@ -48,12 +48,13 @@ export async function generateResumeSuggestions(resume: Resume, careerPath?: Car
       return getSampleResumeSuggestions(resume, careerPath);
     }
     
-    // Extract resume content for AI analysis
-    const personalInfo = resume.content?.personalInfo || {};
-    const experience = resume.content?.experience || [];
-    const education = resume.content?.education || [];
-    const skills = resume.content?.skills || [];
-    const projects = resume.content?.projects || [];
+    // Safely extract resume content for AI analysis
+    const resumeContent = resume.content || {};
+    const personalInfo = (resumeContent as any).personalInfo || {};
+    const experience = Array.isArray((resumeContent as any).experience) ? (resumeContent as any).experience : [];
+    const education = Array.isArray((resumeContent as any).education) ? (resumeContent as any).education : [];
+    const skills = Array.isArray((resumeContent as any).skills) ? (resumeContent as any).skills : [];
+    const projects = Array.isArray((resumeContent as any).projects) ? (resumeContent as any).projects : [];
     
     const resumeContext = {
       personalInfo,
@@ -87,7 +88,16 @@ export async function generateResumeSuggestions(resume: Resume, careerPath?: Car
       response_format: { type: "json_object" }
     });
     
-    const result = JSON.parse(response.choices[0].message.content || "{}");
+    // Safely handle the response
+    const contentStr = response.choices[0].message.content || "{}";
+    let result;
+    try {
+      result = JSON.parse(contentStr);
+    } catch (parseError) {
+      console.error("Error parsing suggestions JSON:", parseError);
+      result = { suggestions: [] };
+    }
+    
     return Array.isArray(result.suggestions) ? result.suggestions : [];
   } catch (error) {
     console.error("Error generating resume suggestions:", error);
@@ -205,9 +215,9 @@ export async function matchJobsWithResume(jobs: Job[], resume: Resume): Promise<
     
     // Safely extract resume content for job matching
     const resumeContent = resume.content || {};
-    const personalInfo = resumeContent.personalInfo || {};
-    const experience = Array.isArray(resumeContent.experience) ? resumeContent.experience : [];
-    const skills = Array.isArray(resumeContent.skills) ? resumeContent.skills : [];
+    const personalInfo = (resumeContent as any).personalInfo || {};
+    const experience = Array.isArray((resumeContent as any).experience) ? (resumeContent as any).experience : [];
+    const skills = Array.isArray((resumeContent as any).skills) ? (resumeContent as any).skills : [];
     
     // Detect career path for more accurate matching
     const careerPath = await detectCareerPath({
@@ -292,15 +302,15 @@ function isNewJob(postedAt: Date): boolean {
 
 // Calculate a simple match score based on keyword overlap
 function calculateSimpleMatch(job: Job, resume: Resume): number {
-  const skills = resume.content?.personalInfo?.skills || [];
-  const experience = resume.content?.experience || [];
+  // Safely extract resume content
+  const resumeContent = resume.content || {};
   
   // Extract keywords from resume
   const resumeKeywords = new Set<string>();
   
   // Add skills
-  if (Array.isArray(resume.content?.skills)) {
-    resume.content.skills.forEach((skill: any) => {
+  if (Array.isArray((resumeContent as any).skills)) {
+    (resumeContent as any).skills.forEach((skill: any) => {
       if (skill && skill.name) {
         resumeKeywords.add(skill.name.toLowerCase());
       }
@@ -308,8 +318,8 @@ function calculateSimpleMatch(job: Job, resume: Resume): number {
   }
   
   // Add experience keywords
-  if (Array.isArray(experience)) {
-    experience.forEach((exp: any) => {
+  if (Array.isArray((resumeContent as any).experience)) {
+    (resumeContent as any).experience.forEach((exp: any) => {
       if (exp && exp.title) {
         exp.title.toLowerCase().split(/\s+/).forEach((word: string) => {
           if (word.length > 3) resumeKeywords.add(word);
@@ -590,7 +600,9 @@ export async function parseResumeFile(filePath: string, fileName: string): Promi
       });
       
       try {
-        const parsedData = JSON.parse(structureResponse.choices[0].message.content);
+        // Safely handle the response content which could be null
+        const contentStr = structureResponse.choices[0].message.content || "{}";
+        const parsedData = JSON.parse(contentStr);
         return { success: true, data: parsedData };
       } catch (err) {
         console.error("Error parsing resume structure:", err);

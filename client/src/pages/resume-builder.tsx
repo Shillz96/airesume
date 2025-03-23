@@ -4,7 +4,7 @@ import { Loader2, X, ChevronDown, ChevronUp, Save, Download, PenSquare, Star, Pl
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Resume, useResumeData } from "@/hooks/use-resume-data";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useUnifiedTheme } from "@/contexts/UnifiedThemeContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { CosmicButton } from "@/components/cosmic-button";

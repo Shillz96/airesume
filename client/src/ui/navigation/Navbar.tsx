@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useAuthDialog } from "@/hooks/use-auth-dialog";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useUnifiedTheme } from "@/contexts/UnifiedThemeContext";
 import { Button } from "@/ui/core/Button";
 import {
   Menu,
@@ -37,7 +37,7 @@ export default function Navbar() {
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
   const { openLogin, openRegister } = useAuthDialog();
-  const { isDarkMode, toggleDarkMode } = useTheme();
+  const { isDarkMode, toggleDarkMode } = useUnifiedTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Calculate user initials for avatar

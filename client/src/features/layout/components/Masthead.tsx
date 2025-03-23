@@ -3,13 +3,13 @@ import { Link, useLocation } from 'wouter';
 import { User, Moon, Sun, LogOut, Settings } from 'lucide-react';
 import { Button } from '@/ui/core/Button';
 import { useAuth } from '@/hooks/use-auth';
-import { useTheme } from '@/contexts/ThemeContext';
+import { useUnifiedTheme } from '@/contexts/UnifiedThemeContext';
 import CosmicStarfield from '@/ui/theme/CosmicStarfield';
 
 export default function Masthead() {
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
-  const { isDarkMode, toggleDarkMode } = useTheme();
+  const { isDarkMode, toggleDarkMode } = useUnifiedTheme();
   
   const isHomePage = location === '/home' || location === '/';
   

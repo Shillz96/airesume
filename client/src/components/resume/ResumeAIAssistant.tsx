@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-// Legacy button import (to be removed)
-import { Button } from '@/components/ui/button';
 import { CosmicButton } from '@/components/cosmic-button';
 import { Loader2, RefreshCw, X, Bot, Sparkles, MessageCircle, ArrowRight, Search, ChevronDown, ChevronUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -600,15 +598,15 @@ export function ResumeAIAssistant({
         )}
         
         <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-          <Button 
+          <CosmicButton 
             variant="ghost" 
             size="sm" 
             className="text-xs bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-indigo-700 px-0 font-medium"
             onClick={() => setIsChatView(true)}
+            iconLeft={<MessageCircle className="h-3.5 w-3.5 text-blue-500" />}
           >
-            <MessageCircle className="h-3.5 w-3.5 mr-1.5 text-blue-500" />
             Chat with AI for tailored advice
-          </Button>
+          </CosmicButton>
         </div>
       </div>
     );
@@ -629,13 +627,14 @@ export function ResumeAIAssistant({
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
           Have questions about your resume? Chat with our AI assistant for personalized advice.
         </p>
-        <Button 
+        <CosmicButton 
+          variant="primary"
           onClick={() => setIsChatView(true)}
           className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+          iconLeft={<MessageCircle className="h-4 w-4" />}
         >
-          <MessageCircle className="h-4 w-4 mr-2" />
           Chat with AI Assistant
-        </Button>
+        </CosmicButton>
       </div>
     </div>
   );

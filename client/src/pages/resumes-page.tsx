@@ -15,7 +15,7 @@ import {
   Upload
 } from 'lucide-react';
 import Navbar from '@/components/navbar';
-import { Button } from '@/components/ui/button';
+import { CosmicButton } from '@/components/cosmic-button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';

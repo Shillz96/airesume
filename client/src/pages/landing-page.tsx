@@ -130,12 +130,9 @@ export default function LandingPage() {
     }
   }
 
-  // Animation for text elements (no starfield - using global CosmicBackground)
+  // Animation for text elements - simplified for mobile compatibility
   useEffect(() => {
-    // Register ScrollTrigger plugin
-    gsap.registerPlugin(ScrollTrigger);
-    
-    // Initial hero animations
+    // Initial hero animations - these work reliably on all devices
     if (titleRef.current && subtitleRef.current && ctaRef.current) {
       gsap.fromTo(titleRef.current, 
         { opacity: 0, y: 20 }, 
@@ -153,143 +150,71 @@ export default function LandingPage() {
       );
     }
 
-    // Feature animations with scroll triggers
+    // Simple fade-in animations for feature section
     if (featuresRef.current) {
       // Animate the section title and description
       const featureTitle = featuresRef.current.querySelector('h2');
       const featureDesc = featuresRef.current.querySelector('h2 + p');
-      
-      if (featureTitle) {
-        gsap.fromTo(featureTitle,
-          { opacity: 0, y: 30 },
-          { 
-            opacity: 1, 
-            y: 0, 
-            duration: 0.8,
-            scrollTrigger: {
-              trigger: featureTitle,
-              start: "top 80%",
-              toggleActions: "play none none none"
-            }
-          }
-        );
-      }
-      
-      if (featureDesc) {
-        gsap.fromTo(featureDesc,
-          { opacity: 0, y: 20 },
-          { 
-            opacity: 1, 
-            y: 0, 
-            duration: 0.8,
-            delay: 0.2,
-            scrollTrigger: {
-              trigger: featureDesc,
-              start: "top 80%",
-              toggleActions: "play none none none"
-            }
-          }
-        );
-      }
-      
-      // Animate each feature card with a staggered effect
       const features = featuresRef.current.querySelectorAll('.feature-card');
+      
+      // Set initial states
+      if (featureTitle) gsap.set(featureTitle, { opacity: 0, y: 20 });
+      if (featureDesc) gsap.set(featureDesc, { opacity: 0, y: 15 });
       features.forEach((card, index) => {
-        gsap.fromTo(card,
-          { opacity: 0, y: 50, scale: 0.95 },
-          { 
-            opacity: 1, 
-            y: 0, 
-            scale: 1,
-            duration: 0.7, 
-            delay: index * 0.1,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: card,
-              start: "top 85%",
-              toggleActions: "play none none none"
-            }
-          }
-        );
+        gsap.set(card, { opacity: 0, y: 25 });
       });
       
-      // Add hover animations to feature cards
-      features.forEach((card) => {
-        card.addEventListener('mouseenter', () => {
-          gsap.to(card, { y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)", duration: 0.3 });
-        });
+      // Function to check if element is in viewport and animate
+      const animateOnScroll = () => {
+        const scrollPosition = window.scrollY + window.innerHeight * 0.85;
         
-        card.addEventListener('mouseleave', () => {
-          gsap.to(card, { y: 0, boxShadow: "none", duration: 0.3 });
+        if (featureTitle && featureTitle.getBoundingClientRect().top + window.scrollY < scrollPosition && 
+            getComputedStyle(featureTitle).opacity === '0') {
+          gsap.to(featureTitle, { opacity: 1, y: 0, duration: 0.6 });
+        }
+        
+        if (featureDesc && featureDesc.getBoundingClientRect().top + window.scrollY < scrollPosition && 
+            getComputedStyle(featureDesc).opacity === '0') {
+          gsap.to(featureDesc, { opacity: 1, y: 0, duration: 0.6, delay: 0.2 });
+        }
+        
+        features.forEach((card, index) => {
+          if (card.getBoundingClientRect().top + window.scrollY < scrollPosition && 
+              getComputedStyle(card).opacity === '0') {
+            gsap.to(card, { 
+              opacity: 1, 
+              y: 0, 
+              duration: 0.5, 
+              delay: index * 0.1, 
+              ease: "power1.out"
+            });
+          }
         });
-      });
-    }
-
-    // Pricing section animations
-    const pricingSection = document.getElementById('pricing');
-    if (pricingSection) {
-      const pricingTitle = pricingSection.querySelector('h2');
-      const pricingDesc = pricingSection.querySelector('h2 + p');
-      const pricingCards = pricingSection.querySelectorAll('.cosmic-card');
+      };
       
-      if (pricingTitle) {
-        gsap.fromTo(pricingTitle,
-          { opacity: 0, y: 30 },
-          { 
-            opacity: 1, 
-            y: 0, 
-            duration: 0.8,
-            scrollTrigger: {
-              trigger: pricingTitle,
-              start: "top 80%",
-              toggleActions: "play none none none"
-            }
-          }
-        );
+      // Initial check and add scroll listener
+      animateOnScroll();
+      window.addEventListener('scroll', animateOnScroll);
+      
+      // Add hover effects for desktop only
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (!isMobile) {
+        features.forEach((card) => {
+          card.addEventListener('mouseenter', () => {
+            gsap.to(card, { y: -5, duration: 0.3 });
+          });
+          
+          card.addEventListener('mouseleave', () => {
+            gsap.to(card, { y: 0, duration: 0.3 });
+          });
+        });
       }
       
-      if (pricingDesc) {
-        gsap.fromTo(pricingDesc,
-          { opacity: 0, y: 20 },
-          { 
-            opacity: 1, 
-            y: 0, 
-            duration: 0.8,
-            delay: 0.2,
-            scrollTrigger: {
-              trigger: pricingDesc,
-              start: "top 80%",
-              toggleActions: "play none none none"
-            }
-          }
-        );
-      }
-      
-      // Animate pricing cards with a staggered effect
-      pricingCards.forEach((card, index) => {
-        gsap.fromTo(card,
-          { opacity: 0, y: 50, rotationY: 15 },
-          { 
-            opacity: 1, 
-            y: 0, 
-            rotationY: 0,
-            duration: 0.8, 
-            delay: index * 0.15,
-            ease: "back.out(1.2)",
-            scrollTrigger: {
-              trigger: card,
-              start: "top 85%",
-              toggleActions: "play none none none"
-            }
-          }
-        );
-      });
+      // Clean up
+      return () => {
+        window.removeEventListener('scroll', animateOnScroll);
+      };
     }
-
-    // Clean up all ScrollTrigger instances on component unmount
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
   }, []);
 
   const handleLoginClick = () => {

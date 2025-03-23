@@ -190,59 +190,84 @@ export default function ResumeTemplate({
             </div>
           )}
           
-          <Button
-            variant="ghost"
-            size="sm" 
-            onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
-            aria-label="Zoom out"
-            title="Zoom out"
-          >
-            <ZoomOut className="h-4 w-4" />
-          </Button>
+          <div className="group relative">
+            <Button
+              variant="ghost"
+              size="sm" 
+              onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
+              aria-label="Zoom out"
+              title="Zoom out"
+            >
+              <ZoomOut className="h-4 w-4" />
+            </Button>
+            <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-black/80 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+              Zoom out to view more content
+            </div>
+          </div>
           
           <span className="text-xs font-mono px-2 py-1 rounded bg-muted">{Math.round(zoom * 100)}%</span>
           
-          <Button
-            variant="ghost"
-            size="sm" 
-            onClick={() => setZoom(Math.min(2, zoom + 0.1))}
-            aria-label="Zoom in"
-            title="Zoom in"
-          >
-            <ZoomIn className="h-4 w-4" />
-          </Button>
+          <div className="group relative">
+            <Button
+              variant="ghost"
+              size="sm" 
+              onClick={() => setZoom(Math.min(2, zoom + 0.1))}
+              aria-label="Zoom in"
+              title="Zoom in"
+            >
+              <ZoomIn className="h-4 w-4" />
+            </Button>
+            <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-black/80 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+              Zoom in for a closer look
+            </div>
+          </div>
           
-          <Button
-            variant="ghost"
-            size="sm" 
-            onClick={() => setFullscreen(!fullscreen)}
-            aria-label="Toggle fullscreen"
-            title={fullscreen ? "Exit fullscreen" : "Fullscreen"}
-          >
-            {fullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
-          </Button>
+          <div className="group relative">
+            <Button
+              variant="ghost"
+              size="sm" 
+              onClick={() => setFullscreen(!fullscreen)}
+              aria-label="Toggle fullscreen"
+              title={fullscreen ? "Exit fullscreen" : "Fullscreen view"}
+            >
+              {fullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+            </Button>
+            <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-black/80 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+              {fullscreen ? "Exit fullscreen mode" : "View in fullscreen mode"}
+            </div>
+          </div>
           
-          <Button
-            variant="ghost"
-            size="sm" 
-            onClick={applySmartAdjust}
-            aria-label="Smart adjust"
-            title="Smart adjust (optimize layout)"
-            className="relative"
-          >
-            <Dices className="h-4 w-4" />
-            <span className="absolute -top-1 -right-1 bg-primary h-2 w-2 rounded-full"></span>
-          </Button>
+          <div className="group relative">
+            <Button
+              variant="ghost"
+              size="sm" 
+              onClick={applySmartAdjust}
+              aria-label="Smart adjust"
+              title="Smart adjust (optimize layout)"
+              className="relative"
+            >
+              <Dices className="h-4 w-4" />
+              <span className="absolute -top-1 -right-1 bg-primary h-2 w-2 rounded-full"></span>
+              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-black/80 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none w-48 text-center">
+                Smart Adjust: Automatically optimize spacing to fit more content on a single page
+              </div>
+            </Button>
+          </div>
           
-          <Button
-            variant="ghost"
-            size="sm" 
-            onClick={() => setShowPlaceholders(!showPlaceholders)}
-            aria-label="Toggle placeholders"
-            title={showPlaceholders ? "Hide placeholders" : "Show placeholders"}
-          >
-            {showPlaceholders ? <PanelLeftClose className="h-4 w-4" /> : <PanelRightClose className="h-4 w-4" />}
-          </Button>
+          <div className="group relative">
+            <Button
+              variant="ghost"
+              size="sm" 
+              onClick={() => setShowPlaceholders(!showPlaceholders)}
+              aria-label="Toggle placeholders"
+              title={showPlaceholders ? "Hide placeholders" : "Show placeholders"}
+            >
+              {showPlaceholders ? <PanelLeftClose className="h-4 w-4" /> : <PanelRightClose className="h-4 w-4" />}
+              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-black/80 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none w-48 text-center">
+                {showPlaceholders ? "Hide example content" : "Show example content to guide you"}
+              </div>
+            </Button>
+          </div>
           
           {onDownload && (
             <Button

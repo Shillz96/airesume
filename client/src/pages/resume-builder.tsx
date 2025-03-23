@@ -265,6 +265,27 @@ export default function ResumeBuilder() {
           }
         />
 
+        {/* Mobile progress indicator */}
+        <div className="block lg:hidden mt-2 mb-6">
+          <div className="bg-black/30 border border-white/10 rounded-lg p-4">
+            <h3 className="text-sm font-medium text-white/90 mb-2">Resume Progress</h3>
+            <div className="flex gap-1 mb-3">
+              {['contact', 'summary', 'experience', 'education', 'skills', 'projects', 'preview'].map((section) => (
+                <div 
+                  key={section}
+                  className={`h-1.5 flex-1 rounded-full ${
+                    section === activeSection ? 'bg-primary' : 'bg-white/20'
+                  }`}
+                />
+              ))}
+            </div>
+            <div className="flex justify-between text-xs text-white/60">
+              <span>Contact Info</span>
+              <span>Preview</span>
+            </div>
+          </div>
+        </div>
+        
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="flex-1">
             <Tabs 
@@ -273,46 +294,46 @@ export default function ResumeBuilder() {
               onValueChange={setActiveSection}
               className="w-full"
             >
-              <TabsList className="mb-6 flex flex-wrap h-auto bg-black/30 border border-white/10 rounded-lg w-full gap-0">
+              <TabsList className="mb-6 flex flex-wrap h-auto bg-black/30 border border-white/10 rounded-lg w-full gap-0 overflow-x-auto scrollbar-thin">
                 <TabsTrigger 
                   value="contact" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white whitespace-nowrap min-w-[80px] flex-shrink-0"
                 >
                   Contact
                 </TabsTrigger>
                 <TabsTrigger 
                   value="summary" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white whitespace-nowrap min-w-[80px] flex-shrink-0"
                 >
                   Summary
                 </TabsTrigger>
                 <TabsTrigger 
                   value="experience" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white whitespace-nowrap min-w-[80px] flex-shrink-0"
                 >
                   Experience
                 </TabsTrigger>
                 <TabsTrigger 
                   value="education" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white whitespace-nowrap min-w-[80px] flex-shrink-0"
                 >
                   Education
                 </TabsTrigger>
                 <TabsTrigger 
                   value="skills" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white whitespace-nowrap min-w-[80px] flex-shrink-0"
                 >
                   Skills
                 </TabsTrigger>
                 <TabsTrigger 
                   value="projects" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white whitespace-nowrap min-w-[80px] flex-shrink-0"
                 >
                   Projects
                 </TabsTrigger>
                 <TabsTrigger 
                   value="preview" 
-                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white"
+                  className="py-2 text-sm font-medium text-white/70 transition-all rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:text-white whitespace-nowrap min-w-[80px] flex-shrink-0"
                 >
                   Preview
                 </TabsTrigger>
@@ -394,11 +415,69 @@ export default function ResumeBuilder() {
             </Tabs>
           </div>
 
-          {/* Right Sidebar - AI Assistant */}
-          <div className="w-full lg:w-80">
+          {/* Mobile quick actions bar - only show on small screens */}
+          <div className="block lg:hidden sticky bottom-4 left-0 right-0 z-30 mt-4 mb-2">
+            <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-full px-4 py-3 flex justify-between items-center shadow-xl">
+              <div className="flex items-center gap-3">
+                <Button 
+                  variant="ghost"
+                  size="sm"
+                  className="h-9 w-9 p-0 rounded-full bg-white/10"
+                  onClick={handleSaveResume}
+                  disabled={!isDirty}
+                >
+                  <Save size={18} />
+                </Button>
+                <Button 
+                  variant="ghost"
+                  size="sm"
+                  className="h-9 w-9 p-0 rounded-full bg-white/10"
+                  onClick={handleDownload}
+                >
+                  <Download size={18} />
+                </Button>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="rounded-full"
+                  onClick={() => {
+                    // Scroll to AI assistant on mobile
+                    document.getElementById('mobile-ai-assistant')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  <Bot size={16} className="mr-2" />
+                  AI Help
+                </Button>
+                {activeSection !== 'preview' ? (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="rounded-full"
+                    onClick={() => setActiveSection('preview')}
+                  >
+                    Preview
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full"
+                    onClick={() => setActiveSection('contact')}
+                  >
+                    Edit
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          {/* Right Sidebar - AI Assistant (desktop) */}
+          <div className="hidden lg:block lg:w-80">
             <div className="sticky top-6">
               <div className="bg-black/30 border border-white/10 rounded-md p-6 overflow-hidden">
-                {/* Using our new ResumeAIAssistant component */}
                 <ResumeAIAssistant 
                   activeSection={activeSection}
                   skillSearchQuery={skillSearchQuery}
@@ -407,6 +486,22 @@ export default function ResumeBuilder() {
                   resumeId={resume?.id}
                 />
               </div>
+            </div>
+          </div>
+          
+          {/* Mobile AI Assistant (separate section at bottom) */}
+          <div id="mobile-ai-assistant" className="block lg:hidden w-full mt-8 pt-8 border-t border-white/10">
+            <h3 className="text-lg font-medium mb-4 flex items-center">
+              <Bot size={18} className="mr-2" /> AI Resume Assistant
+            </h3>
+            <div className="bg-black/30 border border-white/10 rounded-md p-6 overflow-hidden">
+              <ResumeAIAssistant 
+                activeSection={activeSection}
+                skillSearchQuery={skillSearchQuery}
+                setSkillSearchQuery={setSkillSearchQuery}
+                onApplySuggestion={applySuggestion}
+                resumeId={resume?.id}
+              />
             </div>
           </div>
         </div>

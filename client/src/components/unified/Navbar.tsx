@@ -59,6 +59,11 @@ export default function Navbar() {
           }`}>
             Resumes
           </Link>
+          <Link href="/resume-builder" className={`text-sm transition-colors hover:text-foreground ${
+            location === '/resume-builder' ? 'text-foreground font-medium' : 'text-muted-foreground'
+          }`}>
+            Resume Builder
+          </Link>
           <Link href="/job-finder" className={`text-sm transition-colors hover:text-foreground ${
             location === '/job-finder' ? 'text-foreground font-medium' : 'text-muted-foreground'
           }`}>

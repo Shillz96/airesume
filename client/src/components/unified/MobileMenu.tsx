@@ -84,6 +84,20 @@ export default function MobileMenu({ className = '' }: MobileMenuProps) {
             </li>
             <li>
               <Link 
+                href="/resume-builder" 
+                onClick={() => setMenuOpen(false)}
+                className={`flex items-center gap-3 p-3 rounded-lg ${
+                  location === '/resume-builder' 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'bg-card text-foreground'
+                }`}
+              >
+                <FileText size={20} className="rotate-6" />
+                <span className="font-medium">Resume Builder</span>
+              </Link>
+            </li>
+            <li>
+              <Link 
                 href="/job-finder" 
                 onClick={() => setMenuOpen(false)}
                 className={`flex items-center gap-3 p-3 rounded-lg ${

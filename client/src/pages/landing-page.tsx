@@ -35,6 +35,8 @@ import { cn } from "@/lib/utils";
 import { insertUserSchema } from "@shared/schema";
 import { useGuestMode } from "@/hooks/use-guest-mode";
 import gsap from "gsap";
+// Import ScrollTrigger separately to avoid JSON serialization issues
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // Login form schema
 const loginSchema = z.object({
@@ -130,26 +132,163 @@ export default function LandingPage() {
 
   // Animation for text elements (no starfield - using global CosmicBackground)
   useEffect(() => {
-
-    // GSAP animations
+    // Register ScrollTrigger plugin
+    gsap.registerPlugin(ScrollTrigger);
+    
+    // Initial hero animations
     if (titleRef.current && subtitleRef.current && ctaRef.current) {
-      gsap.fromTo(titleRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1 });
-      gsap.fromTo(subtitleRef.current, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 1, delay: 0.3 });
-      gsap.fromTo(ctaRef.current, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 1, delay: 0.6 });
-    }
-
-    // Feature animations on scroll - without scrollTrigger to avoid cyclic reference
-    if (featuresRef.current) {
-      const features = featuresRef.current.querySelectorAll('.feature-card');
-      gsap.fromTo(features, 
-        { opacity: 0, y: 30 }, 
-        { opacity: 1, y: 0, duration: 0.7, stagger: 0.2 }
+      gsap.fromTo(titleRef.current, 
+        { opacity: 0, y: 20 }, 
+        { opacity: 1, y: 0, duration: 1 }
+      );
+      
+      gsap.fromTo(subtitleRef.current, 
+        { opacity: 0, y: 15 }, 
+        { opacity: 1, y: 0, duration: 1, delay: 0.3 }
+      );
+      
+      gsap.fromTo(ctaRef.current, 
+        { opacity: 0, y: 10 }, 
+        { opacity: 1, y: 0, duration: 1, delay: 0.6 }
       );
     }
 
-    // No background cleanup needed since we're using the global CosmicBackground
+    // Feature animations with scroll triggers
+    if (featuresRef.current) {
+      // Animate the section title and description
+      const featureTitle = featuresRef.current.querySelector('h2');
+      const featureDesc = featuresRef.current.querySelector('h2 + p');
+      
+      if (featureTitle) {
+        gsap.fromTo(featureTitle,
+          { opacity: 0, y: 30 },
+          { 
+            opacity: 1, 
+            y: 0, 
+            duration: 0.8,
+            scrollTrigger: {
+              trigger: featureTitle,
+              start: "top 80%",
+              toggleActions: "play none none none"
+            }
+          }
+        );
+      }
+      
+      if (featureDesc) {
+        gsap.fromTo(featureDesc,
+          { opacity: 0, y: 20 },
+          { 
+            opacity: 1, 
+            y: 0, 
+            duration: 0.8,
+            delay: 0.2,
+            scrollTrigger: {
+              trigger: featureDesc,
+              start: "top 80%",
+              toggleActions: "play none none none"
+            }
+          }
+        );
+      }
+      
+      // Animate each feature card with a staggered effect
+      const features = featuresRef.current.querySelectorAll('.feature-card');
+      features.forEach((card, index) => {
+        gsap.fromTo(card,
+          { opacity: 0, y: 50, scale: 0.95 },
+          { 
+            opacity: 1, 
+            y: 0, 
+            scale: 1,
+            duration: 0.7, 
+            delay: index * 0.1,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: card,
+              start: "top 85%",
+              toggleActions: "play none none none"
+            }
+          }
+        );
+      });
+      
+      // Add hover animations to feature cards
+      features.forEach((card) => {
+        card.addEventListener('mouseenter', () => {
+          gsap.to(card, { y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)", duration: 0.3 });
+        });
+        
+        card.addEventListener('mouseleave', () => {
+          gsap.to(card, { y: 0, boxShadow: "none", duration: 0.3 });
+        });
+      });
+    }
+
+    // Pricing section animations
+    const pricingSection = document.getElementById('pricing');
+    if (pricingSection) {
+      const pricingTitle = pricingSection.querySelector('h2');
+      const pricingDesc = pricingSection.querySelector('h2 + p');
+      const pricingCards = pricingSection.querySelectorAll('.cosmic-card');
+      
+      if (pricingTitle) {
+        gsap.fromTo(pricingTitle,
+          { opacity: 0, y: 30 },
+          { 
+            opacity: 1, 
+            y: 0, 
+            duration: 0.8,
+            scrollTrigger: {
+              trigger: pricingTitle,
+              start: "top 80%",
+              toggleActions: "play none none none"
+            }
+          }
+        );
+      }
+      
+      if (pricingDesc) {
+        gsap.fromTo(pricingDesc,
+          { opacity: 0, y: 20 },
+          { 
+            opacity: 1, 
+            y: 0, 
+            duration: 0.8,
+            delay: 0.2,
+            scrollTrigger: {
+              trigger: pricingDesc,
+              start: "top 80%",
+              toggleActions: "play none none none"
+            }
+          }
+        );
+      }
+      
+      // Animate pricing cards with a staggered effect
+      pricingCards.forEach((card, index) => {
+        gsap.fromTo(card,
+          { opacity: 0, y: 50, rotationY: 15 },
+          { 
+            opacity: 1, 
+            y: 0, 
+            rotationY: 0,
+            duration: 0.8, 
+            delay: index * 0.15,
+            ease: "back.out(1.2)",
+            scrollTrigger: {
+              trigger: card,
+              start: "top 85%",
+              toggleActions: "play none none none"
+            }
+          }
+        );
+      });
+    }
+
+    // Clean up all ScrollTrigger instances on component unmount
     return () => {
-      // No cleanup needed for removed star animations
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
   }, []);
 

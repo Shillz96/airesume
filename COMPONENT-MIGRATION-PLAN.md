@@ -26,7 +26,7 @@ We have implemented the core infrastructure for our feature-based architecture:
 - [x] cosmic-starfield.tsx → ui/theme/CosmicStarfield.tsx
 
 ### Layout Components
-- [ ] page-header.tsx → features/layout/components/PageHeader.tsx
+- [x] page-header.tsx → features/layout/components/PageHeader.tsx
 - [x] masthead.tsx → features/layout/components/Masthead.tsx
 - [ ] navbar.tsx → ui/navigation/Navbar.tsx
 - [x] SimpleNavbar.tsx → ui/navigation/SimpleNavbar.tsx
@@ -45,7 +45,7 @@ We have implemented the core infrastructure for our feature-based architecture:
 
 ### Dashboard Feature Components
 - [x] dashboard-stats.tsx → features/dashboard/components/DashboardStats.tsx
-- [ ] recent-activity.tsx → features/dashboard/components/RecentActivity.tsx
+- [x] recent-activity.tsx → features/dashboard/components/RecentActivity.tsx
 
 ### Auth Feature Components
 - [x] auth-dialog.tsx → features/auth/components/AuthDialog.tsx

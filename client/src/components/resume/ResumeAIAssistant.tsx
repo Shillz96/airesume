@@ -408,7 +408,7 @@ export function ResumeAIAssistant({
             onClick={() => setIsChatView(true)}
             className="h-7 w-7 p-0 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30"
           >
-            <MessageCircle className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+            <MessageCircle className="h-3.5 w-3.5 text-primary" />
           </Button>
         </div>
       
@@ -442,7 +442,7 @@ export function ResumeAIAssistant({
               onClick={() => setSuggestionsExpanded(!suggestionsExpanded)}
             >
               <span>Skills to Add</span>
-              {suggestionsExpanded ? <ChevronUp className="h-4 w-4 text-blue-500" /> : <ChevronDown className="h-4 w-4 text-blue-500" />}
+              {suggestionsExpanded ? <ChevronUp className="h-4 w-4 text-primary" /> : <ChevronDown className="h-4 w-4 text-primary" />}
             </button>
             <CosmicButton 
               variant="ghost" 
@@ -457,14 +457,14 @@ export function ResumeAIAssistant({
           {suggestionsExpanded && (
             isLoadingSuggestions ? (
               <div className="flex justify-center py-6">
-                <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
               </div>
             ) : Array.isArray(skillSuggestions) && skillSuggestions.length > 0 ? (
               <div className="flex flex-wrap gap-2 py-2">
                 {skillSuggestions.map((skill, index) => (
                   <button
                     key={index}
-                    className="px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-800 dark:bg-blue-900/30 dark:hover:bg-blue-800/40 dark:text-blue-200 rounded-full text-xs font-medium transition-colors"
+                    className="px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary dark:bg-primary/20 dark:hover:bg-primary/30 rounded-full text-xs font-medium transition-colors"
                     onClick={() => onApplySuggestion(skill)}
                   >
                     {skill}
@@ -504,7 +504,7 @@ export function ResumeAIAssistant({
             onClick={() => setIsChatView(true)}
             className="h-7 w-7 p-0 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30"
           >
-            <MessageCircle className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+            <MessageCircle className="h-3.5 w-3.5 text-primary" />
           </Button>
         </div>
         
@@ -561,7 +561,7 @@ export function ResumeAIAssistant({
         {/* Suggestions display */}
         {isLoadingSuggestions ? (
           <div className="flex justify-center py-6">
-            <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
           </div>
         ) : suggestions.length > 0 ? (
           <div className="space-y-3">

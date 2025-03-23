@@ -608,7 +608,7 @@ export default function SubscriptionPage() {
                 </CardContent>
                 <CardFooter className="border-t border-[#252a47] ">
                   <Button 
-                    className="w-full bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
+                    className="w-full cosmic-btn-glow"
                     onClick={() => {
                       setSelectedAddon("cover_letter_pack");
                       handlePurchaseAddon();
@@ -653,7 +653,7 @@ export default function SubscriptionPage() {
                 </CardContent>
                 <CardFooter className="border-t border-[#252a47] ">
                   <Button 
-                    className="w-full bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
+                    className="w-full cosmic-btn-glow"
                     onClick={() => {
                       setSelectedAddon("interview_prep");
                       handlePurchaseAddon();
@@ -698,7 +698,7 @@ export default function SubscriptionPage() {
                 </CardContent>
                 <CardFooter className="border-t border-[#252a47] ">
                   <Button 
-                    className="w-full bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
+                    className="w-full cosmic-btn-glow"
                     onClick={() => {
                       setSelectedAddon("premium_filters");
                       handlePurchaseAddon();
@@ -786,7 +786,7 @@ export default function SubscriptionPage() {
                 <div className="py-6 text-center">
                   <p className="mb-4 text-gray-400">No payment methods saved.</p>
                   <Button 
-                    className="bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
+                    className="cosmic-btn-glow"
                     onClick={() => {
                       toast({
                         title: "Coming Soon",
@@ -805,7 +805,7 @@ export default function SubscriptionPage() {
         
         {/* Active Plan Purchase Dialog */}
         <Dialog open={activePlanDialog} onOpenChange={setActivePlanDialog}>
-          <DialogContent className="bg-[#151830] border border-[#252a47] shadow-xl text-white max-w-md">
+          <DialogContent className="bg-card/90 backdrop-blur-xl border-white/10 shadow-xl text-white max-w-md">
             <DialogHeader>
               <DialogTitle className="text-white text-xl">Subscribe to {selectedPlan.replace('_', ' ')} Plan</DialogTitle>
               <DialogDescription className="text-gray-400">
@@ -842,13 +842,14 @@ export default function SubscriptionPage() {
             
             <DialogFooter className="border-t border-[#252a47] ">
               <Button
-                className="bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
+                className="cosmic-btn-glow !bg-transparent"
+                variant="outline"
                 onClick={() => setActivePlanDialog(false)}
               >
                 Cancel
               </Button>
               <Button 
-                className="bg-indigo-600 hover:bg-indigo-700 text-white border-0"
+                className="cosmic-btn-glow"
                 onClick={handlePurchasePlan}
                 disabled={createSubscriptionMutation.isPending}
               >

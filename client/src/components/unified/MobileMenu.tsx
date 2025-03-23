@@ -81,35 +81,39 @@ export default function MobileMenu({ className = '' }: MobileMenuProps) {
             <nav className="flex-1 overflow-y-auto py-6 px-4">
               <ul className="space-y-4">
                 <li>
-                  <Link href="/dashboard">
-                    <a className={`flex items-center gap-3 p-3 rounded-lg ${location === '/dashboard' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/10'}`}>
-                      <Home size={20} />
-                      <span>Dashboard</span>
-                    </a>
+                  <Link 
+                    href="/dashboard"
+                    className={`flex items-center gap-3 p-3 rounded-lg ${location === '/dashboard' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/10'}`}
+                  >
+                    <Home size={20} />
+                    <span>Dashboard</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/resumes">
-                    <a className={`flex items-center gap-3 p-3 rounded-lg ${location === '/resumes' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/10'}`}>
-                      <FileText size={20} />
-                      <span>Resumes</span>
-                    </a>
+                  <Link 
+                    href="/resumes"
+                    className={`flex items-center gap-3 p-3 rounded-lg ${location === '/resumes' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/10'}`}
+                  >
+                    <FileText size={20} />
+                    <span>Resumes</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/job-finder">
-                    <a className={`flex items-center gap-3 p-3 rounded-lg ${location === '/job-finder' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/10'}`}>
-                      <Briefcase size={20} />
-                      <span>Find Jobs</span>
-                    </a>
+                  <Link 
+                    href="/job-finder"
+                    className={`flex items-center gap-3 p-3 rounded-lg ${location === '/job-finder' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/10'}`}
+                  >
+                    <Briefcase size={20} />
+                    <span>Find Jobs</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/subscription">
-                    <a className={`flex items-center gap-3 p-3 rounded-lg ${location === '/subscription' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/10'}`}>
-                      <Settings size={20} />
-                      <span>Subscription</span>
-                    </a>
+                  <Link 
+                    href="/subscription"
+                    className={`flex items-center gap-3 p-3 rounded-lg ${location === '/subscription' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/10'}`}
+                  >
+                    <Settings size={20} />
+                    <span>Subscription</span>
                   </Link>
                 </li>
               </ul>

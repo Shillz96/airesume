@@ -46,33 +46,25 @@ export default function Navbar() {
 
         {/* Desktop Navigation - Hidden on Mobile */}
         <nav className="hidden md:flex items-center gap-6 flex-1">
-          <Link href="/dashboard">
-            <a className={`text-sm transition-colors hover:text-foreground ${
-              location === '/dashboard' ? 'text-foreground font-medium' : 'text-muted-foreground'
-            }`}>
-              Dashboard
-            </a>
+          <Link href="/dashboard" className={`text-sm transition-colors hover:text-foreground ${
+            location === '/dashboard' ? 'text-foreground font-medium' : 'text-muted-foreground'
+          }`}>
+            Dashboard
           </Link>
-          <Link href="/resumes">
-            <a className={`text-sm transition-colors hover:text-foreground ${
-              location === '/resumes' ? 'text-foreground font-medium' : 'text-muted-foreground'
-            }`}>
-              Resumes
-            </a>
+          <Link href="/resumes" className={`text-sm transition-colors hover:text-foreground ${
+            location === '/resumes' ? 'text-foreground font-medium' : 'text-muted-foreground'
+          }`}>
+            Resumes
           </Link>
-          <Link href="/job-finder">
-            <a className={`text-sm transition-colors hover:text-foreground ${
-              location === '/job-finder' ? 'text-foreground font-medium' : 'text-muted-foreground'
-            }`}>
-              Find Jobs
-            </a>
+          <Link href="/job-finder" className={`text-sm transition-colors hover:text-foreground ${
+            location === '/job-finder' ? 'text-foreground font-medium' : 'text-muted-foreground'
+          }`}>
+            Find Jobs
           </Link>
-          <Link href="/subscription">
-            <a className={`text-sm transition-colors hover:text-foreground ${
-              location === '/subscription' ? 'text-foreground font-medium' : 'text-muted-foreground'
-            }`}>
-              Subscription
-            </a>
+          <Link href="/subscription" className={`text-sm transition-colors hover:text-foreground ${
+            location === '/subscription' ? 'text-foreground font-medium' : 'text-muted-foreground'
+          }`}>
+            Subscription
           </Link>
         </nav>
         

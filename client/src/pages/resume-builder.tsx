@@ -7,6 +7,7 @@ import { Resume, useResumeData } from "@/hooks/use-resume-data";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { CosmicButton } from "@/components/cosmic-button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ResumeAIAssistant } from "@/components/resume/ResumeAIAssistant";
 
@@ -229,28 +230,29 @@ export default function ResumeBuilder() {
           </div>
           
           <div className="flex items-center gap-3">
-            <Button
+            <CosmicButton
               variant="outline"
-              className="hidden sm:flex cosmic-btn-outline"
+              className="hidden sm:flex"
               disabled={!isDirty}
               onClick={handleSaveResume}
+              iconLeft={<Save className="h-4 w-4" />}
             >
-              <Save className="mr-2 h-4 w-4" />
-              <span>Save</span>
-            </Button>
-            <Button 
-              className="cosmic-btn-primary hidden sm:flex cosmic-btn-glow"
+              Save
+            </CosmicButton>
+            <CosmicButton 
+              variant="primary"
+              className="hidden sm:flex"
+              withGlow
               onClick={handleDownload}
+              iconLeft={<Download className="h-4 w-4" />}
             >
-              <Download className="mr-2 h-4 w-4" />
               Download
-            </Button>
+            </CosmicButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="sm:hidden cosmic-btn-outline">
-                  <ChevronDown className="h-4 w-4 sm:mr-2" />
+                <CosmicButton variant="outline" className="sm:hidden" iconLeft={<ChevronDown className="h-4 w-4" />}>
                   <span className="hidden sm:inline">Options</span>
-                </Button>
+                </CosmicButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="cosmic-dropdown-content">
                 <DropdownMenuItem onClick={handleSaveResume} disabled={!isDirty} className="cosmic-dropdown-item">

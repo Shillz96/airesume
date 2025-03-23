@@ -162,14 +162,15 @@ function CosmicBackgroundComponent() {
   if (!isClient) return null;
 
   return (
-    <div className="cosmic-background fixed inset-0 w-full min-h-screen overflow-hidden z-0" style={{ 
+    <div className="cosmic-background fixed inset-0 w-full h-full min-h-screen overflow-hidden z-0" style={{ 
       position: 'fixed', 
       top: 0, 
       left: 0,
       right: 0,
       bottom: 0,
-      width: '100%',
-      height: '100%'
+      width: '100vw',
+      height: '100vh',
+      minHeight: '100vh'
     }}>
       {/* Starfield is handled via CSS ::before in animations.css */}
       
@@ -180,8 +181,9 @@ function CosmicBackgroundComponent() {
         left: 0,
         right: 0,
         bottom: 0,
-        width: '100%',
-        height: '100%'
+        width: '100vw',
+        height: '100vh',
+        minHeight: '100vh'
       }}>
         {stars}
       </div>
@@ -193,8 +195,9 @@ function CosmicBackgroundComponent() {
         left: 0,
         right: 0,
         bottom: 0,
-        width: '100%',
-        height: '100%'
+        width: '100vw',
+        height: '100vh',
+        minHeight: '100vh'
       }}>
         {nebulaLayers}
       </div>

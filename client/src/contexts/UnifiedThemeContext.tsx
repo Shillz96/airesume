@@ -3,13 +3,27 @@ import React, { createContext, ReactNode, useContext, useEffect, useState } from
 /**
  * Unified Theme Context
  * 
- * This is a complete rebuild of the theme system to provide a single, consistent
- * approach to theming throughout the application.
+ * This is the single, centralized theme system that powers all UI components.
+ * It merges functionality from both previous theme implementations to provide
+ * a unified API for theme management across the application.
  */
 
 // Theme Types
-export type ThemeVariant = 'cosmic' | 'professional' | 'minimal';
+export type ThemeVariant = 'cosmic' | 'professional' | 'minimal' | 'vibrant' | 'tint'; 
 export type ThemeMode = 'dark' | 'light' | 'system';
+export type ThemeAppearance = ThemeMode; // For backward compatibility
+
+// Event interface for theme change notifications
+export interface ThemeChangeEventDetail {
+  isDarkMode: boolean;
+}
+
+// Extend Window interface for our custom theme change event
+declare global {
+  interface WindowEventMap {
+    'theme-change': CustomEvent<ThemeChangeEventDetail>;
+  }
+}
 
 // Theme Configuration Interface
 export interface ThemeConfig {
@@ -19,15 +33,32 @@ export interface ThemeConfig {
   secondaryColor: string;
   borderRadius: number;
   animations: boolean;
+  colors: Record<string, string>;
+}
+
+// Parameters for partial theme updates
+export interface ThemeUpdateParams {
+  variant?: ThemeVariant;
+  mode?: ThemeMode;
+  appearance?: ThemeAppearance; // For backward compatibility
+  primaryColor?: string;
+  primary?: string; // For backward compatibility
+  secondaryColor?: string;
+  borderRadius?: number;
+  radius?: number; // For backward compatibility
+  animations?: boolean;
+  colors?: Record<string, string>;
 }
 
 // Theme Context Interface
 interface ThemeContextType {
   // Current theme state
   config: ThemeConfig;
+  currentTheme: ThemeConfig; // For backward compatibility
   
   // Theme state flags
   isDarkMode: boolean;
+  isSystemTheme: boolean;
   
   // Theme changing functions
   setVariant: (variant: ThemeVariant) => void;
@@ -38,9 +69,72 @@ interface ThemeContextType {
   setAnimations: (enabled: boolean) => void;
   toggleDarkMode: () => void;
   
+  // Legacy compatibility functions
+  setThemeVariant: (variant: ThemeVariant) => void;
+  setThemeAppearance: (appearance: ThemeAppearance) => void;
+  setThemeRadius: (radius: number) => void;
+  updateThemeSettings: (updates: ThemeUpdateParams) => void;
+  
   // Utility functions
   getThemeClass: (component: string) => string;
+  getThemeVar: (variableName: string) => string;
+  getCurrentVariant: () => ThemeVariant;
+  getCurrentAppearance: () => ThemeAppearance;
+  getCosmicColor: (colorName: string) => string;
+  getVariantClasses: (
+    professionalClasses: string,
+    vibrantClasses: string,
+    tintClasses: string,
+    minimalClasses?: string,
+    cosmicClasses?: string
+  ) => string;
+  getTextColorClass: () => string;
+  getBackgroundClass: () => string;
+  getCardBackgroundClass: () => string;
+  getButtonClass: (variant: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive') => string;
 }
+
+// Default colors for the application
+const defaultColors = {
+  // Core colors
+  background: '#050A18',
+  foreground: '#ffffff',
+  card: '#0A1428',
+  cardHover: '#0F1A30',
+  muted: '#6b7280',
+  mutedForeground: '#9ca3af',
+  
+  // Brand colors
+  primary: '#4f46e5', // Indigo-600
+  secondary: '#10b981', // Emerald-500
+  accent: '#10b981',
+  
+  // UI element colors
+  border: 'rgba(255, 255, 255, 0.1)',
+  input: 'rgba(255, 255, 255, 0.1)',
+  ring: 'rgba(59, 130, 246, 0.5)',
+  
+  // Status colors
+  destructive: '#ef4444',
+  destructiveForeground: '#ffffff',
+  success: '#10b981',
+  successForeground: '#ffffff',
+  warning: '#f59e0b',
+  warningForeground: '#ffffff',
+  error: '#ef4444',
+  errorForeground: '#ffffff',
+  info: '#3b82f6',
+  infoForeground: '#ffffff',
+  
+  // Additional UI elements
+  popover: '#0A1428',
+  popoverForeground: '#ffffff',
+  
+  // Gradient definitions
+  gradientPrimary: 'linear-gradient(135deg, #4f46e5, #8b5cf6)',
+  gradientAccent: 'linear-gradient(135deg, #10b981, #3b82f6)',
+  gradientBackground: 'linear-gradient(135deg, #050A18, #0A1428)'
+};
 
 // Default theme configuration
 const defaultTheme: ThemeConfig = {
@@ -50,6 +144,7 @@ const defaultTheme: ThemeConfig = {
   secondaryColor: '#10b981', // Emerald-500 - creates an attractive contrast
   borderRadius: 0.75, // Slightly more rounded corners
   animations: true,
+  colors: defaultColors
 };
 
 // Create the context with default values
@@ -270,10 +365,171 @@ export function UnifiedThemeProvider({ children }: { children: ReactNode }) {
     }
   };
   
+  // Legacy compatibility functions
+  const setThemeVariant = (variant: ThemeVariant) => {
+    setVariant(variant);
+  };
+  
+  const setThemeAppearance = (appearance: ThemeAppearance) => {
+    setMode(appearance);
+  };
+  
+  const setThemeRadius = (radius: number) => {
+    setBorderRadius(radius);
+  };
+  
+  const updateThemeSettings = (updates: ThemeUpdateParams) => {
+    const newConfig = { ...config };
+    
+    if (updates.variant) {
+      newConfig.variant = updates.variant;
+    }
+    
+    if (updates.mode) {
+      newConfig.mode = updates.mode;
+    } else if (updates.appearance) {
+      // Handle legacy appearance property
+      newConfig.mode = updates.appearance;
+    }
+    
+    if (updates.primaryColor) {
+      newConfig.primaryColor = updates.primaryColor;
+    } else if (updates.primary) {
+      // Handle legacy primary property
+      newConfig.primaryColor = updates.primary;
+    }
+    
+    if (updates.borderRadius !== undefined) {
+      newConfig.borderRadius = updates.borderRadius;
+    } else if (updates.radius !== undefined) {
+      // Handle legacy radius property
+      newConfig.borderRadius = updates.radius;
+    }
+    
+    if (updates.colors) {
+      newConfig.colors = { ...newConfig.colors, ...updates.colors };
+    }
+    
+    setConfig(newConfig);
+  };
+  
+  // Utility functions for backwards compatibility
+  const getThemeVar = (variableName: string): string => {
+    return `var(--${variableName})`;
+  };
+  
+  const getCurrentVariant = (): ThemeVariant => {
+    return config.variant;
+  };
+  
+  const getCurrentAppearance = (): ThemeAppearance => {
+    return config.mode;
+  };
+  
+  const getCosmicColor = (colorName: string): string => {
+    if (!colorName) return "";
+    
+    const { colors } = config;
+    if (!colors) return "";
+    
+    // Handle dot notation for nested colors
+    if (colorName.includes('.')) {
+      const parts = colorName.split('.');
+      let current: any = colors;
+      
+      // Navigate through nested properties
+      for (const part of parts) {
+        if (current && typeof current === 'object' && part in current) {
+          current = current[part];
+        } else {
+          return ""; // Return empty string if path doesn't exist
+        }
+      }
+      
+      // Return the color if it's a string
+      return typeof current === 'string' ? current : "";
+    }
+    
+    // Simple property access
+    return typeof colors[colorName] === 'string' ? colors[colorName] : "";
+  };
+  
+  const getVariantClasses = (
+    professionalClasses: string,
+    vibrantClasses: string,
+    tintClasses: string,
+    minimalClasses?: string,
+    cosmicClasses?: string
+  ): string => {
+    const currentVariant = config.variant;
+    
+    if (currentVariant === "cosmic" && cosmicClasses) {
+      return cosmicClasses;
+    } else if (currentVariant === "vibrant") {
+      return vibrantClasses;
+    } else if (currentVariant === "tint") {
+      return tintClasses;
+    } else if (currentVariant === "minimal" && minimalClasses) {
+      return minimalClasses;
+    } else {
+      // Default to professional
+      return professionalClasses;
+    }
+  };
+  
+  const getTextColorClass = (): string => {
+    return isDarkMode ? "text-white" : "text-gray-900";
+  };
+  
+  const getBackgroundClass = (): string => {
+    if (isDarkMode) {
+      return "bg-[#050A18] cosmic-background";
+    } else {
+      return "bg-white";
+    }
+  };
+  
+  const getCardBackgroundClass = (): string => {
+    return isDarkMode 
+      ? "cosmic-card"
+      : "bg-white border border-gray-200 shadow rounded-lg";
+  };
+  
+  const getButtonClass = (variant: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive'): string => {
+    switch (variant) {
+      case 'primary':
+        return 'cosmic-button-primary';
+      case 'secondary':
+        return 'cosmic-button-secondary';
+      case 'outline':
+        return 'cosmic-button-outline';
+      case 'ghost':
+        return 'cosmic-button-ghost';
+      case 'destructive':
+        return 'cosmic-button-destructive';
+      default:
+        return 'cosmic-button-primary';
+    }
+  };
+  
+  // Create backwards compatible currentTheme property
+  const currentTheme: ThemeConfig = {
+    ...config,
+    // Add these for backward compatibility
+    primary: config.primaryColor,
+    appearance: config.mode,
+    radius: config.borderRadius,
+  } as any;
+  
+  // Determine if system theme is active
+  const isSystemTheme = config.mode === 'system';
+  
   // Combine state and functions for context value
   const contextValue: ThemeContextType = {
     config,
+    currentTheme,
     isDarkMode,
+    isSystemTheme,
     setVariant,
     setMode,
     setPrimaryColor,
@@ -282,6 +538,23 @@ export function UnifiedThemeProvider({ children }: { children: ReactNode }) {
     setAnimations,
     toggleDarkMode,
     getThemeClass,
+    
+    // Legacy compatibility functions
+    setThemeVariant,
+    setThemeAppearance,
+    setThemeRadius,
+    updateThemeSettings,
+    
+    // Utility functions
+    getThemeVar,
+    getCurrentVariant,
+    getCurrentAppearance,
+    getCosmicColor,
+    getVariantClasses,
+    getTextColorClass,
+    getBackgroundClass,
+    getCardBackgroundClass,
+    getButtonClass
   };
   
   return (

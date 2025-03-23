@@ -369,7 +369,7 @@ export function ResumeAIAssistant({
           <div className="flex items-center">
             <input
               type="text"
-              className="flex-grow px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800"
+              className="flex-grow px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white dark:bg-gray-800"
               placeholder="Type your message..."
               value={userMessage}
               onChange={(e) => setUserMessage(e.target.value)}
@@ -419,7 +419,7 @@ export function ResumeAIAssistant({
             </div>
             <input
               type="text"
-              className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800"
+              className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white dark:bg-gray-800"
               placeholder="Search skills or abilities..."
               value={skillSearchQuery}
               onChange={(e) => setSkillSearchQuery(e.target.value)}
@@ -438,7 +438,7 @@ export function ResumeAIAssistant({
         <div className="mt-4">
           <div className="flex items-center justify-between mb-2">
             <button 
-              className="flex items-center space-x-1 text-sm font-medium bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-indigo-700"
+              className="flex items-center space-x-1 text-sm font-medium cosmic-text-gradient"
               onClick={() => setSuggestionsExpanded(!suggestionsExpanded)}
             >
               <span>Skills to Add</span>
@@ -495,8 +495,8 @@ export function ResumeAIAssistant({
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <Sparkles className="h-4 w-4 text-gradient-primary bg-clip-text from-blue-600 to-indigo-600" />
-            <h3 className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">AI Suggestions</h3>
+            <Sparkles className="h-4 w-4 cosmic-text-gradient" />
+            <h3 className="text-sm font-semibold cosmic-text-gradient">AI Suggestions</h3>
           </div>
           <Button
             variant="ghost"
@@ -575,7 +575,7 @@ export function ResumeAIAssistant({
                   <Button
                     size="sm"
                     onClick={() => onApplySuggestion(suggestion)}
-                    className="h-7 text-xs bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+                    className="h-7 text-xs cosmic-btn-glow text-white"
                   >
                     Apply
                   </Button>
@@ -620,7 +620,7 @@ export function ResumeAIAssistant({
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-2">
           <Bot className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">AI Resume Assistant</h3>
+          <h3 className="text-sm font-semibold cosmic-text-gradient">AI Resume Assistant</h3>
         </div>
       </div>
       
@@ -632,7 +632,7 @@ export function ResumeAIAssistant({
         <CosmicButton 
           variant="primary"
           onClick={() => setIsChatView(true)}
-          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+          className="cosmic-btn-glow text-white"
           iconLeft={<MessageCircle className="h-4 w-4 text-primary" />}
         >
           Chat with AI Assistant

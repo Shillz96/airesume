@@ -241,13 +241,15 @@ export default function ResumesPage() {
         <UnifiedPageHeader 
           title="My Resumes"
           subtitle="Manage and organize all your resumes in one place"
+          variant="cosmic"
+          borderStyle="gradient"
           actions={
             <div className="flex space-x-3">
             <CosmicButton 
               variant="outline" 
               size="sm"
               onClick={() => handleResumeAction('upload')}
-              className="border-white/10 text-gray-200 hover:bg-white/10 hover:text-white"
+              className="cosmic-gradient-border hover:text-white"
             >
               <Upload className="mr-2 h-4 w-4 text-blue-400" />
               Upload Resume

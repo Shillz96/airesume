@@ -391,12 +391,14 @@ export default function ResumeBuilderNew() {
         <UnifiedPageHeader
           title="Resume Builder"
           subtitle="Create and customize your professional resume"
+          variant="cosmic"
+          borderStyle="gradient"
           actions={
             <div className="flex items-center gap-3">
               <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
                 <DialogTrigger asChild>
                   <button
-                    className="btn btn-outline hidden sm:flex items-center"
+                    className="btn btn-outline hidden sm:flex items-center cosmic-gradient-border"
                     onClick={() => setUploadDialogOpen(true)}
                   >
                     <Upload className="h-4 w-4 mr-2" />

@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+// Import both button versions during transition
 import { CosmicButton } from '@/components/cosmic-button';
+import Button from '@/components/ui/modern-button';
 import { Loader2, RefreshCw, X, Bot, Sparkles, MessageCircle, ArrowRight, Search, ChevronDown, ChevronUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';

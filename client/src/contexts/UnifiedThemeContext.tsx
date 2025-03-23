@@ -16,7 +16,9 @@ export interface ThemeConfig {
   variant: ThemeVariant;
   mode: ThemeMode;
   primaryColor: string;
+  secondaryColor: string;
   borderRadius: number;
+  animations: boolean;
 }
 
 // Theme Context Interface
@@ -31,8 +33,13 @@ interface ThemeContextType {
   setVariant: (variant: ThemeVariant) => void;
   setMode: (mode: ThemeMode) => void;
   setPrimaryColor: (color: string) => void;
+  setSecondaryColor: (color: string) => void;
   setBorderRadius: (radius: number) => void;
+  setAnimations: (enabled: boolean) => void;
   toggleDarkMode: () => void;
+  
+  // Utility functions
+  getThemeClass: (component: string) => string;
 }
 
 // Default theme configuration
@@ -40,7 +47,9 @@ const defaultTheme: ThemeConfig = {
   variant: 'cosmic',
   mode: 'dark',
   primaryColor: '#3b82f6',
+  secondaryColor: '#8b5cf6',
   borderRadius: 0.5,
+  animations: true,
 };
 
 // Create the context with default values
@@ -50,8 +59,11 @@ const ThemeContext = createContext<ThemeContextType>({
   setVariant: () => {},
   setMode: () => {},
   setPrimaryColor: () => {},
+  setSecondaryColor: () => {},
   setBorderRadius: () => {},
+  setAnimations: () => {},
   toggleDarkMode: () => {},
+  getThemeClass: () => "",
 });
 
 /**
@@ -139,25 +151,45 @@ export function UnifiedThemeProvider({ children }: { children: ReactNode }) {
     // Primary color
     root.style.setProperty('--primary', config.primaryColor);
     
-    // Convert hex to RGB for use in rgba() functions
-    const rgb = hexToRgb(config.primaryColor);
-    if (rgb) {
-      root.style.setProperty('--primary-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+    // Convert primary color to RGB for use in rgba() functions
+    const primaryRgb = hexToRgb(config.primaryColor);
+    if (primaryRgb) {
+      root.style.setProperty('--primary-rgb', `${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}`);
+    }
+    
+    // Secondary color
+    root.style.setProperty('--secondary', config.secondaryColor);
+    
+    // Convert secondary color to RGB for use in rgba() functions
+    const secondaryRgb = hexToRgb(config.secondaryColor);
+    if (secondaryRgb) {
+      root.style.setProperty('--secondary-rgb', `${secondaryRgb.r}, ${secondaryRgb.g}, ${secondaryRgb.b}`);
     }
     
     // Border radius
     root.style.setProperty('--radius', `${config.borderRadius}rem`);
+    root.style.setProperty('--button-radius', `${config.borderRadius}rem`);
+    
+    // Animation control
+    root.style.setProperty('--animation-speed', config.animations ? '1' : '0');
+    
+    // Apply theme variant class
+    root.classList.remove('theme-cosmic', 'theme-professional', 'theme-minimal');
+    root.classList.add(`theme-${config.variant}`);
     
     // Variant-specific properties
     if (config.variant === 'cosmic') {
-      root.style.setProperty('--animation-speed', '1.2');
+      root.style.setProperty('--animation-speed', config.animations ? '1.2' : '0');
       root.style.setProperty('--card-glow', 'var(--shadow-cosmic)');
+      root.style.setProperty('--animation-emphasis', '1');
     } else if (config.variant === 'professional') {
-      root.style.setProperty('--animation-speed', '0.8');
+      root.style.setProperty('--animation-speed', config.animations ? '0.8' : '0');
       root.style.setProperty('--card-glow', 'none');
+      root.style.setProperty('--animation-emphasis', '0.5');
     } else if (config.variant === 'minimal') {
-      root.style.setProperty('--animation-speed', '0.5');
+      root.style.setProperty('--animation-speed', config.animations ? '0.5' : '0');
       root.style.setProperty('--card-glow', 'none');
+      root.style.setProperty('--animation-emphasis', '0');
     }
   };
   

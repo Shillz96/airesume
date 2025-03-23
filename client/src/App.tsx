@@ -10,7 +10,7 @@ import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 import { initializeTheme } from "@/lib/theme-loader";
 import NotFound from "@/pages/not-found"; 
 import HomePage from "@/pages/home-page";
-import ResumeBuilder from "@/pages/resume-builder";
+import ResumeBuilderNew from "@/pages/resume-builder-new";
 import ResumesPage from "@/pages/resumes-page";
 import JobFinder from "@/pages/job-finder";
 import JobDetails from "@/pages/job-details";
@@ -24,7 +24,7 @@ import Navbar from "@/components/navbar";
 import GoAdminLink from "@/components/go-admin-link";
 import QuickLogin from "@/components/quick-login";
 import AuthDialog from "@/components/auth-dialog";
-import CosmicBackground from "@/components/cosmic-background";
+import CosmicBackground from "@/ui/theme/CosmicBackground";
 
 function Router() {
   // Manual check for admin-access path to handle direct navigation
@@ -37,7 +37,7 @@ function Router() {
     <Switch>
       <Route path="/" component={LandingPage} />
       <ProtectedRoute path="/dashboard" component={HomePage} />
-      <ProtectedRoute path="/resume-builder" component={ResumeBuilder} />
+      <ProtectedRoute path="/resume-builder" component={ResumeBuilderNew} />
       <ProtectedRoute path="/resumes" component={ResumesPage} />
       <ProtectedRoute path="/job-finder" component={JobFinder} />
       <ProtectedRoute path="/job/:id" component={JobDetails} />

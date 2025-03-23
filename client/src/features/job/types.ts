@@ -3,8 +3,6 @@
  * Centralizes all type definitions related to job functionality
  */
 
-import { SkillItem } from '../resume/types';
-
 export interface Job {
   id: string;
   title: string;
@@ -48,6 +46,13 @@ export interface UserResume {
   };
   experience: any[];
   skills: SkillItem[];
+}
+
+export interface SkillItem {
+  id: string;
+  name: string;
+  proficiency: number;
+  category?: string;
 }
 
 export interface Application {

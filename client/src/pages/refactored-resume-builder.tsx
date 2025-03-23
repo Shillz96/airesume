@@ -216,23 +216,31 @@ export default function ResumeBuilder() {
   };
 
   return (
-    <div className="container pb-10">
+    <div className="container px-4 pb-10 mt-6">
       <PageHeader
-        title="Resume Builder"
-        subtitle="Create and customize your professional resume"
+        title={
+          <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            Resume Builder
+          </span>
+        }
+        subtitle={
+          <span className="text-gray-600 dark:text-gray-400 mt-1">
+            Create and customize your professional resume
+          </span>
+        }
         actions={
           <div className="flex items-center gap-3">
             <Button
               variant="outline"
-              className="hidden sm:flex"
+              className="hidden sm:flex border-blue-300 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/30"
               disabled={!isDirty}
               onClick={handleSaveResume}
             >
-              <Save className="mr-2 h-4 w-4" />
-              Save
+              <Save className="mr-2 h-4 w-4 text-blue-600" />
+              <span className="text-blue-700 dark:text-blue-400">Save</span>
             </Button>
             <Button 
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hidden sm:flex hover:from-blue-700 hover:to-purple-700"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hidden sm:flex hover:from-blue-700 hover:to-indigo-700 text-white shadow-sm"
               onClick={handleDownload}
             >
               <Download className="mr-2 h-4 w-4" />
@@ -240,19 +248,19 @@ export default function ResumeBuilder() {
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="sm:hidden">
-                  <ChevronDown className="h-4 w-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Options</span>
+                <Button variant="outline" className="sm:hidden border-blue-300 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/30">
+                  <ChevronDown className="h-4 w-4 sm:mr-2 text-blue-600" />
+                  <span className="hidden sm:inline text-blue-700 dark:text-blue-400">Options</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleSaveResume} disabled={!isDirty}>
-                  <Save className="mr-2 h-4 w-4" />
-                  <span>Save</span>
+              <DropdownMenuContent align="end" className="border-blue-200 dark:border-blue-800">
+                <DropdownMenuItem onClick={handleSaveResume} disabled={!isDirty} className="hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                  <Save className="mr-2 h-4 w-4 text-blue-600" />
+                  <span className="text-blue-700 dark:text-blue-400">Save</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleDownload}>
-                  <Download className="mr-2 h-4 w-4" />
-                  <span>Download</span>
+                <DropdownMenuItem onClick={handleDownload} className="hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                  <Download className="mr-2 h-4 w-4 text-blue-600" />
+                  <span className="text-blue-700 dark:text-blue-400">Download</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -269,51 +277,72 @@ export default function ResumeBuilder() {
               onValueChange={setActiveSection}
               className="w-full"
             >
-              <TabsList className="mb-4 flex flex-wrap h-auto">
-                <TabsTrigger value="contact" className="py-2">
+              <TabsList className="mb-6 flex flex-wrap h-auto bg-gray-100/80 dark:bg-gray-800/50 p-1 rounded-lg">
+                <TabsTrigger 
+                  value="contact" 
+                  className="py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-sm"
+                >
                   Contact
                 </TabsTrigger>
-                <TabsTrigger value="summary" className="py-2">
+                <TabsTrigger 
+                  value="summary" 
+                  className="py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-sm"
+                >
                   Summary
                 </TabsTrigger>
-                <TabsTrigger value="experience" className="py-2">
+                <TabsTrigger 
+                  value="experience" 
+                  className="py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-sm"
+                >
                   Experience
                 </TabsTrigger>
-                <TabsTrigger value="education" className="py-2">
+                <TabsTrigger 
+                  value="education" 
+                  className="py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-sm"
+                >
                   Education
                 </TabsTrigger>
-                <TabsTrigger value="skills" className="py-2">
+                <TabsTrigger 
+                  value="skills" 
+                  className="py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-sm"
+                >
                   Skills
                 </TabsTrigger>
-                <TabsTrigger value="projects" className="py-2">
+                <TabsTrigger 
+                  value="projects" 
+                  className="py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-sm"
+                >
                   Projects
                 </TabsTrigger>
-                <TabsTrigger value="preview" className="py-2">
+                <TabsTrigger 
+                  value="preview" 
+                  className="py-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-sm"
+                >
                   Preview
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="contact">
-                <div className="space-y-4">
-                  <h2 className="text-2xl font-semibold">Contact Information</h2>
+                <div className="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">Contact Information</h2>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-2">
-                      <label htmlFor="title" className="text-sm font-medium">Resume Title</label>
+                      <label htmlFor="title" className="text-sm font-medium text-gray-700 dark:text-gray-300">Resume Title</label>
                       <input 
                         type="text"
                         id="title"
                         value={resume.title}
                         onChange={(e) => updateResumeTitle(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                         placeholder="e.g., Software Engineer Resume"
                       />
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
                     <div className="space-y-2">
-                      <label htmlFor="firstName" className="text-sm font-medium">First Name</label>
+                      <label htmlFor="firstName" className="text-sm font-medium text-gray-700 dark:text-gray-300">First Name</label>
                       <input 
                         type="text"
                         id="firstName"
@@ -322,12 +351,12 @@ export default function ResumeBuilder() {
                           ...resume.personalInfo,
                           firstName: e.target.value
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                         placeholder="John"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="lastName" className="text-sm font-medium">Last Name</label>
+                      <label htmlFor="lastName" className="text-sm font-medium text-gray-700 dark:text-gray-300">Last Name</label>
                       <input 
                         type="text"
                         id="lastName"
@@ -336,15 +365,15 @@ export default function ResumeBuilder() {
                           ...resume.personalInfo,
                           lastName: e.target.value
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                         placeholder="Doe"
                       />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
                     <div className="space-y-2">
-                      <label htmlFor="email" className="text-sm font-medium">Email</label>
+                      <label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
                       <input 
                         type="email"
                         id="email"
@@ -353,12 +382,12 @@ export default function ResumeBuilder() {
                           ...resume.personalInfo,
                           email: e.target.value
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                         placeholder="johndoe@example.com"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="phone" className="text-sm font-medium">Phone</label>
+                      <label htmlFor="phone" className="text-sm font-medium text-gray-700 dark:text-gray-300">Phone</label>
                       <input 
                         type="text"
                         id="phone"
@@ -367,14 +396,14 @@ export default function ResumeBuilder() {
                           ...resume.personalInfo,
                           phone: e.target.value
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                         placeholder="(123) 456-7890"
                       />
                     </div>
                   </div>
                   
-                  <div className="space-y-2">
-                    <label htmlFor="headline" className="text-sm font-medium">Professional Headline</label>
+                  <div className="space-y-2 mt-5">
+                    <label htmlFor="headline" className="text-sm font-medium text-gray-700 dark:text-gray-300">Professional Headline</label>
                     <input 
                       type="text"
                       id="headline"
@@ -383,13 +412,13 @@ export default function ResumeBuilder() {
                         ...resume.personalInfo,
                         headline: e.target.value
                       })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                       placeholder="e.g., Senior Software Engineer | Full Stack Developer | Tech Lead"
                     />
                   </div>
                   
-                  <div className="space-y-2">
-                    <label htmlFor="summary" className="text-sm font-medium">Professional Summary</label>
+                  <div className="space-y-2 mt-5">
+                    <label htmlFor="summary" className="text-sm font-medium text-gray-700 dark:text-gray-300">Professional Summary</label>
                     <textarea 
                       id="summary"
                       value={resume.personalInfo.summary}
@@ -397,7 +426,7 @@ export default function ResumeBuilder() {
                         ...resume.personalInfo,
                         summary: e.target.value
                       })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px] dark:bg-gray-700 dark:text-white"
                       placeholder="Write a short summary of your skills and experience..."
                     />
                   </div>
@@ -405,14 +434,14 @@ export default function ResumeBuilder() {
               </TabsContent>
 
               <TabsContent value="summary">
-                <div className="space-y-4">
-                  <h2 className="text-2xl font-semibold">Professional Summary</h2>
-                  <p className="text-gray-600">
+                <div className="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <h2 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">Professional Summary</h2>
+                  <p className="text-gray-600 dark:text-gray-400 mb-5">
                     Write a compelling summary that highlights your skills, experience, and achievements.
                   </p>
                   
                   <div className="space-y-2">
-                    <label htmlFor="summary" className="text-sm font-medium">Professional Summary</label>
+                    <label htmlFor="summaryFull" className="text-sm font-medium text-gray-700 dark:text-gray-300">Professional Summary</label>
                     <textarea 
                       id="summaryFull"
                       value={resume.personalInfo.summary}
@@ -420,7 +449,7 @@ export default function ResumeBuilder() {
                         ...resume.personalInfo,
                         summary: e.target.value
                       })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[250px]"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[250px] dark:bg-gray-700 dark:text-white"
                       placeholder="Write a short summary of your skills and experience..."
                     />
                   </div>

@@ -56,13 +56,16 @@ export default function MobileMenu({ className = '' }: MobileMenuProps) {
         className="p-2 text-foreground bg-card hover:bg-muted/80 rounded-lg shadow-sm"
         aria-label="Toggle mobile menu"
       >
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
+        <Menu size={24} />
       </button>
 
       {/* Mobile Menu Overlay */}
       {isOpen && (
-        <div className="fixed inset-0 z-[100] bg-background shadow-xl min-h-screen h-full overflow-y-auto">
-          <div className="flex flex-col min-h-screen">
+        <div className="fixed inset-0 z-[1000] bg-background shadow-xl min-h-screen h-full overflow-y-auto">
+          {/* Add a solid background to prevent any text showing through */}
+          <div className="absolute inset-0 bg-background"></div>
+          
+          <div className="flex flex-col min-h-screen bg-background relative z-10">
             {/* Menu Header */}
             <div className="sticky top-0 flex justify-between items-center p-4 border-b border-border bg-primary text-primary-foreground z-10">
               <div className="flex items-center gap-2">

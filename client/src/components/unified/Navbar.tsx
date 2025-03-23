@@ -20,6 +20,9 @@ export default function Navbar() {
   const { config } = useUnifiedTheme();
   const { user, logoutMutation } = useAuth();
   
+  // Prevent multiple navbar X from showing
+  const isMobileMenuOpen = React.useRef(false);
+  
   React.useEffect(() => {
     console.log("Unified Navbar mounted from components/unified/Navbar.tsx");
   }, []);

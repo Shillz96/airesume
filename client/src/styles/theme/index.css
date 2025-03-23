@@ -1,86 +1,62 @@
 /**
- * Unified Theme System
+ * Unified Theme System - Core Variables
  * 
- * This is the single source of truth for all theme variables.
- * It consolidates variables from both the modern and cosmic theme systems.
+ * This file contains the core CSS variables used throughout the application.
+ * It defines the base colors, typography, spacing, and other design tokens
+ * that are used by component-specific style files.
  */
 
-/* Base theme colors - light mode defaults with dark mode overrides */
 :root {
-  /* Primary colors */
-  --color-primary: 221 83% 53%;
-  --color-primary-foreground: 0 0% 100%;
-  
-  /* Secondary colors */
-  --color-secondary: 262 83% 58%;
-  --color-secondary-foreground: 0 0% 100%;
-  
-  /* Accent colors */
-  --color-accent: 199 89% 48%;
-  --color-accent-foreground: 0 0% 100%;
-  
-  /* Feedback colors */
-  --color-success: 142 76% 36%;
-  --color-success-foreground: 0 0% 100%;
-  --color-warning: 38 92% 50%;
-  --color-warning-foreground: 0 0% 98%;
-  --color-error: 346 87% 44%;
-  --color-error-foreground: 0 0% 100%;
-  --color-info: 199 89% 48%;
-  --color-info-foreground: 0 0% 100%;
-  
-  /* Background colors */
-  --color-background: 224 71% 4%;
-  --color-foreground: 0 0% 100%;
-  
-  /* Card and component colors */
-  --color-card: 224 71% 6%;
-  --color-card-foreground: 0 0% 100%;
-  --color-card-hover: 224 71% 8%;
-  
-  /* Form elements */
-  --color-input: 215 25% 18%;
-  --color-input-foreground: 0 0% 100%;
-  
-  /* Border colors */
-  --color-border: 215 25% 18%;
-  --color-ring: 221 83% 65%;
-  
-  /* Muted elements */
-  --color-muted: 215 25% 12%;
-  --color-muted-foreground: 0 0% 70%;
-  
-  /* Neutral colors for UI elements */
-  --color-popover: 224 71% 6%;
-  --color-popover-foreground: 0 0% 100%;
-  
-  /* Destructive actions */
-  --color-destructive: 0 84% 60%;
-  --color-destructive-foreground: 0 0% 100%;
-  
-  /* Special effects */
-  --color-shadow: 0 0% 0%;
-  --color-overlay: 224 71% 4% / 0.8;
-  
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, hsl(221, 83%, 53%), hsl(262, 83%, 58%));
-  --gradient-accent: linear-gradient(135deg, hsl(199, 89%, 48%), hsl(221, 83%, 65%));
-  --gradient-background: linear-gradient(135deg, hsl(224, 71%, 4%), hsl(223, 47%, 8%));
+  /* Base Colors - Light Mode */
+  --color-primary-hsl: 210 100% 55%; /* Brighter Blue */
+  --color-background-hsl: 210 30% 98%;
+  --color-foreground-hsl: 210 15% 15%;
+  --color-card-hsl: 0 0% 100%;
+  --color-muted-hsl: 210 15% 65%;
+  --color-border-hsl: 210 20% 92%;
+  --color-input-hsl: 210 20% 92%;
 
-  /* Animation & transitions */
-  --transition-fast: 0.15s;
-  --transition-normal: 0.25s;
-  --transition-slow: 0.4s;
+  /* Semantic Colors */
+  --color-success-hsl: 142 80% 35%;
+  --color-warning-hsl: 38 95% 55%;
+  --color-danger-hsl: 358 90% 60%;
+  --color-info-hsl: 200 100% 45%;
+
+  /* Accent Colors */
+  --color-accent-1-hsl: 262 90% 62%; /* Brighter Purple */
+  --color-accent-2-hsl: 326 85% 55%; /* Brighter Pink */
+  --color-accent-3-hsl: 29 100% 55%; /* Brighter Orange */
   
-  /* Border radius */
-  --border-radius: 0.5rem;
-  --radius-sm: 0.125rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
-  --radius-full: 9999px;
-  
-  /* Spacing scale */
+  /* Converted HSL colors to RGB format for use with opacity */
+  --color-primary-rgb: 26, 115, 255;
+  --color-background-rgb: 248, 250, 252;
+  --color-foreground-rgb: 35, 38, 45;
+  --color-card-rgb: 255, 255, 255;
+  --color-muted-rgb: 155, 167, 180;
+  --color-border-rgb: 232, 236, 241;
+  --color-input-rgb: 232, 236, 241;
+
+  /* Semantic Colors RGB */
+  --color-success-rgb: 22, 163, 74;
+  --color-warning-rgb: 245, 158, 11;
+  --color-danger-rgb: 239, 68, 68;
+  --color-info-rgb: 2, 132, 199;
+
+  /* Accent Colors RGB */
+  --color-accent-1-rgb: 124, 58, 237;
+  --color-accent-2-rgb: 217, 38, 169;
+  --color-accent-3-rgb: 255, 128, 0;
+
+  /* Border Radius */
+  --border-radius-sm: 0.125rem;
+  --border-radius: 0.25rem;
+  --border-radius-md: 0.375rem;
+  --border-radius-lg: 0.5rem;
+  --border-radius-xl: 0.75rem;
+  --border-radius-2xl: 1rem;
+  --border-radius-full: 9999px;
+
+  /* Spacing System */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -93,163 +69,176 @@
   --space-16: 4rem;
   --space-20: 5rem;
   --space-24: 6rem;
-  
-  /* Shadow values */
+  --space-32: 8rem;
+  --space-40: 10rem;
+  --space-48: 12rem;
+  --space-56: 14rem;
+  --space-64: 16rem;
+
+  /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+
+  /* Typography */
+  --font-family-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   
-  /* Z-index scale */
-  --z-dropdown: 10;
-  --z-sticky: 20;
-  --z-fixed: 30;
-  --z-modal: 40;
-  --z-popover: 50;
-  --z-tooltip: 60;
-  
-  /* Variant-specific properties */
-  --animation-speed: 1; /* Default for 'professional' variant */
-  --border-radius-button: var(--border-radius);
-  --card-box-shadow: var(--shadow-md);
+  /* Animation */
+  --transition-fast: 100ms;
+  --transition-normal: 200ms;
+  --transition-slow: 300ms;
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
 }
 
-/* Light mode overrides */
-.light {
-  --color-background: 0 0% 100%;
-  --color-foreground: 224 71% 4%;
-  
-  --color-card: 0 0% 100%;
-  --color-card-foreground: 224 71% 4%;
-  --color-card-hover: 220 14% 96%;
-  
-  --color-input: 220 13% 91%;
-  --color-input-foreground: 224 71% 4%;
-  
-  --color-border: 220 13% 91%;
-  --color-ring: 221 83% 53%;
-  
-  --color-muted: 220 14% 96%;
-  --color-muted-foreground: 220 8% 46%;
-  
-  --color-popover: 0 0% 100%;
-  --color-popover-foreground: 224 71% 4%;
-  
-  --color-overlay: 0 0% 100% / 0.8;
+/* Dark mode overrides */
+.dark {
+  --color-primary-hsl: 217 91% 60%; /* Slightly lighter blue for dark mode */
+  --color-background-hsl: 222 47% 11%;
+  --color-foreground-hsl: 214 10% 90%;
+  --color-card-hsl: 223 40% 16%;
+  --color-muted-hsl: 215 16% 65%;
+  --color-border-hsl: 220 20% 23%;
+  --color-input-hsl: 220 20% 23%;
+
+  /* Semantic Colors */
+  --color-success-hsl: 142 64% 38%;
+  --color-warning-hsl: 38 92% 60%;
+  --color-danger-hsl: 0 84% 65%;
+  --color-info-hsl: 200 98% 49%;
+
+  /* RGB values for dark mode */
+  --color-primary-rgb: 59, 130, 246;
+  --color-background-rgb: 17, 24, 39;
+  --color-foreground-rgb: 229, 231, 235;
+  --color-card-rgb: 26, 34, 55;
+  --color-muted-rgb: 156, 163, 175;
+  --color-border-rgb: 55, 65, 81;
+  --color-input-rgb: 55, 65, 81;
+
+  /* Semantic Colors RGB */
+  --color-success-rgb: 34, 197, 94;
+  --color-warning-rgb: 252, 176, 52;
+  --color-danger-rgb: 248, 113, 113;
+  --color-info-rgb: 14, 165, 233;
+
+  /* Shadow overrides for dark mode */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.4);
 }
 
-/* Legacy variable support - maps new variables to old names for backward compatibility */
-:root {
-  --primary: hsl(var(--color-primary));
-  --primary-foreground: hsl(var(--color-primary-foreground));
-  
-  --secondary: hsl(var(--color-secondary));
-  --secondary-foreground: hsl(var(--color-secondary-foreground));
-  
-  --accent: hsl(var(--color-accent));
-  --accent-foreground: hsl(var(--color-accent-foreground));
-  
-  --success: hsl(var(--color-success));
-  --success-foreground: hsl(var(--color-success-foreground));
-  
-  --warning: hsl(var(--color-warning));
-  --warning-foreground: hsl(var(--color-warning-foreground));
-  
-  --error: hsl(var(--color-error));
-  --error-foreground: hsl(var(--color-error-foreground));
-  
-  --info: hsl(var(--color-info));
-  --info-foreground: hsl(var(--color-info-foreground));
-  
-  --background: hsl(var(--color-background));
-  --foreground: hsl(var(--color-foreground));
-  
-  --card: hsl(var(--color-card));
-  --card-foreground: hsl(var(--color-card-foreground));
-  
-  --input: hsl(var(--color-input));
-  --input-foreground: hsl(var(--color-input-foreground));
-  
-  --border: hsl(var(--color-border));
-  --ring: hsl(var(--color-ring));
-  
-  --muted: hsl(var(--color-muted));
-  --muted-foreground: hsl(var(--color-muted-foreground));
-  
-  --popover: hsl(var(--color-popover));
-  --popover-foreground: hsl(var(--color-popover-foreground));
-  
-  --destructive: hsl(var(--color-destructive));
-  --destructive-foreground: hsl(var(--color-destructive-foreground));
-  
-  --shadow: var(--shadow-md);
-  --overlay: var(--color-overlay);
-}
-
-/* Converting HSL variables to actual color values for CSS properties */
-@supports (color: hsl(var(--color-primary))) {
+/* Export HSL variables for Tailwind */
+@layer base {
   :root {
-    /* RGB format for use with opacity variations */
-    --primary-rgb: var(--color-primary);
-    --background-rgb: var(--color-background);
-    --foreground-rgb: var(--color-foreground);
-    --border-rgb: var(--color-border);
+    --background: var(--color-background-hsl);
+    --foreground: var(--color-foreground-hsl);
     
-    /* HSL color values */
-    --background-color: hsl(var(--color-background));
-    --foreground-color: hsl(var(--color-foreground));
-    --card-color: hsl(var(--color-card));
-    --card-foreground-color: hsl(var(--color-card-foreground));
-    --popover-color: hsl(var(--color-popover));
-    --popover-foreground-color: hsl(var(--color-popover-foreground));
-    --primary-color: hsl(var(--color-primary));
-    --primary-foreground-color: hsl(var(--color-primary-foreground));
-    --secondary-color: hsl(var(--color-secondary));
-    --secondary-foreground-color: hsl(var(--color-secondary-foreground));
-    --muted-color: hsl(var(--color-muted));
-    --muted-foreground-color: hsl(var(--color-muted-foreground));
-    --accent-color: hsl(var(--color-accent));
-    --accent-foreground-color: hsl(var(--color-accent-foreground));
-    --destructive-color: hsl(var(--color-destructive));
-    --destructive-foreground-color: hsl(var(--color-destructive-foreground));
-    --border-color: hsl(var(--color-border));
-    --input-color: hsl(var(--color-input));
-    --ring-color: hsl(var(--color-ring));
-    --success-color: hsl(var(--color-success));
-    --warning-color: hsl(var(--color-warning));
-    --error-color: hsl(var(--color-error));
+    --card: var(--color-card-hsl);
+    --card-foreground: var(--color-foreground-hsl);
+    
+    --popover: var(--color-card-hsl);
+    --popover-foreground: var(--color-foreground-hsl);
+    
+    --primary: var(--color-primary-hsl);
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: var(--color-accent-1-hsl);
+    --secondary-foreground: 0 0% 100%;
+    
+    --muted: var(--color-muted-hsl);
+    --muted-foreground: 0 0% 100%;
+    
+    --accent: var(--color-accent-2-hsl);
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: var(--color-danger-hsl);
+    --destructive-foreground: 0 0% 100%;
+
+    --success: var(--color-success-hsl);
+    --success-foreground: 0 0% 100%;
+    
+    --border: var(--color-border-hsl);
+    --input: var(--color-input-hsl);
+    --ring: var(--color-primary-hsl);
+    
+    --radius: var(--border-radius);
   }
 }
 
-/* Base styles */
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  overflow-x: hidden;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  font-feature-settings: "rlig" 1, "calt" 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: hsl(var(--color-background));
-  color: hsl(var(--color-foreground));
+/* Base styles for common elements */
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-family-sans);
+  line-height: 1.5;
 }
 
-/* Variant-specific styles */
-[data-theme-variant="professional"] {
-  --animation-speed: 1;
-  --border-radius-button: var(--border-radius);
-  --card-box-shadow: var(--shadow-md);
+/* Utility classes */
+.bg-glass {
+  background-color: hsla(var(--card) / 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid hsla(var(--border) / 0.1);
 }
 
-[data-theme-variant="vibrant"] {
-  --animation-speed: 1.2;
-  --border-radius-button: var(--radius-lg);
-  --card-box-shadow: var(--shadow-lg);
+.text-gradient {
+  background: linear-gradient(
+    to right,
+    hsl(var(--primary)),
+    hsl(var(--secondary))
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-[data-theme-variant="tint"] {
-  --animation-speed: 0.8;
-  --border-radius-button: var(--radius-full);
-  --card-box-shadow: var(--shadow-sm);
+.bg-gradient {
+  background: linear-gradient(
+    to right,
+    hsl(var(--primary)),
+    hsl(var(--secondary))
+  );
+}
+
+.border-gradient {
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+
+.border-gradient::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: -2px;
+  border-radius: inherit;
+  background: linear-gradient(
+    to right,
+    hsl(var(--primary)),
+    hsl(var(--secondary))
+  );
+  z-index: -1;
+}
+
+.glow {
+  box-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.5);
+}
+
+.glow-success {
+  box-shadow: 0 0 10px rgba(var(--color-success-rgb), 0.5);
+}
+
+.glow-danger {
+  box-shadow: 0 0 10px rgba(var(--color-danger-rgb), 0.5);
 }

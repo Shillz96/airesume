@@ -51,15 +51,15 @@ export default function PageHeader({
       case 'none':
         return '';
       case 'gradient':
-        return 'border-b border-transparent bg-gradient-to-r from-transparent via-primary/20 to-transparent bg-[length:100%_1px] bg-bottom bg-no-repeat pb-4';
+        return 'border-b border-transparent bg-gradient-to-r from-transparent via-primary/20 to-transparent bg-[length:100%_1px] bg-bottom bg-no-repeat pb-3';
       case 'subtle':
       default:
-        return 'border-b border-white/10 pb-4';
+        return 'border-b border-white/10 pb-3';
     }
   };
 
   return (
-    <header className={cn("mb-8", className)}>
+    <header className={cn("mb-4", className)}>
       <div className={cn(
         "flex flex-col sm:flex-row items-start sm:items-center justify-between", 
         getBorderClasses()
@@ -73,13 +73,13 @@ export default function PageHeader({
             title
           )}
           {subtitle && (
-            <div className="mt-2 text-muted-foreground">
+            <div className="mt-1 text-muted-foreground">
               {typeof subtitle === 'string' ? subtitle : subtitle}
             </div>
           )}
         </div>
         {actions && (
-          <div className="flex gap-2 mt-4 sm:mt-0">
+          <div className="flex gap-2 mt-3 sm:mt-0">
             {actions}
           </div>
         )}

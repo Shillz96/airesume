@@ -30,12 +30,12 @@ export function UnifiedPageHeader({
   const getBorderClasses = () => {
     switch (borderStyle) {
       case 'subtle':
-        return 'border-b border-border/40 pb-4 mb-6';
+        return 'border-b border-border/40 pb-3 mb-4';
       case 'gradient':
-        return 'border-b-2 border-gradient pb-4 mb-6';
+        return 'border-b-2 border-gradient pb-3 mb-4';
       case 'none':
       default:
-        return 'mb-6';
+        return 'mb-4';
     }
   };
   
@@ -43,9 +43,9 @@ export function UnifiedPageHeader({
   const getVariantClasses = () => {
     switch (variant) {
       case 'gradient':
-        return 'bg-gradient-to-r from-primary/10 to-secondary/10 p-6 rounded-lg';
+        return 'bg-gradient-to-r from-primary/10 to-secondary/10 p-4 rounded-lg';
       case 'cosmic':
-        return 'bg-black/20 backdrop-blur-sm p-6 rounded-lg cosmic-glow';
+        return 'bg-black/20 backdrop-blur-sm p-4 rounded-lg cosmic-glow';
       case 'default':
       default:
         return '';

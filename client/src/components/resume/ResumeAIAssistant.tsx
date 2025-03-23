@@ -467,7 +467,7 @@ export function ResumeAIAssistant({
                 {skillSuggestions.map((skill, index) => (
                   <button
                     key={index}
-                    className="px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-800 dark:bg-blue-900/30 dark:hover:bg-blue-800/40 dark:text-blue-200 rounded-full text-sm transition-colors"
+                    className="px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-800 dark:bg-blue-900/30 dark:hover:bg-blue-800/40 dark:text-blue-200 rounded-full text-xs font-medium transition-colors"
                     onClick={() => onApplySuggestion(skill)}
                   >
                     {skill}
@@ -498,16 +498,16 @@ export function ResumeAIAssistant({
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <Sparkles className="h-4 w-4 text-blue-500" />
-            <h3 className="text-sm font-semibold">AI Suggestions</h3>
+            <Sparkles className="h-4 w-4 text-gradient-primary bg-clip-text from-blue-600 to-indigo-600" />
+            <h3 className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">AI Suggestions</h3>
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setIsChatView(true)}
-            className="h-8 w-8 p-0"
+            className="h-7 w-7 p-0 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30"
           >
-            <MessageCircle className="h-4 w-4" />
+            <MessageCircle className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
           </Button>
         </div>
         
@@ -571,14 +571,14 @@ export function ResumeAIAssistant({
             {suggestions.map((suggestion, index) => (
               <div 
                 key={index} 
-                className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-100 dark:border-blue-800"
+                className="bg-blue-50 dark:bg-blue-900/20 p-3.5 rounded-lg border border-blue-100 dark:border-blue-800"
               >
-                <p className="text-sm text-gray-800 dark:text-gray-200">{suggestion}</p>
-                <div className="mt-2 flex justify-end">
+                <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">{suggestion}</p>
+                <div className="mt-3 flex justify-end">
                   <Button
                     size="sm"
                     onClick={() => onApplySuggestion(suggestion)}
-                    className="h-7 text-xs"
+                    className="h-7 text-xs bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
                   >
                     Apply
                   </Button>
@@ -602,14 +602,14 @@ export function ResumeAIAssistant({
           </div>
         )}
         
-        <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+        <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
           <Button 
             variant="ghost" 
             size="sm" 
-            className="text-xs text-blue-500 hover:text-blue-700 px-0"
+            className="text-xs bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-indigo-700 px-0 font-medium"
             onClick={() => setIsChatView(true)}
           >
-            <MessageCircle className="h-3 w-3 mr-1" />
+            <MessageCircle className="h-3.5 w-3.5 mr-1.5 text-blue-500" />
             Chat with AI for tailored advice
           </Button>
         </div>

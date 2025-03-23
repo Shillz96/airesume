@@ -25,6 +25,8 @@ export default function ResumeBuilder() {
   const [aiSuggestionType, setAiSuggestionType] = useState<"short" | "medium" | "long">("medium");
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [skillSearchQuery, setSkillSearchQuery] = useState<string>("");
+  const [skillSuggestions, setSkillSuggestions] = useState<string[]>([]);
   const { toast } = useToast();
   const { 
     resume, 
@@ -52,13 +54,69 @@ export default function ResumeBuilder() {
   
   // Generate new suggestions when active section changes
   useEffect(() => {
-    if (activeSection !== 'preview') {
+    // Only show AI assistant for Summary, Experience, and Skills tabs
+    if (activeSection === 'summary' || activeSection === 'experience') {
       generateSuggestions(aiSuggestionType);
+    } else if (activeSection === 'skills') {
+      generateSkillSuggestions();
     } else {
-      // Clear suggestions when switching to preview
+      // Clear suggestions for other tabs
       setSuggestions([]);
+      setSkillSuggestions([]);
     }
   }, [activeSection]);
+  
+  // Function to generate skill suggestions
+  const generateSkillSuggestions = () => {
+    setIsLoadingSuggestions(true);
+    
+    // In a real implementation, this would call an API
+    setTimeout(() => {
+      // Generate a comprehensive list of skills
+      const allSkills = [
+        // Programming Languages
+        "JavaScript", "TypeScript", "Python", "Java", "C#", "C++", "Go", "Ruby", "PHP", "Swift", "Kotlin", "Rust",
+        // Frontend 
+        "React", "Angular", "Vue.js", "Next.js", "HTML", "CSS", "SASS/SCSS", "Bootstrap", "Tailwind CSS", "Material-UI", 
+        "Redux", "Context API", "Webpack", "Babel", "GraphQL", "Apollo Client", "Responsive Design", "Mobile-First Design",
+        // Backend
+        "Node.js", "Express", "Django", "Flask", "Spring Boot", "Ruby on Rails", ".NET Core", "Laravel", "NestJS",
+        "REST APIs", "GraphQL", "WebSockets", "Microservices", "Socket.io", 
+        // Databases
+        "SQL", "PostgreSQL", "MySQL", "MongoDB", "Redis", "Elasticsearch", "Firebase", "Supabase", "DynamoDB", "Cassandra",
+        "ORM", "Sequelize", "TypeORM", "Mongoose", "Prisma", "Entity Framework",
+        // Cloud & DevOps
+        "AWS", "Azure", "Google Cloud", "Heroku", "Vercel", "Netlify", "Docker", "Kubernetes", "CI/CD", "GitHub Actions",
+        "Jenkins", "Terraform", "Serverless", "Cloudflare", "Load Balancing", "Auto-scaling",
+        // Testing
+        "Jest", "Mocha", "Cypress", "Selenium", "Puppeteer", "React Testing Library", "TDD", "BDD", "Unit Testing", 
+        "Integration Testing", "E2E Testing", "Test Coverage",
+        // Tools & Methodologies
+        "Git", "GitHub", "GitLab", "BitBucket", "Jira", "Agile", "Scrum", "Kanban", "Code Reviews", "Pair Programming",
+        // Security
+        "Authentication", "Authorization", "OAuth", "JWT", "HTTPS", "Encryption", "XSS Prevention", "CSRF Protection",
+        // Performance
+        "Web Performance", "Lazy Loading", "Code Splitting", "Bundle Optimization", "Server-Side Rendering", "Caching Strategies",
+        // Soft Skills
+        "Problem Solving", "Communication", "Teamwork", "Leadership", "Time Management", "Critical Thinking", 
+        "Adaptability", "Project Management", "Mentoring", "Documentation",
+        // Mobile
+        "React Native", "Flutter", "iOS Development", "Android Development", "Mobile UI/UX", "App Store Optimization"
+      ];
+      
+      setSkillSuggestions(allSkills);
+      setIsLoadingSuggestions(false);
+    }, 600);
+  };
+  
+  // Function to filter skill suggestions based on search query
+  const getFilteredSkillSuggestions = () => {
+    if (!skillSearchQuery) return skillSuggestions;
+    
+    return skillSuggestions.filter(skill => 
+      skill.toLowerCase().includes(skillSearchQuery.toLowerCase())
+    );
+  };
 
   // Function to handle download
   const handleDownload = () => {
@@ -555,7 +613,7 @@ export default function ResumeBuilder() {
           </div>
 
           {/* Right Sidebar - AI Assistant - Only visible on large screens and only for non-preview tabs */}
-          <div className={`hidden lg:block lg:col-span-1 ${activeSection === 'preview' ? 'invisible' : ''}`}>
+          <div className={`hidden lg:block lg:col-span-1 ${activeSection === 'preview' || activeSection === 'contact' || activeSection === 'education' || activeSection === 'projects' ? 'hidden' : ''}`}>
             <div className="sticky top-4">
               <div className="bg-[#161f36] rounded-md border border-[#2a325a] p-5 shadow-md">
                 <div className="flex items-center gap-2 mb-4">
@@ -563,87 +621,149 @@ export default function ResumeBuilder() {
                   <h3 className="text-lg font-medium">AI Assistant</h3>
                 </div>
                 
-                {/* Length selector buttons */}
-                <div className="flex gap-2 mb-4">
-                  <Button 
-                    size="sm" 
-                    variant={aiSuggestionType === 'short' ? 'default' : 'outline'}
-                    onClick={() => generateSuggestions('short')}
-                    className={aiSuggestionType === 'short' 
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600' 
-                      : 'border-white/10 text-gray-200 hover:bg-white/10'}
-                  >
-                    Short
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    variant={aiSuggestionType === 'medium' ? 'default' : 'outline'}
-                    onClick={() => generateSuggestions('medium')}
-                    className={aiSuggestionType === 'medium' 
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600' 
-                      : 'border-white/10 text-gray-200 hover:bg-white/10'}
-                  >
-                    Medium
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    variant={aiSuggestionType === 'long' ? 'default' : 'outline'}
-                    onClick={() => generateSuggestions('long')}
-                    className={aiSuggestionType === 'long' 
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600' 
-                      : 'border-white/10 text-gray-200 hover:bg-white/10'}
-                  >
-                    Long
-                  </Button>
-                  <Button 
-                    size="sm"
-                    variant="outline"
-                    onClick={() => generateSuggestions(aiSuggestionType)}
-                    className="border-white/10 text-gray-200 hover:bg-white/10 ml-auto"
-                    title="Generate new suggestions"
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                {/* Descriptive text based on active section */}
-                <p className="text-sm text-gray-300 mb-4">
-                  {activeSection === 'contact' && 'Choose a professional headline that captures your expertise and career focus.'}
-                  {activeSection === 'summary' && 'Select a professional summary that highlights your expertise and achievements.'}
-                  {activeSection === 'experience' && 'Add impressive work experience bullet points to showcase your impact and skills.'}
-                  {activeSection === 'education' && 'Choose education entries that present your academic background effectively.'}
-                  {activeSection === 'skills' && 'Add relevant skills that match your experience and target jobs.'}
-                  {activeSection === 'projects' && 'Include projects that demonstrate your capabilities and technical skills.'}
-                </p>
-                
-                {/* Suggestions area */}
-                <div className="space-y-3">
-                  {isLoadingSuggestions ? (
-                    <div className="flex justify-center items-center py-8">
-                      <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+                {activeSection === 'skills' ? (
+                  /* Skills-specific UI */
+                  <>
+                    <p className="text-sm text-gray-300 mb-4">
+                      Search and add skills that are relevant to your background and the jobs you're targeting.
+                    </p>
+
+                    {/* Search box for skills */}
+                    <div className="relative mb-4">
+                      <input
+                        type="text"
+                        placeholder="Search skills..."
+                        className="w-full px-3 py-2 bg-[#0f172a] border border-[#2a325a] rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        value={skillSearchQuery}
+                        onChange={(e) => setSkillSearchQuery(e.target.value)}
+                      />
+                      {skillSearchQuery && (
+                        <button 
+                          className="absolute right-2 top-2 text-gray-400 hover:text-white"
+                          onClick={() => setSkillSearchQuery('')}
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      )}
                     </div>
-                  ) : suggestions.length > 0 ? (
-                    suggestions.map((suggestion, index) => (
-                      <div 
-                        key={index}
-                        className="p-3 rounded bg-[#1a2442] border border-[#2a325a] hover:border-blue-500/50 transition-all cursor-pointer"
-                        onClick={() => applySuggestion(suggestion)}
+                    
+                    {/* Skills suggestions grid */}
+                    <div className="max-h-[400px] overflow-y-auto pr-1">
+                      {isLoadingSuggestions ? (
+                        <div className="flex justify-center items-center py-8">
+                          <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-2 gap-2">
+                          {getFilteredSkillSuggestions().map((skill, index) => (
+                            <div 
+                              key={index}
+                              className="p-2 rounded bg-[#1a2442] border border-[#2a325a] hover:border-blue-500/50 transition-all cursor-pointer text-center"
+                              onClick={() => {
+                                const newSkill = {
+                                  id: `skill-${Date.now()}-${index}`,
+                                  name: skill,
+                                  proficiency: 80
+                                };
+                                updateResume({
+                                  ...resume,
+                                  skills: [...resume.skills, newSkill]
+                                });
+                                toast({
+                                  title: "Skill added",
+                                  description: `${skill} has been added to your skills.`
+                                });
+                              }}
+                            >
+                              <p className="text-sm">{skill}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  /* UI for Summary and Experience */
+                  <>
+                    {/* Length selector buttons */}
+                    <div className="flex gap-2 mb-4">
+                      <Button 
+                        size="sm" 
+                        variant={aiSuggestionType === 'short' ? 'default' : 'outline'}
+                        onClick={() => generateSuggestions('short')}
+                        className={aiSuggestionType === 'short' 
+                          ? 'bg-gradient-to-r from-blue-600 to-purple-600' 
+                          : 'border-white/10 text-gray-200 hover:bg-white/10'}
                       >
-                        <p className="text-sm whitespace-pre-line">{suggestion}</p>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="p-4 text-center text-gray-400">
-                      <p>Click one of the buttons above to generate suggestions for your {activeSection === 'contact' ? 'headline' : activeSection}.</p>
+                        Short
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant={aiSuggestionType === 'medium' ? 'default' : 'outline'}
+                        onClick={() => generateSuggestions('medium')}
+                        className={aiSuggestionType === 'medium' 
+                          ? 'bg-gradient-to-r from-blue-600 to-purple-600' 
+                          : 'border-white/10 text-gray-200 hover:bg-white/10'}
+                      >
+                        Medium
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant={aiSuggestionType === 'long' ? 'default' : 'outline'}
+                        onClick={() => generateSuggestions('long')}
+                        className={aiSuggestionType === 'long' 
+                          ? 'bg-gradient-to-r from-blue-600 to-purple-600' 
+                          : 'border-white/10 text-gray-200 hover:bg-white/10'}
+                      >
+                        Long
+                      </Button>
+                      <Button 
+                        size="sm"
+                        variant="outline"
+                        onClick={() => generateSuggestions(aiSuggestionType)}
+                        className="border-white/10 text-gray-200 hover:bg-white/10 ml-auto"
+                        title="Generate new suggestions"
+                      >
+                        <RefreshCw className="h-4 w-4" />
+                      </Button>
                     </div>
-                  )}
-                </div>
-                
-                {/* Hint at bottom */}
-                {suggestions.length > 0 && (
-                  <p className="text-xs text-gray-400 mt-4 text-center">
-                    Click on a suggestion to apply it to your resume
-                  </p>
+                    
+                    {/* Descriptive text based on active section */}
+                    <p className="text-sm text-gray-300 mb-4">
+                      {activeSection === 'summary' && 'Select a professional summary that highlights your expertise and achievements.'}
+                      {activeSection === 'experience' && 'Add impressive work experience bullet points to showcase your impact and skills.'}
+                    </p>
+                    
+                    {/* Suggestions area */}
+                    <div className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
+                      {isLoadingSuggestions ? (
+                        <div className="flex justify-center items-center py-8">
+                          <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+                        </div>
+                      ) : suggestions.length > 0 ? (
+                        suggestions.map((suggestion, index) => (
+                          <div 
+                            key={index}
+                            className="p-3 rounded bg-[#1a2442] border border-[#2a325a] hover:border-blue-500/50 transition-all cursor-pointer"
+                            onClick={() => applySuggestion(suggestion)}
+                          >
+                            <p className="text-sm whitespace-pre-line">{suggestion}</p>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="p-4 text-center text-gray-400">
+                          <p>Click one of the buttons above to generate suggestions for your {activeSection}.</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Hint at bottom */}
+                    {suggestions.length > 0 && (
+                      <p className="text-xs text-gray-400 mt-4 text-center">
+                        Click on a suggestion to apply it to your resume
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
             </div>

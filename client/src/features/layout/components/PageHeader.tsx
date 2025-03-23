@@ -12,9 +12,13 @@ interface PageHeaderProps {
  */
 export default function PageHeader({ title, subtitle, actions }: PageHeaderProps) {
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 pb-4 border-b border-border">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 pb-4 border-b border-white/10">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">{title}</h1>
+        {typeof title === 'string' ? (
+          <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">{title}</h1>
+        ) : (
+          title
+        )}
         {subtitle && (
           <p className="mt-1 text-sm sm:text-base text-foreground/60">{subtitle}</p>
         )}

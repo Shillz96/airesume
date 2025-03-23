@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import Button from "@/components/ui/modern-button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/modern-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sparkles, Check, Plus, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -262,83 +262,108 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
   const getLengthOptions = () => {
     if (suggestionType === "skill") {
       return (
-        <TabsList className="cosmic-tabs-list grid w-full grid-cols-3 h-7">
-          <TabsTrigger className="cosmic-tabs-trigger px-2 py-0 text-xs" value="technical" onClick={() => {
-            setActiveTab("technical");
-            generateSuggestions("technical");
-          }}>Technical</TabsTrigger>
-          <TabsTrigger className="cosmic-tabs-trigger px-2 py-0 text-xs" value="soft" onClick={() => {
-            setActiveTab("soft");
-            generateSuggestions("soft");
-          }}>Soft</TabsTrigger>
-          <TabsTrigger className="cosmic-tabs-trigger px-2 py-0 text-xs" value="industry" onClick={() => {
-            setActiveTab("industry");
-            generateSuggestions("industry");
-          }}>Industry</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 bg-card border border-border rounded-md p-1">
+          <TabsTrigger 
+            className="text-sm rounded-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground" 
+            value="technical" 
+            onClick={() => {
+              setActiveTab("technical");
+              generateSuggestions("technical");
+            }}
+          >
+            Technical
+          </TabsTrigger>
+          <TabsTrigger 
+            className="text-sm rounded-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground" 
+            value="soft" 
+            onClick={() => {
+              setActiveTab("soft");
+              generateSuggestions("soft");
+            }}
+          >
+            Soft
+          </TabsTrigger>
+          <TabsTrigger 
+            className="text-sm rounded-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground" 
+            value="industry" 
+            onClick={() => {
+              setActiveTab("industry");
+              generateSuggestions("industry");
+            }}
+          >
+            Industry
+          </TabsTrigger>
         </TabsList>
       );
     }
     
     return (
-      <TabsList className="cosmic-tabs-list grid w-full grid-cols-3 h-7">
-        <TabsTrigger className="cosmic-tabs-trigger px-2 py-0 text-xs" value="short" onClick={() => {
-          setActiveTab("short");
-          generateSuggestions("short");
-        }}>Short</TabsTrigger>
-        <TabsTrigger className="cosmic-tabs-trigger px-2 py-0 text-xs" value="medium" onClick={() => {
+      <TabsList className="grid w-full grid-cols-3 bg-card border border-border rounded-md p-1">
+        <TabsTrigger 
+          className="text-sm rounded-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground" 
+          value="short" 
+          onClick={() => {
+            setActiveTab("short");
+            generateSuggestions("short");
+          }}
+        >
+          Short
+        </TabsTrigger>
+        <TabsTrigger 
+          className="text-sm rounded-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground" 
+          value="medium" 
+          onClick={() => {
           setActiveTab("medium");
           generateSuggestions("medium");
         }}>Medium</TabsTrigger>
-        <TabsTrigger className="cosmic-tabs-trigger px-2 py-0 text-xs" value="long" onClick={() => {
-          setActiveTab("long");
-          generateSuggestions("long");
-        }}>Long</TabsTrigger>
+        <TabsTrigger 
+          className="text-sm rounded-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground" 
+          value="long" 
+          onClick={() => {
+            setActiveTab("long");
+            generateSuggestions("long");
+          }}
+        >
+          Long
+        </TabsTrigger>
       </TabsList>
     );
   };
 
   return (
-    <Card className="cosmic-card cosmic-card-gradient border border-blue-500/30 shadow-lg max-w-full w-full">
-      <CardHeader style={{ padding: "var(--space-3)" }}>
+    <Card className="border rounded-md shadow-sm bg-card w-full">
+      <CardHeader className="pb-2 space-y-1">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-blue-400" />
-          <CardTitle className="text-sm text-blue-100">{getTipTitle()}</CardTitle>
+          <Sparkles className="h-4 w-4 text-primary" />
+          <CardTitle className="text-sm font-medium">{getTipTitle()}</CardTitle>
         </div>
-        <CardDescription className="text-xs text-blue-200/70">{getTipDescription()}</CardDescription>
+        <CardDescription className="text-xs text-muted-foreground">{getTipDescription()}</CardDescription>
       </CardHeader>
       
-      <CardContent style={{ 
-        padding: "var(--space-3)",
-        paddingTop: "var(--space-1)"
-      }}>
-        <Tabs defaultValue={activeTab} value={activeTab} className="cosmic-tabs">
+      <CardContent className="pt-2">
+        <Tabs defaultValue={activeTab} value={activeTab}>
           {getLengthOptions()}
           
-          <div style={{ 
-            marginTop: "var(--space-2)", 
-            gap: "var(--space-2)",
-            display: "flex",
-            flexDirection: "column"
-          }}>
+          <div className="mt-4 flex flex-col gap-3">
             {isGenerating ? (
-              <div className="flex justify-center py-4">
-                <div className="animate-spin h-6 w-6 border-2 border-blue-500 rounded-full border-t-transparent"></div>
+              <div className="flex justify-center py-6">
+                <div className="animate-spin h-6 w-6 border-2 border-primary rounded-full border-t-transparent"></div>
               </div>
             ) : (
               <>
                 {multiSelect && appliedSuggestions.length > 0 && (
-                  <div className="mb-2">
-                    <h4 className="cosmic-section-title text-xs font-medium text-blue-300 mb-1">Applied Suggestions</h4>
-                    <div className="space-y-1.5">
+                  <div className="mb-4">
+                    <h4 className="text-xs font-medium mb-2">Applied Suggestions</h4>
+                    <div className="space-y-2">
                       {appliedSuggestions.map((applied, idx) => (
-                        <div key={`applied-${idx}`} className="cosmic-item-container flex items-start p-1.5 rounded-md bg-blue-800/20 border border-blue-500/30">
+                        <div key={`applied-${idx}`} className="flex items-start p-2 rounded-md bg-muted border">
                           <div className="flex-grow">
-                            <p className="text-xs text-blue-100 leading-relaxed">{typeof applied === 'object' ? JSON.stringify(applied) : applied}</p>
+                            <p className="text-xs leading-relaxed">{typeof applied === 'object' ? JSON.stringify(applied) : applied}</p>
                           </div>
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="cosmic-button-ghost h-5 w-5 p-0 ml-1 text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
+                            className="h-6 w-6 p-0 ml-1"
                             onClick={() => {
                               setAppliedSuggestions(appliedSuggestions.filter((_, i) => i !== idx));
                             }}
@@ -351,7 +376,7 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
                   </div>
                 )}
                 
-                <h4 className="cosmic-section-title text-xs font-medium text-blue-300 mb-1">Available Suggestions</h4>
+                <h4 className="text-xs font-medium mb-2">Available Suggestions</h4>
                 {suggestions.map((suggestion, index) => {
                   // For object suggestions, we need to stringify to check if they're already applied
                   const isApplied = typeof suggestion === 'object' 
@@ -360,10 +385,10 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
                   return (
                     <div 
                       key={index} 
-                      className={`cosmic-item-container p-2 rounded-md bg-white/10 border transition-all cursor-pointer ${
+                      className={`p-3 rounded-md border transition-all cursor-pointer ${
                         isApplied 
-                          ? "border-blue-500/40 bg-blue-800/20" 
-                          : "border-blue-500/20 hover:border-blue-500/40"
+                          ? "border-primary bg-primary/10" 
+                          : "border-muted-foreground/20 hover:border-primary/50"
                       }`}
                       onClick={() => {
                         if (multiSelect) {
@@ -377,12 +402,12 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
                         }
                       }}
                     >
-                      <p className="text-xs text-white leading-relaxed">{typeof suggestion === 'object' ? JSON.stringify(suggestion) : suggestion}</p>
-                      <div className="flex justify-end mt-1">
+                      <p className="text-sm leading-relaxed">{typeof suggestion === 'object' ? JSON.stringify(suggestion) : suggestion}</p>
+                      <div className="flex justify-end mt-2">
                         <Button 
-                          variant="ghost" 
+                          variant="outline" 
                           size="sm" 
-                          className="cosmic-button-ghost h-6 px-2 text-xs text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
+                          className="h-7"
                           onClick={(e) => {
                             e.stopPropagation();
                             if (multiSelect) {
@@ -411,14 +436,10 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
         </Tabs>
       </CardContent>
       
-      <CardFooter style={{ 
-        padding: "var(--space-3)",
-        paddingTop: "var(--space-2)"
-      }}>
+      <CardFooter className="border-t pt-3">
         <Button 
-          variant="outline" 
-          style={{ height: "var(--space-8)" }}
-          className="cosmic-button w-full text-xs text-blue-300 border-blue-500/30 hover:bg-blue-800/50 hover:text-blue-100"
+          variant="outline"
+          className="w-full"
           onClick={() => generateSuggestions(activeTab)}
           disabled={isGenerating}
         >
@@ -426,7 +447,7 @@ export default function ResumeTips({ resumeId, onApplySuggestion, suggestionType
             "Generating..."
           ) : (
             <>
-              <RefreshCw className="w-3 h-3 mr-1" />
+              <RefreshCw className="h-4 w-4 mr-2" />
               Refresh Suggestions
             </>
           )}

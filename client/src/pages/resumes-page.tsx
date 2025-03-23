@@ -27,15 +27,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Resume as ResumeType } from '@shared/schema';
-import { 
-  TemplatePreviewProfessional,
-  TemplatePreviewCreative,
-  TemplatePreviewExecutive,
-  TemplatePreviewModern,
-  TemplatePreviewMinimal,
-  TemplatePreviewIndustry,
-  TemplatePreviewBold
-} from '@/components/resume-template';
+// Import the default resume template component
+import ResumeTemplate from '@/components/resume-template';
 
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
@@ -509,13 +502,10 @@ export default function ResumesPage() {
                   </CardHeader>
                   <CardContent className="relative">
                     <div className="aspect-[11/14] bg-black/50 rounded border border-white/10 flex items-center justify-center cosmic-glow-subtle overflow-hidden">
-                      {template.id === 'professional' && <TemplatePreviewProfessional />}
-                      {template.id === 'creative' && <TemplatePreviewCreative />}
-                      {template.id === 'executive' && <TemplatePreviewExecutive />}
-                      {template.id === 'modern' && <TemplatePreviewModern />}
-                      {template.id === 'minimalist' && <TemplatePreviewMinimal />}
-                      {template.id === 'industry' && <TemplatePreviewIndustry />}
-                      {template.id === 'bold' && <TemplatePreviewBold />}
+                      {/* Replace with simplified template preview */}
+                      <div className={`h-32 w-full flex items-center justify-center ${template.color} rounded-md`}>
+                        <span className="text-white font-medium">{template.name}</span>
+                      </div>
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 flex items-end justify-center p-4 transition-opacity duration-300">
                       <Button 

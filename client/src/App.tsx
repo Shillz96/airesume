@@ -85,15 +85,15 @@ function AppContent() {
   }, [location]);
 
   return (
-    <div className={`min-h-screen cosmic-app-container ${isDarkMode ? '' : 'light-mode'}`}>
+    <div className={`min-h-screen h-full cosmic-app-container ${isDarkMode ? '' : 'light-mode'}`} style={{ minHeight: '100vh' }}>
       {/* Global Cosmic Background with consistent styling across all pages */}
       <CosmicBackground />
       
       {/* Content */}
-      <div className="relative z-10">
+      <div className="relative z-10 min-h-screen">
         {/* Master Navbar Component */}
         {showNavbar && <Navbar />}
-        <div className="pt-[4.5rem]">
+        <div className="pt-[4.5rem] min-h-screen">
           <Router />
         </div>
         {/* Admin access button - always visible */}

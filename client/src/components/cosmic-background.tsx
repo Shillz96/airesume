@@ -162,11 +162,11 @@ function CosmicBackgroundComponent() {
   if (!isClient) return null;
 
   return (
-    <div className="cosmic-background fixed inset-0 w-full min-h-screen overflow-hidden z-0">
+    <div className="cosmic-background fixed inset-0 w-full h-full min-h-screen overflow-hidden z-0" style={{ height: '100vh' }}>
       {/* Starfield is handled via CSS ::before in animations.css */}
       
       {/* Dynamic stars with JavaScript - now memoized */}
-      <div className="starfield absolute inset-0 pointer-events-none">
+      <div className="starfield absolute inset-0 pointer-events-none" style={{ minHeight: '100vh' }}>
         {stars}
       </div>
 

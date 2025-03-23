@@ -14,7 +14,9 @@
   }
 
   html, body, #root {
-    @apply h-full m-0 p-0;
+    @apply h-full min-h-screen m-0 p-0;
+    height: 100vh;
+    min-height: 100vh;
   }
   
   body {
@@ -23,6 +25,11 @@
     color: var(--foreground);
     background-color: var(--background);
     position: relative;
+    height: 100vh;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
   }
   
   a {
@@ -154,6 +161,7 @@ code, pre {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  height: 100vh;
 }
 
 /* Content container with consistent padding */

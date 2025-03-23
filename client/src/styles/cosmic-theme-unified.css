@@ -145,6 +145,8 @@
     radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.10) 0%, transparent 50%);
   overflow: hidden;
   z-index: 10; /* Lower z-index than navbar */
+  height: 100vh;
+  min-height: 100vh;
 }
 
 /* Subtle star pattern overlay */

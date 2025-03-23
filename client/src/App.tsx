@@ -115,11 +115,9 @@ function AppContent() {
 }
 
 function App() {
-  // Initialize theme when app loads
-  useEffect(() => {
-    initializeTheme();
-  }, []);
-
+  // Note: Theme is initialized in main.tsx before the App renders
+  // We no longer need to initialize it here to avoid duplicate initialization
+  
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>

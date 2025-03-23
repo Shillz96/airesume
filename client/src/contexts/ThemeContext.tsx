@@ -69,9 +69,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [currentTheme, setCurrentTheme] = useState<ThemeConfig>(getThemeConfig());
   const [isDarkMode, setIsDarkMode] = useState<boolean>(isDarkModeActive());
   
-  // Initialize theme when component mounts
+  // We only need to listen for theme change events, not initialize the theme again
+  // The theme is already initialized in main.tsx before the App renders
   useEffect(() => {
-    initializeTheme();
+    // Set the initial dark mode state
     setIsDarkMode(isDarkModeActive());
 
     // Listen for theme change events from outside this component

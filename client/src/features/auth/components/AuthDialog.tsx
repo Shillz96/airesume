@@ -71,9 +71,9 @@ export default function AuthDialog({ isOpen, onOpenChange, defaultTab = 'login' 
   if (!isOpen) return null;
   
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-xl z-50 flex items-center justify-center p-4">
       <div className="relative w-full max-w-md mx-auto">
-        <Card className="border-border shadow-xl">
+        <Card className="cosmic-card border-white/10 shadow-xl">
           <div className="absolute right-4 top-4">
             <button
               onClick={() => onOpenChange(false)}
@@ -85,7 +85,7 @@ export default function AuthDialog({ isOpen, onOpenChange, defaultTab = 'login' 
           </div>
           
           <CardHeader>
-            <CardTitle className="text-xl text-center">
+            <CardTitle className="text-xl text-center cosmic-text-gradient">
               {activeTab === 'login' ? 'Welcome Back' : 'Create an Account'}
             </CardTitle>
           </CardHeader>
@@ -187,6 +187,9 @@ export default function AuthDialog({ isOpen, onOpenChange, defaultTab = 'login' 
                   type="submit"
                   isLoading={loginMutation.isPending}
                   fullWidth
+                  variant="cosmic"
+                  glow="cosmic"
+                  className="cosmic-btn-glow"
                 >
                   Login
                 </Button>
@@ -320,6 +323,9 @@ export default function AuthDialog({ isOpen, onOpenChange, defaultTab = 'login' 
                   type="submit"
                   isLoading={registerMutation.isPending}
                   fullWidth
+                  variant="cosmic"
+                  glow="cosmic"
+                  className="cosmic-btn-glow"
                 >
                   Register
                 </Button>

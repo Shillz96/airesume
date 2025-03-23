@@ -9,8 +9,6 @@ import { cn } from "@/lib/utils";
 
 import { Button } from "@/ui/core/Button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/ui/core/Card";
-import { ThemeButton } from "@/components/theme/ModernThemeButton";
-import { ThemeCard, ThemeCardContent, ThemeCardDescription, ThemeCardFooter, ThemeCardHeader, ThemeCardTitle } from "@/components/theme/ModernThemeCard";
 import {
   Dialog,
   DialogContent,
@@ -287,12 +285,12 @@ export default function SubscriptionPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Current Subscription Card */}
-              <ThemeCard className="border-0 text-white shadow-xl overflow-hidden" withGlow>
-                <ThemeCardHeader>
-                  <ThemeCardTitle className="text-white">Current Plan</ThemeCardTitle>
-                  <ThemeCardDescription className="text-gray-400">Your active subscription details</ThemeCardDescription>
-                </ThemeCardHeader>
-                <ThemeCardContent>
+              <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden">
+                <CardHeader>
+                  <CardTitle className="text-white">Current Plan</CardTitle>
+                  <CardDescription className="text-gray-400">Your active subscription details</CardDescription>
+                </CardHeader>
+                <CardContent>
                   {isLoadingSubscription ? (
                     <div className="flex justify-center py-6">
                       <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
@@ -354,11 +352,11 @@ export default function SubscriptionPage() {
                       <p className="mb-4 text-gray-400">You don't have an active subscription.</p>
                     </div>
                   )}
-                </ThemeCardContent>
-                <ThemeCardFooter className="flex flex-col gap-2 border-t border-[#252a47] ">
+                </CardContent>
+                <CardFooter className="flex flex-col gap-2 border-t border-[#252a47]">
                   {subscription ? (
                     <>
-                      <ThemeButton
+                      <Button
                         variant="outline"
                         className="w-full bg-transparent border border-gray-700 hover:bg-gray-800 text-white"
                         disabled={cancelSubscriptionMutation.isPending}
@@ -368,21 +366,20 @@ export default function SubscriptionPage() {
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         )}
                         Cancel Subscription
-                      </ThemeButton>
-                      <ThemeButton
-                        variant="primary"
-                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white border-0"
+                      </Button>
+                      <Button
+                        variant="default"
+                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white border-0 cosmic-btn-glow"
                         onClick={() => setActivePlanDialog(true)}
-                        withGlow
                       >
                         Upgrade Plan
-                      </ThemeButton>
+                      </Button>
                     </>
                   ) : (
                     <div className="h-[38px]"></div>
                   )}
-                </ThemeCardFooter>
-              </ThemeCard>
+                </CardFooter>
+              </Card>
 
               {/* Starter Plan Card */}
               <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden">

@@ -31,15 +31,14 @@ export default function CareerPathDetection({ resumeId, onAdviceReceived }: Care
     mutationFn: async () => {
       if (resumeId) {
         // If resumeId is provided, use the API endpoint that takes a saved resume
-        return apiRequest<CareerDetectionResponse>(`/api/resumes/${resumeId}/career-path`, {
-          method: 'GET'
-        });
+        const response = await apiRequest('GET', `/api/resumes/${resumeId}/career-path`);
+        const data = await response.json();
+        return data as CareerDetectionResponse;
       } else if (resumeQuery.data) {
         // Otherwise use the direct detection endpoint with resume data
-        return apiRequest<CareerDetectionResponse>('/api/careers/detect', {
-          method: 'POST',
-          body: JSON.stringify({ resume: resumeQuery.data })
-        });
+        const response = await apiRequest('POST', '/api/careers/detect', { resume: resumeQuery.data });
+        const data = await response.json();
+        return data as CareerDetectionResponse;
       }
       throw new Error('No resume data available for career detection');
     },
@@ -118,7 +117,7 @@ export default function CareerPathDetection({ resumeId, onAdviceReceived }: Care
                 <div>
                   <h4 className="text-lg font-medium mb-2">Suggested Skills</h4>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {advice.suggestedSkills.map((skill, index) => (
+                    {advice.suggestedSkills.map((skill: string, index: number) => (
                       <Badge key={index} variant="secondary" className="py-1">
                         {skill}
                       </Badge>
@@ -129,7 +128,7 @@ export default function CareerPathDetection({ resumeId, onAdviceReceived }: Care
                 <div>
                   <h4 className="text-lg font-medium mb-2">Resume Tips</h4>
                   <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                    {advice.resumeTips.map((tip, index) => (
+                    {advice.resumeTips.map((tip: string, index: number) => (
                       <li key={index}>{tip}</li>
                     ))}
                   </ul>
@@ -138,7 +137,7 @@ export default function CareerPathDetection({ resumeId, onAdviceReceived }: Care
                 <div>
                   <h4 className="text-lg font-medium mb-2">Valuable Certifications</h4>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {advice.certifications.map((cert, index) => (
+                    {advice.certifications.map((cert: string, index: number) => (
                       <Badge key={index} variant="outline" className="py-1">
                         {cert}
                       </Badge>
@@ -149,7 +148,7 @@ export default function CareerPathDetection({ resumeId, onAdviceReceived }: Care
                 <div>
                   <h4 className="text-lg font-medium mb-2">Industry Keywords</h4>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {advice.industryKeywords.map((keyword, index) => (
+                    {advice.industryKeywords.map((keyword: string, index: number) => (
                       <Badge key={index} variant="default" className="py-1 bg-accent text-accent-foreground">
                         {keyword}
                       </Badge>

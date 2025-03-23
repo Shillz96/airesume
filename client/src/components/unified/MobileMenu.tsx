@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, Link } from 'wouter';
-import { Menu, X, Home, FileText, Briefcase, Settings, LogOut, Moon, Sun } from 'lucide-react';
+import { Menu, X, Home, FileText, Briefcase, Settings, LogOut, Moon, Sun, Rocket } from 'lucide-react';
 import { useUnifiedTheme } from '../../contexts/UnifiedThemeContext';
 import { useAuth } from '../../hooks/use-auth';
 
@@ -61,13 +61,16 @@ export default function MobileMenu({ className = '' }: MobileMenuProps) {
 
       {/* Mobile Menu Overlay */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 bg-background shadow-xl min-h-screen h-full overflow-y-auto">
+        <div className="fixed inset-0 z-[100] bg-background shadow-xl min-h-screen h-full overflow-y-auto">
           <div className="flex flex-col min-h-screen">
             {/* Menu Header */}
             <div className="sticky top-0 flex justify-between items-center p-4 border-b border-border bg-primary text-primary-foreground z-10">
-              <h2 className="text-xl font-semibold">
-                Menu
-              </h2>
+              <div className="flex items-center gap-2">
+                <Rocket className="text-primary-foreground h-5 w-5" />
+                <h2 className="text-xl font-semibold">
+                  AIreHire
+                </h2>
+              </div>
               <button 
                 onClick={toggleMenu}
                 className="p-2 text-primary-foreground hover:bg-primary-foreground/10 rounded-full"

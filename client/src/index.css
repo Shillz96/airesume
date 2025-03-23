@@ -1,98 +1,581 @@
 /**
- * Main CSS Entry Point
+ * Main CSS Entry Point - Fresh, Simplified Implementation
  * 
- * This file imports all CSS modules in the correct order to ensure proper cascading.
- * Base styles are applied first, followed by components, layout, animations and utilities.
+ * This file serves as the single source of truth for styling in our application.
+ * No more imports from multiple files - everything is defined here for clarity.
  */
 
-/* Import unified theme system - single source of truth for styling */
-@import './styles/theme/index.css';     /* Core theme variables and base styles */
-@import './styles/theme/buttons.css';   /* Unified button styles */
-@import './styles/theme/cards.css';     /* Unified card styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Legacy theme imports kept for backward compatibility during transition */
-/* These will be eventually removed once all components are migrated to the unified theme */
-@import './styles/modern/theme.css';    /* Modern theme (will be deprecated) */
-@import './styles/cosmic-theme-unified.css'; 
-@import './styles/base/variables.css';
-@import './styles/base/base.css';
+/* --------------------------------
+ * ROOT VARIABLES - Theme System
+ * -------------------------------- */
+:root {
+  /* Core Spacing */
+  --container-padding: 1.5rem;
+  --page-padding: 1rem;
+  --content-max-width: 1200px;
+  
+  /* Colors */
+  --background: #050A18;
+  --foreground: #ffffff;
+  --muted: #6b7280;
+  --muted-foreground: #9ca3af;
+  --card: #0A1428;
+  --card-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: rgba(59, 130, 246, 0.5);
+  
+  /* Brand Colors */
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --secondary: #8b5cf6;
+  --secondary-foreground: #ffffff;
+  --accent: #10b981;
+  --accent-foreground: #ffffff;
+  
+  /* Status Colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #3b82f6;
+  
+  /* UI Properties */
+  --radius: 0.5rem;
+  --header-height: 4rem;
+  
+  /* Animation & Transitions */
+  --transition-fast: 0.2s;
+  --transition-normal: 0.3s;
+  --transition-slow: 0.5s;
+  
+  /* Z-index Layers */
+  --z-negative: -1;
+  --z-background: -1;
+  --z-default: 1;
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-fixed: 30;
+  --z-modal: 40;
+  --z-popover: 50;
+  --z-tooltip: 60;
+  
+  /* Cosmic Theme Variables */
+  --cosmic-accent-primary: rgba(59, 130, 246, 0.5);
+  --cosmic-accent-secondary: rgba(139, 92, 246, 0.3);
+  --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
 
-/* Unified component styles (during transition period) */
-@import './styles/components/unified-tabs.css';      /* Combined tab styles */
-@import './styles/components/unified-cards.css';     /* Combined card styles */
-@import './styles/components/unified-buttons.css';   /* Combined button styles */
-@import './styles/components/unified-forms.css';     /* Combined form styles */
-@import './styles/components/unified-dropdowns.css'; /* Combined dropdown styles */
-
-/* Legacy imports - these will eventually be phased out in favor of the unified theme */
-/* Only keeping for backwards compatibility during transition */
-@import './styles/components/cosmic-components.css';
-@import './styles/cosmic-resume.css';
-@import './styles/components/cosmic-dialog.css';
-@import './styles/components/resume-sections.css';
-
-/* Import layout styles */
-@import './styles/layout/navigation.css';
-
-/* Import animations */
-@import './styles/animations/unified-animations.css'; /* Combined animations */
-
-/* Import utilities last to ensure they have highest specificity */
-@import './styles/utilities/utilities.css';
-@import './styles/utilities/accessibility.css';
-
-/* Critical fixes for z-index issues - these should be loaded last */
-@import './styles/fixes/z-index-fix.css';
-
-/**
- * Legacy theme variables - these will be phased out in favor of theme-variables.css
- * Keeping them for backwards compatibility during the transition
- */
+/* --------------------------------
+ * BASE ELEMENTS
+ * -------------------------------- */
 html, body {
   margin: 0;
   padding: 0;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
   overflow-x: hidden;
   width: 100%;
   max-width: 100vw;
   position: relative;
 }
 
-:root {
-  /* These variables will be set dynamically at runtime based on theme.json */
-  --primary: hsl(221.2 83.2% 53.3%);
-  --primary-foreground: hsl(0 0% 100%);
-  
-  /* Base colors for dark mode - being replaced with RGB values in theme-variables.css */
-  --background: #050A18;
-  --foreground: #ffffff;
-  --card: rgba(255, 255, 255, 0.05);
-  --card-foreground: #ffffff;
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.1);
-  --ring: rgba(59, 130, 246, 0.5);
-  
-  /* Cosmic theme variables */
-  --cosmic-accent-primary: rgba(59, 130, 246, 0.5);
-  --cosmic-accent-secondary: rgba(139, 92, 246, 0.3);
-  --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.2);
-  --transition-fast: 0.2s;
-  --transition-normal: 0.3s;
-  --z-negative: -1;
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 1rem;
 }
 
-/* Utility to hide scrollbars but keep scrolling functionality */
-@layer utilities {
-  .no-scrollbar::-webkit-scrollbar {
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.75rem;
+}
+
+h4 {
+  font-size: 1.5rem;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: color-mix(in srgb, var(--primary) 80%, white);
+}
+
+/* --------------------------------
+ * LAYOUT COMPONENTS
+ * -------------------------------- */
+.container {
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+.page-container {
+  padding-top: 2rem;
+  padding-bottom: 4rem;
+  min-height: calc(100vh - var(--header-height));
+}
+
+/* Page Header Component */
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-header h1, 
+.page-header h2 {
+  margin-bottom: 0.5rem;
+}
+
+.page-header-subtitle {
+  color: var(--muted-foreground);
+}
+
+.page-header-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* --------------------------------
+ * COSMIC BACKGROUND
+ * -------------------------------- */
+.cosmic-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: var(--z-background);
+  background: linear-gradient(to bottom, #050A18, #0A1428);
+  overflow: hidden;
+}
+
+.cosmic-background::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+  background-image: 
+    radial-gradient(1px 1px at 25% 25%, rgba(255, 255, 255, 0.2) 1px, transparent 0),
+    radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.2) 1px, transparent 0),
+    radial-gradient(1px 1px at 75% 75%, rgba(255, 255, 255, 0.2) 1px, transparent 0),
+    radial-gradient(2px 2px at 10% 10%, rgba(59, 130, 246, 0.1) 1px, transparent 0),
+    radial-gradient(2px 2px at 90% 20%, rgba(139, 92, 246, 0.1) 1px, transparent 0);
+  background-size: 100px 100px, 120px 120px, 170px 170px, 150px 150px, 200px 200px;
+  background-position: 0 0;
+  z-index: var(--z-negative);
+}
+
+.cosmic-background::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.03), transparent 30%),
+    radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.03), transparent 30%);
+}
+
+/* --------------------------------
+ * CARD COMPONENT
+ * -------------------------------- */
+.card {
+  background-color: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.card:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+  margin-bottom: 1rem;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.card-description {
+  color: var(--muted-foreground);
+  font-size: 0.9rem;
+}
+
+.card-content {
+  margin-bottom: 1rem;
+}
+
+.card-footer {
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* --------------------------------
+ * BUTTON COMPONENT
+ * -------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  outline: none;
+}
+
+.btn:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: color-mix(in srgb, var(--primary) 80%, white);
+}
+
+.btn-secondary {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+  border: none;
+}
+
+.btn-secondary:hover {
+  background-color: color-mix(in srgb, var(--secondary) 80%, white);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--border);
+  color: var(--foreground);
+}
+
+.btn-outline:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn-ghost {
+  background-color: transparent;
+  border: none;
+  color: var(--foreground);
+}
+
+.btn-ghost:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.btn-success {
+  background-color: var(--success);
+  color: white;
+  border: none;
+}
+
+.btn-success:hover {
+  background-color: color-mix(in srgb, var(--success) 80%, white);
+}
+
+.btn-danger {
+  background-color: var(--danger);
+  color: white;
+  border: none;
+}
+
+.btn-danger:hover {
+  background-color: color-mix(in srgb, var(--danger) 80%, white);
+}
+
+/* Button Sizes */
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+}
+
+/* Cosmic Button Variants */
+.btn-cosmic {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.btn-cosmic::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  z-index: -1;
+  transition: opacity var(--transition-fast);
+}
+
+.btn-cosmic:hover::before {
+  opacity: 0.8;
+}
+
+.btn-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+.btn-glow:hover {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+}
+
+/* --------------------------------
+ * FORM COMPONENTS
+ * -------------------------------- */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  background-color: transparent;
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+.form-error {
+  color: var(--danger);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* --------------------------------
+ * UTILITIES
+ * -------------------------------- */
+.text-gradient {
+  background: linear-gradient(to right, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+.border-gradient {
+  border: 2px solid transparent;
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  background-image: 
+    linear-gradient(to right, var(--card), var(--card)), 
+    linear-gradient(to right, var(--primary), var(--secondary));
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* --------------------------------
+ * ANIMATIONS
+ * -------------------------------- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+/* --------------------------------
+ * NAVBAR STYLES
+ * -------------------------------- */
+.navbar {
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--container-padding);
+  background-color: rgba(10, 20, 40, 0.8);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar-container {
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-logo {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--foreground);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.navbar-link {
+  color: var(--muted-foreground);
+  transition: color var(--transition-fast);
+  padding: 0.5rem 0;
+  position: relative;
+}
+
+.navbar-link:hover {
+  color: var(--foreground);
+}
+
+.navbar-link.active {
+  color: var(--primary);
+}
+
+.navbar-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--primary);
+  border-radius: 1px;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mobile-menu-button {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .navbar-links {
     display: none;
   }
   
-  .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+  .mobile-menu-button {
+    display: block;
+  }
+  
+  .mobile-menu {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--background);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    z-index: var(--z-dropdown);
+    border-top: 1px solid var(--border);
+  }
+  
+  .mobile-menu-link {
+    padding: 0.75rem;
+    font-size: 1.25rem;
+    text-align: center;
+    border-radius: var(--radius);
   }
 }
-
-/* 
-   All z-index fixes moved to dedicated file: ./styles/fixes/z-index-fix.css 
-   which is imported at the end of this file for highest specificity
-*/

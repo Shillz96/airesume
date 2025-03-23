@@ -34,5 +34,6 @@ export {
 export { UnifiedPageHeader } from './PageHeader';
 export { ThemeSwitcher } from './ThemeSwitcher';
 export { CosmicBackground } from './CosmicBackground';
+export { UnifiedNavbar } from './Navbar';
 
 // Add other components as they are created

@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { AuthDialogProvider, useAuthDialog } from "@/hooks/use-auth-dialog";
 import { GuestModeProvider } from "@/hooks/use-guest-mode";
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
+import { UnifiedThemeProvider } from "@/contexts/UnifiedThemeContext";
 import NotFound from "@/pages/not-found"; 
 import HomePage from "@/pages/home-page";
 import ResumeBuilderNew from "@/pages/resume-builder-new";
@@ -24,8 +25,8 @@ import GoAdminLink from "@/features/admin/components/GoAdminLink";
 import QuickLogin from "@/features/auth/components/QuickLogin";
 import AuthDialog from "@/features/auth/components/AuthDialog";
 
-// Import our simplified components
-import CosmicBackground from "./components/CosmicBackground";
+// Import our unified components
+import { UnifiedNavbar, CosmicBackground, UnifiedContainer } from "@/components/unified";
 
 function Router() {
   // Manual check for admin-access path to handle direct navigation
@@ -90,14 +91,14 @@ function AppContent() {
       
       {/* Content */}
       <div className="relative z-10">
-        {/* Master Navbar Component */}
-        {showNavbar && <Navbar />}
+        {/* Master Navbar Component - Using our unified navbar */}
+        {showNavbar && <UnifiedNavbar />}
         
         {/* Main content area with proper spacing using our unified theme variables */}
-        <main>
-          <div className="container page-container">
+        <main className="pt-20">
+          <UnifiedContainer className="page-container">
             <Router />
-          </div>
+          </UnifiedContainer>
         </main>
         
         {/* Admin access button - always visible */}
@@ -120,15 +121,19 @@ function AppContent() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      {/* Keep the old ThemeProvider for backward compatibility */}
       <ThemeProvider>
-        <AuthProvider>
-          <GuestModeProvider>
-            <AuthDialogProvider>
-              <AppContent />
-              <Toaster />
-            </AuthDialogProvider>
-          </GuestModeProvider>
-        </AuthProvider>
+        {/* Add the new UnifiedThemeProvider */}
+        <UnifiedThemeProvider>
+          <AuthProvider>
+            <GuestModeProvider>
+              <AuthDialogProvider>
+                <AppContent />
+                <Toaster />
+              </AuthDialogProvider>
+            </GuestModeProvider>
+          </AuthProvider>
+        </UnifiedThemeProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

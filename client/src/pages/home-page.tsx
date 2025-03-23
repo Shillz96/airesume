@@ -5,7 +5,7 @@ import { useUnifiedTheme } from "@/contexts/UnifiedThemeContext";
 import DashboardStats from "@/features/dashboard/components/DashboardStats";
 import RecentActivity from "@/features/dashboard/components/RecentActivity";
 import JobSearchProgress from "@/features/job/components/JobSearchProgress";
-import JobInterviewAvatar from "@/features/job/components/JobInterviewAvatar";
+import EnhancedJobInterviewAvatar from "@/features/job/components/EnhancedJobInterviewAvatar";
 import SubscriptionStatus from "@/features/subscription/components/SubscriptionStatus";
 import { UnifiedPageHeader, Heading1, GradientText, UnifiedContainer } from "@/components/unified";
 import { Rocket, User, LayoutDashboard, UserCheck, Calendar, Search, Clock, Briefcase } from "lucide-react";
@@ -118,7 +118,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[600px]">
           <div className="md:col-span-1 flex flex-col h-full">
             <div className="flex-1 h-full">
-              <JobInterviewAvatar />
+              <EnhancedJobInterviewAvatar />
             </div>
           </div>
           <div className="md:col-span-1 flex flex-col h-full">

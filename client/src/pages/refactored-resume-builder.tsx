@@ -113,13 +113,19 @@ export default function ResumeBuilder() {
     }, 600);
   };
   
-  // Function to filter skill suggestions based on search query
+  // Function to get AI-based skill suggestions for a search query
   const getFilteredSkillSuggestions = () => {
+    // If no search query, just return the random suggestions
     if (!skillSearchQuery) return skillSuggestions;
     
-    return skillSuggestions.filter(skill => 
+    // This would normally call an AI API with the search query
+    // For now, we'll simulate an AI response by finding all matching skills from our full list
+    const matches = allSkills.filter(skill => 
       skill.toLowerCase().includes(skillSearchQuery.toLowerCase())
     );
+    
+    // Take up to 10 matches
+    return matches.slice(0, 10);
   };
 
   // Function to handle download
@@ -640,15 +646,29 @@ export default function ResumeBuilder() {
                           placeholder="Search skills..."
                           className="w-full px-3 py-2 bg-[#0f172a] border border-[#2a325a] rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                           value={skillSearchQuery}
-                          onChange={(e) => setSkillSearchQuery(e.target.value)}
+                          onChange={(e) => {
+                            setSkillSearchQuery(e.target.value);
+                            if (e.target.value) {
+                              setIsLoadingSuggestions(true);
+                              // Simulate API delay for the AI search
+                              setTimeout(() => {
+                                setIsLoadingSuggestions(false);
+                              }, 500);
+                            }
+                          }}
                         />
-                        {skillSearchQuery && (
+                        {skillSearchQuery && !isLoadingSuggestions && (
                           <button 
                             className="absolute right-2 top-2 text-gray-400 hover:text-white"
                             onClick={() => setSkillSearchQuery('')}
                           >
                             <X className="h-4 w-4" />
                           </button>
+                        )}
+                        {isLoadingSuggestions && skillSearchQuery && (
+                          <div className="absolute right-2 top-2 text-blue-400">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          </div>
                         )}
                       </div>
                       <Button

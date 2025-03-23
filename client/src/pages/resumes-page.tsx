@@ -28,7 +28,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Resume as ResumeType } from '@shared/schema';
 // Import the default resume template component
 import ResumeTemplate from '@/features/resume/components/ResumeTemplate';
-import PageHeader from '@/features/layout/components/PageHeader';
+import { UnifiedPageHeader, UnifiedContainer } from '@/components/unified';
 
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
@@ -237,8 +237,8 @@ export default function ResumesPage() {
   return (
     <>
       
-      <div className="container pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
-        <PageHeader
+      <UnifiedContainer className="pb-10 min-h-screen relative z-10">
+        <UnifiedPageHeader 
           title="My Resumes"
           subtitle="Manage and organize all your resumes in one place"
           actions={
@@ -529,7 +529,7 @@ export default function ResumesPage() {
             </div>
           </TabsContent>
         </Tabs>
-      </div>
+      </UnifiedContainer>
     </>
   );
 }

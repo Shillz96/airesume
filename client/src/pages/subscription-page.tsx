@@ -240,10 +240,12 @@ export default function SubscriptionPage() {
   return (
     <>
       {/* Using global CosmicBackground from App.tsx */}
-      <div className="container pb-10 px-4 md:px-6 max-w-7xl mx-auto min-h-screen relative z-10">
-        <PageHeader
+      <UnifiedContainer className="pb-10 min-h-screen">
+        <UnifiedPageHeader
           title="Subscription Management"
           subtitle="Manage your plans, add-ons, and payment history"
+          variant="cosmic"
+          borderStyle="gradient"
           actions={
             <Button
               variant="outline"
@@ -861,7 +863,7 @@ export default function SubscriptionPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
+      </UnifiedContainer>
     </>
   );
 }

@@ -99,7 +99,7 @@ export default function JobFinder() {
   return (
     <>
       {/* Using global CosmicBackground from App.tsx */}
-      <UnifiedContainer className="pb-10 min-h-screen">
+      <UnifiedContainer className="pb-10 min-h-screen" paddingTop="sm">
         <UnifiedPageHeader 
           title="Job Finder"
           subtitle="AI-matched job opportunities based on your resume profile and skills"

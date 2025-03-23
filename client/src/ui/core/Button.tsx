@@ -108,3 +108,6 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     );
   }
 );
+
+// Add display name for React DevTools and error messages
+Button.displayName = "Button";

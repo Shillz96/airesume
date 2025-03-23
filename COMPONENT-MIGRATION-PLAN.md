@@ -17,7 +17,7 @@ We have implemented the core infrastructure for our feature-based architecture:
 - [x] Button.tsx → ui/core/Button.tsx
 - [x] Card.tsx → ui/core/Card.tsx
 - [x] RichTextEditor.tsx → ui/core/RichTextEditor.tsx
-- [ ] cosmic-button.tsx → ui/core/CosmicButton.tsx (archive after migration)
+- [x] cosmic-button.tsx → ui/core/CosmicButton.tsx (archive after migration)
 - [ ] cosmic-button-refactored.tsx → (archive/remove - redundant)
 - [x] button-guide.tsx → ui/core/ButtonGuide.tsx
 
@@ -36,7 +36,7 @@ We have implemented the core infrastructure for our feature-based architecture:
 - [x] job-filter.tsx → features/job/components/JobFilter.tsx
 - [x] job-interview-avatar.tsx → features/job/components/JobInterviewAvatar.tsx
 - [ ] job-listing.tsx → features/job/components/JobListing.tsx
-- [ ] job-search-progress.tsx → features/job/components/JobSearchProgress.tsx
+- [x] job-search-progress.tsx → features/job/components/JobSearchProgress.tsx
 
 ### Resume Feature Components
 - [x] resume-section.tsx → features/resume/components/ResumeSections.tsx
@@ -49,7 +49,7 @@ We have implemented the core infrastructure for our feature-based architecture:
 
 ### Auth Feature Components
 - [x] auth-dialog.tsx → features/auth/components/AuthDialog.tsx
-- [ ] quick-login.tsx → features/auth/components/QuickLogin.tsx
+- [x] quick-login.tsx → features/auth/components/QuickLogin.tsx
 
 ### Common Feature Components
 - [x] admin-tools.tsx → features/admin/components/AdminTools.tsx

@@ -115,7 +115,7 @@ export default function ResumeBuilderNew() {
       
       // Create FormData to send the file
       const formData = new FormData();
-      formData.append('resume', file);
+      formData.append('file', file);
       
       // Send the file to the server
       const response = await fetch('/api/resumes/parse', {
@@ -131,26 +131,37 @@ export default function ResumeBuilderNew() {
       // Parse the response data
       const parsedResume = await response.json();
       
-      // Update the resume data with the parsed content
-      if (parsedResume) {
+      // If the response contains an error message, show it
+      if (parsedResume.error) {
+        toast({
+          title: "Error parsing resume",
+          description: parsedResume.error,
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Check if the resume was successfully parsed
+      if (parsedResume.success && parsedResume.data) {
         // Create a new resume object with the parsed data
+        const resumeData = parsedResume.data;
         const newResume = {
           ...resume,
-          title: parsedResume.title || 'My Resume',
+          title: resumeData.title || 'My Resume',
           personalInfo: {
             ...resume.personalInfo,
-            firstName: parsedResume.personalInfo?.firstName || resume.personalInfo.firstName,
-            lastName: parsedResume.personalInfo?.lastName || resume.personalInfo.lastName,
-            email: parsedResume.personalInfo?.email || resume.personalInfo.email,
-            phone: parsedResume.personalInfo?.phone || resume.personalInfo.phone,
-            headline: parsedResume.personalInfo?.headline || resume.personalInfo.headline,
-            summary: parsedResume.personalInfo?.summary || resume.personalInfo.summary
+            firstName: resumeData.personalInfo?.firstName || resume.personalInfo.firstName,
+            lastName: resumeData.personalInfo?.lastName || resume.personalInfo.lastName,
+            email: resumeData.personalInfo?.email || resume.personalInfo.email,
+            phone: resumeData.personalInfo?.phone || resume.personalInfo.phone,
+            headline: resumeData.personalInfo?.headline || resume.personalInfo.headline,
+            summary: resumeData.personalInfo?.summary || resume.personalInfo.summary
           }
         };
         
         // Update experience, education, skills if they exist in parsed data
-        if (parsedResume.experience && parsedResume.experience.length > 0) {
-          newResume.experience = parsedResume.experience.map((exp: any) => ({
+        if (resumeData.experience && resumeData.experience.length > 0) {
+          newResume.experience = resumeData.experience.map((exp: any) => ({
             id: `exp-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
             title: exp.title || 'Position Title',
             company: exp.company || 'Company Name',
@@ -160,8 +171,8 @@ export default function ResumeBuilderNew() {
           }));
         }
         
-        if (parsedResume.education && parsedResume.education.length > 0) {
-          newResume.education = parsedResume.education.map((edu: any) => ({
+        if (resumeData.education && resumeData.education.length > 0) {
+          newResume.education = resumeData.education.map((edu: any) => ({
             id: `edu-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
             degree: edu.degree || 'Degree',
             institution: edu.institution || 'Institution Name',
@@ -171,12 +182,21 @@ export default function ResumeBuilderNew() {
           }));
         }
         
-        if (parsedResume.skills && parsedResume.skills.length > 0) {
-          newResume.skills = parsedResume.skills.map((skill: any) => ({
+        if (resumeData.skills && resumeData.skills.length > 0) {
+          newResume.skills = resumeData.skills.map((skill: any) => ({
             id: `skill-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
             name: typeof skill === 'string' ? skill : skill.name || 'Skill',
             proficiency: typeof skill === 'object' && skill.proficiency ? skill.proficiency : 80
           }));
+        }
+        
+        // Show warning if any was returned from server
+        if (parsedResume.warning) {
+          toast({
+            title: "Resume parsed with limitations",
+            description: parsedResume.warning
+            // Using default variant since warning is not defined
+          });
         }
         
         // Update the resume state

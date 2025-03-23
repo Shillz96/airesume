@@ -49,7 +49,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
   };
 
   return (
-    <div className="bg-card border border-border rounded-lg p-4 mb-6">
+    <div className="cosmic-card border border-white/10 rounded-lg p-4 mb-6">
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Job Title Search */}
@@ -63,7 +63,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
               value={values.title}
               onChange={handleChange}
               className={cn(
-                "w-full pl-10 py-2 pr-4 rounded-md border border-border bg-background",
+                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 bg-card/90",
                 "focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
               )}
               placeholder="Job title or keyword"
@@ -81,7 +81,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
               value={values.location}
               onChange={handleChange}
               className={cn(
-                "w-full pl-10 py-2 pr-4 rounded-md border border-border bg-background",
+                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 bg-card/90",
                 "focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
               )}
               placeholder="City, state, or zip"
@@ -98,7 +98,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
               value={values.country}
               onChange={handleChange}
               className={cn(
-                "w-full pl-10 py-2 pr-4 rounded-md border border-border bg-background",
+                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 bg-card/90",
                 "focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary",
                 "appearance-none"
               )}
@@ -123,7 +123,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
               value={values.type}
               onChange={handleChange}
               className={cn(
-                "w-full pl-10 py-2 pr-4 rounded-md border border-border bg-background",
+                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 bg-card/90",
                 "focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary",
                 "appearance-none"
               )}
@@ -147,7 +147,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
               value={values.experience}
               onChange={handleChange}
               className={cn(
-                "w-full pl-10 py-2 pr-4 rounded-md border border-border bg-background",
+                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 bg-card/90",
                 "focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary",
                 "appearance-none"
               )}
@@ -171,7 +171,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
               value={values.remote}
               onChange={handleChange}
               className={cn(
-                "w-full pl-10 py-2 pr-4 rounded-md border border-border bg-background",
+                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 bg-card/90",
                 "focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary",
                 "appearance-none"
               )}
@@ -193,7 +193,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
               value={values.salary}
               onChange={handleChange}
               className={cn(
-                "w-full pl-10 py-2 pr-4 rounded-md border border-border bg-background",
+                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 bg-card/90",
                 "focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary",
                 "appearance-none"
               )}

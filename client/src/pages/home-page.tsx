@@ -82,7 +82,7 @@ export default function HomePage() {
   
   return (
     <>
-      <UnifiedContainer className="pb-10 min-h-screen relative z-10">
+      <UnifiedContainer className="pb-10 min-h-screen relative z-10" paddingTop="sm">
         <div ref={welcomeRef}>
           <UnifiedPageHeader
             title={

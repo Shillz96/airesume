@@ -254,6 +254,27 @@ export default function ResumeTemplate({
               Download
             </Button>
           )}
+          
+          {/* Test button for simulating a multi-page resume */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              // Simulate detecting multiple pages by directly setting the state
+              setTotalPages(Math.max(2, totalPages));
+              
+              toast({
+                title: "Multi-page mode activated",
+                description: "The resume preview now shows multiple pages for testing. Use the pagination controls to navigate between pages.",
+                duration: 5000
+              });
+            }}
+            title="Test multi-page view"
+            className="ml-2"
+          >
+            <FileText className="h-4 w-4" />
+            <span className="ml-1 text-xs">Test Pages</span>
+          </Button>
         </div>
       </div>
 
@@ -578,6 +599,81 @@ export default function ResumeTemplate({
           </div>
         </div>
       </div>
+      
+      {/* Enhanced Multi-page navigation footer */}
+      {totalPages > 1 && (
+        <div className="flex flex-col items-center justify-center mt-4 space-y-2 py-3">
+          <div className="flex items-center justify-center space-x-2 bg-black/20 px-4 py-2 rounded-full shadow-sm">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCurrentPage(1)}
+              disabled={currentPage === 1}
+              title="First page"
+              className="h-8 w-8 p-0"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-4 w-4 -ml-3" />
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              title="Previous page"
+              className="h-8 w-8 p-0"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            
+            <div className="px-2 py-1 rounded-md bg-black/40 min-w-[80px] text-center">
+              <span className="text-sm font-medium">
+                {currentPage} / {totalPages}
+              </span>
+            </div>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+              title="Next page"
+              className="h-8 w-8 p-0"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+              title="Last page"
+              className="h-8 w-8 p-0"
+            >
+              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-4 w-4 -ml-3" />
+            </Button>
+          </div>
+          
+          {/* Visual page indicators */}
+          <div className="flex space-x-1 mt-1">
+            {Array.from({ length: totalPages }).map((_, index) => (
+              <button
+                key={index}
+                className={`h-2 rounded-full transition-all ${
+                  currentPage === index + 1 
+                    ? 'w-6 bg-primary' 
+                    : 'w-2 bg-gray-400 hover:bg-gray-300'
+                }`}
+                onClick={() => setCurrentPage(index + 1)}
+                title={`Go to page ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

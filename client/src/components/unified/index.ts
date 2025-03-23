@@ -8,19 +8,18 @@
  */
 
 // Core components
-export { UnifiedButton, buttonVariants } from './Button';
+export { default as UnifiedButton } from './Button';
 export { 
-  UnifiedCard, 
+  default as UnifiedCard,
   UnifiedCardHeader, 
   UnifiedCardTitle, 
   UnifiedCardDescription, 
   UnifiedCardContent, 
-  UnifiedCardFooter,
-  cardVariants 
+  UnifiedCardFooter
 } from './Card';
-export { UnifiedContainer } from './Container';
+export { default as UnifiedContainer } from './Container';
 export { 
-  UnifiedText, 
+  default as UnifiedText, 
   Heading1, 
   Heading2, 
   Heading3, 
@@ -31,7 +30,7 @@ export {
   Code,
   GradientText 
 } from './Text';
-export { UnifiedPageHeader } from './PageHeader';
+export { default as UnifiedPageHeader } from './PageHeader';
 export { default as ThemeSwitcher } from './ThemeSwitcher';
 export { default as CosmicBackground } from './CosmicBackground';
 export { default as UnifiedNavbar } from './Navbar';

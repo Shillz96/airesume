@@ -53,7 +53,7 @@ export default function MobileMenu({ className = '' }: MobileMenuProps) {
       {/* Mobile Menu Toggle Button */}
       <button 
         onClick={toggleMenu}
-        className="p-2 text-foreground"
+        className="p-2 text-foreground bg-card hover:bg-muted/80 rounded-lg shadow-sm"
         aria-label="Toggle mobile menu"
       >
         {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -61,16 +61,16 @@ export default function MobileMenu({ className = '' }: MobileMenuProps) {
 
       {/* Mobile Menu Overlay */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-md">
+        <div className="fixed inset-0 z-50 bg-background shadow-xl">
           <div className="flex flex-col h-full">
             {/* Menu Header */}
-            <div className="flex justify-between items-center p-4 border-b border-border">
+            <div className="flex justify-between items-center p-4 border-b border-border bg-primary text-primary-foreground">
               <h2 className="text-xl font-semibold">
                 Menu
               </h2>
               <button 
                 onClick={toggleMenu}
-                className="p-2 text-foreground hover:bg-muted/20 rounded-full"
+                className="p-2 text-primary-foreground hover:bg-primary-foreground/10 rounded-full"
                 aria-label="Close mobile menu"
               >
                 <X size={24} />
@@ -79,11 +79,15 @@ export default function MobileMenu({ className = '' }: MobileMenuProps) {
 
             {/* Navigation Links */}
             <nav className="flex-1 overflow-y-auto py-6 px-4">
-              <ul className="space-y-4">
+              <ul className="space-y-2">
                 <li>
                   <Link 
                     href="/dashboard"
-                    className={`flex items-center gap-3 p-3 rounded-lg ${location === '/dashboard' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/10'}`}
+                    className={`flex items-center gap-3 p-4 rounded-lg text-md font-medium ${
+                      location === '/dashboard' 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-card hover:bg-muted/30 text-foreground shadow-sm'
+                    }`}
                   >
                     <Home size={20} />
                     <span>Dashboard</span>
@@ -92,7 +96,11 @@ export default function MobileMenu({ className = '' }: MobileMenuProps) {
                 <li>
                   <Link 
                     href="/resumes"
-                    className={`flex items-center gap-3 p-3 rounded-lg ${location === '/resumes' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/10'}`}
+                    className={`flex items-center gap-3 p-4 rounded-lg text-md font-medium ${
+                      location === '/resumes' 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-card hover:bg-muted/30 text-foreground shadow-sm'
+                    }`}
                   >
                     <FileText size={20} />
                     <span>Resumes</span>
@@ -101,7 +109,11 @@ export default function MobileMenu({ className = '' }: MobileMenuProps) {
                 <li>
                   <Link 
                     href="/job-finder"
-                    className={`flex items-center gap-3 p-3 rounded-lg ${location === '/job-finder' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/10'}`}
+                    className={`flex items-center gap-3 p-4 rounded-lg text-md font-medium ${
+                      location === '/job-finder' 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-card hover:bg-muted/30 text-foreground shadow-sm'
+                    }`}
                   >
                     <Briefcase size={20} />
                     <span>Find Jobs</span>
@@ -110,7 +122,11 @@ export default function MobileMenu({ className = '' }: MobileMenuProps) {
                 <li>
                   <Link 
                     href="/subscription"
-                    className={`flex items-center gap-3 p-3 rounded-lg ${location === '/subscription' ? 'bg-primary/10 text-primary' : 'hover:bg-muted/10'}`}
+                    className={`flex items-center gap-3 p-4 rounded-lg text-md font-medium ${
+                      location === '/subscription' 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-card hover:bg-muted/30 text-foreground shadow-sm'
+                    }`}
                   >
                     <Settings size={20} />
                     <span>Subscription</span>
@@ -120,20 +136,20 @@ export default function MobileMenu({ className = '' }: MobileMenuProps) {
             </nav>
 
             {/* User and Theme Actions */}
-            <div className="border-t border-border p-4 space-y-4">
+            <div className="border-t border-border p-4 space-y-4 bg-muted/5">
               {/* Theme Toggle */}
               <button 
                 onClick={toggleDarkMode}
-                className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-muted/10"
+                className="flex items-center gap-3 w-full p-4 rounded-lg bg-card hover:bg-muted/30 text-foreground font-medium shadow-sm"
               >
                 {config.mode === 'dark' ? (
                   <>
-                    <Sun size={20} />
+                    <Sun size={20} className="text-amber-500" />
                     <span>Light Mode</span>
                   </>
                 ) : (
                   <>
-                    <Moon size={20} />
+                    <Moon size={20} className="text-indigo-500" />
                     <span>Dark Mode</span>
                   </>
                 )}
@@ -143,7 +159,7 @@ export default function MobileMenu({ className = '' }: MobileMenuProps) {
               {user && (
                 <button 
                   onClick={handleLogout}
-                  className="flex items-center gap-3 w-full p-3 rounded-lg text-danger hover:bg-danger/10"
+                  className="flex items-center gap-3 w-full p-4 rounded-lg font-medium bg-red-500/10 text-red-500 hover:bg-red-500/20 shadow-sm"
                 >
                   <LogOut size={20} />
                   <span>Logout</span>
@@ -152,13 +168,13 @@ export default function MobileMenu({ className = '' }: MobileMenuProps) {
 
               {/* User Info */}
               {user && (
-                <div className="flex items-center gap-4 p-3 mt-4 rounded-lg bg-muted/10">
-                  <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
+                <div className="flex items-center gap-4 p-4 mt-4 rounded-lg bg-card shadow-sm">
+                  <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-lg font-bold">
                     {user.username.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <div className="font-medium">{user.username}</div>
-                    <div className="text-sm text-muted-foreground">Signed in</div>
+                    <div className="font-medium text-foreground">{user.username}</div>
+                    <div className="text-sm text-primary">Signed in</div>
                   </div>
                 </div>
               )}

@@ -1,163 +1,138 @@
-import React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
+import React from 'react';
+import { useUnifiedTheme } from '../../contexts/UnifiedThemeContext';
 
-/**
- * Unified Card Component
- * 
- * This component replaces all previous card implementations with a single,
- * consistent component that integrates with our unified theme system.
- * 
- * Features:
- * - Standardized styling across the application
- * - Multiple variants for different visual styles
- * - Loading state support
- * - Consistent spacing and layout
- */
-
-// Define card variants
-const cardVariants = cva(
-  // Base styles for all cards
-  "rounded-lg border border-border bg-card text-card-foreground transition-all duration-200",
-  {
-    variants: {
-      variant: {
-        default: "shadow-sm",
-        outline: "border border-border bg-transparent",
-        filled: "bg-card border-none",
-        elevated: "shadow-md hover:shadow-lg",
-        // Cosmic-specific variants
-        cosmic: "border-primary/20 backdrop-blur-sm bg-card/80 hover:border-primary/40",
-        "cosmic-glow": "border-primary/30 shadow-[0_0_15px_rgba(var(--primary-rgb),0.15)] hover:shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)] hover:border-primary/50",
-        gradient: "border-0 bg-gradient-to-br from-primary/10 to-secondary/10 backdrop-blur-sm",
-      },
-      hover: {
-        true: "hover:border-primary/30 hover:bg-card/90",
-        false: "",
-      },
-      padding: {
-        none: "p-0",
-        sm: "p-3",
-        default: "p-6",
-        lg: "p-8",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      hover: true,
-      padding: "default",
-    },
-  }
-);
-
-// Card props interface
-export interface UnifiedCardProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof cardVariants> {
-  isLoading?: boolean;
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: 'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'cosmic';
+  padding?: 'none' | 'small' | 'medium' | 'large';
+  withShadow?: boolean;
+  withHoverEffect?: boolean;
+  withGradientBorder?: boolean;
+  className?: string;
+  children: React.ReactNode;
 }
 
-// Card component
-export const UnifiedCard = React.forwardRef<HTMLDivElement, UnifiedCardProps>(
-  (
-    {
-      className,
-      variant,
-      hover,
-      padding,
-      isLoading = false,
-      children,
-      ...props
-    },
-    ref
-  ) => (
-    <div
-      ref={ref}
-      className={cn(cardVariants({ variant, hover, padding, className }))}
-      {...props}
-    >
-      {isLoading ? (
-        <div className="flex h-full w-full items-center justify-center p-6">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
-      ) : (
-        children
-      )}
+/**
+ * UnifiedCard component
+ * 
+ * A versatile card component that supports multiple visual variants
+ * and is fully responsive across all device sizes.
+ * 
+ * Features:
+ * - Multiple style variants
+ * - Configurable padding
+ * - Optional shadow and hover effects
+ * - Optional gradient border
+ * - Fully responsive
+ */
+export function UnifiedCard({
+  variant = 'default',
+  padding = 'medium',
+  withShadow = false,
+  withHoverEffect = false,
+  withGradientBorder = false,
+  className = '',
+  children,
+  ...props
+}: CardProps) {
+  const { config } = useUnifiedTheme();
+
+  // Determine variant-specific styles
+  const getVariantClasses = () => {
+    switch (variant) {
+      case 'primary':
+        return 'bg-primary text-primary-foreground';
+      case 'secondary':
+        return 'bg-secondary text-secondary-foreground';
+      case 'outline':
+        return 'bg-transparent border border-border';
+      case 'ghost':
+        return 'bg-muted/50';
+      case 'cosmic':
+        return 'bg-black/20 backdrop-blur-sm cosmic-glow';
+      case 'default':
+      default:
+        return 'bg-card text-card-foreground';
+    }
+  };
+
+  // Determine padding size
+  const getPaddingClasses = () => {
+    switch (padding) {
+      case 'none':
+        return '';
+      case 'small':
+        return 'p-3';
+      case 'large':
+        return 'p-6';
+      case 'medium':
+      default:
+        return 'p-4';
+    }
+  };
+
+  // Apply optional shadow
+  const getShadowClasses = () => {
+    if (!withShadow) return '';
+    return 'shadow-lg';
+  };
+
+  // Apply hover effect
+  const getHoverClasses = () => {
+    if (!withHoverEffect) return '';
+    return 'transition-all duration-200 hover:shadow-md hover:-translate-y-1';
+  };
+
+  // Apply gradient border
+  const getGradientBorderClasses = () => {
+    if (!withGradientBorder) return '';
+    return 'border-gradient';
+  };
+
+  const cardClasses = [
+    'rounded-lg',
+    getVariantClasses(),
+    getPaddingClasses(),
+    getShadowClasses(),
+    getHoverClasses(),
+    getGradientBorderClasses(),
+    className
+  ].filter(Boolean).join(' ');
+
+  return (
+    <div className={cardClasses} {...props}>
+      {children}
     </div>
-  )
-);
+  );
+}
 
-UnifiedCard.displayName = "UnifiedCard";
+export function UnifiedCardHeader({ className = '', ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div className={`flex flex-col space-y-1.5 ${className}`} {...props} />
+  );
+}
 
-// Card Header component
-export const UnifiedCardHeader = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-6 pb-3", className)}
-    {...props}
-  />
-));
+export function UnifiedCardTitle({ className = '', ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h3 className={`text-lg md:text-xl font-semibold leading-none tracking-tight ${className}`} {...props} />
+  );
+}
 
-UnifiedCardHeader.displayName = "UnifiedCardHeader";
+export function UnifiedCardDescription({ className = '', ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p className={`text-sm text-muted-foreground ${className}`} {...props} />
+  );
+}
 
-// Card Title component
-export const UnifiedCardTitle = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
-  <h3
-    ref={ref}
-    className={cn("font-semibold leading-none tracking-tight", className)}
-    {...props}
-  />
-));
+export function UnifiedCardContent({ className = '', ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div className={`pt-4 ${className}`} {...props} />
+  );
+}
 
-UnifiedCardTitle.displayName = "UnifiedCardTitle";
+export function UnifiedCardFooter({ className = '', ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div className={`flex flex-wrap items-center pt-4 gap-4 mt-auto ${className}`} {...props} />
+  );
+}
 
-// Card Description component
-export const UnifiedCardDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
-  <p
-    ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
-    {...props}
-  />
-));
-
-UnifiedCardDescription.displayName = "UnifiedCardDescription";
-
-// Card Content component
-export const UnifiedCardContent = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("p-6 pt-0", className)}
-    {...props}
-  />
-));
-
-UnifiedCardContent.displayName = "UnifiedCardContent";
-
-// Card Footer component
-export const UnifiedCardFooter = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("flex items-center p-6 pt-0 gap-2", className)}
-    {...props}
-  />
-));
-
-UnifiedCardFooter.displayName = "UnifiedCardFooter";
-
-export { cardVariants };
+export default UnifiedCard;

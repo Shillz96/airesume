@@ -66,45 +66,49 @@ export default function ResumeBuilder() {
     }
   }, [activeSection]);
   
-  // Function to generate skill suggestions
+  // All available skills
+  const allSkills = [
+    // Programming Languages
+    "JavaScript", "TypeScript", "Python", "Java", "C#", "C++", "Go", "Ruby", "PHP", "Swift", "Kotlin", "Rust",
+    // Frontend 
+    "React", "Angular", "Vue.js", "Next.js", "HTML", "CSS", "SASS/SCSS", "Bootstrap", "Tailwind CSS", "Material-UI", 
+    "Redux", "Context API", "Webpack", "Babel", "GraphQL", "Apollo Client", "Responsive Design", "Mobile-First Design",
+    // Backend
+    "Node.js", "Express", "Django", "Flask", "Spring Boot", "Ruby on Rails", ".NET Core", "Laravel", "NestJS",
+    "REST APIs", "GraphQL", "WebSockets", "Microservices", "Socket.io", 
+    // Databases
+    "SQL", "PostgreSQL", "MySQL", "MongoDB", "Redis", "Elasticsearch", "Firebase", "Supabase", "DynamoDB", "Cassandra",
+    "ORM", "Sequelize", "TypeORM", "Mongoose", "Prisma", "Entity Framework",
+    // Cloud & DevOps
+    "AWS", "Azure", "Google Cloud", "Heroku", "Vercel", "Netlify", "Docker", "Kubernetes", "CI/CD", "GitHub Actions",
+    "Jenkins", "Terraform", "Serverless", "Cloudflare", "Load Balancing", "Auto-scaling",
+    // Testing
+    "Jest", "Mocha", "Cypress", "Selenium", "Puppeteer", "React Testing Library", "TDD", "BDD", "Unit Testing", 
+    "Integration Testing", "E2E Testing", "Test Coverage",
+    // Tools & Methodologies
+    "Git", "GitHub", "GitLab", "BitBucket", "Jira", "Agile", "Scrum", "Kanban", "Code Reviews", "Pair Programming",
+    // Security
+    "Authentication", "Authorization", "OAuth", "JWT", "HTTPS", "Encryption", "XSS Prevention", "CSRF Protection",
+    // Performance
+    "Web Performance", "Lazy Loading", "Code Splitting", "Bundle Optimization", "Server-Side Rendering", "Caching Strategies",
+    // Soft Skills
+    "Problem Solving", "Communication", "Teamwork", "Leadership", "Time Management", "Critical Thinking", 
+    "Adaptability", "Project Management", "Mentoring", "Documentation",
+    // Mobile
+    "React Native", "Flutter", "iOS Development", "Android Development", "Mobile UI/UX", "App Store Optimization"
+  ];
+  
+  // Function to generate 10 random skills
   const generateSkillSuggestions = () => {
     setIsLoadingSuggestions(true);
     
     // In a real implementation, this would call an API
     setTimeout(() => {
-      // Generate a comprehensive list of skills
-      const allSkills = [
-        // Programming Languages
-        "JavaScript", "TypeScript", "Python", "Java", "C#", "C++", "Go", "Ruby", "PHP", "Swift", "Kotlin", "Rust",
-        // Frontend 
-        "React", "Angular", "Vue.js", "Next.js", "HTML", "CSS", "SASS/SCSS", "Bootstrap", "Tailwind CSS", "Material-UI", 
-        "Redux", "Context API", "Webpack", "Babel", "GraphQL", "Apollo Client", "Responsive Design", "Mobile-First Design",
-        // Backend
-        "Node.js", "Express", "Django", "Flask", "Spring Boot", "Ruby on Rails", ".NET Core", "Laravel", "NestJS",
-        "REST APIs", "GraphQL", "WebSockets", "Microservices", "Socket.io", 
-        // Databases
-        "SQL", "PostgreSQL", "MySQL", "MongoDB", "Redis", "Elasticsearch", "Firebase", "Supabase", "DynamoDB", "Cassandra",
-        "ORM", "Sequelize", "TypeORM", "Mongoose", "Prisma", "Entity Framework",
-        // Cloud & DevOps
-        "AWS", "Azure", "Google Cloud", "Heroku", "Vercel", "Netlify", "Docker", "Kubernetes", "CI/CD", "GitHub Actions",
-        "Jenkins", "Terraform", "Serverless", "Cloudflare", "Load Balancing", "Auto-scaling",
-        // Testing
-        "Jest", "Mocha", "Cypress", "Selenium", "Puppeteer", "React Testing Library", "TDD", "BDD", "Unit Testing", 
-        "Integration Testing", "E2E Testing", "Test Coverage",
-        // Tools & Methodologies
-        "Git", "GitHub", "GitLab", "BitBucket", "Jira", "Agile", "Scrum", "Kanban", "Code Reviews", "Pair Programming",
-        // Security
-        "Authentication", "Authorization", "OAuth", "JWT", "HTTPS", "Encryption", "XSS Prevention", "CSRF Protection",
-        // Performance
-        "Web Performance", "Lazy Loading", "Code Splitting", "Bundle Optimization", "Server-Side Rendering", "Caching Strategies",
-        // Soft Skills
-        "Problem Solving", "Communication", "Teamwork", "Leadership", "Time Management", "Critical Thinking", 
-        "Adaptability", "Project Management", "Mentoring", "Documentation",
-        // Mobile
-        "React Native", "Flutter", "iOS Development", "Android Development", "Mobile UI/UX", "App Store Optimization"
-      ];
+      // Shuffle the skills array and take 10 random skills
+      const shuffled = [...allSkills].sort(() => 0.5 - Math.random());
+      const randomSkills = shuffled.slice(0, 10);
       
-      setSkillSuggestions(allSkills);
+      setSkillSuggestions(randomSkills);
       setIsLoadingSuggestions(false);
     }, 600);
   };
@@ -628,23 +632,35 @@ export default function ResumeBuilder() {
                       Search and add skills that are relevant to your background and the jobs you're targeting.
                     </p>
 
-                    {/* Search box for skills */}
-                    <div className="relative mb-4">
-                      <input
-                        type="text"
-                        placeholder="Search skills..."
-                        className="w-full px-3 py-2 bg-[#0f172a] border border-[#2a325a] rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        value={skillSearchQuery}
-                        onChange={(e) => setSkillSearchQuery(e.target.value)}
-                      />
-                      {skillSearchQuery && (
-                        <button 
-                          className="absolute right-2 top-2 text-gray-400 hover:text-white"
-                          onClick={() => setSkillSearchQuery('')}
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      )}
+                    {/* Search box for skills and refresh button */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="relative flex-1">
+                        <input
+                          type="text"
+                          placeholder="Search skills..."
+                          className="w-full px-3 py-2 bg-[#0f172a] border border-[#2a325a] rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          value={skillSearchQuery}
+                          onChange={(e) => setSkillSearchQuery(e.target.value)}
+                        />
+                        {skillSearchQuery && (
+                          <button 
+                            className="absolute right-2 top-2 text-gray-400 hover:text-white"
+                            onClick={() => setSkillSearchQuery('')}
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={generateSkillSuggestions}
+                        className="border-white/10 text-gray-200 hover:bg-white/10"
+                        title="Show different skills"
+                      >
+                        <RefreshCw className="h-4 w-4 mr-1" />
+                        Refresh
+                      </Button>
                     </div>
                     
                     {/* Skills suggestions grid */}

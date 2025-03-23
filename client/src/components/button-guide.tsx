@@ -1,4 +1,4 @@
-import { CosmicButton } from "@/components/cosmic-button";
+import { Button } from "@/components/unified";
 import { 
   Save, 
   Plus, 
@@ -9,137 +9,162 @@ import {
   Loader2, 
   ArrowRight 
 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/unified";
+import { Text } from "@/components/unified";
 
 /**
- * Guide component that demonstrates the various cosmic button styles
+ * Guide component that demonstrates the unified button styles
  * This can be imported into any page for reference
  */
 export default function ButtonGuide() {
   return (
-    <div className="space-y-6 p-6 bg-black/30 backdrop-blur-md rounded-lg border border-white/10">
-      <div>
-        <h2 className="text-xl font-bold mb-2 text-white">Cosmic Button Style Guide</h2>
-        <p className="text-gray-300 mb-4">Use these consistent button styles throughout the application.</p>
-      </div>
-
-      <div className="space-y-4">
+    <Card variant="glass" className="space-y-6 p-6">
+      <CardHeader>
+        <CardTitle>Unified Button Style Guide</CardTitle>
+        <CardDescription>Use these consistent button styles throughout the application.</CardDescription>
+      </CardHeader>
+      
+      <CardContent className="space-y-6">
         <div>
-          <h3 className="text-lg font-medium mb-2 text-white">Primary Buttons</h3>
-          <p className="text-gray-400 text-sm mb-3">Use for primary actions, like submitting forms or confirming an important action</p>
+          <Text variant="h3" className="mb-2">Primary Buttons</Text>
+          <Text variant="body2" color="muted" className="mb-3">Use for primary actions, like submitting forms or confirming an important action</Text>
           <div className="flex flex-wrap gap-4">
-            <CosmicButton variant="primary">
+            <Button variant="primary">
               Primary Button
-            </CosmicButton>
-            <CosmicButton 
+            </Button>
+            <Button 
               variant="primary" 
               iconLeft={<Save />}
             >
               Save Resume
-            </CosmicButton>
-            <CosmicButton 
+            </Button>
+            <Button 
               variant="primary" 
               iconRight={<ArrowRight />}
             >
               Next Step
-            </CosmicButton>
-            <CosmicButton 
+            </Button>
+            <Button 
               variant="primary" 
               isLoading 
               loadingText="Saving..."
             >
               Save Resume
-            </CosmicButton>
+            </Button>
           </div>
         </div>
 
         <div>
-          <h3 className="text-lg font-medium mb-2 text-white">Secondary Buttons</h3>
-          <p className="text-gray-400 text-sm mb-3">Use for secondary actions, like alternative options</p>
+          <Text variant="h3" className="mb-2">Secondary Buttons</Text>
+          <Text variant="body2" color="muted" className="mb-3">Use for secondary actions, like alternative options</Text>
           <div className="flex flex-wrap gap-4">
-            <CosmicButton variant="secondary">
+            <Button variant="secondary">
               Secondary Button
-            </CosmicButton>
-            <CosmicButton 
+            </Button>
+            <Button 
               variant="secondary" 
               iconLeft={<Download />}
             >
               Download PDF
-            </CosmicButton>
-            <CosmicButton 
+            </Button>
+            <Button 
               variant="secondary" 
               isLoading 
               loadingText="Loading..."
             >
               Load Resume
-            </CosmicButton>
+            </Button>
           </div>
         </div>
 
         <div>
-          <h3 className="text-lg font-medium mb-2 text-white">Outline Buttons</h3>
-          <p className="text-gray-400 text-sm mb-3">Use for less emphasized actions or in card interfaces</p>
+          <Text variant="h3" className="mb-2">Outline Buttons</Text>
+          <Text variant="body2" color="muted" className="mb-3">Use for less emphasized actions or in card interfaces</Text>
           <div className="flex flex-wrap gap-4">
-            <CosmicButton variant="outline">
+            <Button variant="outline">
               Outline Button
-            </CosmicButton>
-            <CosmicButton 
+            </Button>
+            <Button 
               variant="outline" 
               iconLeft={<Plus />}
             >
               Add Section
-            </CosmicButton>
-            <CosmicButton 
+            </Button>
+            <Button 
               variant="outline" 
               isLoading 
               loadingText="Generating..."
             >
               Generate AI Content
-            </CosmicButton>
+            </Button>
           </div>
         </div>
 
         <div>
-          <h3 className="text-lg font-medium mb-2 text-white">Ghost Buttons</h3>
-          <p className="text-gray-400 text-sm mb-3">Use for subtle actions or in tight spaces</p>
+          <Text variant="h3" className="mb-2">Ghost Buttons</Text>
+          <Text variant="body2" color="muted" className="mb-3">Use for subtle actions or in tight spaces</Text>
           <div className="flex flex-wrap gap-4">
-            <CosmicButton variant="ghost">
+            <Button variant="ghost">
               Ghost Button
-            </CosmicButton>
-            <CosmicButton 
+            </Button>
+            <Button 
               variant="ghost" 
               iconLeft={<Mail />}
             >
               Contact Support
-            </CosmicButton>
-            <CosmicButton variant="ghost" iconLeft={<LogIn />}>
+            </Button>
+            <Button variant="ghost" iconLeft={<LogIn />}>
               Sign In
-            </CosmicButton>
+            </Button>
           </div>
         </div>
 
         <div>
-          <h3 className="text-lg font-medium mb-2 text-white">Destructive Buttons</h3>
-          <p className="text-gray-400 text-sm mb-3">Use for dangerous actions like deletion</p>
+          <Text variant="h3" className="mb-2">Destructive Buttons</Text>
+          <Text variant="body2" color="muted" className="mb-3">Use for dangerous actions like deletion</Text>
           <div className="flex flex-wrap gap-4">
-            <CosmicButton variant="destructive">
+            <Button variant="destructive">
               Destructive Button
-            </CosmicButton>
-            <CosmicButton 
+            </Button>
+            <Button 
               variant="destructive" 
               iconLeft={<Trash2 />}
             >
               Delete Resume
-            </CosmicButton>
-            <CosmicButton 
+            </Button>
+            <Button 
               variant="destructive" 
               isLoading
               loadingText="Deleting..."
             >
               Delete Account
-            </CosmicButton>
+            </Button>
           </div>
         </div>
-      </div>
-    </div>
+        
+        <div>
+          <Text variant="h3" className="mb-2">Cosmic Buttons</Text>
+          <Text variant="body2" color="muted" className="mb-3">Use for cosmic themed actions</Text>
+          <div className="flex flex-wrap gap-4">
+            <Button variant="cosmic">
+              Cosmic Button
+            </Button>
+            <Button 
+              variant="cosmic" 
+              iconLeft={<Save />}
+            >
+              Save Resume
+            </Button>
+            <Button 
+              variant="cosmic" 
+              isLoading 
+              loadingText="Loading..."
+            >
+              Loading
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

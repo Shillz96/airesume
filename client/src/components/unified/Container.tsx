@@ -1,59 +1,103 @@
 /**
  * Unified Container Component
  * 
- * Provides consistent padding and maximum width for content
- * Integrates with the central theme system
+ * This is the single Container component to be used across the entire application.
+ * It provides consistent spacing, padding, and max-width for content sections.
  */
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-interface ContainerProps {
+export interface ContainerProps {
   children: React.ReactNode;
   className?: string;
-  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
-  paddingX?: 'none' | 'sm' | 'md' | 'lg';
-  paddingY?: 'none' | 'sm' | 'md' | 'lg';
+  maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'full' | 'none';
+  paddingX?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  paddingY?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  centerContent?: boolean;
 }
 
-export default function Container({
+// For backward compatibility
+export interface UnifiedContainerProps {
+  children: React.ReactNode;
+  className?: string;
+  paddingTop?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+}
+
+export const Container: React.FC<ContainerProps> = ({
   children,
   className,
-  maxWidth = 'xl',
+  maxWidth = 'lg',
   paddingX = 'md',
   paddingY = 'md',
-}: ContainerProps) {
-  const maxWidthClasses = {
-    sm: 'max-w-screen-sm',
-    md: 'max-w-screen-md',
-    lg: 'max-w-screen-lg', 
-    xl: 'max-w-screen-xl',
-    '2xl': 'max-w-screen-2xl',
-    'full': 'max-w-none'
+  centerContent = false,
+  ...props
+}) => {
+  // Max width styles
+  const maxWidthStyles: Record<string, string> = {
+    xs: 'max-w-xs',
+    sm: 'max-w-sm',
+    md: 'max-w-md',
+    lg: 'max-w-lg',
+    xl: 'max-w-xl',
+    full: 'max-w-full',
+    none: '',
   };
-  
-  const paddingXClasses = {
+
+  // Padding X (horizontal) styles
+  const paddingXStyles: Record<string, string> = {
     none: 'px-0',
-    sm: 'px-2 sm:px-4',
-    md: 'px-4 sm:px-6 lg:px-8',
-    lg: 'px-6 sm:px-8 lg:px-12'
+    xs: 'px-2',
+    sm: 'px-4',
+    md: 'px-6',
+    lg: 'px-8',
+    xl: 'px-12',
   };
-  
-  const paddingYClasses = {
+
+  // Padding Y (vertical) styles
+  const paddingYStyles: Record<string, string> = {
     none: 'py-0',
-    sm: 'py-2 sm:py-4',
-    md: 'py-4 sm:py-6',
-    lg: 'py-6 sm:py-8'
+    xs: 'py-2',
+    sm: 'py-4',
+    md: 'py-6',
+    lg: 'py-8',
+    xl: 'py-12',
   };
-  
+
+  // Center content styles
+  const centerContentStyles = centerContent ? 'flex flex-col items-center' : '';
+
   return (
-    <div className={cn(
-      'mx-auto w-full',
-      maxWidthClasses[maxWidth],
-      paddingXClasses[paddingX],
-      paddingYClasses[paddingY],
-      className
-    )}>
+    <div
+      className={cn(
+        'mx-auto w-full',
+        maxWidthStyles[maxWidth],
+        paddingXStyles[paddingX],
+        paddingYStyles[paddingY],
+        centerContentStyles,
+        className
+      )}
+      {...props}
+    >
       {children}
     </div>
   );
-}
+};
+
+// For backward compatibility
+export const UnifiedContainer: React.FC<UnifiedContainerProps> = ({
+  children,
+  className = '',
+  paddingTop = 'sm'
+}) => {
+  return (
+    <Container
+      className={className}
+      paddingY={paddingTop}
+      maxWidth="lg"
+    >
+      {children}
+    </Container>
+  );
+};
+
+export default Container;

@@ -1,17 +1,17 @@
 import React from 'react';
-import { UnifiedContainer } from './unified/Container';
+import { Container } from './unified';
 
 interface PageContainerProps {
   children: React.ReactNode;
   className?: string;
-  paddingTop?: 'none' | 'sm' | 'md' | 'lg';
+  paddingTop?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
 /**
  * PageContainer component
  * 
  * Provides consistent padding and maximum width for page content
- * Utilizes the UnifiedContainer for consistent spacing across all pages
+ * Utilizes the unified Container for consistent spacing across all pages
  * Now with configurable top padding to optimize header placement
  */
 const PageContainer: React.FC<PageContainerProps> = ({ 
@@ -20,9 +20,13 @@ const PageContainer: React.FC<PageContainerProps> = ({
   paddingTop = 'sm' // Reduced padding compared to previous default
 }) => {
   return (
-    <UnifiedContainer className={className} paddingTop={paddingTop}>
+    <Container 
+      className={className} 
+      paddingY={paddingTop}
+      maxWidth="lg"
+    >
       {children}
-    </UnifiedContainer>
+    </Container>
   );
 };
 

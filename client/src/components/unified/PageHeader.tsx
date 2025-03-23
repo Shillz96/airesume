@@ -1,14 +1,14 @@
 /**
  * Unified PageHeader Component
  * 
- * A consistent header component for all pages with support for title, subtitle, and actions
- * Integrates with the central theme system via CSS variables
+ * This is the single PageHeader component to be used across the entire application.
+ * It provides consistent header styling with variants for different pages.
  */
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Heading1, Heading2, GradientText } from './Text';
+import Text from './Text';
 
-interface PageHeaderProps {
+export interface PageHeaderProps {
   title: React.ReactNode;
   subtitle?: React.ReactNode;
   actions?: React.ReactNode;
@@ -17,63 +17,105 @@ interface PageHeaderProps {
   borderStyle?: 'none' | 'subtle' | 'gradient';
 }
 
-export default function PageHeader({
+// For backward compatibility
+export interface UnifiedPageHeaderProps {
+  title: React.ReactNode;
+  subtitle?: React.ReactNode;
+  actions?: React.ReactNode;
+  variant?: 'default' | 'gradient' | 'cosmic';
+  className?: string;
+  borderStyle?: 'none' | 'subtle' | 'gradient';
+}
+
+export const PageHeader: React.FC<PageHeaderProps> = ({
   title,
   subtitle,
   actions,
   variant = 'default',
   className,
-  borderStyle = 'subtle',
-}: PageHeaderProps) {
-  // Different classes based on variant
-  const variantClasses = {
-    default: '',
-    gradient: '',
-    cosmic: 'bg-black/10 backdrop-blur-sm bg-opacity-60 rounded-xl'
-  };
-
-  // Border style classes
-  const borderClasses = {
+  borderStyle = 'none',
+  ...props
+}) => {
+  // Border styles
+  const borderStyles: Record<string, string> = {
     none: '',
     subtle: 'border-b border-border',
-    gradient: 'border-b border-gradient-to-r from-primary via-secondary to-transparent'
+    gradient: 'border-b border-gradient-to-r from-blue-500 to-purple-500',
   };
-  
+
+  // Header variants
+  const variantStyles: Record<string, { titleClass: string; subtitleClass: string }> = {
+    default: {
+      titleClass: '',
+      subtitleClass: 'text-muted-foreground',
+    },
+    gradient: {
+      titleClass: 'text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600',
+      subtitleClass: 'text-muted-foreground',
+    },
+    cosmic: {
+      titleClass: 'text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-600',
+      subtitleClass: 'text-muted-foreground',
+    },
+  };
+
+  const renderTitle = () => {
+    if (typeof title === 'string') {
+      return (
+        <Text 
+          variant="h1" 
+          className={cn(variantStyles[variant].titleClass)}
+        >
+          {title}
+        </Text>
+      );
+    }
+    return title;
+  };
+
+  const renderSubtitle = () => {
+    if (!subtitle) return null;
+    
+    if (typeof subtitle === 'string') {
+      return (
+        <Text 
+          variant="subtitle1" 
+          className={cn('mt-2', variantStyles[variant].subtitleClass)}
+        >
+          {subtitle}
+        </Text>
+      );
+    }
+    return subtitle;
+  };
+
   return (
-    <div className={cn(
-      'flex flex-col md:flex-row justify-between items-start md:items-center py-4 mb-6',
-      borderClasses[borderStyle],
-      variantClasses[variant],
-      className
-    )}>
-      <div className="space-y-1">
-        {variant === 'gradient' ? (
-          <GradientText as="h1" size="3xl" weight="bold" gradient="cosmic" className="tracking-tight">
-            {title}
-          </GradientText>
-        ) : (
-          <Heading1 className={cn(
-            variant === 'cosmic' && 'text-white'
-          )}>
-            {title}
-          </Heading1>
-        )}
-        
-        {subtitle && (
-          <Heading2 className={cn(
-            'font-normal text-muted-foreground',
-            variant === 'cosmic' && 'text-white/70'
-          )}>
-            {subtitle}
-          </Heading2>
+    <div 
+      className={cn(
+        'mb-6 pb-4',
+        borderStyles[borderStyle],
+        className
+      )}
+      {...props}
+    >
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          {renderTitle()}
+          {renderSubtitle()}
+        </div>
+        {actions && (
+          <div className="flex items-center gap-3 md:ml-auto">
+            {actions}
+          </div>
         )}
       </div>
-      
-      {actions && (
-        <div className="flex gap-2 mt-4 md:mt-0">
-          {actions}
-        </div>
-      )}
     </div>
   );
-}
+};
+
+// For backward compatibility
+export const UnifiedPageHeader: React.FC<UnifiedPageHeaderProps> = (props) => {
+  return <PageHeader {...props} />;
+};
+
+export default PageHeader;

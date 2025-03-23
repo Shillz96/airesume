@@ -1,186 +1,104 @@
 /**
- * Unified Text Components
+ * Unified Text Component
  * 
- * This file provides text components like headings and paragraphs
- * with consistent styling based on the unified theme system.
+ * This is the single Text component to be used across the entire application.
+ * It handles all typography variants with consistent styling.
  */
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { useUnifiedTheme } from '@/contexts/UnifiedThemeContext';
 
-// Heading components with different levels
-export function Heading1({ children, className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  const { config } = useUnifiedTheme();
-  
-  return (
-    <h1 
-      className={cn(
-        "text-3xl font-bold tracking-tight",
-        config.variant === 'cosmic' && "text-foreground",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </h1>
-  );
-}
-
-export function Heading2({ children, className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  const { config } = useUnifiedTheme();
-  
-  return (
-    <h2 
-      className={cn(
-        "text-2xl font-semibold tracking-tight",
-        config.variant === 'cosmic' && "text-foreground",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </h2>
-  );
-}
-
-export function Heading3({ children, className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  const { config } = useUnifiedTheme();
-  
-  return (
-    <h3 
-      className={cn(
-        "text-xl font-semibold tracking-tight",
-        config.variant === 'cosmic' && "text-foreground",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </h3>
-  );
-}
-
-export function Heading4({ children, className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  const { config } = useUnifiedTheme();
-  
-  return (
-    <h4 
-      className={cn(
-        "text-lg font-semibold tracking-tight",
-        config.variant === 'cosmic' && "text-foreground",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </h4>
-  );
-}
-
-export function Heading5({ children, className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  const { config } = useUnifiedTheme();
-  
-  return (
-    <h5 
-      className={cn(
-        "text-base font-semibold tracking-tight",
-        config.variant === 'cosmic' && "text-foreground",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </h5>
-  );
-}
-
-export function Heading6({ children, className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  const { config } = useUnifiedTheme();
-  
-  return (
-    <h6 
-      className={cn(
-        "text-sm font-semibold tracking-tight",
-        config.variant === 'cosmic' && "text-foreground",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </h6>
-  );
-}
-
-export function Paragraph({ children, className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return (
-    <p 
-      className={cn(
-        "leading-7 [&:not(:first-child)]:mt-6",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </p>
-  );
-}
-
-// Text with gradient effect
-type GradientTextProps = {
+export interface TextProps {
   children: React.ReactNode;
-  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
-  size?: 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl';
-  weight?: 'normal' | 'medium' | 'semibold' | 'bold';
+  variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'subtitle1' | 'subtitle2' | 'body1' | 'body2' | 'caption' | 'overline';
+  color?: 'default' | 'primary' | 'secondary' | 'muted' | 'accent' | 'success' | 'warning' | 'error' | 'cosmic';
+  align?: 'left' | 'center' | 'right' | 'justify';
   className?: string;
-  gradient?: 'primary' | 'secondary' | 'accent' | 'cosmic';
-};
+  component?: React.ElementType;
+  noMargin?: boolean;
+  gutterBottom?: boolean;
+}
 
-export function GradientText({ 
-  children, 
-  as = 'span',
-  size = 'base',
-  weight = 'normal',
+export const Text: React.FC<TextProps> = ({
+  children,
+  variant = 'body1',
+  color = 'default',
+  align = 'left',
   className,
-  gradient = 'primary',
+  component,
+  noMargin = false,
+  gutterBottom = false,
   ...props
-}: GradientTextProps) {
-  const { config } = useUnifiedTheme();
-  
-  const sizeClasses = {
-    xs: 'text-xs',
-    sm: 'text-sm',
-    base: 'text-base',
-    lg: 'text-lg',
-    xl: 'text-xl',
-    '2xl': 'text-2xl',
-    '3xl': 'text-3xl',
-    '4xl': 'text-4xl',
-    '5xl': 'text-5xl',
+}) => {
+  // Map variant to element type
+  const defaultComponentMap: Record<string, React.ElementType> = {
+    h1: 'h1',
+    h2: 'h2',
+    h3: 'h3',
+    h4: 'h4',
+    h5: 'h5',
+    h6: 'h6',
+    subtitle1: 'h6',
+    subtitle2: 'h6',
+    body1: 'p',
+    body2: 'p',
+    caption: 'span',
+    overline: 'span',
   };
-  
-  const weightClasses = {
-    normal: 'font-normal',
-    medium: 'font-medium',
-    semibold: 'font-semibold',
-    bold: 'font-bold',
+
+  // Use provided component or default based on variant
+  const Component = component || defaultComponentMap[variant] || 'p';
+
+  // Typography variant styles
+  const variantStyles: Record<string, string> = {
+    h1: 'text-4xl font-extrabold tracking-tight',
+    h2: 'text-3xl font-bold tracking-tight',
+    h3: 'text-2xl font-bold',
+    h4: 'text-xl font-semibold',
+    h5: 'text-lg font-semibold',
+    h6: 'text-base font-semibold',
+    subtitle1: 'text-lg font-medium',
+    subtitle2: 'text-base font-medium',
+    body1: 'text-base',
+    body2: 'text-sm',
+    caption: 'text-sm',
+    overline: 'text-xs uppercase tracking-wider',
   };
-  
-  const gradientClasses = {
-    primary: 'from-primary to-primary/80',
-    secondary: 'from-primary to-secondary',
-    accent: 'from-secondary to-accent',
-    cosmic: 'from-primary via-secondary to-accent',
+
+  // Text color styles
+  const colorStyles: Record<string, string> = {
+    default: 'text-foreground',
+    primary: 'text-primary',
+    secondary: 'text-secondary',
+    muted: 'text-muted-foreground',
+    accent: 'text-accent',
+    success: 'text-green-600',
+    warning: 'text-amber-600',
+    error: 'text-destructive',
+    cosmic: 'text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600',
   };
-  
-  const Component = as;
-  
+
+  // Text alignment
+  const alignStyles: Record<string, string> = {
+    left: 'text-left',
+    center: 'text-center',
+    right: 'text-right',
+    justify: 'text-justify',
+  };
+
+  // Margin styles
+  const marginStyles = noMargin 
+    ? 'my-0' 
+    : gutterBottom 
+      ? 'mb-4' 
+      : '';
+
   return (
     <Component
       className={cn(
-        sizeClasses[size],
-        weightClasses[weight],
-        "bg-clip-text text-transparent bg-gradient-to-r",
-        gradientClasses[gradient],
+        variantStyles[variant],
+        colorStyles[color],
+        alignStyles[align],
+        marginStyles,
         className
       )}
       {...props}
@@ -188,8 +106,6 @@ export function GradientText({
       {children}
     </Component>
   );
-}
+};
 
-export default function Text() {
-  return null; // This default export is just to satisfy the requirement
-}
+export default Text;

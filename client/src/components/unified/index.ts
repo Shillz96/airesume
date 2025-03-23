@@ -1,31 +1,56 @@
 /**
- * Unified Components Index
+ * Unified Components Export
  * 
- * This file exports all components from the unified system to provide a single import path.
- * Import components from here rather than individual files for better organization.
- * 
- * Example:
- * import { PageHeader, Container, Heading1 } from '@/components/unified';
+ * This file exports all of our unified components to make importing easier.
+ * Components should be imported from this file using:
+ * import { Button, Text, Container, PageHeader, Card } from '@/components/unified';
  */
 
-// Layout components
-export { default as PageHeader } from './PageHeader';
-export { default as Container } from './Container';
+// Core components
+export { Button } from './Button';
+export type { ButtonProps } from './Button';
 
-// For backward compatibility with existing code
-export { default as UnifiedPageHeader } from './PageHeader';
-export { default as UnifiedContainer } from './Container';
+export { Text } from './Text';
+export type { TextProps } from './Text';
 
-// Typography components
+export { Container, UnifiedContainer } from './Container';
+export type { ContainerProps, UnifiedContainerProps } from './Container';
+
+export { PageHeader, UnifiedPageHeader } from './PageHeader';
+export type { PageHeaderProps, UnifiedPageHeaderProps } from './PageHeader';
+
+export { 
+  Card, 
+  CardHeader, 
+  CardTitle, 
+  CardDescription, 
+  CardContent, 
+  CardFooter 
+} from './Card';
+export type { CardProps } from './Card';
+
+// Form components
 export {
-  Heading1,
-  Heading2,
-  Heading3,
-  Heading4,
-  GradientText
-} from './Text';
-
-// Export additional typography components if needed - currently Heading5, Heading6 and Paragraph
-// need special handling as they're not exported correctly from Text.tsx
-
-// Import more unified components as they are created
+  FormField,
+  Label,
+  Input,
+  TextArea,
+  Select,
+  Checkbox,
+  Radio,
+  FormError,
+  SubmitButton,
+  FormGroup
+} from './Form';
+export type {
+  FormFieldProps,
+  LabelProps,
+  InputProps,
+  TextAreaProps,
+  SelectProps,
+  CheckboxProps,
+  RadioProps,
+  FormErrorProps,
+  SubmitButtonProps,
+  FormGroupProps
+} from './Form';

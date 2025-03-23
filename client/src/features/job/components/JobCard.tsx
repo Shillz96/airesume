@@ -28,9 +28,10 @@ export default function JobCard({ job }: JobCardProps) {
     e.stopPropagation();
     
     try {
-      await apiRequest(`/api/jobs/${job.id}/save`, {
-        method: 'POST'
-      });
+      await apiRequest(
+        'POST',
+        `/api/jobs/${job.id}/save`
+      );
       
       // Update the local state optimistically
       queryClient.setQueryData(['/api/jobs'], (old: Job[] | undefined) => {

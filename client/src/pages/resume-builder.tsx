@@ -218,6 +218,7 @@ export default function ResumeBuilder() {
 
   return (
     <div className="min-h-screen w-full flex flex-col relative z-10">
+      {/* Using global CosmicBackground from App.tsx */}
       <div className="container mx-auto px-4 sm:px-6 py-6 pt-6">
         <div className="flex justify-between items-center mb-6">
           <div>

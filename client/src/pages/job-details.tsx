@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useGuestMode } from "@/hooks/use-guest-mode";
 import { useAuth } from "@/hooks/use-auth";
+import { UnifiedContainer, UnifiedPageHeader } from "@/components/unified";
 
 
 export default function JobDetails() {
@@ -67,66 +68,66 @@ export default function JobDetails() {
   // Show loading state
   if (isLoading) {
     return (
-      <>
-        
-        <div className="container pt-24 pb-10 px-4 md:px-6 max-w-4xl mx-auto min-h-screen relative z-10">
-          <div className="flex justify-center items-center min-h-[50vh]">
-            <div className="text-center">
-              <Loader2 className="h-10 w-10 animate-spin text-blue-400 mx-auto mb-4" />
-              <p className="text-gray-300">Loading job details...</p>
-            </div>
-          </div>
+      <UnifiedContainer className="pb-10 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-10 w-10 animate-spin text-blue-400 mx-auto mb-4" />
+          <p className="text-gray-300">Loading job details...</p>
         </div>
-      </>
+      </UnifiedContainer>
     );
   }
   
   // Show error state
   if (error || !job) {
     return (
-      <>
-        
-        <div className="container pt-24 pb-10 px-4 md:px-6 max-w-4xl mx-auto min-h-screen relative z-10">
-          <div className="px-4 py-6 sm:px-0">
-            <div className="cosmic-card border border-white/10 rounded-lg p-8 text-center">
-              <Briefcase className="h-12 w-12 text-red-400 mx-auto mb-4" />
-              <h3 className="text-xl font-medium text-white mb-2">Job Not Found</h3>
-              <p className="text-gray-300 mb-6">The job you're looking for doesn't exist or was removed.</p>
-              <Button 
-                onClick={() => setLocation("/job-finder")}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Jobs
-              </Button>
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  return (
-    <>
-      
-      <div className="container pt-24 pb-10 px-4 md:px-6 max-w-4xl mx-auto min-h-screen relative z-10">
-        <div className="mb-6">
+      <UnifiedContainer className="pb-10 min-h-screen">
+        <UnifiedPageHeader
+          title="Job Not Found"
+          subtitle="The job you're looking for doesn't exist or was removed"
+          variant="cosmic"
+          borderStyle="gradient"
+        />
+        <div className="cosmic-card border border-white/10 rounded-lg p-8 text-center mt-8">
+          <Briefcase className="h-12 w-12 text-red-400 mx-auto mb-4" />
+          <p className="text-gray-300 mb-6">Please try searching for another job position.</p>
           <Button 
             onClick={() => setLocation("/job-finder")}
-            variant="outline"
-            className="mb-6 border-white/10 text-gray-200 hover:bg-white/10 hover:text-white"
+            className="cosmic-glow bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Jobs
           </Button>
-          
-          <JobListing 
-            job={job} 
-            userResume={resume}
-            onTailoredResumeApplied={handleTailoredResumeApplied}
-          />
         </div>
+      </UnifiedContainer>
+    );
+  }
+
+  return (
+    <UnifiedContainer className="pb-10 min-h-screen">
+      <UnifiedPageHeader
+        title={job.title}
+        subtitle={`${job.company} · ${job.location}`}
+        variant="cosmic"
+        borderStyle="gradient"
+        actions={
+          <Button 
+            onClick={() => setLocation("/job-finder")}
+            variant="outline"
+            className="cosmic-gradient-border text-gray-200 hover:text-white"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Jobs
+          </Button>
+        }
+      />
+      
+      <div className="mt-6">
+        <JobListing 
+          job={job} 
+          userResume={resume}
+          onTailoredResumeApplied={handleTailoredResumeApplied}
+        />
       </div>
-    </>
+    </UnifiedContainer>
   );
 }

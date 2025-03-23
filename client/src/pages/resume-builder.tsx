@@ -221,16 +221,17 @@ export default function ResumeBuilder() {
   return (
     <>
       {/* Using global CosmicBackground from App.tsx */}
-      <div className="container mx-auto px-2 sm:px-6 pb-8 pt-3 min-h-screen relative z-10">
+      <div className="container mx-auto px-2 sm:px-6 pb-10 min-h-screen relative z-10">
         <PageHeader
           title="Resume Builder"
           subtitle="Create and customize your professional resume"
-          className="py-4 mb-2 sm:mb-4"
+          variant="cosmic"
+          borderStyle="gradient"
           actions={
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
-                className="hidden sm:flex"
+                className="hidden sm:flex cosmic-gradient-border"
                 disabled={!isDirty}
                 onClick={handleSaveResume}
               >
@@ -239,7 +240,7 @@ export default function ResumeBuilder() {
               </Button>
               <Button 
                 variant="default"
-                className="hidden sm:flex"
+                className="hidden sm:flex cosmic-glow"
                 onClick={handleDownload}
               >
                 <Download className="h-4 w-4 mr-2" />

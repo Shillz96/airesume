@@ -71,7 +71,7 @@ export const ThemeButton = forwardRef<HTMLButtonElement, ThemeButtonProps>(
       `btn-${size}`,
       isIconOnly && 'btn-icon',
       fullWidth && 'btn-full',
-      withGlow && 'btn-glow',
+      withGlow && 'with-glow',
       isLoading && 'btn-loading',
       className
     );

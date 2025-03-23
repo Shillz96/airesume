@@ -48,7 +48,7 @@ export const ThemeCard = forwardRef<HTMLDivElement, ThemeCardProps>(
       isInteractive && 'card-interactive',
       isHoverable && 'card-hoverable',
       isLoading && 'card-loading',
-      withGlow && 'card-glow',
+      withGlow && 'card-with-glow',
       className
     );
     

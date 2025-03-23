@@ -99,34 +99,34 @@
 
 /* Dark mode overrides */
 .dark {
-  --color-primary-hsl: 217 91% 60%; /* Slightly lighter blue for dark mode */
-  --color-background-hsl: 222 47% 11%;
-  --color-foreground-hsl: 214 10% 90%;
-  --color-card-hsl: 223 40% 16%;
-  --color-muted-hsl: 215 16% 65%;
-  --color-border-hsl: 220 20% 23%;
-  --color-input-hsl: 220 20% 23%;
+  --color-primary-hsl: 210 95% 65%; /* Brighter blue for dark mode */
+  --color-background-hsl: 220 40% 13%;
+  --color-foreground-hsl: 210 15% 95%;
+  --color-card-hsl: 220 35% 18%;
+  --color-muted-hsl: 215 20% 70%;
+  --color-border-hsl: 220 25% 25%;
+  --color-input-hsl: 220 25% 25%;
 
   /* Semantic Colors */
-  --color-success-hsl: 142 64% 38%;
-  --color-warning-hsl: 38 92% 60%;
-  --color-danger-hsl: 0 84% 65%;
-  --color-info-hsl: 200 98% 49%;
+  --color-success-hsl: 142 70% 45%;
+  --color-warning-hsl: 38 95% 65%;
+  --color-danger-hsl: 358 90% 65%;
+  --color-info-hsl: 200 100% 55%;
 
   /* RGB values for dark mode */
-  --color-primary-rgb: 59, 130, 246;
-  --color-background-rgb: 17, 24, 39;
-  --color-foreground-rgb: 229, 231, 235;
-  --color-card-rgb: 26, 34, 55;
-  --color-muted-rgb: 156, 163, 175;
-  --color-border-rgb: 55, 65, 81;
-  --color-input-rgb: 55, 65, 81;
+  --color-primary-rgb: 77, 156, 255;
+  --color-background-rgb: 21, 27, 40;
+  --color-foreground-rgb: 235, 240, 245;
+  --color-card-rgb: 32, 41, 61;
+  --color-muted-rgb: 170, 180, 195;
+  --color-border-rgb: 60, 70, 90;
+  --color-input-rgb: 60, 70, 90;
 
   /* Semantic Colors RGB */
-  --color-success-rgb: 34, 197, 94;
-  --color-warning-rgb: 252, 176, 52;
-  --color-danger-rgb: 248, 113, 113;
-  --color-info-rgb: 14, 165, 233;
+  --color-success-rgb: 45, 212, 105;
+  --color-warning-rgb: 255, 186, 64;
+  --color-danger-rgb: 255, 98, 98;
+  --color-info-rgb: 40, 186, 255;
 
   /* Shadow overrides for dark mode */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);

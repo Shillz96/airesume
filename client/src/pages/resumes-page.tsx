@@ -15,6 +15,9 @@ import {
   Upload
 } from 'lucide-react';
 import Navbar from '@/components/navbar';
+// Import our new modern Button component
+import Button from '@/components/ui/modern-button';
+// Keep the CosmicButton for backward compatibility during transition
 import { CosmicButton } from '@/components/cosmic-button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';

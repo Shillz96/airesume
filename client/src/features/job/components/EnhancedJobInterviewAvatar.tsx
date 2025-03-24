@@ -210,44 +210,44 @@ export default function EnhancedJobInterviewAvatar({ job, className }: EnhancedJ
   const loadLatestResume = async () => {
     setLoadingResume(true);
     try {
-      // Fetch the user's latest resume
-      const response = await apiRequest('/api/resumes/latest');
-      if (response.ok) {
-        const resumeData = await response.json();
-        setUserResume(resumeData);
-        
-        // Use AI to detect career path from resume content
-        detectCareerPathFromResume(resumeData);
-        
-        // Set the flag to indicate we've loaded a resume
-        setHasLoadedResume(true);
-        
-        toast({
-          title: "Resume loaded",
-          description: "Your resume has been analyzed to personalize interview questions.",
-        });
-      } else if (response.status === 401) {
-        // User is not logged in, show a message
+      // Fetch the user's latest resume - correct method parameter required
+      const response = await apiRequest('GET', '/api/resumes/latest');
+      const resumeData = await response.json();
+      setUserResume(resumeData);
+      
+      // Use AI to detect career path from resume content
+      detectCareerPathFromResume(resumeData);
+      
+      // Set the flag to indicate we've loaded a resume
+      setHasLoadedResume(true);
+      
+      toast({
+        title: "Resume loaded",
+        description: "Your resume has been analyzed to personalize interview questions.",
+      });
+    } catch (error: any) {
+      console.error('Error loading resume:', error);
+      
+      // Handle different error scenarios
+      if (error.message?.includes('401')) {
         toast({
           title: "Resume not loaded",
           description: "Log in to load your resume for personalized questions.",
           variant: "default"
         });
-      } else if (response.status === 404) {
-        // No resume found
+      } else if (error.message?.includes('404')) {
         toast({
           title: "No resume found",
           description: "Create a resume first to get personalized interview questions.",
           variant: "default"
         });
+      } else {
+        toast({
+          title: "Error loading resume",
+          description: "There was an error loading your resume. Using generic questions instead.",
+          variant: "destructive"
+        });
       }
-    } catch (error) {
-      console.error('Error loading resume:', error);
-      toast({
-        title: "Error loading resume",
-        description: "There was an error loading your resume. Using generic questions instead.",
-        variant: "destructive"
-      });
     } finally {
       setLoadingResume(false);
     }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/ui/core/Button';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/ui/core/Card';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter, Button } from "@/components/ui";
 import { Play, Send, Mic, Pause, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

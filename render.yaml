@@ -3,8 +3,7 @@ services:
     name: airesume-backend
     env: docker
     region: oregon
-    rootDir: server
-    dockerfilePath: ./server/Dockerfile
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: DATABASE_URL
         fromDatabase:

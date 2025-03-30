@@ -8,11 +8,11 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first to leverage Docker cache
-COPY requirements.txt .
+COPY server/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy all Python application code
-COPY . .
+COPY server/ .
 
 # Set Python path and environment variables
 ENV PYTHONPATH=/app

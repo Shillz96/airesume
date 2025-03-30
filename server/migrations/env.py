@@ -22,7 +22,7 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from python_api.models import Base
+from models.database_models import Base
 target_metadata = Base.metadata
 
 def run_migrations_offline() -> None:
@@ -40,6 +40,21 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
+    # Handle special cases for different database URLs
+    url = config.get_main_option("sqlalchemy.url")
+    
+    # If using SQLite, ensure foreign key support is enabled
+    if url.startswith("sqlite"):
+        from sqlalchemy import event
+        from sqlalchemy import Engine
+        
+        def _enable_sqlite_fk(dbapi_connection, connection_record):
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.close()
+            
+        event.listen(Engine, "connect", _enable_sqlite_fk)
+    
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
@@ -48,7 +63,10 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata,
+            compare_type=True,  # Compare column types
+            compare_server_default=True,  # Compare default values
         )
 
         with context.begin_transaction():

@@ -19,4 +19,4 @@ ENV PYTHONPATH=/app
 ENV PORT=8000
 
 # Command to run the application using Gunicorn
-CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "python_api.main:app", "--bind", "0.0.0.0:${PORT}"] 
+CMD gunicorn -w 4 -k uvicorn.workers.UvicornWorker python_api.main:app --bind 0.0.0.0:$PORT 

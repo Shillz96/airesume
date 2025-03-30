@@ -89,7 +89,7 @@ const DialogTitle = React.forwardRef<
     ref={ref}
     className={cn(
       "text-lg font-semibold leading-none tracking-tight",
-      gradient && "cosmic-text-gradient",
+      gradient && "bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent",
       className
     )}
     {...props}

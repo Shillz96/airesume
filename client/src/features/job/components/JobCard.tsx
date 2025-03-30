@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation } from 'wouter';
 import { Bookmark, Clock, MapPin, Star, Award, Building, CheckCircle2, ChevronRight } from 'lucide-react';
-import { Button } from '@/ui/core/Button';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import { apiRequest, queryClient } from '@/lib/queryClient';
@@ -63,25 +63,25 @@ export default function JobCard({ job }: JobCardProps) {
 
   return (
     <div 
-      className="cosmic-card border border-white/10 cursor-pointer transition-all p-4 rounded-lg"
+      className="solid-card cursor-pointer transition-all p-4"
       onClick={handleClick}
     >
       <div className="flex justify-between items-start">
         <div className="flex-1">
           <div className="flex items-start justify-between">
-            <div>
-              <h3 className="text-lg font-medium cosmic-text-gradient truncate">{job.title}</h3>
-              <p className="text-sm text-gray-300">{job.company}</p>
+            <div className="no-blur">
+              <h3 className="text-lg font-medium bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent truncate">{job.title}</h3>
+              <p className="text-sm text-gray-300 truncate">{job.company} · {job.location}</p>
             </div>
             {typeof job.match === 'number' && (
-              <div className="flex items-center space-x-1 bg-primary/10 text-primary px-2 py-1 rounded-full text-xs font-medium">
+              <div className="flex items-center space-x-1 bg-primary/10 text-primary px-2 py-1 rounded-full text-xs font-medium no-blur">
                 <Star className="h-3.5 w-3.5" />
                 <span>{job.match}% match</span>
               </div>
             )}
           </div>
           
-          <div className="flex flex-wrap gap-2 mt-2 mb-3">
+          <div className="flex flex-wrap gap-2 mt-2 mb-3 no-blur">
             {job.location && (
               <div className="flex items-center text-xs text-gray-400">
                 <MapPin className="h-3.5 w-3.5 mr-1 text-primary" />
@@ -108,7 +108,7 @@ export default function JobCard({ job }: JobCardProps) {
             )}
           </div>
           
-          <p className="text-sm text-gray-400 line-clamp-2 mb-3">
+          <p className="text-sm text-gray-400 line-clamp-2 mb-3 no-blur">
             {job.description}
           </p>
           
@@ -117,13 +117,13 @@ export default function JobCard({ job }: JobCardProps) {
               {job.skills.slice(0, 3).map((skill, index) => (
                 <span 
                   key={index} 
-                  className="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs border border-primary/30"
+                  className="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs border border-primary/30 no-blur"
                 >
                   {skill}
                 </span>
               ))}
               {job.skills.length > 3 && (
-                <span className="px-2 py-0.5 bg-card/90 text-gray-400 rounded-full text-xs border border-white/10">
+                <span className="px-2 py-0.5 bg-card/90 text-gray-400 rounded-full text-xs border-white/10 no-blur">
                   +{job.skills.length - 3} more
                 </span>
               )}
@@ -132,46 +132,15 @@ export default function JobCard({ job }: JobCardProps) {
         </div>
       </div>
       
-      <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/10">
-        <div className="flex items-center space-x-2">
-          {job.isNew && (
-            <span className="px-2 py-0.5 bg-green-500/10 text-green-500 rounded-full text-xs font-medium border border-green-500/30">
-              New
-            </span>
-          )}
-          {job.remote && (
-            <span className="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs font-medium border border-primary/30">
-              Remote
-            </span>
-          )}
-          {job.saved && (
-            <div className="flex items-center text-xs text-primary">
-              <CheckCircle2 className="h-3.5 w-3.5 mr-1" />
-              <span>Saved</span>
-            </div>
-          )}
-        </div>
-        
-        <div className="flex space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleSave}
-            iconLeft={<Bookmark className={cn("h-4 w-4", job.saved && "fill-primary text-primary")} />}
-            className="text-xs hover:text-primary hover:bg-primary/10"
-          >
-            {job.saved ? 'Saved' : 'Save'}
-          </Button>
-          
-          <Button
-            variant="outline"
-            size="sm"
-            iconRight={<ChevronRight className="h-4 w-4" />}
-            className="text-xs cosmic-btn-glow"
-          >
-            View
-          </Button>
-        </div>
+      <div className="flex justify-between items-center mt-4 pt-4 border-t border-white/10 dark:border-gray-700/30">
+        <Button variant="outline" size="sm" onClick={toggleSave} className="gap-1">
+          {job.saved ? <Bookmark size={14} fill="currentColor" /> : <Bookmark size={14} />}
+          {job.saved ? 'Saved' : 'Save Job'}
+        </Button>
+        <Button variant="secondary" size="sm" className="font-semibold gap-1.5">
+          Apply Now
+          <ChevronRight size={16} />
+        </Button>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Trash, PlusCircle, ChevronUp, ChevronDown, Save, Globe, GripVertical } from 'lucide-react';
-import { Button } from '@/ui/core/Button';
-import RichTextEditor from '@/ui/core/RichTextEditor';
+import { Button } from '@/components/ui/button';
+import RichTextEditor from '@/components/custom/RichTextEditor';
 import { cn } from '@/lib/utils';
 import { ExperienceItem, EducationItem, SkillItem, ProjectItem, PersonalInfo } from '../types';
 
@@ -45,28 +45,28 @@ export function ResumeExperienceSection({ experiences, onUpdate }: ResumeExperie
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-medium text-foreground">Professional Experience</h3>
+        <h3 className="text-xl font-medium text-foreground no-blur">Professional Experience</h3>
         <Button 
           variant="outline" 
           size="sm" 
           onClick={handleAdd}
-          iconLeft={<PlusCircle className="h-4 w-4" />}
         >
+          <PlusCircle size={16} />
           Add Experience
         </Button>
       </div>
       
       <div className="space-y-4">
         {experiences.length === 0 ? (
-          <div className="text-center p-6 border border-dashed border-border rounded-md">
-            <p className="text-muted-foreground">No experience added yet. Click the button to add your work experience.</p>
+          <div className="text-center p-6 border border-dashed border-white/10 dark:border-gray-700/30 rounded-md">
+            <p className="text-muted-foreground no-blur">No experience added yet. Click the button to add your work experience.</p>
           </div>
         ) : (
           experiences.map((exp, index) => (
             <div 
               key={exp.id} 
               className={cn(
-                "border border-border rounded-md overflow-hidden transition-all", 
+                "border border-white/10 dark:border-gray-700/30 rounded-md overflow-hidden transition-all", 
                 expandedId === exp.id ? "bg-background/50" : "bg-background/20"
               )}
             >
@@ -77,12 +77,12 @@ export function ResumeExperienceSection({ experiences, onUpdate }: ResumeExperie
                 <div className="flex items-center">
                   <GripVertical className="h-5 w-5 text-primary mr-2 cursor-grab" />
                   <div>
-                    <h4 className="font-medium text-foreground">
+                    <h4 className="font-medium text-foreground no-blur">
                       {exp.title || "Untitled Position"}
                       {exp.company && <span> at {exp.company}</span>}
                     </h4>
                     {(exp.startDate || exp.endDate) && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-muted-foreground no-blur">
                         {exp.startDate} {exp.startDate && exp.endDate && "–"} {exp.endDate}
                       </p>
                     )}
@@ -109,53 +109,53 @@ export function ResumeExperienceSection({ experiences, onUpdate }: ResumeExperie
               </div>
               
               {expandedId === exp.id && (
-                <div className="p-4 pt-0 border-t border-border">
+                <div className="p-4 pt-0 border-t border-white/10 dark:border-gray-700/30">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1 no-blur">
                         Job Title
                       </label>
                       <input
                         type="text"
                         value={exp.title}
                         onChange={(e) => handleChange(exp.id, 'title', e.target.value)}
-                        className="w-full p-2 border border-border rounded-md bg-background"
+                        className="w-full p-2 border border-white/10 dark:border-gray-700/30 rounded-md bg-background no-blur"
                         placeholder="E.g. Software Engineer"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1 no-blur">
                         Company
                       </label>
                       <input
                         type="text"
                         value={exp.company}
                         onChange={(e) => handleChange(exp.id, 'company', e.target.value)}
-                        className="w-full p-2 border border-border rounded-md bg-background"
+                        className="w-full p-2 border border-white/10 dark:border-gray-700/30 rounded-md bg-background no-blur"
                         placeholder="E.g. Acme Corp"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1 no-blur">
                         Start Date
                       </label>
                       <input
                         type="text"
                         value={exp.startDate}
                         onChange={(e) => handleChange(exp.id, 'startDate', e.target.value)}
-                        className="w-full p-2 border border-border rounded-md bg-background"
+                        className="w-full p-2 border border-white/10 dark:border-gray-700/30 rounded-md bg-background no-blur"
                         placeholder="E.g. Jan 2020"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-foreground mb-1">
+                      <label className="block text-sm font-medium text-foreground mb-1 no-blur">
                         End Date
                       </label>
                       <input
                         type="text"
                         value={exp.endDate}
                         onChange={(e) => handleChange(exp.id, 'endDate', e.target.value)}
-                        className="w-full p-2 border border-border rounded-md bg-background"
+                        className="w-full p-2 border border-white/10 dark:border-gray-700/30 rounded-md bg-background no-blur"
                         placeholder="E.g. Present"
                       />
                     </div>
@@ -225,8 +225,8 @@ export function ResumeEducationSection({ education, onUpdate }: ResumeEducationS
           variant="outline" 
           size="sm" 
           onClick={handleAdd}
-          iconLeft={<PlusCircle className="h-4 w-4" />}
         >
+          <PlusCircle size={16} />
           Add Education
         </Button>
       </div>
@@ -657,8 +657,8 @@ export function ResumeProjectsSection({ projects, onUpdate }: ResumeProjectsSect
           variant="outline" 
           size="sm" 
           onClick={handleAdd}
-          iconLeft={<PlusCircle className="h-4 w-4" />}
         >
+          <PlusCircle size={16} />
           Add Project
         </Button>
       </div>

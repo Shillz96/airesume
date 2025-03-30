@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { Link, useLocation } from 'wouter';
 import { 
   FileText, 
@@ -14,10 +14,8 @@ import {
   Trash2,
   Upload
 } from 'lucide-react';
-// Using the UI components from the new feature-based architecture
-import { Button } from '@/ui/core/Button';
-// CosmicButton is now in the ui/core directory
-import { CosmicButton } from '@/ui/core/CosmicButton';
+// Standard UI components
+import { Button } from '@/components/ui/button'; 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -26,13 +24,13 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Resume as ResumeType } from '@shared/schema';
-// Import the default resume template component
-import ResumeTemplate from '@/features/resume/components/ResumeTemplate';
-import { UnifiedPageHeader, UnifiedContainer } from '@/components/unified';
-
+// Removed unused ResumeTemplate import for now
+// import ResumeTemplate from '@/features/resume/components/ResumeTemplate';
+import PageHeader from "@/features/layout/components/PageHeader";
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { useGuestMode } from '@/hooks/use-guest-mode';
+import { cn } from '@/lib/utils'; // Import cn
 
 interface Resume extends ResumeType {
   personalInfo?: {
@@ -60,13 +58,22 @@ export default function ResumesPage() {
   const [activeTab, setActiveTab] = useState('my-resumes');
 
   // Query resumes
-  const { data: resumes = [], isLoading, error } = useQuery<Resume[]>({
+  const { data: resumes = [], isLoading, error } = useQuery<Resume[], Error>({
     queryKey: ['/api/resumes'],
-    enabled: true,
-  });
+    enabled: !!user?.id, // Only fetch if user is authenticated
+    retry: 2,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    onError: (error: Error) => {
+      toast({
+        title: "Error Loading Resumes",
+        description: "Please check your connection and try again.",
+        variant: "destructive",
+      });
+    }
+  }) as UseQueryResult<Resume[], Error>;
 
   // Filter resumes based on search query
-  const filteredResumes = searchQuery.trim() !== '' 
+  const filteredResumes = searchQuery.trim() !== '' && Array.isArray(resumes)
     ? resumes.filter((resume: Resume) => 
         (resume.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
          resume.personalInfo?.headline?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -75,50 +82,15 @@ export default function ResumesPage() {
       )
     : resumes;
 
-  // Template options for new resume
+  // Template options (simplified color mapping)
   const resumeTemplates = [
-    {
-      id: 'professional',
-      name: 'Professional',
-      description: 'Clean, organized layout for corporate settings',
-      color: 'bg-gradient-to-r from-blue-500 to-blue-700'
-    },
-    {
-      id: 'creative',
-      name: 'Creative',
-      description: 'Dynamic design for creative industries',
-      color: 'bg-gradient-to-r from-purple-500 to-pink-500'
-    },
-    {
-      id: 'executive',
-      name: 'Executive',
-      description: 'Sophisticated style for senior positions',
-      color: 'bg-gradient-to-r from-gray-700 to-gray-900'
-    },
-    {
-      id: 'modern',
-      name: 'Modern',
-      description: 'Contemporary look with balanced elements',
-      color: 'bg-gradient-to-r from-emerald-500 to-teal-700'
-    },
-    {
-      id: 'minimalist',
-      name: 'Minimalist',
-      description: 'Simple, focused design with essential info',
-      color: 'bg-gradient-to-r from-amber-500 to-orange-600'
-    },
-    {
-      id: 'industry',
-      name: 'Industry',
-      description: 'Specialized format for technical roles',
-      color: 'bg-gradient-to-r from-indigo-500 to-indigo-700'
-    },
-    {
-      id: 'bold',
-      name: 'Bold',
-      description: 'Strong visual impact with clear hierarchy',
-      color: 'bg-gradient-to-r from-red-500 to-rose-700'
-    }
+    { id: 'professional', name: 'Professional', description: 'Clean, organized layout for corporate settings', colorClass: 'bg-blue-500' },
+    { id: 'creative', name: 'Creative', description: 'Dynamic design for creative industries', colorClass: 'bg-purple-500' },
+    { id: 'executive', name: 'Executive', description: 'Sophisticated style for senior positions', colorClass: 'bg-gray-700' },
+    { id: 'modern', name: 'Modern', description: 'Contemporary look with balanced elements', colorClass: 'bg-emerald-500' },
+    { id: 'minimalist', name: 'Minimalist', description: 'Simple, focused design with essential info', colorClass: 'bg-amber-500' },
+    { id: 'industry', name: 'Industry', description: 'Specialized format for technical roles', colorClass: 'bg-indigo-500' },
+    { id: 'bold', name: 'Bold', description: 'Strong visual impact with clear hierarchy', colorClass: 'bg-red-500' }
   ];
 
   // Handle resume creation
@@ -156,18 +128,20 @@ export default function ResumesPage() {
           }
           
           const resumeData = await response.json();
-          console.log("Resume to edit:", resumeData);
           
           // Store resume data in localStorage for resume-builder to use
-          localStorage.setItem('editingResume', JSON.stringify({
-            resumeData,
-            timestamp: new Date().toISOString()
-          }));
+          try {
+            localStorage.setItem('editingResume', JSON.stringify({
+              resumeData,
+              timestamp: new Date().toISOString()
+            }));
+          } catch (e) {
+            // Silently fail if localStorage is not available
+          }
           
           // Navigate to edit page
           navigate(`/resume-builder?id=${id}&edit=true`);
         } catch (error) {
-          console.error("Error loading resume for editing:", error);
           toast({
             title: "Error Loading Resume",
             description: "Failed to load resume for editing. Please try again.",
@@ -217,7 +191,6 @@ export default function ResumesPage() {
             variant: "destructive",
           });
         } catch (error) {
-          console.error("Error deleting resume:", error);
           toast({
             title: "Error Deleting Resume",
             description: "Failed to delete the resume. Please try again.",
@@ -234,79 +207,190 @@ export default function ResumesPage() {
     }
   };
 
-  return (
-    <>
-      
-      <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4 pb-10 min-h-screen relative z-10">
-        <UnifiedPageHeader 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl">
+        <PageHeader
           title="My Resumes"
           subtitle="Manage and organize all your resumes in one place"
-          variant="cosmic"
-          borderStyle="gradient"
+          actions={
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => handleResumeAction('upload')}>
+                <Upload className="w-4 h-4 mr-2" />
+                Upload Resume
+              </Button>
+              <Button onClick={() => handleCreateNewResume('professional')}>
+                <Plus className="w-4 h-4 mr-2" />
+                Create New Resume
+              </Button>
+            </div>
+          }
+        />
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="animate-pulse">
+              <CardHeader>
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2 mt-2" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-20 w-full" />
+              </CardContent>
+              <CardFooter>
+                <Skeleton className="h-8 w-full" />
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl">
+        <PageHeader
+          title="My Resumes"
+          subtitle="Manage and organize all your resumes in one place"
+          actions={
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => handleResumeAction('upload')}>
+                <Upload className="w-4 h-4 mr-2" />
+                Upload Resume
+              </Button>
+              <Button onClick={() => handleCreateNewResume('professional')}>
+                <Plus className="w-4 h-4 mr-2" />
+                Create New Resume
+              </Button>
+            </div>
+          }
+        />
+        <div className="mt-8 p-4 bg-destructive/10 rounded-lg text-destructive">
+          <p>Error loading resumes. Please try again.</p>
+          <Button 
+            variant="outline" 
+            className="mt-2"
+            onClick={() => window.location.reload()}
+          >
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state for no resumes
+  if (resumes.length === 0) {
+    return (
+      <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl">
+        <PageHeader
+          title="My Resumes"
+          subtitle="Manage and organize all your resumes in one place"
+          actions={
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => handleResumeAction('upload')}>
+                <Upload className="w-4 h-4 mr-2" />
+                Upload Resume
+              </Button>
+              <Button onClick={() => handleCreateNewResume('professional')}>
+                <Plus className="w-4 h-4 mr-2" />
+                Create New Resume
+              </Button>
+            </div>
+          }
+        />
+        <div className="mt-8 text-center p-8 bg-card rounded-lg border">
+          <FileText className="w-12 h-12 mx-auto text-muted-foreground" />
+          <h3 className="mt-4 text-lg font-semibold">No Resumes Yet</h3>
+          <p className="mt-2 text-muted-foreground">
+            Create your first resume or upload an existing one to get started.
+          </p>
+          <div className="mt-4 flex gap-2 justify-center">
+            <Button variant="outline" onClick={() => handleResumeAction('upload')}>
+              <Upload className="w-4 h-4 mr-2" />
+              Upload Resume
+            </Button>
+            <Button onClick={() => handleCreateNewResume('professional')}>
+              <Plus className="w-4 h-4 mr-2" />
+              Create New Resume
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4 pb-10 min-h-screen relative z-10">
+        <PageHeader 
+          title="My Resumes"
+          subtitle="Manage and organize all your resumes in one place"
           actions={
             <div className="flex space-x-3">
-            <CosmicButton 
-              variant="outline" 
-              size="sm"
-              onClick={() => handleResumeAction('upload')}
-              className="cosmic-gradient-border hover:text-white"
-            >
-              <Upload className="mr-2 h-4 w-4 text-blue-400" />
-              Upload Resume
-            </CosmicButton>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => handleResumeAction('upload')}
+                className="border-border text-muted-foreground hover:bg-muted hover:text-muted-foreground"
+              >
+                <Upload className="mr-2 h-4 w-4 text-primary" />
+                Upload Resume
+              </Button>
 
-            <Dialog>
-              <DialogTrigger asChild>
-                <CosmicButton size="sm" variant="primary" withGlow>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create New Resume
-                </CosmicButton>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px] cosmic-card border-white/10">
-                <DialogHeader>
-                  <DialogTitle className="cosmic-text-gradient text-xl">Create a New Resume</DialogTitle>
-                  <DialogDescription className="text-gray-300">
-                    Choose a template to start building your new resume
-                  </DialogDescription>
-                </DialogHeader>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button size="sm" variant="default">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create New Resume
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[600px]">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Create a New Resume</DialogTitle>
+                    <DialogDescription className="text-muted-foreground">
+                      Choose a template to start building your new resume
+                    </DialogDescription>
+                  </DialogHeader>
 
-                <div className="grid grid-cols-2 gap-4 py-4">
-                  {resumeTemplates.map((template) => (
-                    <div 
-                      key={template.id}
-                      className="border border-white/10 bg-black/40 rounded-lg overflow-hidden hover:border-blue-500 transition-colors cursor-pointer cosmic-card-hover"
-                      onClick={() => handleCreateNewResume(template.id)}
-                    >
-                      <div className={`h-6 ${template.color}`}></div>
-                      <div className="p-4">
-                        <h3 className="font-medium text-white mb-1">{template.name}</h3>
-                        <p className="text-sm text-gray-300">{template.description}</p>
+                  <div className="grid grid-cols-2 gap-4 py-4">
+                    {resumeTemplates.map((template) => (
+                      <div 
+                        key={template.id}
+                        className="border border-border bg-card rounded-lg overflow-hidden hover:border-primary/50 transition-colors cursor-pointer"
+                        onClick={() => handleCreateNewResume(template.id)}
+                      >
+                        <div className={`h-2 ${template.colorClass}`}></div>
+                        <div className="p-4">
+                          <h3 className="font-medium text-foreground mb-1">{template.name}</h3>
+                          <p className="text-sm text-muted-foreground">{template.description}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
 
-                <DialogFooter>
-                  <CosmicButton 
-                    variant="outline" 
-                    onClick={() => handleCreateNewResume('blank')}
-                    className="border-white/10 text-gray-200 hover:bg-white/10 hover:text-white"
-                  >
-                    Start from Scratch
-                  </CosmicButton>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
+                  <DialogFooter>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => handleCreateNewResume('blank')}
+                    >
+                      Start from Scratch
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
           }
         />
 
         <div className="mb-8">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-400" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary" />
             <Input
               placeholder="Search your resumes..."
-              className="pl-10 bg-black/30 border-white/10 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+              className="pl-10"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -317,60 +401,26 @@ export default function ResumesPage() {
           defaultValue="my-resumes" 
           value={activeTab} 
           onValueChange={setActiveTab}
-          className="cosmic-tabs"
+          className=""
         >
-          <div className="border-b border-white/10 mb-6">
-            <TabsList className="bg-transparent mb-[-1px]">
-              <TabsTrigger 
-                value="my-resumes" 
-                className="rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:text-blue-400 text-gray-300"
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                My Resumes
-              </TabsTrigger>
-              <TabsTrigger 
-                value="templates" 
-                className="rounded-b-none data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:text-blue-400 text-gray-300"
-              >
-                <BarChart2 className="h-4 w-4 mr-2" />
-                Templates
-              </TabsTrigger>
-            </TabsList>
-          </div>
+          <TabsList className="mb-6">
+            <TabsTrigger value="my-resumes" className="no-blur"> 
+              <FileText className="h-4 w-4 mr-2" />
+              My Resumes
+            </TabsTrigger>
+            <TabsTrigger value="templates" className="no-blur"> 
+              <BarChart2 className="h-4 w-4 mr-2" />
+              Templates
+            </TabsTrigger>
+          </TabsList>
 
           <TabsContent value="my-resumes" className="mt-0">
-            {isLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {[...Array(6)].map((_, i) => (
-                  <Card key={i} className="overflow-hidden cosmic-card border-white/10">
-                    <CardHeader className="pb-2">
-                      <Skeleton className="h-6 w-2/3 bg-white/10" />
-                      <Skeleton className="h-4 w-full mt-2 bg-white/10" />
-                    </CardHeader>
-                    <CardContent>
-                      <Skeleton className="h-24 w-full bg-white/10" />
-                    </CardContent>
-                    <CardFooter>
-                      <div className="flex justify-between w-full">
-                        <Skeleton className="h-9 w-1/3 bg-white/10" />
-                        <Skeleton className="h-9 w-1/3 bg-white/10" />
-                      </div>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
-            ) : error ? (
-              <Card className="cosmic-card border-white/10">
-                <CardContent className="flex items-center justify-center p-6">
-                  <p className="text-red-400">Error loading resumes. Please try again.</p>
-                </CardContent>
-              </Card>
-            ) : filteredResumes.length === 0 ? (
-              <Card className="border-dashed cosmic-card border-white/10">
+            {filteredResumes.length === 0 ? (
+              <Card className="border-dashed border-border">
                 <CardContent className="flex flex-col items-center justify-center p-10 text-center">
-                  <FileText className="h-16 w-16 text-blue-400 mb-6 opacity-80" />
-                  <h3 className="text-lg font-medium mb-3 text-white">No resumes found</h3>
-                  <p className="text-gray-300 mb-6 max-w-md">
+                  <FileText className="h-16 w-16 text-primary mb-6 opacity-80" />
+                  <h3 className="text-lg font-medium mb-3 text-foreground">No resumes found</h3>
+                  <p className="text-muted-foreground mb-6 max-w-md">
                     {searchQuery 
                       ? "No resumes match your search criteria. Try a different search term or clear the search."
                       : "You haven't created any resumes yet. Create your first resume or upload an existing one."}
@@ -378,21 +428,20 @@ export default function ResumesPage() {
                   <div className="flex gap-3">
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                        <Button variant="default">
                           <Plus className="mr-2 h-4 w-4" />
                           Create New Resume
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="cosmic-card border-white/10">
-                        {/* Template content is the same as above */}
+                      <DialogContent className="sm:max-w-[600px]">
+                        {/* Template content from above could be reused here */}
                       </DialogContent>
                     </Dialog>
                     <Button 
                       variant="outline" 
                       onClick={() => handleResumeAction('upload')}
-                      className="border-white/10 text-gray-200 hover:bg-white/10 hover:text-white"
                     >
-                      <Upload className="mr-2 h-4 w-4 text-blue-400" />
+                      <Upload className="mr-2 h-4 w-4 text-primary" />
                       Upload Resume
                     </Button>
                   </div>
@@ -401,58 +450,52 @@ export default function ResumesPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredResumes.map((resume: Resume) => (
-                  <Card key={resume.id} className="overflow-hidden group cosmic-card border-white/10 hover:border-blue-500/50 transition-all duration-300">
-                    <div className={`h-2 ${
-                      resume.template === 'professional' ? 'bg-gradient-to-r from-blue-500 to-blue-700' :
-                      resume.template === 'creative' ? 'bg-gradient-to-r from-purple-500 to-pink-500' :
-                      resume.template === 'executive' ? 'bg-gradient-to-r from-gray-700 to-gray-900' :
-                      resume.template === 'modern' ? 'bg-gradient-to-r from-emerald-500 to-teal-700' :
-                      resume.template === 'minimalist' ? 'bg-gradient-to-r from-amber-500 to-orange-600' : 'bg-gradient-to-r from-blue-500 to-purple-600'
-                    }`}></div>
+                  <Card key={resume.id} className="overflow-hidden group border-border hover:border-primary/50 transition-all duration-300">
+                    <div className={`h-2 ${resumeTemplates.find(t => t.id === resume.template)?.colorClass || 'bg-primary'}`}></div>
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-start">
-                        <CardTitle className="text-lg truncate text-white">{resume.title}</CardTitle>
-                        <Badge variant="outline" className="text-xs border-white/20 text-blue-300 bg-blue-900/20">
+                        <CardTitle className="text-lg truncate text-foreground">{resume.title}</CardTitle>
+                        <Badge variant="secondary" className="text-xs">
                           {resume.template?.charAt(0).toUpperCase() + resume.template?.slice(1) || 'Basic'}
                         </Badge>
                       </div>
-                      <CardDescription className="truncate text-gray-300">
+                      <CardDescription className="truncate text-muted-foreground">
                         {resume.personalInfo?.headline || 'No headline'}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="relative">
-                      <div className="flex items-center text-sm text-gray-400 space-x-4 mb-4">
+                      <div className="flex items-center text-sm text-muted-foreground space-x-4 mb-4">
                         <div className="flex items-center">
-                          <Calendar className="h-3.5 w-3.5 mr-1.5 text-blue-400" />
+                          <Calendar className="h-3.5 w-3.5 mr-1.5 text-primary" />
                           <span>Updated {new Date().toLocaleDateString()}</span>
                         </div>
                         <div className="flex items-center">
-                          <Briefcase className="h-3.5 w-3.5 mr-1.5 text-blue-400" />
+                          <Briefcase className="h-3.5 w-3.5 mr-1.5 text-primary" />
                           <span>{resume.experience?.length || 0} jobs</span>
                         </div>
                       </div>
-                      <div className="aspect-[11/14] bg-black/50 rounded border border-white/10 flex items-center justify-center cosmic-glow-subtle">
+                      <div className="aspect-[11/14] bg-muted/30 rounded border border-border flex items-center justify-center">
                         <div className="text-center p-4">
-                          <div className="text-xs text-gray-400">Preview</div>
+                          <div className="text-xs text-muted-foreground">Preview</div>
                         </div>
                       </div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 flex items-end justify-center p-4 transition-opacity duration-300">
+                      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent opacity-0 group-hover:opacity-100 flex items-end justify-center p-4 transition-opacity duration-300">
                         <Button 
                           onClick={() => handleResumeAction('edit', resume.id)}
-                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                          variant="default"
                         >
                           Edit Resume
                         </Button>
                       </div>
                     </CardContent>
-                    <CardFooter className="flex justify-between border-t border-white/5 bg-black/20 pt-3">
+                    <CardFooter className="flex justify-between border-t border-border bg-muted/30 pt-3">
                       <Button 
                         variant="ghost" 
                         size="sm"
                         onClick={() => handleResumeAction('download', resume.id)}
-                        className="text-gray-300 hover:text-white hover:bg-blue-800/20"
+                        className="text-muted-foreground hover:text-primary"
                       >
-                        <Download className="h-4 w-4 mr-2 text-blue-400" />
+                        <Download className="h-4 w-4 mr-2 text-primary" />
                         Download
                       </Button>
                       <div className="flex gap-1">
@@ -460,25 +503,25 @@ export default function ResumesPage() {
                           variant="ghost"
                           size="icon"
                           onClick={() => handleResumeAction('edit', resume.id)}
-                          className="h-8 w-8 text-gray-300 hover:text-white hover:bg-blue-800/20"
+                          className="h-8 w-8 text-muted-foreground hover:text-primary"
                         >
-                          <Edit className="h-4 w-4 text-blue-400" />
+                          <Edit className="h-4 w-4 text-primary" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => handleResumeAction('duplicate', resume.id)}
-                          className="h-8 w-8 text-gray-300 hover:text-white hover:bg-blue-800/20"
+                          className="h-8 w-8 text-muted-foreground hover:text-primary"
                         >
-                          <Copy className="h-4 w-4 text-blue-400" />
+                          <Copy className="h-4 w-4 text-primary" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => handleResumeAction('delete', resume.id)}
-                          className="h-8 w-8 text-gray-300 hover:text-white hover:bg-red-800/20"
+                          className="h-8 w-8 text-destructive/80 hover:text-destructive hover:bg-destructive/10"
                         >
-                          <Trash2 className="h-4 w-4 text-red-400" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </CardFooter>
@@ -491,38 +534,37 @@ export default function ResumesPage() {
           <TabsContent value="templates" className="mt-0">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {resumeTemplates.map((template) => (
-                <Card key={template.id} className="overflow-hidden group cosmic-card border-white/10 hover:border-blue-500/50 transition-all duration-300">
-                  <div className={`h-2 ${template.color}`}></div>
+                <Card key={template.id} className="overflow-hidden group border-border hover:border-primary/50 transition-all duration-300">
+                  <div className={`h-2 ${template.colorClass}`}></div>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-lg text-white">{template.name}</CardTitle>
-                    <CardDescription className="text-gray-300">
+                    <CardTitle className="text-lg text-foreground">{template.name}</CardTitle>
+                    <CardDescription className="text-muted-foreground">
                       {template.description}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="relative">
-                    <div className="aspect-[11/14] bg-black/50 rounded border border-white/10 flex items-center justify-center cosmic-glow-subtle overflow-hidden">
-                      {/* Replace with simplified template preview */}
-                      <div className={`h-32 w-full flex items-center justify-center ${template.color} rounded-md`}>
+                    <div className="aspect-[11/14] bg-muted/30 rounded border border-border flex items-center justify-center overflow-hidden">
+                      <div className={`h-32 w-full flex items-center justify-center ${template.colorClass} rounded-md`}>
                         <span className="text-white font-medium">{template.name}</span>
                       </div>
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 flex items-end justify-center p-4 transition-opacity duration-300">
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent opacity-0 group-hover:opacity-100 flex items-end justify-center p-4 transition-opacity duration-300">
                       <Button 
                         onClick={() => handleCreateNewResume(template.id)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                        variant="default"
                       >
                         Use This Template
                       </Button>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex justify-center border-t border-white/5 bg-black/20 pt-3">
+                  <CardFooter className="flex justify-center border-t border-border bg-muted/30 pt-3">
                     <Button 
                       onClick={() => handleCreateNewResume(template.id)}
                       variant="ghost" 
                       size="sm"
-                      className="text-gray-300 hover:text-white hover:bg-blue-800/20"
+                      className="text-muted-foreground hover:text-primary"
                     >
-                      <Plus className="h-4 w-4 mr-2 text-blue-400" />
+                      <Plus className="h-4 w-4 mr-2 text-primary" />
                       Create Resume
                     </Button>
                   </CardFooter>

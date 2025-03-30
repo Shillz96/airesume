@@ -1,4 +1,4 @@
-import { Button } from "@/components/unified";
+import { Button } from "@/components/ui/button";
 import { 
   Save, 
   Plus, 
@@ -7,10 +7,12 @@ import {
   LogIn, 
   Trash2, 
   Loader2, 
-  ArrowRight 
+  ArrowRight,
+  Heart,
+  Check,
+  Trash
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/unified";
-import { Text } from "@/components/unified";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 /**
  * Guide component that demonstrates the unified button styles
@@ -18,150 +20,97 @@ import { Text } from "@/components/unified";
  */
 export default function ButtonGuide() {
   return (
-    <Card variant="glass" className="space-y-6 p-6">
-      <CardHeader>
+    <Card className="space-y-6 p-6 bg-black/30 backdrop-blur-md rounded-lg border border-white/10">
+      <CardHeader className="p-0">
         <CardTitle>Unified Button Style Guide</CardTitle>
         <CardDescription>Use these consistent button styles throughout the application.</CardDescription>
       </CardHeader>
       
-      <CardContent className="space-y-6">
-        <div>
-          <Text variant="h3" className="mb-2">Primary Buttons</Text>
-          <Text variant="body2" color="muted" className="mb-3">Use for primary actions, like submitting forms or confirming an important action</Text>
-          <div className="flex flex-wrap gap-4">
-            <Button variant="primary">
-              Primary Button
+      <CardContent className="p-0">
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium mb-2 text-white">Primary Buttons</h3>
+          <p className="text-gray-400 text-sm mb-3">Use for primary actions, like submitting forms or confirming an important action</p>
+          <div className="flex flex-wrap items-center gap-4">
+            <Button variant="default">
+              <Heart className="mr-2 h-4 w-4" /> Default Primary
             </Button>
-            <Button 
-              variant="primary" 
-              iconLeft={<Save />}
-            >
-              Save Resume
-            </Button>
-            <Button 
-              variant="primary" 
-              iconRight={<ArrowRight />}
-            >
-              Next Step
-            </Button>
-            <Button 
-              variant="primary" 
-              isLoading 
-              loadingText="Saving..."
-            >
-              Save Resume
+            <Button variant="default" size="sm">Small Primary</Button>
+            <Button variant="default" size="lg">Large Primary</Button>
+            <Button variant="default" disabled>Disabled Primary</Button>
+            <Button variant="default" disabled>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Loading...
             </Button>
           </div>
         </div>
 
-        <div>
-          <Text variant="h3" className="mb-2">Secondary Buttons</Text>
-          <Text variant="body2" color="muted" className="mb-3">Use for secondary actions, like alternative options</Text>
-          <div className="flex flex-wrap gap-4">
+        <div className="space-y-4 mt-6">
+          <h3 className="text-lg font-medium mb-2 text-white">Secondary Buttons</h3>
+          <p className="text-gray-400 text-sm mb-3">Use for secondary actions, like alternative options</p>
+          <div className="flex flex-wrap items-center gap-4">
             <Button variant="secondary">
-              Secondary Button
+              <ArrowRight className="mr-2 h-4 w-4" /> Secondary
             </Button>
-            <Button 
-              variant="secondary" 
-              iconLeft={<Download />}
-            >
-              Download PDF
-            </Button>
-            <Button 
-              variant="secondary" 
-              isLoading 
-              loadingText="Loading..."
-            >
-              Load Resume
+            <Button variant="secondary" size="sm">Small Secondary</Button>
+            <Button variant="secondary" disabled>
+               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+               Loading...
             </Button>
           </div>
         </div>
 
-        <div>
-          <Text variant="h3" className="mb-2">Outline Buttons</Text>
-          <Text variant="body2" color="muted" className="mb-3">Use for less emphasized actions or in card interfaces</Text>
-          <div className="flex flex-wrap gap-4">
+        <div className="space-y-4 mt-6">
+          <h3 className="text-lg font-medium mb-2 text-white">Outline Buttons</h3>
+          <p className="text-gray-400 text-sm mb-3">Use for less emphasized actions or in card interfaces</p>
+          <div className="flex flex-wrap items-center gap-4">
             <Button variant="outline">
-              Outline Button
+              <Trash className="mr-2 h-4 w-4" /> Outline
             </Button>
-            <Button 
-              variant="outline" 
-              iconLeft={<Plus />}
-            >
-              Add Section
-            </Button>
-            <Button 
-              variant="outline" 
-              isLoading 
-              loadingText="Generating..."
-            >
-              Generate AI Content
+            <Button variant="outline" size="sm">Small Outline</Button>
+            <Button variant="outline" disabled>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+               Loading...
             </Button>
           </div>
         </div>
 
-        <div>
-          <Text variant="h3" className="mb-2">Ghost Buttons</Text>
-          <Text variant="body2" color="muted" className="mb-3">Use for subtle actions or in tight spaces</Text>
-          <div className="flex flex-wrap gap-4">
+        <div className="space-y-4 mt-6">
+          <h3 className="text-lg font-medium mb-2 text-white">Ghost Buttons</h3>
+          <p className="text-gray-400 text-sm mb-3">Use for subtle actions or in tight spaces</p>
+          <div className="flex flex-wrap items-center gap-4">
             <Button variant="ghost">
-              Ghost Button
+              <Check className="mr-2 h-4 w-4" /> Ghost
             </Button>
-            <Button 
-              variant="ghost" 
-              iconLeft={<Mail />}
-            >
-              Contact Support
-            </Button>
-            <Button variant="ghost" iconLeft={<LogIn />}>
-              Sign In
-            </Button>
+            <Button variant="ghost" size="sm">Small Ghost</Button>
+            <Button variant="ghost" disabled>Disabled Ghost</Button>
           </div>
         </div>
 
-        <div>
-          <Text variant="h3" className="mb-2">Destructive Buttons</Text>
-          <Text variant="body2" color="muted" className="mb-3">Use for dangerous actions like deletion</Text>
-          <div className="flex flex-wrap gap-4">
+        <div className="space-y-4 mt-6">
+          <h3 className="text-lg font-medium mb-2 text-white">Destructive Buttons</h3>
+          <p className="text-gray-400 text-sm mb-3">Use for dangerous actions like deletion</p>
+          <div className="flex flex-wrap items-center gap-4">
             <Button variant="destructive">
-              Destructive Button
+               <Trash className="mr-2 h-4 w-4" /> Destructive
             </Button>
-            <Button 
-              variant="destructive" 
-              iconLeft={<Trash2 />}
-            >
-              Delete Resume
-            </Button>
-            <Button 
-              variant="destructive" 
-              isLoading
-              loadingText="Deleting..."
-            >
-              Delete Account
+            <Button variant="destructive" size="sm">Small Destructive</Button>
+            <Button variant="destructive" disabled>
+               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+               Loading...
             </Button>
           </div>
         </div>
         
-        <div>
-          <Text variant="h3" className="mb-2">Cosmic Buttons</Text>
-          <Text variant="body2" color="muted" className="mb-3">Use for cosmic themed actions</Text>
-          <div className="flex flex-wrap gap-4">
-            <Button variant="cosmic">
-              Cosmic Button
+        <div className="space-y-4 mt-6">
+          <h3 className="text-2xl font-bold mb-2">Cosmic Buttons</h3>
+          <p className="text-sm text-muted-foreground mb-3">Use for cosmic themed actions</p>
+          <div className="flex flex-wrap items-center gap-4">
+            <Button variant="default" disabled>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Loading...
             </Button>
-            <Button 
-              variant="cosmic" 
-              iconLeft={<Save />}
-            >
-              Save Resume
-            </Button>
-            <Button 
-              variant="cosmic" 
-              isLoading 
-              loadingText="Loading..."
-            >
-              Loading
-            </Button>
+            <Button variant="default" size="sm">Small Cosmic</Button>
+            <Button variant="default" size="lg">Large Cosmic</Button>
           </div>
         </div>
       </CardContent>

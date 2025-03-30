@@ -10,9 +10,173 @@
  * 3. Maintainable - clear organization and naming conventions
  */
 
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /* Core Theme Colors */
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+
+    /* Primary Accent Colors */
+    --primary: 156 100% 50%;
+    --primary-foreground: 210 40% 98%;
+    
+    /* Secondary Accent Colors */
+    --secondary: 199 89% 48%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    /* Muted & Subtle Colors */
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+
+    /* Card & Panel Colors */
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+
+    /* Accent Colors */
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+
+    /* Destructive Colors */
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    /* Border Colors */
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+    --ring: 216 34% 17%;
+
+    /* Radius & Spacing */
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans;
+    background: radial-gradient(ellipse at top, rgb(10, 15, 30), rgb(5, 8, 15));
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-space-grotesk font-bold tracking-tight;
+  }
+
+  h1 { @apply text-5xl md:text-6xl; }
+  h2 { @apply text-4xl md:text-5xl; }
+  h3 { @apply text-3xl md:text-4xl; }
+  h4 { @apply text-2xl md:text-3xl; }
+}
+
+@layer components {
+  /* Glass Card Effect */
+  .glass-card {
+    @apply bg-black/20 backdrop-blur-xl border border-white/10 shadow-xl;
+  }
+
+  /* Glassmorphic Panel */
+  .glass-panel {
+    @apply bg-black/30 backdrop-blur-lg border border-white/5 shadow-2xl;
+  }
+
+  /* Neon Glow Effects */
+  .glow-primary {
+    box-shadow: 0 0 20px theme('colors.primary.DEFAULT'),
+                0 0 40px theme('colors.primary.DEFAULT/30');
+  }
+
+  .glow-secondary {
+    box-shadow: 0 0 20px theme('colors.secondary.DEFAULT'),
+                0 0 40px theme('colors.secondary.DEFAULT/30');
+  }
+
+  /* Button Styles */
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary to-secondary text-white font-semibold 
+           py-2 px-6 rounded-lg transition-all duration-300
+           hover:shadow-[0_0_20px_rgba(0,255,180,0.5)]
+           active:scale-[0.97];
+  }
+
+  .btn-secondary {
+    @apply bg-transparent border-2 border-white/20 text-white font-semibold
+           py-2 px-6 rounded-lg transition-all duration-300
+           hover:border-white/40 hover:bg-white/5
+           active:scale-[0.97];
+  }
+
+  /* Input Fields */
+  .input-glass {
+    @apply bg-black/20 backdrop-blur-md border border-white/10 
+           rounded-lg px-4 py-2 text-white placeholder-white/50
+           focus:outline-none focus:ring-2 focus:ring-primary/50;
+  }
+
+  /* Navigation */
+  .nav-glass {
+    @apply fixed top-0 left-0 right-0 z-50
+           bg-black/10 backdrop-blur-lg border-b border-white/5
+           transition-all duration-300;
+  }
+
+  .nav-link {
+    @apply relative text-white/80 hover:text-white transition-colors duration-200
+           after:content-[''] after:absolute after:bottom-0 after:left-0
+           after:w-full after:h-0.5 after:bg-primary
+           after:transform after:scale-x-0 after:origin-left
+           after:transition-transform after:duration-300
+           hover:after:scale-x-100;
+  }
+
+  /* Animated Gradients */
+  .animated-gradient {
+    background: linear-gradient(
+      45deg,
+      theme('colors.primary.DEFAULT'),
+      theme('colors.secondary.DEFAULT'),
+      theme('colors.primary.DEFAULT')
+    );
+    background-size: 200% 200%;
+    animation: gradient 6s ease infinite;
+  }
+
+  @keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-black/20;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-white/10 rounded-full hover:bg-white/20;
+}
+
+/* Utility Classes */
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
+}
+
+.border-gradient {
+  border-image: linear-gradient(to right, theme('colors.primary.DEFAULT'), theme('colors.secondary.DEFAULT')) 1;
+}
 
 /* --------------------------------
  * ROOT VARIABLES - Light/Dark Mode Support
@@ -51,6 +215,8 @@
   --grid-gap-sm: var(--space-2);
   --grid-gap: var(--space-4);
   --grid-gap-lg: var(--space-6);
+
+  
   
   /* Component spacing */
   --card-padding-sm: var(--space-4);
@@ -102,113 +268,60 @@
   
   /* ========== STATUS COLORS ========== */
   /* These remain consistent across all themes */
-  --success: #10b981;
+  --success: 16 185 129; /* #10B981 */
   --success-rgb: 16, 185, 129;
-  --warning: #f59e0b;
+  --warning: 245 158 11; /* #F59E0B */
   --warning-rgb: 245, 158, 11;
-  --danger: #ef4444;
+  --danger: 239 68 68; /* #ef4444 */
   --danger-rgb: 239, 68, 68;
-  --info: #3b82f6;
+  --info: 59 130 246; /* #3b82f6 */
   --info-rgb: 59, 130, 246;
+
+  /* ========== NEW CSS VARIABLE MAPPINGS (Enhanced Theme) ========== */
+  /* Light Mode Defaults */
+  --color-background: 241 245 249; /* slate-100 (Keep existing) */
+  --color-text: 17 24 39; /* gray-900 (Keep existing) */
+  --color-card: 255 255 255; /* white (Keep existing) */
+  --color-primary: 30 58 138; /* #1E3A8A (NEW) */
+  --color-secondary: 16 185 129; /* #10B981 (NEW - matches success) */
+  --color-muted: 75 85 99; /* gray-600 (Keep existing) */
+  --color-accent: 245 158 11; /* #F59E0B (NEW - matches warning/highlight) */
+  --color-error: 239 68 68; /* red-500 (Keep existing) */
+  --color-border: 203 213 225; /* slate-300 (Keep existing) */
+  --color-highlight: 245 158 11; /* amber-500 (Keep existing - matches accent/warning) */
 }
 
 /* ========== DARK MODE THEME ========== */
 .dark {
-  /* Core Colors */
-  --background: #050A18;
-  --background-rgb: 5, 10, 24;
-  --foreground: #ffffff;
-  --foreground-rgb: 255, 255, 255;
+  /* Override CSS variables for dark mode (Enhanced Theme) */
+  --color-background: 17 24 39; /* gray-900 (Keep existing) */
+  --color-text: 243 244 246; /* gray-100 (Keep existing) */
+  --color-card: 31 41 55; /* slate-800 (Keep existing) */
+  /* primary, secondary, accent, error, muted, highlight use the same RGB values as :root */
+  /* No changes needed here for primary/secondary/accent as they inherit from :root */
+  --color-border: 55 65 81; /* gray-700 (Keep existing) */
+
+  /* Dark Mode Specific Overrides (Keep existing shadow overrides etc.) */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.4);
   
-  /* UI Element Colors */
-  --card: #0A1428;
-  --card-rgb: 10, 20, 40;
-  --card-foreground: #ffffff;
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.1);
-  --ring: rgba(59, 130, 246, 0.5);
-  
-  /* Text Colors */
-  --muted: #6b7280;
-  --muted-rgb: 107, 114, 128;
-  --muted-foreground: #9ca3af;
-  
-  /* Brand Colors - Defaults that can be overridden by theme.json */
-  --primary: #3b82f6;
-  --primary-rgb: 59, 130, 246;
-  --primary-foreground: #ffffff;
-  --secondary: #8b5cf6;
-  --secondary-rgb: 139, 92, 246;
-  --secondary-foreground: #ffffff;
-  --accent: #10b981;
-  --accent-rgb: 16, 185, 129;
-  --accent-foreground: #ffffff;
-  
-  /* Dark Mode Shadow Adjustments */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.3);
-  
-  /* Dark Mode Component Adjustments */
-  --navbar-bg: rgba(5, 10, 24, 0.8);
-  --dropdown-bg: rgba(10, 20, 40, 0.95);
+  /* Update navbar/dropdown bg to match new dark palette */
+  --navbar-bg: rgba(17, 24, 39, 0.8); /* Match dark background with opacity */
+  --dropdown-bg: rgba(31, 41, 55, 0.95); /* Match dark card with opacity */
   --modal-backdrop: rgba(0, 0, 0, 0.7);
 }
 
-/* ========== LIGHT MODE THEME ========== */
-.light {
-  /* Core Colors */
-  --background: #f9fafb;
-  --background-rgb: 249, 250, 251;
-  --foreground: #1f2937;
-  --foreground-rgb: 31, 41, 55;
-  
-  /* UI Element Colors */
-  --card: #ffffff;
-  --card-rgb: 255, 255, 255;
-  --card-foreground: #1f2937;
-  --border: rgba(0, 0, 0, 0.1);
-  --input: rgba(0, 0, 0, 0.1);
-  --ring: rgba(59, 130, 246, 0.5);
-  
-  /* Text Colors */
-  --muted: #6b7280;
-  --muted-rgb: 107, 114, 128;
-  --muted-foreground: #4b5563;
-  
-  /* Brand Colors - Same defaults as dark mode */
-  --primary: #3b82f6;
-  --primary-rgb: 59, 130, 246;
-  --primary-foreground: #ffffff;
-  --secondary: #8b5cf6;
-  --secondary-rgb: 139, 92, 246;
-  --secondary-foreground: #ffffff;
-  --accent: #10b981;
-  --accent-rgb: 16, 185, 129;
-  --accent-foreground: #ffffff;
-  
-  /* Light Mode Shadow Adjustments */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.05);
-  
-  /* Light Mode Component Adjustments */
-  --navbar-bg: rgba(249, 250, 251, 0.8);
-  --dropdown-bg: rgba(255, 255, 255, 0.95);
-  --modal-backdrop: rgba(0, 0, 0, 0.5);
-}
+/* ========== LIGHT MODE THEME (Redundant if :root matches light mode) ========== */
+/* .light { ... } can likely be removed if :root defines light mode defaults */
 
-/* --------------------------------
- * BASE ELEMENTS
- * -------------------------------- */
 html, body {
   margin: 0;
   padding: 0;
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: transparent; /* Still let components handle background */
+  color: rgb(var(--color-text)); /* Use mapped variable */
+  font-family: theme('fontFamily.sans'); /* Use Tailwind's sans definition */
   line-height: 1.5;
   overflow-x: hidden;
   width: 100%;
@@ -216,40 +329,17 @@ html, body {
   position: relative;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
-  line-height: 1.2;
-  margin-bottom: 1rem;
-}
-
-h1 {
-  font-size: 2.5rem;
-}
-
-h2 {
-  font-size: 2rem;
-}
-
-h3 {
-  font-size: 1.75rem;
-}
-
-h4 {
-  font-size: 1.5rem;
-}
-
+/* Apply relaxed leading to base paragraphs */
 p {
-  margin-bottom: 1rem;
+  @apply leading-relaxed;
 }
 
-a {
-  color: var(--primary);
-  text-decoration: none;
-  transition: color var(--transition-fast);
+main {
+  background: transparent;
 }
 
-a:hover {
-  color: color-mix(in srgb, var(--primary) 80%, white);
+.w-full.max-w-screen-xl {
+  background: transparent;
 }
 
 /* --------------------------------
@@ -294,38 +384,189 @@ a:hover {
  * COSMIC BACKGROUND
  * -------------------------------- */
 .cosmic-background {
-  position: fixed;
+  position: fixed !important; /* Force fixed position */
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important; /* Use viewport units */
+  height: 100vh !important;
+  z-index: -1 !important; /* Force behind all content */
+  overflow: hidden;
+  pointer-events: none; /* Don't capture mouse events */
+}
+
+.cosmic-dark {
+  background: linear-gradient(135deg, #0c1222 0%, #1a103c 50%, #0f1930 100%);
+}
+
+.cosmic-light {
+  background: linear-gradient(135deg, #354083 0%, #5c4da0 50%, #3a4a9c 100%);
+}
+
+/* Enhanced stars layer - fixed positioning and distribution */
+.cosmic-background::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-image: 
+    radial-gradient(1px 1px at 10% 10%, rgba(255, 255, 255, 0.9) 1px, transparent 0),
+    radial-gradient(1px 1px at 20% 20%, rgba(255, 255, 255, 0.8) 1px, transparent 0),
+    radial-gradient(1px 1px at 30% 30%, rgba(255, 255, 255, 0.7) 1px, transparent 0),
+    radial-gradient(1px 1px at 40% 40%, rgba(255, 255, 255, 0.8) 1px, transparent 0),
+    radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.9) 1px, transparent 0),
+    radial-gradient(1px 1px at 60% 60%, rgba(255, 255, 255, 0.7) 1px, transparent 0),
+    radial-gradient(1px 1px at 70% 70%, rgba(255, 255, 255, 0.8) 1px, transparent 0),
+    radial-gradient(1px 1px at 80% 80%, rgba(255, 255, 255, 0.9) 1px, transparent 0),
+    radial-gradient(1px 1px at 90% 90%, rgba(255, 255, 255, 0.7) 1px, transparent 0),
+    radial-gradient(2px 2px at 15% 25%, rgba(37, 99, 235, 0.6) 1px, transparent 0),
+    radial-gradient(2px 2px at 35% 45%, rgba(147, 51, 234, 0.6) 1px, transparent 0),
+    radial-gradient(2px 2px at 55% 65%, rgba(16, 185, 129, 0.6) 1px, transparent 0),
+    radial-gradient(2px 2px at 75% 85%, rgba(245, 158, 11, 0.6) 1px, transparent 0);
+  background-size: 
+    300px 300px, 250px 250px, 220px 220px, 180px 180px, 
+    300px 300px, 250px 250px, 220px 220px, 180px 180px, 
+    400px 400px, 350px 350px, 300px 300px, 250px 250px, 
+    200px 200px;
+  z-index: 0;
+  animation: twinkling 10s linear infinite;
+}
+
+/* Animated particles layer - improved distribution */
+.cosmic-particles {
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: var(--z-background);
-  background: linear-gradient(to bottom, #050A18, #0A1428);
   overflow: hidden;
+  z-index: 1;
+  /* The particles will be generated by JavaScript */
 }
 
-/* Stars layer */
-.cosmic-background::before {
-  content: '';
+.cosmic-particle {
   position: absolute;
-  width: 200%;
-  height: 200%;
-  top: -50%;
-  left: -50%;
-  background-image: 
-    radial-gradient(1px 1px at 25% 25%, rgba(255, 255, 255, 0.6) 1px, transparent 0),
-    radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.5) 1px, transparent 0),
-    radial-gradient(2px 2px at 75% 75%, rgba(255, 255, 255, 0.4) 1px, transparent 0),
-    radial-gradient(2px 2px at 10% 10%, rgba(var(--primary-rgb), 0.3) 1px, transparent 0),
-    radial-gradient(2px 2px at 90% 20%, rgba(var(--secondary-rgb), 0.3) 1px, transparent 0),
-    radial-gradient(3px 3px at 60% 40%, rgba(16, 185, 129, 0.3) 1px, transparent 0);
-  background-size: 100px 100px, 120px 120px, 170px 170px, 150px 150px, 200px 200px, 250px 250px;
-  background-position: 0 0;
-  z-index: var(--z-negative);
-  animation: twinkling 10s linear infinite;
+  width: 2px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
+  animation: particle-float 15s infinite linear;
 }
 
-/* Nebula effects */
+/* Geometric patterns - enhanced visibility */
+.cosmic-patterns {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+  opacity: 0.15;
+  mix-blend-mode: screen;
+}
+
+.cosmic-hexagon {
+  position: absolute;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg id='hexagons' fill='%23ffffff' fill-opacity='0.4' fill-rule='nonzero'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+}
+
+.cosmic-circuit {
+  position: absolute;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 304 304' width='304' height='304'%3E%3Cpath fill='%23ffffff' fill-opacity='0.4' d='M44.1 224a5 5 0 1 1 0 2H0v-2h44.1zm160 48a5 5 0 1 1 0 2H82v-2h122.1zm57.8-46a5 5 0 1 1 0-2H304v2h-42.1zm0 16a5 5 0 1 1 0-2H304v2h-42.1zm6.2-114a5 5 0 1 1 0 2h-86.2a5 5 0 1 1 0-2h86.2zm-256-48a5 5 0 1 1 0 2H0v-2h12.1zm185.8 34a5 5 0 1 1 0-2h86.2a5 5 0 1 1 0 2h-86.2zM258 12.1a5 5 0 1 1-2 0V0h2v12.1zm-64 208a5 5 0 1 1-2 0v-54.2a5 5 0 1 1 2 0v54.2zm48-198.2V80h62v2h-64V21.9a5 5 0 1 1 2 0zm16 16V64h46v2h-48V37.9a5 5 0 1 1 2 0zm-128 96V208h16v12.1a5 5 0 1 1-2 0V210h-16v-76.1a5 5 0 1 1 2 0zm-5.9-21.9a5 5 0 1 1 0 2H114v48H85.9a5 5 0 1 1 0-2H112v-48h12.1zm-6.2 130a5 5 0 1 1 0-2H176v-74.1a5 5 0 1 1 2 0V242h-60.1zm-16-64a5 5 0 1 1 0-2H114v48h10.1a5 5 0 1 1 0 2H112v-48h-10.1zM66 284.1a5 5 0 1 1-2 0V274H50v30h-2v-32h18v12.1zM236.1 176a5 5 0 1 1 0 2H226v94h48v32h-2v-30h-48v-98h12.1zm25.8-30a5 5 0 1 1 0-2H274v44.1a5 5 0 1 1-2 0V146h-10.1zm-64 96a5 5 0 1 1 0-2H208v-80h16v-14h-42.1a5 5 0 1 1 0-2H226v18h-16v80h-12.1zm86.2-210a5 5 0 1 1 0 2H272V0h2v32h10.1zM98 101.9V146H53.9a5 5 0 1 1 0-2H96v-42.1a5 5 0 1 1 2 0zM53.9 34a5 5 0 1 1 0-2H80V0h2v34H53.9zm60.1 3.9V66H82v64H69.9a5 5 0 1 1 0-2H80V64h32V37.9a5 5 0 1 1 2 0zM101.9 82a5 5 0 1 1 0-2H128V37.9a5 5 0 1 1 2 0V82h-28.1zm16-64a5 5 0 1 1 0-2H146v44.1a5 5 0 1 1-2 0V18h-26.1zm102.2 270a5 5 0 1 1 0 2H98v14h-2v-16h124.1zM242 149.9V160h16v34h-16v62h48v48h-2v-46h-48v-66h16v-30h-16v-12.1a5 5 0 1 1 2 0zM53.9 18a5 5 0 1 1 0-2H64V2H48V0h18v18H53.9zm112 32a5 5 0 1 1 0-2H192V0h50v2h-48v48h-28.1zm-48-48a5 5 0 0 1-9.8-2h2.07a3 3 0 1 0 5.66 0H178v34h-18V21.9a5 5 0 1 1 2 0V32h14V2h-58.1zm0 96a5 5 0 1 1 0-2H137l32-32h39V21.9a5 5 0 1 1 2 0V66h-40.17l-32 32H117.9zm28.1 90.1a5 5 0 1 1-2 0v-76.51L175.59 80H224V21.9a5 5 0 1 1 2 0V82h-49.59L146 112.41v75.69zm16 32a5 5 0 1 1-2 0v-99.51L184.59 96H300.1a5 5 0 0 1 3.9-3.9v2.07a3 3 0 0 0 0 5.66v2.07a5 5 0 0 1-3.9-3.9H185.41L162 121.41v98.69zm-144-64a5 5 0 1 1-2 0v-3.51l48-48V48h32V0h2v50H66v55.41l-48 48v2.69zM50 53.9v43.51l-48 48V208h26.1a5 5 0 1 1 0 2H0v-65.41l48-48V53.9a5 5 0 1 1 2 0zm-16 16V89.41l-34 34v-2.82l32-32V69.9a5 5 0 1 1 2 0zM12.1 32a5 5 0 1 1 0 2H9.41L0 43.41V40.6L8.59 32h3.51zm265.8 18a5 5 0 1 1 0-2h18.69l7.41-7.41v2.82L297.41 50H277.9zm-16 160a5 5 0 1 1 0-2H288v-71.41l16-16v2.82l-14 14V210h-28.1zm-208 32a5 5 0 1 1 0-2H64v-22.59L40.59 194H21.9a5 5 0 1 1 0-2H41.41L66 217.59V242H53.9zm150.2 14a5 5 0 1 1 0 2H96v-56.6L56.6 162H37.9a5 5 0 1 1 0-2h19.5L98 200.6V256h106.1zm-150.2 2a5 5 0 1 1 0-2H80v-46.59L48.59 178H21.9a5 5 0 1 1 0-2H49.41L82 208.59V258H53.9zM34 39.8v1.61L9.41 66H0v-2h8.59L32 40.59V0h2v39.8zM2 300.1a5 5 0 0 1 3.9 3.9H3.83A3 3 0 0 0 0 302.17V256h18v48h-2v-46H2v42.1zM34 241v63h-2v-62H0v-2h34v1zM17 18H0v-2h16V0h2v18h-1zm273-2h14v2h-16V0h2v16zm-32 273v15h-2v-14h-14v14h-2v-16h18v1zM0 92.1A5.02 5.02 0 0 1 6 97a5 5 0 0 1-6 4.9v-2.07a3 3 0 1 0 0-5.66V92.1zM80 272h2v32h-2v-32zm37.9 32h-2.07a3 3 0 0 0-5.66 0h-2.07a5 5 0 0 1 9.8 0zM5.9 0A5.02 5.02 0 0 1 0 5.9V3.83A3 3 0 0 0 3.83 0H5.9zm294.2 0h2.07A3 3 0 0 0 304 3.83V5.9a5 5 0 0 1-3.9-5.9zm3.9 300.1v2.07a3 3 0 0 0-1.83 1.83h-2.07a5 5 0 0 1 3.9-3.9zM97 100a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-48 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 48a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 96a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-144a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-96 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm96 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-32 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM49 36a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-32 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM33 68a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-48a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 240a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm80-176a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 48a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm112 176a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 180a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 84a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'%3E%3C/path%3E%3C/svg%3E");
+  width: 100%;
+  height: 100%;
+  opacity: 0.7;
+  transform: scale(1.5);
+  animation: float-slow 30s ease-in-out infinite alternate;
+}
+
+/* Blurred abstract shapes - improved positioning and subtlety */
+.cosmic-abstract-shapes {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cosmic-abstract-shape {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.15;
+  mix-blend-mode: screen;
+  transition: all 8s ease-in-out;
+}
+
+.cosmic-abstract-shape:nth-child(1) {
+  background: radial-gradient(circle, #2563eb 0%, transparent 70%);
+  width: 600px;
+  height: 600px;
+  top: -50px;
+  left: -50px;
+  animation: float-slow 20s ease-in-out infinite alternate;
+}
+
+.cosmic-abstract-shape:nth-child(2) {
+  background: radial-gradient(circle, #9333ea 0%, transparent 70%);
+  width: 500px;
+  height: 500px;
+  top: 60%;
+  right: -50px;
+  animation: float-slow 15s ease-in-out infinite alternate-reverse;
+}
+
+.cosmic-abstract-shape:nth-child(3) {
+  background: radial-gradient(circle, #10b981 0%, transparent 70%);
+  width: 550px;
+  height: 550px;
+  bottom: -50px;
+  left: 30%;
+  animation: float-slow 18s ease-in-out infinite alternate;
+}
+
+/* Animation for floating abstract shapes - more subtle */
+@keyframes float-slow {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0.15;
+  }
+  50% {
+    transform: translate(20px, -20px);
+    opacity: 0.25;
+  }
+  100% {
+    transform: translate(-20px, 20px);
+    opacity: 0.15;
+  }
+}
+
+/* Animation for particles - smoother movement */
+@keyframes particle-float {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.8;
+  }
+  95% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(50px);
+    opacity: 0;
+  }
+}
+
+/* Nebula effects - adjusted for subtlety */
 .cosmic-background::after {
   content: '';
   position: absolute;
@@ -334,49 +575,91 @@ a:hover {
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(circle at 20% 80%, rgba(var(--primary-rgb), 0.08), transparent 35%),
-    radial-gradient(circle at 80% 20%, rgba(var(--secondary-rgb), 0.08), transparent 35%),
-    radial-gradient(circle at 10% 30%, rgba(16, 185, 129, 0.05), transparent 25%),
-    radial-gradient(circle at 90% 60%, rgba(245, 158, 11, 0.05), transparent 25%);
-  filter: blur(8px);
+    radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.1), transparent 60%),
+    radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.1), transparent 60%),
+    radial-gradient(circle at 10% 80%, rgba(16, 185, 129, 0.08), transparent 50%),
+    radial-gradient(circle at 90% 60%, rgba(245, 158, 11, 0.08), transparent 50%);
+  filter: blur(30px);
+  opacity: 0.7;
+  z-index: 3;
+}
+
+/* Container for dynamically generated stars */
+.star-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+/* Dynamically generated stars */
+.star {
+  position: absolute;
+  border-radius: 50%;
+  animation: twinkling 5s linear infinite;
+}
+
+/* Dynamically generated nebulae */
+.nebula {
+  position: absolute;
   opacity: 0.8;
 }
 
 /* Pulsating stars */
-.cosmic-star {
+.cosmic-star, .pulsar {
   position: absolute;
-  width: 2px;
-  height: 2px;
-  background-color: white;
   border-radius: 50%;
   animation: starTwinkle 3s ease-in-out infinite;
 }
 
-.cosmic-star.primary {
+.cosmic-star.primary, .pulsar.primary {
   background-color: var(--primary);
   width: 3px;
   height: 3px;
   box-shadow: 0 0 4px var(--primary);
 }
 
-.cosmic-star.secondary {
+.cosmic-star.secondary, .pulsar.secondary {
   background-color: var(--secondary);
   width: 3px;
   height: 3px;
   box-shadow: 0 0 4px var(--secondary);
 }
 
-/* Star twinkling animation */
-@keyframes twinkling {
-  0% {
-    opacity: 0.7;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0.7;
-  }
+/* Shooting stars */
+.shooting-star {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, white, transparent);
+  animation: shooting-star 1s linear;
+}
+
+/* Overlay effects */
+.cosmic-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.cosmic-overlay-base {
+  background: radial-gradient(circle, rgba(10, 10, 40, 0.1), rgba(0, 0, 0, 0.5));
+}
+
+.cosmic-overlay-accent {
+  background: radial-gradient(circle, rgba(var(--primary-rgb), 0.05), transparent);
+  opacity: 0.5;
+}
+
+.cosmic-vignette {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.8);
+  z-index: 2;
 }
 
 /* --------------------------------
@@ -1004,14 +1287,6 @@ a:hover {
 /* --------------------------------
  * UTILITIES
  * -------------------------------- */
-.text-gradient {
-  background: linear-gradient(to right, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
-}
-
 .border-gradient {
   border: 2px solid transparent;
   background-clip: padding-box, border-box;
@@ -1191,14 +1466,6 @@ a:hover {
   border-color: rgba(var(--primary-rgb), 0.8);
 }
 
-.cosmic-text-gradient {
-  background: linear-gradient(90deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
-}
-
 /* --------------------------------
  * UTILITY CLASSES
  * -------------------------------- */
@@ -1219,13 +1486,44 @@ a:hover {
   height: var(--header-height);
   display: flex;
   align-items: center;
-  padding: 0 var(--container-padding);
+  padding: 0 1.5rem;
   background-color: rgba(10, 20, 40, 0.8);
   backdrop-filter: blur(10px);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: var(--z-sticky);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.dark .navbar {
+  background-color: rgba(8, 15, 30, 0.85);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Cosmic glow effect for the navbar */
+.cosmic-navbar {
+  position: relative;
+  overflow: hidden;
+}
+
+.cosmic-navbar::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(var(--primary-rgb), 0),
+    rgba(var(--primary-rgb), 0.5),
+    rgba(var(--secondary-rgb), 0.5),
+    rgba(var(--primary-rgb), 0)
+  );
+  z-index: 1;
 }
 
 .navbar-container {
@@ -1235,6 +1533,7 @@ a:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 100%;
 }
 
 .navbar-logo {
@@ -1244,43 +1543,56 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  padding-right: 2rem;
 }
 
 .navbar-links {
   display: flex;
-  gap: 1.5rem;
+  gap: 2rem;
+  align-items: center;
+  height: 100%;
 }
 
 .navbar-link {
   color: var(--muted-foreground);
-  transition: color var(--transition-fast);
-  padding: 0.5rem 0;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+  padding: 0.5rem 0.75rem;
   position: relative;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border-radius: 0.25rem;
 }
 
 .navbar-link:hover {
   color: var(--foreground);
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .navbar-link.active {
   color: var(--primary);
+  background-color: rgba(var(--primary-rgb), 0.1);
 }
 
 .navbar-link.active::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
   height: 2px;
   background-color: var(--primary);
   border-radius: 1px;
+  box-shadow: 0 0 8px var(--primary);
 }
 
 .navbar-actions {
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin-left: auto;
+  height: 100%;
 }
 
 .mobile-menu-button {
@@ -1403,3 +1715,104 @@ a:hover {
 .cosmic-tab:hover[data-state="active"]::after {
   width: 60%;
 }
+
+/* Enhanced Resume Template Styles */
+  /* Improve button spacing and touch targets */
+  .resume-template .flex.items-center.gap-1 {
+    gap: 0.5rem; /* Consistent spacing */
+  }
+
+  .resume-template .flex.items-center.gap-2 {
+    gap: 0.75rem;
+  }
+
+  .resume-template .flex.items-center.gap-3 {
+    gap: 1rem;
+  }
+
+  .resume-template .h-8.w-8 {
+    height: 2rem;
+    width: 2rem;
+  }
+
+  /* Ensure buttons are touch-friendly */
+  .resume-template button {
+    min-width: 2rem;
+    min-height: 2rem;
+  }
+
+  /* Remove unnecessary margins */
+  .resume-template .mt-1 {
+    margin-top: 0;
+  }
+
+/* Print-friendly styles */
+@media print {
+  .resume-template {
+    box-shadow: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .resume-template .no-print {
+    display: none;
+  }
+
+  .resume-template .page-break {
+    page-break-before: always;
+  }
+}
+
+/* --------------------------------
+ * NEW GLASS UI UTILITIES
+ * -------------------------------- */
+@layer utilities {
+  .glass-card {
+    @apply bg-white/40 dark:bg-gray-900/40 backdrop-blur-sm border-white/20 dark:border-gray-800/40 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg;
+  }
+  
+  .glass-panel {
+    @apply bg-white/30 dark:bg-gray-900/30 backdrop-blur-sm border-white/20 dark:border-gray-800/40 shadow-md;
+  }
+  
+  .glass-inner {
+    @apply bg-white/10 dark:bg-gray-800/20 border-white/10 dark:border-gray-700/30 shadow-inner;
+  }
+  
+  .glass-button {
+    @apply bg-white/20 dark:bg-gray-900/20 border border-white/30 dark:border-gray-800/30 text-foreground shadow-md hover:bg-white/30 dark:hover:bg-gray-900/30 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200;
+  }
+  
+  .glass-badge {
+    @apply border-white/20 dark:border-gray-700/30;
+  }
+  
+  .glass-divider {
+    @apply border-white/10 dark:border-gray-700/30;
+  }
+  
+  /* Special class to prevent blur on text */
+  .no-blur {
+    @apply backdrop-filter-none;
+  }
+  
+  /* Alternative glass style with solid background */
+  .solid-card {
+    @apply bg-white/80 dark:bg-gray-900/80 border-white/20 dark:border-gray-800/40 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg;
+  }
+}
+
+/* Define twinkling animation if not already present */
+@keyframes twinkling {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+

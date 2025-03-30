@@ -1,0 +1,14 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+#Tech Stack
+
+Python backend
+FastAPI: Fast, modern, and perfect for async AI workloads.
+Hugging Face: Provides accessible, powerful AI models that can be fine-tuned for the client’s specific needs (e.g., western wear queries).
+React: Lightweight yet flexible for a polished chat widget.
+PostgreSQL: Reliable and scalable for storing dynamic data. (never JSON file storage)
+python tests
+

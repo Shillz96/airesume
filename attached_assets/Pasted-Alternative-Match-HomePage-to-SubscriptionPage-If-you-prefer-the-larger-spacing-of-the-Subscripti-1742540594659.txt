@@ -1,48 +1,0 @@
-Alternative: Match HomePage to SubscriptionPage
-If you prefer the larger spacing of the "Subscription Management" page (default p margin of ~16px), you can remove the mt-1 class from HomePage (if present) and let the default p margin apply. However, the tighter spacing (mt-1) is generally more visually appealing for a header section, as it creates a more cohesive look, which is likely why it was used in the "Job Finder" page.
-7. Additional Considerations
-Global Styles: Check your global CSS for any styles that might affect p margins. For example, if you have a global reset like this:
-css
-p {
-  margin: 0;
-}
-
-Then the default p margin would be removed, and you’d need to explicitly set mt- classes everywhere. Based on the images, this doesn’t seem to be the case, as the default p margin is visible in SubscriptionPage.
-Line Height: The line-height of the h1 and p tags can affect perceived spacing. Both pages use text-3xl for the h1 (font-size: 30px) and text-muted-foreground for the p (likely a smaller font size, e.g., 16px). If cosmic-text-gradient in HomePage adjusts the line-height, it could contribute to the spacing difference. You can normalize this by setting a consistent line-height:
-css
-h1 {
-  line-height: 1.2;
-}
-p {
-  line-height: 1.5;
-}
-
-Consistency Across Pages: To ensure consistent spacing across all pages, consider defining a reusable PageHeader component:
-jsx
-const PageHeader = ({ title, subtitle }) => (
-  <div className="flex items-center justify-between mb-6">
-    <div>
-      <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
-      <p className="text-muted-foreground mt-1">{subtitle}</p>
-    </div>
-  </div>
-);
-
-// In SubscriptionPage
-<PageHeader
-  title="Subscription Management"
-  subtitle="Manage your plans, add-ons, and payment history"
-/>
-
-// In HomePage
-<PageHeader
-  title={
-    <>
-      Welcome back, <span className="cosmic-text-gradient">{user?.username}</span>!
-    </>
-  }
-  subtitle="Navigate your career journey with AI-powered tools and insights."
-/>
-
-This ensures consistent spacing and styling for all page headers.
-

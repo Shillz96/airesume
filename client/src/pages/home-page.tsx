@@ -7,8 +7,10 @@ import RecentActivity from "@/features/dashboard/components/RecentActivity";
 import JobSearchProgress from "@/features/job/components/JobSearchProgress";
 import EnhancedJobInterviewAvatar from "@/features/job/components/EnhancedJobInterviewAvatar";
 import SubscriptionStatus from "@/features/subscription/components/SubscriptionStatus";
-import { PageHeader } from "@/components/unified";
+import PageHeader from "@/features/layout/components/PageHeader";
 import { Rocket, User, LayoutDashboard, UserCheck, Calendar, Search, Clock, Briefcase } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -78,24 +80,24 @@ export default function HomePage() {
     }
   }, []);
   
-  const { config } = useUnifiedTheme();
+  const { /* config */ } = useUnifiedTheme();
   
   return (
     <>
       <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4 pb-10 min-h-screen relative z-10">
         <div ref={welcomeRef}>
           <PageHeader
-            title={`Welcome back, ${user?.username}!`}
+            title={user?.username ? `Welcome back, ${user.username}!` : "Welcome to AllHire AI!"}
             subtitle="Navigate your career journey with AI-powered tools and insights."
-            variant={config.variant === 'cosmic' ? 'cosmic' : 'default'}
-            borderStyle={config.variant === 'cosmic' ? 'gradient' : 'subtle'}
             actions={
               <div ref={rocketRef}>
-                <div className={`p-3 rounded-full ${config.variant === 'cosmic' ? 'bg-primary/30 cosmic-glow animate-pulse' : 'bg-primary/20'}`}>
-                  <Rocket size={24} className={config.variant === 'cosmic' ? 'text-primary-foreground' : 'text-primary'} />
+                <div className={`p-3 rounded-full bg-primary/20`}>
+                  <Rocket size={24} className={`text-primary`} />
                 </div>
               </div>
             }
+            variant="cosmic"
+            borderStyle="gradient"
           />
         </div>
         
@@ -105,7 +107,7 @@ export default function HomePage() {
           <DashboardStats />
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 min-h-[600px] mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[600px] mt-10">
           <div className="md:col-span-1 flex flex-col h-full">
             <div className="flex-1 h-full">
               <EnhancedJobInterviewAvatar />
@@ -118,7 +120,7 @@ export default function HomePage() {
           </div>
         </div>
         
-        <div className="mt-20 mb-12 ">
+        <div className="mt-10 mb-12">
           <JobSearchProgress />
         </div>
       </div>

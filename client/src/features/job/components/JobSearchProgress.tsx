@@ -15,9 +15,10 @@ import {
   CheckCircle2, 
   Target 
 } from "lucide-react";
-import { Button } from "@/ui/core/Button";
+import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import gsap from "gsap";
+import { cn } from "@/lib/utils";
 
 /**
  * JobSearchProgress component displays a visual representation of the user's
@@ -35,7 +36,8 @@ export default function JobSearchProgress() {
       progress: 100, 
       icon: <FileCheck className="h-4 w-4 text-teal-400" />,
       link: "/resume-builder",
-      linkText: "Edit Resume"
+      linkText: "Edit Resume",
+      color: "from-teal-500 to-green-400"
     },
     { 
       title: "Job Matching", 
@@ -43,7 +45,8 @@ export default function JobSearchProgress() {
       progress: 75, 
       icon: <Target className="h-4 w-4 text-blue-400" />,
       link: "/job-finder",
-      linkText: "Find More Matches"
+      linkText: "Find More Matches",
+      color: "from-blue-500 to-indigo-400"
     },
     { 
       title: "Applications", 
@@ -51,7 +54,8 @@ export default function JobSearchProgress() {
       progress: 25, 
       icon: <Send className="h-4 w-4 text-purple-400" />,
       link: "/job-finder",
-      linkText: "Apply to Jobs"
+      linkText: "Apply to Jobs",
+      color: "from-purple-500 to-violet-400"
     },
     { 
       title: "Interviews", 
@@ -59,7 +63,8 @@ export default function JobSearchProgress() {
       progress: 10, 
       icon: <MoveUpRight className="h-4 w-4 text-amber-400" />,
       link: "#",
-      linkText: "Start Practice"
+      linkText: "Start Practice",
+      color: "from-amber-500 to-orange-400"
     },
     { 
       title: "Offer Acceptance", 
@@ -67,7 +72,8 @@ export default function JobSearchProgress() {
       progress: 0, 
       icon: <CheckCircle2 className="h-4 w-4 text-gray-400" />,
       link: "#",
-      linkText: "Learn More"
+      linkText: "Learn More",
+      color: "from-gray-500 to-gray-400"
     }
   ];
   
@@ -111,59 +117,39 @@ export default function JobSearchProgress() {
   }, []);
   
   return (
-    <Card className="cosmic-card overflow-hidden border border-white/10 bg-black/30" ref={cardRef}>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-xl text-white">Job Search Progress</CardTitle>
-        <CardDescription className="text-gray-300">
-          Track your career journey milestones
-        </CardDescription>
+    <Card className="solid-card shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg" ref={cardRef}>
+      <CardHeader className="pb-0">
+        <CardTitle className="text-lg no-blur">Job Search Progress</CardTitle>
+        <CardDescription className="text-sm text-gray-400 no-blur">Track your progress through the job search process</CardDescription>
       </CardHeader>
-      
-      <CardContent className="p-6" ref={progressRef}>
-        <div className="space-y-8">
+      <CardContent>
+        <div className="space-y-6 py-2">
           {milestones.map((milestone, index) => (
-            <div key={index} className="progress-item">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center space-x-3">
-                  <div className="p-1.5 bg-blue-900/30 rounded-md">
-                    {milestone.icon}
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-white">
-                      {milestone.title}
-                    </h4>
-                    <p className="text-xs text-gray-400">{milestone.description}</p>
-                  </div>
+            <div key={index} className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  {milestone.icon}
+                  <span className="text-sm font-medium no-blur">{milestone.title}</span>
                 </div>
-                
-                <div className="text-sm font-medium text-white">
-                  {milestone.progress}%
-                </div>
+                <div className="text-sm text-gray-400 no-blur">{milestone.progress}%</div>
               </div>
               
-              <div className="relative mt-2 mb-3">
-                <div className="overflow-hidden h-1 text-xs flex rounded-full bg-gray-800">
+              <div className="relative">
+                <Progress value={milestone.progress} className="h-2" />
+                <div className={`absolute top-0 left-0 right-0 bottom-0 overflow-hidden pointer-events-none`}>
                   <div 
-                    className="progress-bar shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center origin-left"
-                    style={{ 
-                      width: `${milestone.progress}%`,
-                      background: `linear-gradient(to right, #3b82f6, #8b5cf6)`,
-                      opacity: milestone.progress === 0 ? 0.3 : 1,
-                      transform: 'scaleX(1)'
-                    }}
-                  ></div>
+                    className={`h-2 bg-gradient-to-r ${milestone.color} opacity-60 w-full transform -translate-x-full animate-pulse`}
+                    style={{animation: `progress-pulse 2s ease-in-out infinite ${index * 0.5}s`}}  
+                  />
                 </div>
               </div>
               
-              <div className="flex justify-end">
+              <div className="flex justify-between items-center">
+                <div className="text-xs text-gray-500 no-blur">{milestone.description}</div>
                 <Link href={milestone.link}>
-                  <Button 
-                    size="sm" 
-                    variant="ghost" 
-                    className="h-6 text-xs px-2 text-blue-400 hover:text-blue-300 hover:bg-transparent"
-                  >
+                  <Button variant="link" size="sm" className="text-xs p-0 h-auto no-blur">
                     {milestone.linkText}
-                    <ArrowUpRight className="ml-1 h-3 w-3" />
+                    <ArrowUpRight className="h-3 w-3 ml-1" />
                   </Button>
                 </Link>
               </div>

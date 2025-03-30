@@ -2,15 +2,27 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  glass?: boolean;
+  hover?: boolean;
+}
+
 const Card = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { cosmic?: boolean }
->(({ className, cosmic = false, ...props }, ref) => (
+  CardProps
+>(({ className, glass = false, hover = true, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      "rounded-lg border bg-card text-card-foreground shadow-sm",
-      cosmic && "cosmic-card border-white/10",
+      "border border-border rounded-lg",
+      // Standard styling
+      "bg-card text-card-foreground",
+      // Shadow and transition
+      "shadow-md transition-all duration-300 ease-out",
+      // Conditional glass effect
+      glass && "bg-white/40 dark:bg-gray-900/40 backdrop-blur-md border-white/20 dark:border-gray-800/40",
+      // Conditional hover effect
+      hover && "hover:shadow-xl hover:shadow-blue-500/20 hover:scale-[1.03]",
       className
     )}
     {...props}

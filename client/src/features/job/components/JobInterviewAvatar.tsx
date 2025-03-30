@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/ui/core/Button';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter, Button } from "@/components/ui";
-import { Play, Send, Mic, Pause, RotateCcw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { Play, Send, Mic, Pause, RotateCcw, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 interface Job {
   id: string;
@@ -17,6 +18,7 @@ interface JobInterviewAvatarProps {
 }
 
 export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
+  const { toast } = useToast();
   const [questions, setQuestions] = useState<string[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -25,16 +27,9 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
   const [feedback, setFeedback] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [hasError, setHasError] = useState(false);
   
   // Default job for demonstration if none provided
-  const defaultJob: Job = {
-    id: '1',
-    title: 'Software Engineer',
-    company: 'Tech Solutions Inc.',
-    level: 'Mid-level',
-    industry: 'Tech'
-  };
-  
   const activeJob: Job = job || {
     id: '1',
     title: 'Software Engineer',
@@ -45,15 +40,27 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
   
   useEffect(() => {
     // Load interview questions when component mounts or job changes
-    fetchInterviewQuestions(activeJob)
-      .then(questions => {
-        setQuestions(questions);
+    const loadQuestions = async () => {
+      try {
+        const newQuestions = await fetchInterviewQuestions(activeJob);
+        setQuestions(newQuestions);
         setCurrentQuestionIndex(0);
         setUserResponse('');
         setFeedback('');
         setShowFeedback(false);
-      });
-  }, [job?.id]);
+        setHasError(false);
+      } catch (error) {
+        setHasError(true);
+        toast({
+          title: 'Error Loading Questions',
+          description: 'Unable to load interview questions. Please try again later.',
+          variant: 'destructive',
+        });
+      }
+    };
+    
+    loadQuestions();
+  }, [job?.id, toast]);
   
   const fetchInterviewQuestions = async (job: Job): Promise<string[]> => {
     // In a production app, this would be an API call to get real questions
@@ -86,6 +93,15 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
   };
   
   const startInterview = () => {
+    if (hasError) {
+      toast({
+        title: 'Cannot Start Interview',
+        description: 'Please refresh the page and try again.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     setIsPlaying(true);
     setIsPaused(false);
     setUserResponse('');
@@ -119,6 +135,10 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
     } else {
       // End of interview
       setIsPlaying(false);
+      toast({
+        title: 'Interview Complete',
+        description: 'You have completed all the interview questions!',
+      });
     }
   };
   
@@ -132,7 +152,14 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
   };
   
   const submitResponse = async () => {
-    if (!userResponse.trim()) return;
+    if (!userResponse.trim()) {
+      toast({
+        title: 'Empty Response',
+        description: 'Please provide an answer before submitting.',
+        variant: 'destructive',
+      });
+      return;
+    }
     
     setIsLoading(true);
     try {
@@ -140,7 +167,12 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
       setFeedback(feedbackText);
       setShowFeedback(true);
     } catch (error) {
-      console.error('Error generating feedback:', error);
+      // Silent error handling with user feedback
+      toast({
+        title: 'Feedback Generation Failed',
+        description: 'Unable to analyze your response. Please try again.',
+        variant: 'destructive',
+      });
       setFeedback('Unable to generate feedback at this time. Please try again later.');
     } finally {
       setIsLoading(false);
@@ -150,15 +182,19 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
   const generateFeedback = async (response: string, question: string, job: Job): Promise<string> => {
     // In a production app, this would be an API call to get AI-generated feedback
     // For demonstration, we'll use predefined feedback
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       setTimeout(() => {
-        // Simple feedback generation based on response length and content
-        if (response.length < 50) {
-          resolve(`Your answer was quite brief. Consider elaborating more on your experience and providing specific examples related to ${job.title} roles.`);
-        } else if (response.includes('experience') || response.includes('project')) {
-          resolve(`Good job mentioning your experience! Your answer shows relevant background for this ${job.title} position. Consider also mentioning how you'd apply these skills at ${job.company}.`);
-        } else {
-          resolve(`Your answer addresses the question, but try to be more specific about your experiences relevant to the ${job.title} role. Quantifying your achievements and relating them to ${job.company}'s industry (${job.industry}) would strengthen your response.`);
+        try {
+          // Simple feedback generation based on response length and content
+          if (response.length < 50) {
+            resolve(`Your answer was quite brief. Consider elaborating more on your experience and providing specific examples related to ${job.title} roles.`);
+          } else if (response.includes('experience') || response.includes('project')) {
+            resolve(`Good job mentioning your experience! Your answer shows relevant background for this ${job.title} position. Consider also mentioning how you'd apply these skills at ${job.company}.`);
+          } else {
+            resolve(`Your answer addresses the question, but try to be more specific about your experiences relevant to the ${job.title} role. Quantifying your achievements and relating them to ${job.company}'s industry (${job.industry}) would strengthen your response.`);
+          }
+        } catch (error) {
+          reject(new Error('Failed to generate feedback'));
         }
       }, 1000); // Simulate API delay
     });
@@ -194,10 +230,9 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
         <CardFooter>
           <Button 
             onClick={startInterview}
-            iconLeft={<Play className="h-4 w-4" />}
-            fullWidth
+            className="w-full gap-2"
           >
-            Start Interview Practice
+            <Play size={18} /> Start Mock Interview
           </Button>
         </CardFooter>
       </Card>
@@ -220,27 +255,27 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
                 variant="ghost" 
                 size="sm"
                 onClick={resumeInterview} 
-                iconLeft={<Play className="h-4 w-4" />}
+                className="gap-2"
               >
-                Resume
+                <Play size={16} /> Resume
               </Button>
             ) : (
               <Button 
                 variant="ghost" 
                 size="sm"
                 onClick={pauseInterview} 
-                iconLeft={<Pause className="h-4 w-4" />}
+                className="gap-2"
               >
-                Pause
+                <Pause size={16} /> Pause
               </Button>
             )}
             <Button 
               variant="ghost" 
               size="sm"
               onClick={resetInterview} 
-              iconLeft={<RotateCcw className="h-4 w-4" />}
+              className="gap-2"
             >
-              Reset
+              <RotateCcw size={16} /> Reset
             </Button>
           </div>
         </CardTitle>
@@ -271,11 +306,11 @@ export default function JobInterviewAvatar({ job }: JobInterviewAvatarProps) {
               <Button
                 onClick={submitResponse}
                 disabled={!userResponse.trim() || isLoading || isPaused}
-                isLoading={isLoading}
-                loadingText="Analyzing..."
-                iconRight={<Send className="h-4 w-4" />}
+                className="gap-2"
               >
-                Submit Answer
+                {isLoading && <Loader2 className="animate-spin" size={16} />}
+                {isLoading ? 'Submitting...' : 'Submit Answer'}
+                {!isLoading && <Send size={16} />}
               </Button>
             </div>
           </div>

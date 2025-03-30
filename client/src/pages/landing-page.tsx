@@ -20,7 +20,7 @@ import {
   Rocket
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CosmicButton } from "@/ui/core/CosmicButton";
+import { CosmicButton } from "@/components/custom/CosmicButton";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,6 +35,7 @@ import { cn } from "@/lib/utils";
 import { insertUserSchema } from "@shared/schema";
 import { useGuestMode } from "@/hooks/use-guest-mode";
 import gsap from "gsap";
+import { Badge } from "@/components/ui/badge";
 
 // Login form schema
 const loginSchema = z.object({
@@ -214,9 +215,9 @@ export default function LandingPage() {
 
       {/* Login Dialog */}
       <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-        <DialogContent className="bg-card/90 backdrop-blur-xl border-white/10 sm:max-w-md">
+        <DialogContent className="solid-card sm:max-w-md">
           <DialogHeader className="mb-3">
-            <DialogTitle className="text-2xl cosmic-text-gradient">Log In</DialogTitle>
+            <DialogTitle className="text-2xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Log In</DialogTitle>
             <DialogDescription>Enter your credentials to access your account</DialogDescription>
           </DialogHeader>
           <Form {...loginForm}>
@@ -253,12 +254,17 @@ export default function LandingPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full cosmic-btn-glow" disabled={loginMutation.isPending}>
-                {loginMutation.isPending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
-                Log In
-              </Button>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setIsLoginOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
+                  {loginMutation.isPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : null}
+                  Log In
+                </Button>
+              </DialogFooter>
             </form>
           </Form>
           <DialogFooter className="mt-4 text-center flex-col sm:flex-col sm:space-y-2">
@@ -293,9 +299,9 @@ export default function LandingPage() {
 
       {/* Register Dialog */}
       <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
-        <DialogContent className="bg-card/90 backdrop-blur-xl border-white/10 sm:max-w-md">
+        <DialogContent className="solid-card sm:max-w-md">
           <DialogHeader className="mb-3">
-            <DialogTitle className="text-2xl cosmic-text-gradient">Create Account</DialogTitle>
+            <DialogTitle className="text-2xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Create Account</DialogTitle>
             <DialogDescription>Sign up to get started with AIreHire</DialogDescription>
           </DialogHeader>
           <Form {...registerForm}>
@@ -309,7 +315,7 @@ export default function LandingPage() {
                     <FormControl>
                       <div className="relative">
                         <User className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input placeholder="Choose a username" className="pl-8" {...field} />
+                        <Input placeholder="Choose a username" className="pl-8 no-blur" {...field} />
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -325,7 +331,7 @@ export default function LandingPage() {
                     <FormControl>
                       <div className="relative">
                         <Lock className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input type="password" placeholder="Create a password" className="pl-8" {...field} />
+                        <Input type="password" placeholder="Create a password" className="pl-8 no-blur" {...field} />
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -341,7 +347,7 @@ export default function LandingPage() {
                     <FormControl>
                       <div className="relative">
                         <Lock className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input type="password" placeholder="Confirm your password" className="pl-8" {...field} />
+                        <Input type="password" placeholder="Confirm your password" className="pl-8 no-blur" {...field} />
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -355,12 +361,17 @@ export default function LandingPage() {
                   </AlertDescription>
                 </Alert>
               )}
-              <Button type="submit" className="w-full cosmic-btn-glow mt-2" disabled={registerMutation.isPending}>
-                {registerMutation.isPending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
-                Create Account
-              </Button>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setIsRegisterOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" variant="secondary" className="w-full mt-2" disabled={registerMutation.isPending}>
+                  {registerMutation.isPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : null}
+                  Sign Up
+                </Button>
+              </DialogFooter>
             </form>
           </Form>
           <div className="mt-4 text-center text-sm">
@@ -382,278 +393,212 @@ export default function LandingPage() {
       {/* Main Content */}
       <div className="pt-24 pb-10 mx-auto relative z-10">
         {/* Hero Section */}
-        <section className="py-12 md:py-20">
-          <div className="text-center max-w-3xl mx-auto">
-            <h1 
-              className="text-4xl sm:text-5xl md:text-6xl font-bold background-animate bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent"
-              ref={titleRef}
+        <section className="py-16 sm:py-24 text-center">
+          <h1 ref={titleRef} className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4">
+            Land Your Dream Job Faster
+          </h1>
+          <p ref={subtitleRef} className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+            Leverage AI to craft the perfect resume, find tailored job openings, and get expert career advice. All in one place.
+          </p>
+          <div ref={ctaRef} className="flex flex-col sm:flex-row justify-center items-center gap-4">
+            {/* Use CosmicButton component? Assuming it provides the intended style */}
+            <CosmicButton 
+              className="px-8 py-6 text-lg"
+              onClick={handleRegisterClick} 
+              id="register-button"
             >
-              Accelerate Your Career with AI-Powered Resume & Job Tools
-            </h1>
-            <p 
-              className="mt-6 max-w-2xl mx-auto text-xl text-gray-300"
-              ref={subtitleRef}
-            >
-              Create stunning resumes tailored to each job, discover your perfect career match, and land more interviews with our AI-powered platform.
-            </p>
-            <div 
-              className="mt-10 flex justify-center gap-4"
-              ref={ctaRef}
-            >
-              <CosmicButton 
-                size="xl" 
-                variant="primary"
-                withGlow
-                className="px-8 py-6 text-lg"
-                onClick={() => setIsRegisterOpen(true)}
-              >
-                Try for Free <ArrowRight className="ml-2 h-5 w-5" />
-              </CosmicButton>
-              <CosmicButton 
-                variant="outline" 
-                size="xl" 
-                className="px-8 py-6 text-lg"
-                onClick={() => showGuestModal()}
-              >
-                Continue as Guest
-              </CosmicButton>
-            </div>
+              Start Building for Free <ArrowRight className="ml-2 h-5 w-5" />
+            </CosmicButton>
+            <Button variant="ghost" onClick={handleLoginClick} id="login-button" className="text-muted-foreground hover:text-primary">
+              Already have an account? Log in
+            </Button>
           </div>
         </section>
 
         {/* Features Section */}
-        <section className="py-20 relative z-10" ref={featuresRef}>
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold cosmic-text-gradient">
-                Powerful Features to Supercharge Your Job Search
-              </h2>
-              <p className="mt-4 text-xl text-gray-300">
-                Everything you need to create professional resumes and find your dream job
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {/* Feature 1 */}
-              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
-                <div className="h-12 w-12 rounded-full bg-blue-500/20 flex items-center justify-center mb-4">
-                  <FileText className="h-6 w-6 text-blue-400" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">AI Resume Builder</h3>
-                <p className="text-gray-300">
-                  Create ATS-optimized resumes with intelligent suggestions for every section, customizable templates, and real-time feedback.
-                </p>
-              </div>
-
-              {/* Feature 2 */}
-              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
-                <div className="h-12 w-12 rounded-full bg-purple-500/20 flex items-center justify-center mb-4">
-                  <Bot className="h-6 w-6 text-purple-400" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">AI Tailor Resume</h3>
-                <p className="text-gray-300">
-                  Automatically optimize your resume for specific job descriptions, increasing your chances of getting interviews.
-                </p>
-              </div>
-
-              {/* Feature 3 */}
-              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
-                <div className="h-12 w-12 rounded-full bg-pink-500/20 flex items-center justify-center mb-4">
-                  <Briefcase className="h-6 w-6 text-pink-400" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Intelligent Job Matching</h3>
-                <p className="text-gray-300">
-                  Discover jobs that match your skills and experience with our AI-powered job search and matching algorithm.
-                </p>
-              </div>
-
-              {/* Feature 4 */}
-              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
-                <div className="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
-                  <Star className="h-6 w-6 text-green-400" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Multiple Resume Versions</h3>
-                <p className="text-gray-300">
-                  Create and manage multiple resume versions for different job types, industries, or career paths.
-                </p>
-              </div>
-
-              {/* Feature 5 */}
-              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
-                <div className="h-12 w-12 rounded-full bg-yellow-500/20 flex items-center justify-center mb-4">
-                  <Search className="h-6 w-6 text-yellow-400" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">ATS Keyword Analysis</h3>
-                <p className="text-gray-300">
-                  Identify missing keywords and optimize your resume to pass through Applicant Tracking Systems.
-                </p>
-              </div>
-
-              {/* Feature 6 */}
-              <div className="feature-card cosmic-card border border-white/10 rounded-lg p-6">
-                <div className="h-12 w-12 rounded-full bg-red-500/20 flex items-center justify-center mb-4">
-                  <Zap className="h-6 w-6 text-red-400" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Job Application Tracking</h3>
-                <p className="text-gray-300">
-                  Keep track of your job applications, status, and follow-ups in one centralized dashboard.
-                </p>
-              </div>
-            </div>
+        <section className="py-16 sm:py-24">
+          <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Why Choose AllHire?</h2>
+          <div ref={featuresRef} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[ /* Feature data array */
+              { icon: FileText, title: "AI Resume Builder", desc: "Craft tailored resumes that bypass ATS and impress recruiters instantly." },
+              { icon: Briefcase, title: "Smart Job Matching", desc: "Get matched with jobs that fit your skills and career goals perfectly." },
+              { icon: Star, title: "Personalized Career Advice", desc: "Receive AI-driven insights and guidance to navigate your career path." },
+              { icon: Sparkles, title: "Cover Letter Generator", desc: "Generate compelling cover letters customized for each application." },
+              { icon: Search, title: "Intelligent Job Search", desc: "Filter and search through millions of jobs with advanced AI criteria." },
+              { icon: Bot, title: "Interview Preparation", desc: "Practice common interview questions and get AI feedback on your answers." },
+            ].map((feature, index) => (
+              <Card key={index} className="feature-card p-6">
+                <CardHeader className="p-0 mb-4">
+                  <div className="bg-primary/10 rounded-full p-3 inline-block mb-3">
+                    <feature.icon className="h-6 w-6 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl font-semibold">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <p className="text-muted-foreground">{feature.desc}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </section>
 
-{/* Pricing Section */}
-<section id="pricing" className="py-20 relative z-10">
-  <div className="max-w-5xl mx-auto">
-    <div className="text-center mb-16">
-      <h2 className="text-3xl md:text-4xl font-bold cosmic-text-gradient">
-        Simple, Transparent Pricing
-      </h2>
-      <p className="mt-4 text-lg text-gray-300">
-        Choose the plan that fits your needs. All plans include our core features.
-      </p>
-    </div>
+        {/* Pricing Section */}
+        <section className="py-16 sm:py-24">
+          <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Simple Pricing for Every Stage</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {/* Pricing Card 1 (Free) */}
+            <Card className="solid-card p-6">
+              <CardHeader className="p-0 mb-4 space-y-2">
+                <CardTitle className="text-xl font-bold no-blur">Free</CardTitle>
+                <div className="no-blur">
+                  <span className="text-4xl font-bold mb-2">$0</span>
+                  <span className="text-muted-foreground ml-1">/mo</span>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0 space-y-4">
+                <div className="space-y-2 no-blur">
+                  <div className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-primary mr-2" />
+                    <span className="text-sm">Basic Resume Builder</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-primary mr-2" />
+                    <span className="text-sm">Limited Job Search</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-primary mr-2" />
+                    <span className="text-sm">5 AI-Powered Job Matches</span>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="p-0 mt-6">
+                <Button 
+                  className="w-full"
+                  variant="default"
+                  onClick={() => handleSelectPlan("free")}
+                >
+                  Try Free
+                </Button>
+              </CardFooter>
+            </Card>
+            
+            {/* Pro Plan with Special Styling */}
+            <Card className="solid-card p-6 border-primary/50 ring-2 ring-primary/30">
+              <Badge className="mb-4 bg-primary/20 text-primary border-primary/30 no-blur">Most Popular</Badge>
+              <CardHeader className="p-0 mb-4 space-y-2">
+                <CardTitle className="text-xl font-bold no-blur">Pro</CardTitle>
+                <div className="no-blur">
+                  <span className="text-4xl font-bold mb-2">$19</span>
+                  <span className="text-muted-foreground ml-1">/mo</span>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0 space-y-4">
+                <div className="space-y-2 no-blur">
+                  <div className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-primary mr-2" />
+                    <span className="text-sm">Advanced Resume Builder</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-primary mr-2" />
+                    <span className="text-sm">Unlimited Job Search</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-primary mr-2" />
+                    <span className="text-sm">50 AI-Powered Job Matches</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-primary mr-2" />
+                    <span className="text-sm">AI Interview Preparation</span>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="p-0 mt-6">
+                <Button 
+                  className="w-full"
+                  variant="default"
+                  onClick={() => handleSelectPlan("pro")}
+                >
+                  Get Started
+                </Button>
+              </CardFooter>
+            </Card>
 
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {/* Free Plan */}
-      <Card className="relative flex flex-col h-full bg-gradient-to-b from-blue-900/50 to-purple-900/50 border border-white/10 rounded-xl">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-xl text-white">Basic</CardTitle>
-          <CardDescription className="text-gray-300">For individuals just getting started</CardDescription>
-          <div className="mt-2">
-            <span className="text-3xl font-bold text-white">Free</span>
-          </div>
-        </CardHeader>
-        <CardContent className="flex-1 space-y-2 pb-6">
-          <ul className="space-y-2 text-gray-300 text-sm">
-            <li className="flex items-start">
-              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-              <span>1 Resume Creation</span>
-            </li>
-            <li className="flex items-start">
-              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-              <span>Basic AI Resume Tips</span>
-            </li>
-            <li className="flex items-start">
-              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-              <span>10 Job Matches Per Month</span>
-            </li>
-            <li className="flex items-start">
-              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-              <span>Access to Basic Templates</span>
-            </li>
-          </ul>
-        </CardContent>
-        <CardFooter className="mt-auto pt-0">
-          <Button
-            className="w-full bg-black/50 text-white border border-white/20 hover:bg-black/70"
-            onClick={() => handleSelectPlan("Basic")}
-          >
-            Get Started Free
-          </Button>
-        </CardFooter>
-      </Card>
+            {/* Premium Plan */}
+            <Card className="solid-card p-6">
+              <CardHeader className="p-0 mb-4 space-y-2">
+                <CardTitle className="text-xl font-bold no-blur">Premium</CardTitle>
+                <div className="no-blur">
+                  <span className="text-4xl font-bold mb-2">$39</span>
+                  <span className="text-muted-foreground ml-1">/mo</span>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0 space-y-4">
+                <div className="space-y-2 no-blur">
+                  <div className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-primary mr-2" />
+                    <span className="text-sm">Everything in Pro</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-primary mr-2" />
+                    <span className="text-sm">Premium Resume Templates</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-primary mr-2" />
+                    <span className="text-sm">Unlimited AI Job Matches</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-primary mr-2" />
+                    <span className="text-sm">Career Coaching</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-primary mr-2" />
+                    <span className="text-sm">Priority Support</span>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="p-0 mt-6">
+                <Button 
+                  className="w-full"
+                  variant="default"
+                  onClick={() => handleSelectPlan("premium")}
+                >
+                  Get Premium
+                </Button>
+              </CardFooter>
+            </Card>
 
-      {/* Pro Plan */}
-      <Card className="relative flex flex-col h-full bg-gradient-to-b from-blue-900/50 to-purple-900/50 border-2 border-blue-400/50 rounded-xl">
-        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-fit px-4 py-1 bg-blue-500 text-white text-sm font-medium rounded-full">
-          Most Popular
-        </div>
-        <CardHeader className="pb-4 ">
-          <CardTitle className="text-xl text-white">Pro</CardTitle>
-          <CardDescription className="text-gray-300">For individuals actively job hunting</CardDescription>
-          <div className="mt-2">
-            <span className="text-3xl font-bold text-white">$15</span>
-            <span className="text-muted-foreground">/month</span>
+            {/* Pricing Card 3 (Enterprise/Custom) */}
+            <Card className="p-6">
+              <CardHeader className="p-0 mb-4">
+                <CardTitle className="text-xl font-semibold mb-2">Enterprise</CardTitle>
+                <p className="text-4xl font-bold">Custom</p>
+              </CardHeader>
+              <CardContent className="p-0 mb-6">
+                <ul className="space-y-2 text-muted-foreground">
+                  <li className="flex items-center"><CheckCircle2 className="h-4 w-4 mr-2 text-green-500" /> Everything in Pro</li>
+                  <li className="flex items-center"><CheckCircle2 className="h-4 w-4 mr-2 text-green-500" /> Team Management Tools</li>
+                  <li className="flex items-center"><CheckCircle2 className="h-4 w-4 mr-2 text-green-500" /> API Access</li>
+                  <li className="flex items-center"><CheckCircle2 className="h-4 w-4 mr-2 text-green-500" /> Dedicated Support Manager</li>
+                </ul>
+              </CardContent>
+              <CardFooter className="p-0">
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={() => {/* Link to contact form or page */}}
+                >
+                  Contact Sales
+                </Button>
+              </CardFooter>
+            </Card>
           </div>
-        </CardHeader>
-        <CardContent className="flex-1 space-y-2 pb-6">
-          <ul className="space-y-2 text-gray-300 text-sm">
-            <li className="flex items-start">
-              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-              <span>Unlimited Resume Creations</span>
-            </li>
-            <li className="flex items-start">
-              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-              <span>Advanced AI Resume Suggestions</span>
-            </li>
-            <li className="flex items-start">
-              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-              <span>Unlimited Job Matches</span>
-            </li>
-            <li className="flex items-start">
-              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-              <span>Resume Tailoring for Each Job</span>
-            </li>
-            <li className="flex items-start">
-              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-              <span>Application Tracking Dashboard</span>
-            </li>
-          </ul>
-        </CardContent>
-        <CardFooter className="mt-auto pt-0">
-          <Button
-            className="w-full bg-blue-600 text-white hover:bg-blue-700"
-            onClick={() => handleSelectPlan("Pro")}
-          >
-            Start Pro Plan
-          </Button>
-        </CardFooter>
-      </Card>
-
-      {/* Business Plan */}
-      <Card className="relative flex flex-col h-full bg-gradient-to-b from-blue-900/50 to-purple-900/50 border border-white/10 rounded-xl">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-xl text-white">Enterprise</CardTitle>
-          <CardDescription className="text-gray-300">For career professionals and teams</CardDescription>
-          <div className="mt-2">
-            <span className="text-3xl font-bold text-white">$29</span>
-            <span className="text-muted-foreground">/month</span>
-          </div>
-        </CardHeader>
-        <CardContent className="flex-1 space-y-2 pb-6">
-          <ul className="space-y-2 text-gray-300 text-sm">
-            <li className="flex items-start">
-              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-              <span>All Pro Features</span>
-            </li>
-            <li className="flex items-start">
-              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-              <span>Premium Resume Templates</span>
-            </li>
-            <li className="flex items-start">
-              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-              <span>Priority AI Assistance</span>
-            </li>
-            <li className="flex items-start">
-              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-              <span>Advanced Career Insights</span>
-            </li>
-            <li className="flex items-start">
-              <CheckCircle2 className="h-5 w-5 text-green-400 mr-2 shrink-0 mt-0.5" />
-              <span>Team Collaboration Features</span>
-            </li>
-          </ul>
-        </CardContent>
-        <CardFooter className="mt-auto pt-0">
-          <Button
-            className="w-full bg-black/50 text-white border border-white/20 hover:bg-black/70"
-            onClick={() => handleSelectPlan("Enterprise")}
-          >
-            Start Enterprise Plan
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>
-  </div>
-</section>
+        </section>
 
         {/* Testimonials Section */}
         <section className="py-20 relative z-10">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold cosmic-text-gradient">
+              <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 What Our Users Say
               </h2>
               <p className="mt-4 text-lg text-gray-300">
@@ -715,27 +660,28 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-16 relative z-10">
-          <div className="max-w-4xl mx-auto">
-            <div className="cosmic-card border border-white/10 rounded-lg p-8 text-center bg-gradient-to-r from-blue-900/40 to-purple-900/40">
-              <h2 className="text-3xl font-bold mb-4 cosmic-text-gradient">
-                Ready to Accelerate Your Career?
-              </h2>
-              <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-                Join thousands of professionals who have transformed their job search with AIreHire's AI-powered tools.
-              </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Button 
-                  size="lg" 
-                  className="px-8 py-6 text-lg cosmic-btn-glow"
-                  onClick={() => setIsRegisterOpen(true)}
-                >
-                  Get Started Today <Rocket className="ml-2 h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-          </div>
+        {/* Final CTA Section */}
+        <section className="py-16 sm:py-24">
+          <Card 
+            className="p-8 text-center bg-gradient-to-r from-blue-900/40 to-purple-900/40"
+          > 
+            <CardHeader className="p-0 mb-4">
+              <Rocket className="h-10 w-10 mx-auto mb-4 text-primary" />
+              <CardTitle className="text-3xl font-bold mb-2">Ready to Elevate Your Career?</CardTitle>
+              <CardDescription className="text-lg text-muted-foreground max-w-xl mx-auto">
+                Join thousands of job seekers using AllHire AI to land their dream jobs faster.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+              <Button 
+                size="lg" 
+                className="px-8 py-6 text-lg"
+                onClick={() => setIsRegisterOpen(true)}
+              >
+                Get Started Now <ChevronRight className="ml-2 h-5 w-5" />
+              </Button>
+            </CardContent>
+          </Card>
         </section>
       </div>
 
@@ -744,7 +690,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-xl font-bold mb-4 cosmic-text-gradient">AIreHire</h3>
+              <h3 className="text-xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">AIreHire</h3>
               <p className="text-gray-400">
                 AI-powered career development platform that transforms professional growth through intelligent tools.
               </p>

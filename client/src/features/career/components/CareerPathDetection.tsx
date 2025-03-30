@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/ui/core/Card';
-import { Button } from '@/ui/core/Button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { Badge } from '@/components/ui/badge';
 import { CareerPath, CareerSpecificAdvice, CareerDetectionResponse } from '../types';
+import { Resume } from "@/features/resume/types";
+import { useToast } from '@/hooks/use-toast';
 
 interface CareerPathDetectionProps {
   resumeId?: number | string;
@@ -17,36 +19,89 @@ interface CareerPathDetectionProps {
  * Detects the likely career path from a resume and provides career-specific advice
  */
 export default function CareerPathDetection({ resumeId, onAdviceReceived }: CareerPathDetectionProps) {
+  const { toast } = useToast();
   const [showAdvice, setShowAdvice] = useState(false);
   
-  // Query for resume data if resumeId is provided
-  const resumeQuery = useQuery({
-    queryKey: resumeId ? ['/api/resumes', resumeId] : [],
+  const resumeQuery = useQuery<Resume | null>({ 
+    queryKey: ['resume', resumeId],
+    queryFn: async () => {
+      if (!resumeId) return null; 
+      try {
+        const response = await apiRequest('GET', `/api/resumes/${resumeId}`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch resume: ${response.status} ${response.statusText}`);
+        }
+        const data = await response.json();
+        return data as Resume;
+      } catch (error) {
+        // Silent error handling with user feedback
+        toast({
+          title: 'Resume Load Failed',
+          description: 'Unable to load your resume. Please try again later.',
+          variant: 'destructive',
+        });
+        return null;
+      }
+    },
     enabled: !!resumeId,
-    queryFn: !!resumeId ? undefined : () => Promise.resolve(null)
   });
   
   // Mutation to detect career path from resume
-  const detectCareerMutation = useMutation({
+  const detectCareerMutation = useMutation<CareerDetectionResponse, Error>({
     mutationFn: async () => {
-      if (resumeId) {
-        // If resumeId is provided, use the API endpoint that takes a saved resume
-        const response = await apiRequest('GET', `/api/resumes/${resumeId}/career-path`);
-        const data = await response.json();
-        return data as CareerDetectionResponse;
-      } else if (resumeQuery.data) {
-        // Otherwise use the direct detection endpoint with resume data
-        const response = await apiRequest('POST', '/api/careers/detect', { resume: resumeQuery.data });
-        const data = await response.json();
-        return data as CareerDetectionResponse;
+      // Check resumeQuery.data (which is now typed) before using it
+      const currentResumeData = resumeQuery.data;
+      
+      if (!resumeId && !currentResumeData) {
+        throw new Error('No resume data available for career detection');
       }
-      throw new Error('No resume data available for career detection');
+      
+      try {
+        if (resumeId) {
+          // If resumeId is provided, use the API endpoint that takes a saved resume
+          const response = await apiRequest('GET', `/api/resumes/${resumeId}/career-path`);
+          if (!response.ok) {
+            throw new Error(`Career path detection failed: ${response.status} ${response.statusText}`);
+          }
+          const data = await response.json();
+          return data as CareerDetectionResponse;
+        } else if (currentResumeData) {
+          // Use the fetched data
+          const response = await apiRequest('POST', '/api/careers/detect', { resume: currentResumeData });
+          if (!response.ok) {
+            throw new Error(`Career path detection failed: ${response.status} ${response.statusText}`);
+          }
+          const data = await response.json();
+          return data as CareerDetectionResponse;
+        }
+        throw new Error('No resume data available for career detection');
+      } catch (error) {
+        // Silent error handling with user feedback
+        toast({
+          title: 'Career Detection Failed',
+          description: error instanceof Error ? error.message : 'Unable to analyze your career path. Please try again.',
+          variant: 'destructive',
+        });
+        throw error;
+      }
     },
     onSuccess: (data) => {
       if (data.success && onAdviceReceived) {
         onAdviceReceived(data.careerPath, data.advice);
+        toast({
+          title: 'Analysis Complete',
+          description: 'Your career path has been analyzed successfully.',
+        });
       }
       setShowAdvice(true);
+    },
+    onError: (error) => {
+      // Silent error handling with user feedback
+      toast({
+        title: 'Analysis Failed',
+        description: 'Unable to analyze your career path. Please try again later.',
+        variant: 'destructive',
+      });
     }
   });
   
@@ -60,6 +115,14 @@ export default function CareerPathDetection({ resumeId, onAdviceReceived }: Care
   
   // Handler for detecting career path
   const handleDetectCareer = () => {
+    if (!resumeId && !resumeQuery.data) {
+      toast({
+        title: 'No Resume Available',
+        description: 'Please save your resume before analyzing your career path.',
+        variant: 'destructive',
+      });
+      return;
+    }
     detectCareerMutation.mutate();
   };
   

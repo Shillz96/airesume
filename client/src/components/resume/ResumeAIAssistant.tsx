@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-// Import both button versions during transition
-import { CosmicButton } from '@/components/cosmic-button';
-import Button from '@/components/ui/modern-button';
-import { Loader2, RefreshCw, X, Bot, Sparkles, MessageCircle, ArrowRight, Search, ChevronDown, ChevronUp } from 'lucide-react';
+// Import standard button
+import { Button } from '@/components/ui/button';
+// import { CosmicButton } from '@/components/cosmic-button'; // Assuming CosmicButton is deprecated or handled differently
+// import Button from '@/components/ui/modern-button'; // Remove this import
+import { Loader2, RefreshCw, X, Bot, Sparkles, MessageCircle, ArrowRight, Search, ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { useResumeData } from '@/hooks/use-resume-data';
@@ -53,6 +54,199 @@ export function ResumeAIAssistant({
     "Communication", "Problem Solving", "Critical Thinking"
   ];
   
+  // Function to fetch data from API with retry logic
+  const fetchFromApi = useCallback(async (url: string, retries = 2) => {
+    for (let i = 0; i <= retries; i++) {
+      try {
+        const response = await apiRequest('GET', url);
+        const data = await response.json();
+        
+        if (data.success && Array.isArray(data.suggestions)) {
+          return data.suggestions;
+        } else if (data.fallbackSuggestions && Array.isArray(data.fallbackSuggestions)) {
+          toast({
+            title: "Using Fallback Suggestions",
+            description: "Using locally stored suggestions due to API limitations.",
+            variant: "default"
+          });
+          return data.fallbackSuggestions;
+        }
+        throw new Error('Invalid API response format');
+      } catch (error) {
+        if (i === retries) {
+          // On final retry, return null to trigger fallback
+          return null;
+        }
+        // Wait before retrying (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+      }
+    }
+    return null;
+  }, [toast]);
+  
+  // Function to generate skills with improved error handling
+  const generateSkillSuggestions = useCallback(async () => {
+    if (!resumeId) {
+      const shuffled = [...allSkills].sort(() => 0.5 - Math.random());
+      setSkillSuggestions(shuffled.slice(0, 10));
+      return;
+    }
+    
+    setIsLoadingSuggestions(true);
+    
+    try {
+      const suggestions = await fetchFromApi(`/api/resumes/${resumeId}/suggestions?skillsOnly=true${skillSearchQuery ? `&query=${encodeURIComponent(skillSearchQuery)}` : ''}`);
+      if (suggestions) {
+        setSkillSuggestions(suggestions);
+      } else {
+        // Fallback to local suggestions
+        const shuffled = [...allSkills].sort(() => 0.5 - Math.random());
+        setSkillSuggestions(shuffled.slice(0, 10));
+        
+        toast({
+          title: "Using Local Suggestions",
+          description: "Using locally generated suggestions while we restore the connection.",
+          variant: "default"
+        });
+      }
+    } catch (error) {
+      // Silent error handling with user feedback
+      const shuffled = [...allSkills].sort(() => 0.5 - Math.random());
+      setSkillSuggestions(shuffled.slice(0, 10));
+      
+      toast({
+        title: "Using Local Suggestions",
+        description: "Using locally generated suggestions while we restore the connection.",
+        variant: "default"
+      });
+    } finally {
+      setIsLoadingSuggestions(false);
+    }
+  }, [resumeId, skillSearchQuery, fetchFromApi, toast, allSkills]);
+  
+  // Function to search skills with improved error handling
+  const handleSkillSearch = useCallback(async (query: string) => {
+    if (!query.trim()) {
+      return generateSkillSuggestions();
+    }
+    
+    setIsLoadingSuggestions(true);
+    
+    try {
+      if (!resumeId) {
+        // Fallback to local filtering if no resumeId
+        const matches = allSkills.filter(skill => 
+          skill.toLowerCase().includes(query.toLowerCase())
+        );
+        setSkillSuggestions(matches.slice(0, 10));
+        return;
+      }
+      
+      const suggestions = await fetchFromApi(`/api/resumes/${resumeId}/suggestions?skillsOnly=true&query=${encodeURIComponent(query)}`);
+      if (suggestions) {
+        setSkillSuggestions(suggestions);
+      } else {
+        // Fallback to local filtering
+        const matches = allSkills.filter(skill => 
+          skill.toLowerCase().includes(query.toLowerCase())
+        );
+        setSkillSuggestions(matches.slice(0, 10));
+        
+        toast({
+          title: "Local Search Results",
+          description: "Showing matches from local database.",
+          variant: "default"
+        });
+      }
+    } catch (error) {
+      // Silent error handling with user feedback
+      const matches = allSkills.filter(skill => 
+        skill.toLowerCase().includes(query.toLowerCase())
+      );
+      setSkillSuggestions(matches.slice(0, 10));
+      
+      toast({
+        title: "Local Search Results",
+        description: "Showing matches from local database.",
+        variant: "default"
+      });
+    } finally {
+      setIsLoadingSuggestions(false);
+    }
+  }, [resumeId, fetchFromApi, toast, allSkills, generateSkillSuggestions]);
+  
+  // Search for skills when query changes
+  useEffect(() => {
+    // Debounce search
+    const timer = setTimeout(() => {
+      if (activeSection === "skills") {
+        handleSkillSearch(skillSearchQuery);
+      }
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, [skillSearchQuery, activeSection, handleSkillSearch]);
+  
+  // Function to generate suggestions with improved error handling
+  const generateSuggestions = useCallback(async (type: "short" | "medium" | "long") => {
+    setAiSuggestionType(type);
+    setIsLoadingSuggestions(true);
+    
+    try {
+      if (!resumeId) {
+        setTimeout(() => {
+          setIsLoadingSuggestions(false);
+          setSuggestions([]);
+          toast({
+            title: "Resume ID Required",
+            description: "Please save your resume first to get AI suggestions.",
+            variant: "default"
+          });
+        }, 500);
+        return;
+      }
+      
+      let queryParams = '';
+      
+      switch (activeSection) {
+        case "summary":
+          queryParams = `summaryOnly=true&length=${type}`;
+          break;
+        case "experience":
+          queryParams = `experienceOnly=true&length=${type}`;
+          break;
+        case "skills":
+          queryParams = `skillsOnly=true`;
+          break;
+        case "projects":
+        default:
+          queryParams = ``;
+      }
+      
+      const suggestions = await fetchFromApi(`/api/resumes/${resumeId}/suggestions?${queryParams}`);
+      if (suggestions) {
+        setSuggestions(suggestions);
+      } else {
+        setSuggestions([]);
+        toast({
+          title: "Suggestion Generation Failed",
+          description: "Unable to generate suggestions at this time. Please try again later.",
+          variant: "default"
+        });
+      }
+    } catch (error) {
+      // Silent error handling with user feedback
+      setSuggestions([]);
+      toast({
+        title: "Suggestion Generation Failed",
+        description: "Unable to generate suggestions at this time. Please try again later.",
+        variant: "default"
+      });
+    } finally {
+      setIsLoadingSuggestions(false);
+    }
+  }, [resumeId, activeSection, fetchFromApi, toast]);
+  
   // Reset states and suggestions when active section changes
   useEffect(() => {
     setAiSuggestionType('medium');
@@ -66,165 +260,20 @@ export function ResumeAIAssistant({
     } else {
       setSkillSuggestions([]);
     }
-  }, [activeSection]);
+  }, [activeSection, generateSkillSuggestions, generateSuggestions]);
 
-  // Function to fetch data from API or handle errors
-  const fetchFromApi = useCallback(async (url: string) => {
-    try {
-      const response = await apiRequest('GET', url);
-      const data = await response.json();
-      
-      if (data.success && Array.isArray(data.suggestions)) {
-        return data.suggestions;
-      } else if (data.fallbackSuggestions && Array.isArray(data.fallbackSuggestions)) {
-        // Use fallback suggestions if provided
-        return data.fallbackSuggestions;
-      }
-      throw new Error('Invalid API response format');
-    } catch (error) {
-      console.error(`Error fetching from ${url}:`, error);
-      throw error; // Let the caller handle fallback
-    }
-  }, []);
-  
-  // Function to generate skills based on real API data
-  const generateSkillSuggestions = async () => {
-    if (!resumeId) {
-      // If no resumeId, use local fallbacks immediately
-      const shuffled = [...allSkills].sort(() => 0.5 - Math.random());
-      setSkillSuggestions(shuffled.slice(0, 10));
-      return;
-    }
-    
-    setIsLoadingSuggestions(true);
-    
-    try {
-      // Call API endpoint to get skill suggestions
-      const suggestions = await fetchFromApi(`/api/resumes/${resumeId}/suggestions?skillsOnly=true${skillSearchQuery ? `&query=${encodeURIComponent(skillSearchQuery)}` : ''}`);
-      setSkillSuggestions(suggestions);
-    } catch (error) {
-      console.error("Error fetching skill suggestions:", error);
-      // Fallback to local suggestions in case of API failure
-      const shuffled = [...allSkills].sort(() => 0.5 - Math.random());
-      setSkillSuggestions(shuffled.slice(0, 10));
-      
-      toast({
-        title: "Couldn't connect to AI service",
-        description: "Using locally generated suggestions instead. Please try again later.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoadingSuggestions(false);
-    }
-  };
-  
-  // Function to search for skills based on query
-  const searchSkills = useCallback(async () => {
-    if (!skillSearchQuery.trim()) {
-      return generateSkillSuggestions();
-    }
-    
-    setIsLoadingSuggestions(true);
-    
-    try {
-      if (!resumeId) {
-        // Fallback to local filtering if no resumeId
-        const matches = allSkills.filter(skill => 
-          skill.toLowerCase().includes(skillSearchQuery.toLowerCase())
-        );
-        setSkillSuggestions(matches.slice(0, 10));
-        return;
-      }
-      
-      const suggestions = await fetchFromApi(`/api/resumes/${resumeId}/suggestions?skillsOnly=true&query=${encodeURIComponent(skillSearchQuery)}`);
-      setSkillSuggestions(suggestions);
-    } catch (error) {
-      // Fallback to local filtering
-      const matches = allSkills.filter(skill => 
-        skill.toLowerCase().includes(skillSearchQuery.toLowerCase())
-      );
-      setSkillSuggestions(matches.slice(0, 10));
-    } finally {
-      setIsLoadingSuggestions(false);
-    }
-  }, [skillSearchQuery, resumeId, fetchFromApi]);
-  
-  // Search for skills when query changes
-  useEffect(() => {
-    // Debounce search
-    const timer = setTimeout(() => {
-      if (activeSection === "skills") {
-        searchSkills();
-      }
-    }, 300);
-    
-    return () => clearTimeout(timer);
-  }, [skillSearchQuery, activeSection, searchSkills]);
-  
-  // Function to generate AI suggestions based on the active section and suggestion type
-  const generateSuggestions = async (type: "short" | "medium" | "long") => {
-    setAiSuggestionType(type);
-    setIsLoadingSuggestions(true);
-    
-    try {
-      if (!resumeId) {
-        // If no resumeId, use fallbacks (showing UI will show placeholder message)
-        setTimeout(() => {
-          setIsLoadingSuggestions(false);
-          setSuggestions([]);
-        }, 500);
-        return;
-      }
-      
-      // Determine the suggestion type based on the active section
-      let queryParams = '';
-      
-      if (activeSection === "summary") {
-        queryParams = `summaryOnly=true&length=${type}`;
-      } else if (activeSection === "experience") {
-        queryParams = `experienceOnly=true&length=${type}`;
-      } else if (activeSection === "skills") {
-        queryParams = `skillsOnly=true`;
-      } else if (activeSection === "projects") {
-        // No specific API for projects yet, use general suggestions
-        queryParams = ``;
-      } else {
-        queryParams = ``;
-      }
-      
-      // Call the API to get suggestions
-      const suggestions = await fetchFromApi(`/api/resumes/${resumeId}/suggestions?${queryParams}`);
-      setSuggestions(suggestions);
-    } catch (error) {
-      console.error(`Error generating ${activeSection} suggestions:`, error);
-      // Reset suggestions on error
-      setSuggestions([]);
-      
-      toast({
-        title: "Unable to generate suggestions",
-        description: "There was an error connecting to the AI service. Please try again later.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoadingSuggestions(false);
-    }
-  };
-  
   // Handle chat message submission
   const handleChatSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userMessage.trim() || isSendingMessage) return;
     
     setIsSendingMessage(true);
-    
-    // Add user message to chat
     setChatMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     const messageToSend = userMessage;
     setUserMessage('');
     
     try {
       if (!resumeId) {
-        // Placeholder response if no resumeId
         setTimeout(() => {
           setChatMessages(prev => [...prev, { 
             role: 'assistant', 
@@ -235,8 +284,6 @@ export function ResumeAIAssistant({
         return;
       }
       
-      // In a real implementation, we would call an API endpoint
-      // For now, simulate a response
       setTimeout(() => {
         let response: string;
         
@@ -254,7 +301,6 @@ export function ResumeAIAssistant({
         setIsSendingMessage(false);
       }, 1500);
     } catch (error) {
-      console.error("Error sending chat message:", error);
       setChatMessages(prev => [...prev, { 
         role: 'assistant', 
         content: "I'm sorry, I encountered an error while processing your request. Please try again later." 
@@ -263,380 +309,261 @@ export function ResumeAIAssistant({
     }
   };
   
-  // Render the appropriate UI based on active section
-  if (isHidden) {
-    return null;
-  }
-  
-  // Chat view UI
-  if (isChatView) {
-    return (
-      <div className="flex flex-col h-full bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div className="flex justify-between items-center p-3 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center">
-            <Bot className="h-5 w-5 mr-2 text-primary" />
-            <h3 className="font-medium">AI Resume Assistant</h3>
-          </div>
-          <CosmicButton 
-            variant="ghost" 
-            size="sm"
-            onClick={() => setIsChatView(false)}
-            className="h-8 w-8 p-0"
-            iconLeft={<X className="h-4 w-4" />}
-          />
-        </div>
-        
-        <div className="flex-grow p-3 overflow-y-auto space-y-4">
-          {chatMessages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
-              <Bot className="h-10 w-10 mb-2 text-primary" />
-              <p className="text-sm">Ask me anything about improving your resume!</p>
-              <div className="mt-4 grid grid-cols-1 gap-2 w-full max-w-xs">
-                <CosmicButton variant="outline" size="sm" onClick={() => {
-                  setUserMessage("How can I improve my resume?");
-                  setChatMessages([{ role: 'user', content: "How can I improve my resume?" }]);
-                  
-                  setTimeout(() => {
-                    setChatMessages(prev => [...prev, { 
-                      role: 'assistant', 
-                      content: "To improve your resume, I recommend: 1) Add measurable achievements with specific numbers, 2) Use more powerful action verbs at the start of each bullet point, 3) Tailor your skills section to each job application, and 4) Ensure your summary highlights your most unique qualifications." 
-                    }]);
-                  }, 1000);
-                }}>
-                  How can I improve my resume?
-                </CosmicButton>
-                <CosmicButton variant="outline" size="sm" onClick={() => {
-                  setUserMessage("Suggest skills for my experience");
-                  setChatMessages([{ role: 'user', content: "Suggest skills for my experience" }]);
-                  
-                  setTimeout(() => {
-                    setChatMessages(prev => [...prev, { 
-                      role: 'assistant', 
-                      content: "Based on your experience, consider adding these in-demand skills: Data Analysis, Project Management, Team Leadership, Strategic Planning, and Problem Solving. Technical skills like SQL, Python, or Excel can also significantly boost your resume's visibility to ATS systems." 
-                    }]);
-                  }, 1000);
-                }}>
-                  Suggest skills for my experience
-                </CosmicButton>
-                <CosmicButton variant="outline" size="sm" onClick={() => {
-                  setUserMessage("Write a professional summary for me");
-                  setChatMessages([{ role: 'user', content: "Write a professional summary for me" }]);
-                  
-                  setTimeout(() => {
-                    setChatMessages(prev => [...prev, { 
-                      role: 'assistant', 
-                      content: "For your professional summary, consider: 'Seasoned professional with 5+ years of experience delivering business-critical solutions through innovative approaches and technical expertise. Proven track record of leading cross-functional teams to exceed objectives while optimizing resources and driving continuous improvement.'" 
-                    }]);
-                  }, 1000);
-                }}>
-                  Write a professional summary for me
-                </CosmicButton>
-              </div>
-            </div>
-          ) : (
-            chatMessages.map((message, index) => (
-              <div 
-                key={index} 
-                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div 
-                  className={`max-w-[80%] rounded-lg p-3 ${
-                    message.role === 'user' 
-                      ? 'bg-primary text-white' 
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
-                  }`}
-                >
-                  <p className="text-sm">{message.content}</p>
-                </div>
-              </div>
-            ))
-          )}
-          
-          {isSendingMessage && (
-            <div className="flex justify-start">
-              <div className="max-w-[80%] rounded-lg p-3 bg-gray-100 dark:bg-gray-700">
-                <div className="flex space-x-2 items-center">
-                  <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                  <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                  <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-        
-        <form onSubmit={handleChatSubmit} className="p-3 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex items-center">
-            <input
-              type="text"
-              className="flex-grow px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white dark:bg-gray-800"
-              placeholder="Type your message..."
-              value={userMessage}
-              onChange={(e) => setUserMessage(e.target.value)}
-              disabled={isSendingMessage}
-            />
-            <CosmicButton 
-              type="submit" 
-              className="rounded-l-none"
-              disabled={isSendingMessage || !userMessage.trim()}
-              variant="primary"
-            >
-              {isSendingMessage ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <ArrowRight className="h-4 w-4" />
-              )}
-            </CosmicButton>
-          </div>
-        </form>
-      </div>
-    );
-  }
-  
-  // For Skills section, render skill search and suggestions
-  if (activeSection === "skills") {
-    return (
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Sparkles className="h-4 w-4 cosmic-text-gradient" />
-            <h3 className="text-sm font-semibold cosmic-text-gradient">AI Skill Suggestions</h3>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsChatView(true)}
-            className="h-7 w-7 p-0 rounded-full hover:bg-primary/10 dark:hover:bg-primary/20"
-          >
-            <MessageCircle className="h-3.5 w-3.5 text-primary" />
-          </Button>
-        </div>
-      
-        <div className="space-y-2">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-gray-400" />
-            </div>
-            <input
-              type="text"
-              className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white dark:bg-gray-800"
-              placeholder="Search skills or abilities..."
-              value={skillSearchQuery}
-              onChange={(e) => setSkillSearchQuery(e.target.value)}
-            />
-            {skillSearchQuery && (
-              <button
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                onClick={() => setSkillSearchQuery('')}
-              >
-                <X className="h-4 w-4 text-gray-400 hover:text-gray-600" />
-              </button>
-            )}
-          </div>
-        </div>
-        
-        <div className="mt-4">
-          <div className="flex items-center justify-between mb-2">
-            <button 
-              className="flex items-center space-x-1 text-sm font-medium cosmic-text-gradient"
-              onClick={() => setSuggestionsExpanded(!suggestionsExpanded)}
-            >
-              <span>Skills to Add</span>
-              {suggestionsExpanded ? <ChevronUp className="h-4 w-4 text-primary" /> : <ChevronDown className="h-4 w-4 text-primary" />}
-            </button>
-            <CosmicButton 
-              variant="ghost" 
-              size="sm" 
-              className="h-8 px-2"
-              onClick={generateSkillSuggestions}
-              disabled={isLoadingSuggestions}
-              iconLeft={isLoadingSuggestions ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-            />
-          </div>
-          
-          {suggestionsExpanded && (
-            isLoadingSuggestions ? (
-              <div className="flex justify-center py-6">
-                <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              </div>
-            ) : Array.isArray(skillSuggestions) && skillSuggestions.length > 0 ? (
-              <div className="flex flex-wrap gap-2 py-2">
-                {skillSuggestions.map((skill, index) => (
-                  <button
-                    key={index}
-                    className="px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary dark:bg-primary/20 dark:hover:bg-primary/30 rounded-full text-xs font-medium transition-colors"
-                    onClick={() => onApplySuggestion(skill)}
-                  >
-                    {skill}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-6 text-gray-500 text-sm italic">
-                {resumeId ? "No skills found. Try a different search or refresh suggestions." : 
-                "Save your resume to get AI-powered skill suggestions tailored to your experience."}
-              </div>
-            )
-          )}
-        </div>
+  const fetchSuggestions = async (url: string) => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      toast({
+        title: "Error Fetching Suggestions",
+        description: "Failed to fetch suggestions. Please try again.",
+        variant: "destructive",
+      });
+      return null;
+    }
+  };
 
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            Click any skill to add it to your resume. The AI assistant analyzes job market trends to recommend relevant skills.
-          </p>
-        </div>
-      </div>
-    );
-  }
-  
-  // Render UI for other sections that support AI suggestions
-  if (["summary", "experience", "education", "projects"].includes(activeSection)) {
-    return (
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Sparkles className="h-4 w-4 cosmic-text-gradient" />
-            <h3 className="text-sm font-semibold cosmic-text-gradient">AI Suggestions</h3>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsChatView(true)}
-            className="h-7 w-7 p-0 rounded-full hover:bg-primary/10 dark:hover:bg-primary/20"
-          >
-            <MessageCircle className="h-3.5 w-3.5 text-primary" />
-          </Button>
-        </div>
-        
-        {/* Only for summary, experience sections */}
-        {["summary", "experience"].includes(activeSection) && (
-          <div className="flex gap-2">
-            <Button
-              variant={aiSuggestionType === 'short' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => generateSuggestions('short')}
-              disabled={isLoadingSuggestions}
-              className="px-3 py-1 h-8 text-xs"
-            >
-              Short
-            </Button>
-            <Button
-              variant={aiSuggestionType === 'medium' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => generateSuggestions('medium')}
-              disabled={isLoadingSuggestions}
-              className="px-3 py-1 h-8 text-xs"
-            >
-              Medium
-            </Button>
-            <Button
-              variant={aiSuggestionType === 'long' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => generateSuggestions('long')}
-              disabled={isLoadingSuggestions}
-              className="px-3 py-1 h-8 text-xs"
-            >
-              Long
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => generateSuggestions(aiSuggestionType)}
-              disabled={isLoadingSuggestions}
-              className="px-2 py-1 h-8"
-            >
-              <RefreshCw className="h-3 w-3" />
-            </Button>
-          </div>
-        )}
-        
-        {/* Section-specific helper text */}
-        <div className="text-xs text-gray-500 dark:text-gray-400">
-          {activeSection === "summary" && "Choose an option to generate professional summary suggestions"}
-          {activeSection === "experience" && "Get AI-powered bullet points for your work experience"}
-          {activeSection === "education" && "Enhance your education section descriptions"}
-          {activeSection === "projects" && "Generate compelling project descriptions"}
-        </div>
-        
-        {/* Suggestions display */}
-        {isLoadingSuggestions ? (
-          <div className="flex justify-center py-6">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          </div>
-        ) : suggestions.length > 0 ? (
-          <div className="space-y-3">
-            {suggestions.map((suggestion, index) => (
-              <div 
-                key={index} 
-                className="bg-primary/5 dark:bg-primary/10 p-3.5 rounded-lg border border-primary/10 dark:border-primary/30"
-              >
-                <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">{suggestion}</p>
-                <div className="mt-3 flex justify-end">
-                  <Button
-                    size="sm"
-                    onClick={() => onApplySuggestion(suggestion)}
-                    className="h-7 text-xs cosmic-btn-glow text-white"
-                  >
-                    Apply
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-6">
-            {resumeId ? (
-              <div className="flex flex-col items-center text-gray-500">
-                <Sparkles className="h-8 w-8 mb-2 text-primary opacity-70" />
-                <p className="text-sm">Click an option above to generate AI-powered suggestions.</p>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center text-gray-500">
-                <Bot className="h-8 w-8 mb-2 text-primary opacity-70" />
-                <p className="text-sm">Save your resume to unlock AI-powered suggestions.</p>
-              </div>
-            )}
-          </div>
-        )}
-        
-        <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-          <CosmicButton 
-            variant="ghost" 
-            size="sm" 
-            className="text-xs cosmic-text-gradient px-0 font-medium"
-            onClick={() => setIsChatView(true)}
-            iconLeft={<MessageCircle className="h-3.5 w-3.5 text-primary" />}
-          >
-            Chat with AI for tailored advice
-          </CosmicButton>
-        </div>
-      </div>
-    );
-  }
-  
-  // For unsupported sections, show chat-only mode
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center space-x-2">
-          <Bot className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-semibold cosmic-text-gradient">AI Resume Assistant</h3>
+    <div className={`w-full transition-all ease-out duration-500 ${isHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+      <div className="solid-card shadow-lg rounded-lg overflow-hidden border border-white/20 dark:border-gray-800/40">
+        <div className="p-4 bg-gradient-to-r from-blue-600/10 to-indigo-600/10 border-b border-white/10 dark:border-gray-800/40">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Bot className="h-5 w-5 text-primary" />
+              <h3 className="text-lg font-semibold no-blur">AI Resume Assistant</h3>
+            </div>
+            
+            <div className="flex gap-2">
+              {!isChatView && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-8 px-2"
+                  onClick={() => setIsChatView(true)}
+                >
+                  <MessageCircle className="h-4 w-4 mr-1" />
+                  Chat
+                </Button>
+              )}
+              {isChatView && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-8 px-2"
+                  onClick={() => setIsChatView(false)}
+                >
+                  <Sparkles className="h-4 w-4 mr-1" />
+                  Suggestions
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
-      
-      <div className="text-center py-8">
-        <Bot className="h-12 w-12 mx-auto mb-3 text-primary opacity-70" />
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-          Have questions about your resume? Chat with our AI assistant for personalized advice.
-        </p>
-        <CosmicButton 
-          variant="primary"
-          onClick={() => setIsChatView(true)}
-          className="cosmic-btn-glow text-white"
-          iconLeft={<MessageCircle className="h-4 w-4 text-primary" />}
-        >
-          Chat with AI Assistant
-        </CosmicButton>
+        
+        <div className="p-4">
+          {/* Regular Suggestions View */}
+          {!isChatView && (
+            <>
+              {/* Content based on active section */}
+              {activeSection === "skills" ? (
+                <>
+                  <div className="mb-4">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <input
+                        type="text"
+                        value={skillSearchQuery}
+                        onChange={(e) => setSkillSearchQuery(e.target.value)}
+                        placeholder="Search for relevant skills..."
+                        className="w-full pl-9 py-2 px-3 rounded-md border border-white/10 dark:border-gray-700/30 no-blur bg-white/10 dark:bg-gray-900/10"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2 my-3 no-blur">
+                    <div className="flex justify-between items-center">
+                      <h4 className="text-sm font-medium text-blue-600 dark:text-blue-400">Recommended Skills</h4>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 px-2"
+                        onClick={() => generateSkillSuggestions()}
+                      >
+                        <RefreshCw className="h-3 w-3 mr-1" />
+                        Refresh
+                      </Button>
+                    </div>
+                    
+                    {isLoadingSuggestions ? (
+                      <div className="py-4 flex justify-center">
+                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-2 py-1">
+                        {skillSuggestions.length > 0 ? (
+                          skillSuggestions.map((skill, index) => (
+                            <div key={index} className="solid-card no-blur rounded-md p-2 text-sm flex justify-between items-center group">
+                              <span className="truncate">{skill}</span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => onApplySuggestion(skill)}
+                                className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <Plus className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="col-span-2 text-sm text-muted-foreground py-2">
+                            No skill suggestions available. Try refining your search or adding a work history.
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Suggestions for other sections */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant={aiSuggestionType === 'short' ? 'secondary' : 'outline'}
+                        size="sm"
+                        onClick={() => generateSuggestions('short')}
+                        disabled={isLoadingSuggestions}
+                      >
+                        Short
+                      </Button>
+                      <Button
+                        variant={aiSuggestionType === 'medium' ? 'secondary' : 'outline'}
+                        size="sm"
+                        onClick={() => generateSuggestions('medium')}
+                        disabled={isLoadingSuggestions}
+                      >
+                        Medium
+                      </Button>
+                      <Button
+                        variant={aiSuggestionType === 'long' ? 'secondary' : 'outline'}
+                        size="sm"
+                        onClick={() => generateSuggestions('long')}
+                        disabled={isLoadingSuggestions}
+                      >
+                        Detailed
+                      </Button>
+                    </div>
+                    
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSuggestionsExpanded(!suggestionsExpanded)}
+                      className="p-1 h-8 w-8"
+                    >
+                      {suggestionsExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                  
+                  {isLoadingSuggestions ? (
+                    <div className="py-6 flex justify-center">
+                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : (
+                    <>
+                      {suggestionsExpanded && (
+                        <div className="space-y-3 no-blur">
+                          {suggestions.length > 0 ? (
+                            suggestions.map((suggestion, index) => (
+                              <div 
+                                key={index} 
+                                className="solid-card rounded-md p-3 text-sm hover:shadow-md transition-shadow"
+                              >
+                                <p className="text-slate-700 dark:text-slate-300 mb-2">{suggestion}</p>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="mt-1 w-full text-xs"
+                                  onClick={() => onApplySuggestion(suggestion)}
+                                >
+                                  Apply
+                                </Button>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="text-center p-4 text-muted-foreground">
+                              {resumeId ? 
+                                "No AI suggestions available for this section yet. Try a different length or save your resume first." :
+                                "Please save your resume to enable AI-powered suggestions tailored to your profile."
+                              }
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+            </>
+          )}
+          
+          {/* Chat Interface */}
+          {isChatView && (
+            <div className="h-[350px] flex flex-col">
+              <div className="flex-1 overflow-y-auto mb-3 space-y-3 solid-card rounded-md p-3">
+                {chatMessages.length > 0 ? (
+                  chatMessages.map((message, index) => (
+                    <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div 
+                        className={`max-w-[80%] p-2 rounded-lg text-sm no-blur
+                          ${message.role === 'user' 
+                            ? 'bg-blue-500 text-white ml-4' 
+                            : 'solid-card mr-4'}
+                        `}
+                      >
+                        {message.content}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="h-full flex items-center justify-center text-center">
+                    <div className="max-w-xs text-muted-foreground">
+                      <Bot className="h-8 w-8 mx-auto mb-2 text-primary/60" />
+                      <p className="text-sm">
+                        Ask me anything about your resume. I can help with phrasing, formatting tips, or suggest improvements.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <form onSubmit={handleChatSubmit} className="relative mt-auto">
+                <input 
+                  type="text"
+                  value={userMessage}
+                  onChange={(e) => setUserMessage(e.target.value)}
+                  placeholder="Ask for resume help..."
+                  className="w-full pl-3 pr-10 py-2 rounded-md border border-white/10 dark:border-gray-700/30 no-blur bg-white/10 dark:bg-gray-900/10"
+                  disabled={isSendingMessage}
+                />
+                <Button 
+                  type="submit" 
+                  variant="ghost" 
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+                  disabled={isSendingMessage || !userMessage.trim()}
+                >
+                  {isSendingMessage ? 
+                    <Loader2 className="h-4 w-4 animate-spin" /> : 
+                    <ArrowRight className="h-4 w-4" />
+                  }
+                </Button>
+              </form>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { gsap } from "gsap";
-import { Button } from "@/ui/core/Button";
-import { Cpu, Lightbulb, Briefcase, ArrowRight, Sparkles, RefreshCw, Send, X, MessageSquare, ChevronDown, ChevronUp, PlusCircle, Code, Check, Copy, RotateCcw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Cpu, Lightbulb, Briefcase, ArrowRight, Sparkles, RefreshCw, Send, X, MessageSquare, ChevronDown, ChevronUp, PlusCircle, Code, Check, Copy, RotateCcw, Loader2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -340,7 +340,7 @@ export default function AIAssistant({
     
     if (resume?.experience && Array.isArray(resume.experience)) {
       existingBulletPoints = resume.experience
-        .map(exp => exp.description || "")
+        .map((exp: { description?: string }) => exp.description || "")
         .filter(Boolean);
       
       // Get current role from most recent experience
@@ -1283,7 +1283,7 @@ export default function AIAssistant({
  {isTailoring ? (
  <>
  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
- Tailoring Resume...
+ Tailoring...
  </>
  ) : (
  <>

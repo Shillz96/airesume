@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'wouter';
 import { FileText, Briefcase, CheckSquare, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Card } from '@/ui/core/Card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
 
 interface StatsCardProps {
@@ -25,46 +25,43 @@ function StatsCard({
   index
 }: StatsCardProps) {
   return (
-    <Card
-      variant="cosmic"
-      glow="cosmic"
+    <Card 
       className={cn(
-        "cosmic-card overflow-hidden h-full flex flex-col justify-between",
-        "transition-all duration-300"
+        "solid-card h-full flex flex-col justify-between",
+        "transition-all duration-300 hover:scale-[1.03]",
+        "shadow-lg"
       )}
     >
-      <div className="p-5">
+      <CardContent className="p-5">
         <div className="flex justify-between items-start">
           <div className={cn(
             "p-3 rounded-lg mb-3",
-            glowColor === 'blue' && "bg-blue-500/10 text-blue-500",
-            glowColor === 'green' && "bg-green-500/10 text-green-500",
-            glowColor === 'purple' && "bg-purple-500/10 text-purple-500",
+            glowColor === 'blue' && "bg-blue-500/20 text-blue-500",
+            glowColor === 'green' && "bg-green-500/20 text-green-500",
+            glowColor === 'purple' && "bg-purple-500/20 text-purple-500",
           )}>
             {icon}
           </div>
           <div className={cn(
-            "text-xs font-medium rounded-full px-2 py-0.5",
-            glowColor === 'blue' && "bg-blue-500/10 text-blue-500",
-            glowColor === 'green' && "bg-green-500/10 text-green-500",
-            glowColor === 'purple' && "bg-purple-500/10 text-purple-500",
+            "text-xs font-medium rounded-full px-2 py-0.5 no-blur",
+            glowColor === 'blue' && "bg-blue-500/20 text-blue-500",
+            glowColor === 'green' && "bg-green-500/20 text-green-500",
+            glowColor === 'purple' && "bg-purple-500/20 text-purple-500",
           )}>
             Last 30 days
           </div>
         </div>
 
-        <h3 className="text-lg font-bold cosmic-text-gradient">{value}</h3>
-        <p className="text-sm text-muted-foreground">{title}</p>
-      </div>
+        <h3 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent no-blur">{value}</h3>
+        <p className="text-sm text-muted-foreground mt-1 no-blur">{title}</p>
+      </CardContent>
 
-      <div className="px-5 py-3 border-t border-border">
-        <Link href={linkUrl}>
-          <a className="group flex items-center text-sm font-medium text-muted-foreground hover:text-primary">
-            {linkText}
-            <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </a>
+      <CardFooter className="px-5 py-3 border-t border-white/10 dark:border-gray-700/30">
+        <Link href={linkUrl} className="group flex items-center text-sm font-medium text-muted-foreground hover:text-primary transition-colors no-blur">
+          {linkText}
+          <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
         </Link>
-      </div>
+      </CardFooter>
     </Card>
   );
 }
@@ -89,7 +86,7 @@ export default function DashboardStats() {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <StatsCard
         icon={<FileText className="h-5 w-5" />}
         glowColor="purple"

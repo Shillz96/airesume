@@ -1,24 +1,46 @@
 import type { Config } from "tailwindcss";
+import defaultTheme from 'tailwindcss/defaultTheme';
+import colors from 'tailwindcss/colors';
 
 export default {
   darkMode: ["class"],
   content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'DM Sans', ...defaultTheme.fontFamily.sans],
+        heading: ['Space Grotesk', 'Poppins', ...defaultTheme.fontFamily.sans],
+        inter: ['Inter', ...defaultTheme.fontFamily.sans],
+        'space-grotesk': ['Space Grotesk', ...defaultTheme.fontFamily.sans],
+      },
+      fontSize: {
+        h1: ['48px', { lineHeight: '1.2', fontWeight: '800' }],
+        h2: ['36px', { lineHeight: '1.3', fontWeight: '700' }],
+        h3: ['28px', { lineHeight: '1.4', fontWeight: '600' }],
+        body: ['16px', { lineHeight: '1.5' }],
+        button: ['14px', { letterSpacing: '0.5px' }],
+      },
+      spacing: {
+        '32': '32px',
+        '24': '24px',
+        '16': '16px',
+        '80': '80px',
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
-        background: "rgb(var(--color-background) / <alpha-value>)",
+        background: '#0a0a0a',
         foreground: "rgb(var(--color-text) / <alpha-value>)",
         card: {
           DEFAULT: "rgb(var(--color-card) / <alpha-value>)",
           foreground: "rgb(var(--color-text) / <alpha-value>)",
         },
         primary: {
-          DEFAULT: "rgb(var(--color-primary) / <alpha-value>)",
+          DEFAULT: '#00F260',
+          dark: '#0575E6',
           foreground: "white",
         },
         secondary: {
@@ -30,20 +52,31 @@ export default {
           foreground: "rgb(var(--color-text) / 0.7)",
         },
         accent: {
-          DEFAULT: "rgb(var(--color-accent) / <alpha-value>)",
+          DEFAULT: '#00F260',
+          hover: '#0575E6',
           foreground: "white",
         },
         destructive: {
           DEFAULT: "rgb(var(--color-error) / <alpha-value>)",
           foreground: "white",
         },
-        success: "rgb(var(--color-success) / <alpha-value>)",
-        info: "rgb(var(--color-info) / <alpha-value>)",
-        warning: "rgb(var(--color-warning) / <alpha-value>)",
-        error: "rgb(var(--color-error) / <alpha-value>)",
+        success: {
+          DEFAULT: "#10b981",
+          foreground: "#ffffff",
+        },
+        warning: {
+          DEFAULT: "#f59e0b",
+          foreground: "#ffffff",
+        },
+        info: {
+          DEFAULT: "#3b82f6",
+          foreground: "#ffffff",
+        },
         border: "rgb(var(--color-border) / <alpha-value>)",
         input: "rgb(var(--color-card) / <alpha-value>)",
         ring: "rgb(var(--color-primary) / <alpha-value>)",
+        slate: colors.slate,
+        gray: colors.gray,
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
@@ -60,6 +93,11 @@ export default {
           "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
+        },
+        neon: {
+          blue: '#00F260',
+          purple: '#8A2BE2',
+          teal: '#20B2AA',
         },
       },
       keyframes: {
@@ -110,6 +148,9 @@ export default {
         "glow-slow": "glow-slow 2s ease-in-out infinite",
         "pulse-soft": "pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         "shimmer": "shimmer 2s linear infinite",
+      },
+      maxWidth: {
+        container: '1440px',
       },
     },
   },

@@ -176,12 +176,12 @@ export default function AdminAccess() {
         
         <Tabs defaultValue="dashboard" className="w-full">
           <TabsList className="grid w-full md:w-fit grid-cols-4 md:grid-cols-6 mb-6">
-            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-            <TabsTrigger value="users">Users</TabsTrigger>
-            <TabsTrigger value="jobs">Jobs</TabsTrigger>
-            <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
-            <TabsTrigger value="reports" className="hidden md:inline-flex">Reports</TabsTrigger>
-            <TabsTrigger value="settings" className="hidden md:inline-flex">Settings</TabsTrigger>
+            <TabsTrigger value="dashboard" className="no-blur">Dashboard</TabsTrigger>
+            <TabsTrigger value="users" className="no-blur">Users</TabsTrigger>
+            <TabsTrigger value="jobs" className="no-blur">Jobs</TabsTrigger>
+            <TabsTrigger value="subscriptions" className="no-blur">Subscriptions</TabsTrigger>
+            <TabsTrigger value="reports" className="hidden md:inline-flex no-blur">Reports</TabsTrigger>
+            <TabsTrigger value="settings" className="hidden md:inline-flex no-blur">Settings</TabsTrigger>
           </TabsList>
           
           <TabsContent value="dashboard" className="space-y-6">

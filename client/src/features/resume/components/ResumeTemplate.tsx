@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Resume } from '@/features/resume/types';
-import { Button } from "@/ui/core/Button";
+import { Button } from "@/components/ui/button";
 import { 
   Download, Mail, Phone, Globe, MapPin, 
   ZoomIn, ZoomOut, Maximize, Minimize, 
@@ -150,14 +150,14 @@ export default function ResumeTemplate({
   };
 
   return (
-    <div className="relative bg-card border border-border rounded-lg overflow-hidden shadow-sm">
+    <div className="relative bg-card solid-card border border-white/20 dark:border-gray-800/40 rounded-lg overflow-hidden shadow-lg">
       {/* Template header with controls - Mobile-first optimization */}
-      <div className="p-2 sm:p-4 border-b border-border bg-muted/30">
+      <div className="p-2 sm:p-4 border-b border-white/10 dark:border-gray-700/30 bg-muted/30">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
-            <h3 className="font-medium text-foreground text-sm sm:text-base">Resume Preview</h3>
+            <h3 className="font-medium text-foreground text-sm sm:text-base no-blur">Resume Preview</h3>
             {totalPages > 1 && (
-              <div className="ml-2 sm:ml-4 flex items-center gap-1 text-xs">
+              <div className="ml-2 sm:ml-4 flex items-center gap-1 text-xs no-blur">
                 <FileText className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 text-gray-500" />
                 <span className="font-medium">Page {currentPage} of {totalPages}</span>
               </div>

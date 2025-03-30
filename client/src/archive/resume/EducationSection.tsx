@@ -81,7 +81,7 @@ export function EducationSection({
         icon={<GraduationCap className="h-5 w-5 cosmic-section-icon" />}
         onAdd={handleAddEducation}
         addButtonText="Add Education"
-        className="cosmic-text-gradient"
+        className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
       />
 
       {education.length === 0 ? (
@@ -122,7 +122,7 @@ export function EducationSection({
               <AccordionTrigger className="px-4 py-3 hover:bg-primary/5 data-[state=open]:bg-primary/10 border-white/10">
                 <div className="flex flex-1 justify-between items-center">
                   <div className="text-left">
-                    <p className={cn("font-medium", expandedItem === edu.id ? "cosmic-text-gradient" : "")}>
+                    <p className={cn("font-medium", expandedItem === edu.id ? "bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent" : "")}>
                       {edu.degree || "New Degree"}
                     </p>
                     {edu.institution && (

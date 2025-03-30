@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button } from "@/ui/core/Button";
+import { Button } from "@/components/ui/button";
 import { Heart, Share2, Check, Sparkles, RefreshCw, Briefcase, Clock, Award, ArrowUpRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Link, useLocation } from "wouter";
 import { Job, SkillItem, ExperienceItem, TailoredResume, UserResume } from "@/features/job/types";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface JobListingProps {
   job: Job;
@@ -76,59 +77,106 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
               experience: resume.experience,
               skills: resume.skills
             }
-          } // Format resume data properly for guest mode
+          }
         };
         
-        const res = await apiRequest(
-          "POST", 
-          `/api/jobs/${job.id}/tailor-resume`, 
-          payload
-        );
-        
-        const data = await res.json();
-        
-        if (!data.success) {
-          throw new Error(data.error || "Failed to tailor resume");
+        try {
+          const res = await apiRequest(
+            "POST", 
+            `/api/jobs/${job.id}/tailor-resume`, 
+            payload
+          );
+          
+          const data = await res.json();
+          
+          if (!data.success) {
+            throw new Error(data.error || "Failed to tailor resume");
+          }
+          
+          return data.tailoredResume;
+        } catch (error) {
+          // Implement fallback for resume tailoring
+          const jobKeywords = [...job.skills, ...job.description.toLowerCase().match(/\b\w+\b/g)?.filter(word => word.length > 3) || []];
+          
+          const tailoredSummary = `Experienced ${job.title.toLowerCase()} with expertise in ${job.skills.join(", ")}. Skilled in building scalable web applications, as demonstrated by ${resume.experience[0]?.description?.toLowerCase() || "my previous work"}. Ready to contribute to ${job.company} by leveraging modern frontend architectures and delivering high-quality user experiences.`;
+          
+          const tailoredExperience = resume.experience.map(exp => ({
+            ...exp,
+            description: `Enhanced ${exp.description?.toLowerCase() || "web applications"} by incorporating ${job.skills[0] || "modern techniques"} and ${job.skills[1] || "best practices"} to align with modern frontend requirements.`,
+          }));
+
+          const userSkillNames = resume.skills.map((skill: SkillItem) => skill.name);
+          const skillSet = new Set([...userSkillNames, ...job.skills]);
+          const tailoredSkillNames = Array.from(skillSet);
+
+          return {
+            personalInfo: {
+              ...resume.personalInfo,
+              summary: tailoredSummary,
+            },
+            experience: tailoredExperience,
+            skills: tailoredSkillNames,
+          };
         }
-        
-        return data.tailoredResume;
       } else {
         // Authenticated user - use our enhanced job-specific tailoring endpoint
-        const res = await apiRequest(
-          "POST", 
-          `/api/resumes/${resume.id}/tailor-to-job/${job.id}`,
-          {} // No body needed as we're using the IDs in the URL
-        );
-        
-        const data = await res.json();
-        
-        if (!data.success) {
-          throw new Error(data.error || "Failed to tailor resume");
+        try {
+          const res = await apiRequest(
+            "POST", 
+            `/api/resumes/${resume.id}/tailor-to-job/${job.id}`,
+            {}
+          );
+          
+          const data = await res.json();
+          
+          if (!data.success) {
+            throw new Error(data.error || "Failed to tailor resume");
+          }
+          
+          const { tailoredContent, originalResume } = data;
+          
+          return {
+            personalInfo: {
+              ...originalResume.content.personalInfo,
+              summary: tailoredContent.summary || originalResume.content.personalInfo.summary
+            },
+            experience: originalResume.content.experience.map((exp: ExperienceItem) => {
+              const improved = tailoredContent.experienceImprovements?.find(
+                (improvement: any) => improvement.id === exp.id
+              );
+              
+              return improved 
+                ? { ...exp, description: improved.improvedDescription } 
+                : exp;
+            }),
+            skills: tailoredContent.skills || originalResume.content.skills,
+            keywordsIncorporated: tailoredContent.keywordsIncorporated,
+            matchAnalysis: tailoredContent.matchAnalysis
+          };
+        } catch (error) {
+          // Implement fallback for authenticated users
+          const jobKeywords = [...job.skills, ...job.description.toLowerCase().match(/\b\w+\b/g)?.filter(word => word.length > 3) || []];
+          
+          const tailoredSummary = `Experienced ${job.title.toLowerCase()} with expertise in ${job.skills.join(", ")}. Skilled in building scalable web applications, as demonstrated by ${resume.experience[0]?.description?.toLowerCase() || "my previous work"}. Ready to contribute to ${job.company} by leveraging modern frontend architectures and delivering high-quality user experiences.`;
+          
+          const tailoredExperience = resume.experience.map(exp => ({
+            ...exp,
+            description: `Enhanced ${exp.description?.toLowerCase() || "web applications"} by incorporating ${job.skills[0] || "modern techniques"} and ${job.skills[1] || "best practices"} to align with modern frontend requirements.`,
+          }));
+
+          const userSkillNames = resume.skills.map((skill: SkillItem) => skill.name);
+          const skillSet = new Set([...userSkillNames, ...job.skills]);
+          const tailoredSkillNames = Array.from(skillSet);
+
+          return {
+            personalInfo: {
+              ...resume.personalInfo,
+              summary: tailoredSummary,
+            },
+            experience: tailoredExperience,
+            skills: tailoredSkillNames,
+          };
         }
-        
-        // Create TailoredResume format from the response
-        const { tailoredContent, originalResume } = data;
-        
-        // Transform the tailored content to match our expected format
-        return {
-          personalInfo: {
-            ...originalResume.content.personalInfo,
-            summary: tailoredContent.summary || originalResume.content.personalInfo.summary
-          },
-          experience: originalResume.content.experience.map((exp: ExperienceItem) => {
-            // Find if this experience has improvements
-            const improved = tailoredContent.experienceImprovements?.find(
-              (improvement: any) => improvement.id === exp.id
-            );
-            
-            return improved 
-              ? { ...exp, description: improved.improvedDescription } 
-              : exp;
-          }),
-          skills: tailoredContent.skills || originalResume.content.skills,
-          keywordsIncorporated: tailoredContent.keywordsIncorporated,
-          matchAnalysis: tailoredContent.matchAnalysis
-        };
       }
     },
     onSuccess: (data) => {
@@ -140,43 +188,11 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
       setDialogOpen(true);
     },
     onError: (error: Error) => {
-      console.error("Error tailoring resume:", error);
-      
-      // Fallback approach if the API fails
-      const jobKeywords = [...job.skills, ...job.description.toLowerCase().match(/\b\w+\b/g)?.filter(word => word.length > 3) || []];
-      
-      const tailoredSummary = `Experienced ${job.title.toLowerCase()} with expertise in ${job.skills.join(", ")}. Skilled in building scalable web applications, as demonstrated by ${resume.experience[0]?.description?.toLowerCase() || "my previous work"}. Ready to contribute to ${job.company} by leveraging modern frontend architectures and delivering high-quality user experiences.`;
-      
-      const tailoredExperience = resume.experience.map(exp => ({
-        ...exp,
-        description: `Enhanced ${exp.description?.toLowerCase() || "web applications"} by incorporating ${job.skills[0] || "modern techniques"} and ${job.skills[1] || "best practices"} to align with modern frontend requirements.`,
-      }));
-
-      // Extract skill names from skill items
-      const userSkillNames = resume.skills.map((skill: SkillItem) => skill.name);
-      
-      // Merge user skills with job skills - use Array.from for better compatibility
-      const skillSet = new Set([...userSkillNames, ...job.skills]);
-      const tailoredSkillNames = Array.from(skillSet);
-
-      const fallbackResume = {
-        personalInfo: {
-          ...resume.personalInfo,
-          summary: tailoredSummary,
-        },
-        experience: tailoredExperience,
-        skills: tailoredSkillNames,
-      };
-      
-      setTailoredResume(fallbackResume);
-      
       toast({
-        title: "Resume Tailored",
-        description: "Your resume has been tailored for this position.",
-        variant: "default",
+        title: "Resume Tailoring Failed",
+        description: "There was an error tailoring your resume. Please try again later.",
+        variant: "destructive",
       });
-      
-      setDialogOpen(true);
     },
   });
 
@@ -267,14 +283,14 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
       }, 500);
     },
     onError: (error: Error) => {
-      console.error("Error applying tailored resume:", error);
-      
-      // For guest mode, fallback to callback
+      // Implement fallback logic for applying tailored resume
       if (onTailoredResumeApplied && tailoredResume) {
-        // First store in localStorage for resume-builder to pick up
-        localStorage.setItem("tailoredResume", JSON.stringify(tailoredResume));
+        try {
+          localStorage.setItem("tailoredResume", JSON.stringify(tailoredResume));
+        } catch (e) {
+          // Silently fail if localStorage is not available
+        }
         
-        // Then call the callback from props
         onTailoredResumeApplied(tailoredResume);
         
         toast({
@@ -284,7 +300,6 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
         
         setDialogOpen(false);
         
-        // Redirect to the resume builder
         setTimeout(() => {
           setLocation("/resume-builder?tailored=true");
         }, 500);
@@ -335,11 +350,15 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
 
   // Calculate success rate display
   const getSuccessRate = () => {
+    // Add check for job.match existence
+    if (typeof job.match !== 'number') {
+      return 'N/A'; // Or some default value
+    }
     return job.match > 80 ? "High" : job.match > 60 ? "Medium" : "Low";
   };
 
   return (
-    <div className="cosmic-card bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)] text-white p-4 rounded-lg shadow-lg relative">
+    <Card className="bg-gradient-to-br from-[hsl(219,90%,10%)] to-[hsl(260,90%,10%)] text-white p-4 rounded-lg shadow-lg relative">
       {/* Starfield Background */}
       <div className="starfield absolute inset-0 pointer-events-none overflow-hidden rounded-lg">
         {[...Array(50)].map((_, i) => (
@@ -359,7 +378,7 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
 
       <div className="relative z-10">
         <div className="flex justify-between items-start mb-2">
-          <h2 className="text-xl font-semibold cosmic-text-gradient">
+          <h2 className="text-xl font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             {job.title}
           </h2>
           <Badge
@@ -533,6 +552,6 @@ export default function JobListing({ job, userResume, onTailoredResumeApplied }:
           </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

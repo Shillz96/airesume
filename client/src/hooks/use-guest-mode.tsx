@@ -67,7 +67,7 @@ export function GuestModeProvider({ children }: { children: ReactNode }) {
     <Dialog open={isGuestModalOpen} onOpenChange={setIsGuestModalOpen}>
       <DialogContent className="sm:max-w-[425px] bg-gray-900 text-white border border-white/20">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold cosmic-text-gradient">
+          <DialogTitle className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             Create an Account to Continue
           </DialogTitle>
           <DialogDescription className="text-gray-300">

@@ -81,7 +81,7 @@ export function ExperienceSection({
         icon={<Briefcase className="h-5 w-5 cosmic-section-icon" />}
         onAdd={handleAddExperience}
         addButtonText="Add Experience"
-        className="cosmic-text-gradient"
+        className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
       />
 
       {experiences.length === 0 ? (
@@ -206,7 +206,7 @@ export function ExperienceSection({
                   </div>
 
                   <div className="space-y-2 mt-4 border-t border-white/10 pt-4">
-                    <h4 className="text-sm font-medium cosmic-text-gradient">Formatting Tips:</h4>
+                    <h4 className="text-sm font-medium bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Formatting Tips:</h4>
                     <ul className="text-xs space-y-1 text-muted-foreground opacity-80">
                       <li>• Start with strong action verbs (e.g., "Developed", "Led", "Managed")</li>
                       <li>• Include quantifiable achievements (e.g., "Increased sales by 20%")</li>

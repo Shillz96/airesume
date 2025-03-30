@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Check, ChevronRight, Lightbulb } from 'lucide-react';
-import { Button } from '@/ui/core/Button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/ui/core/Card';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 interface ResumeTipsProps {
@@ -74,13 +74,13 @@ export default function ResumeTips({ section = 'summary', onApplyTip }: ResumeTi
   };
   
   return (
-    <Card>
+    <Card className="solid-card">
       <CardHeader>
-        <CardTitle className="flex items-center">
+        <CardTitle className="flex items-center no-blur">
           <Lightbulb className="h-5 w-5 mr-2 text-yellow-500" />
           Resume Tips
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="no-blur">
           Apply these tips to improve your {section} section
         </CardDescription>
       </CardHeader>
@@ -109,7 +109,7 @@ export default function ResumeTips({ section = 'summary', onApplyTip }: ResumeTi
                 </span>
                 <div>
                   <p className={cn(
-                    "text-sm font-medium",
+                    "text-sm font-medium no-blur",
                     expandedTip === index ? "text-foreground" : "text-muted-foreground"
                   )}>
                     {tip}

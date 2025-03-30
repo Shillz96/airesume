@@ -7,8 +7,8 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation, Link } from "wouter";
 import { cn } from "@/lib/utils";
 
-import { Button } from "@/ui/core/Button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/ui/core/Card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -25,9 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Loader2, CreditCardIcon, ArrowRightIcon, GiftIcon, PlusCircleIcon, ArrowLeft, CheckIcon } from "lucide-react";
 
-import { AdminControls } from "@/features/admin/components/AdminTools";
-
-import { UnifiedPageHeader, UnifiedContainer } from "@/components/unified";
+import PageHeader from "@/features/layout/components/PageHeader";
 
 interface Subscription {
   id: number;
@@ -239,109 +237,90 @@ export default function SubscriptionPage() {
     <>
       {/* Using global CosmicBackground from App.tsx */}
       <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4 pb-10 min-h-screen relative z-10">
-        <UnifiedPageHeader
+        <PageHeader
           title="Subscription Management"
           subtitle="Manage your plans, add-ons, and payment history"
-          variant="cosmic"
-          borderStyle="gradient"
           actions={
             <Button
               variant="outline"
               onClick={() => setLocation("/dashboard")}
-              className="hidden sm:flex items-center bg-transparent border border-gray-700 hover:bg-gray-800 text-white cosmic-glow"
+              className="hidden sm:flex items-center text-muted-foreground border-border hover:bg-muted hover:text-muted-foreground"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Dashboard
             </Button>
           }
         />
         
-        <Tabs defaultValue="subscription" className="w-full mt-6 cosmic-tabs">
-          <TabsList className="cosmic-tablist">
-            <TabsTrigger 
-              value="subscription" 
-              className="cosmic-tab">
-              Plans
-            </TabsTrigger>
-            <TabsTrigger 
-              value="addons" 
-              className="cosmic-tab">
-              Add-ons
-            </TabsTrigger>
-            <TabsTrigger 
-              value="billing" 
-              className="cosmic-tab">
-              Billing
-            </TabsTrigger>
+        {user?.isAdmin && (
+          <div className="bg-muted/50 border border-border rounded-md p-4 shadow-lg mb-4">
+            <p className="text-muted-foreground text-sm">You already have admin privileges.</p>
+          </div>
+        )}
+
+        <Tabs defaultValue="subscription" className="w-full mt-6">
+          <TabsList className="grid w-full grid-cols-3 solid-card">
+            <TabsTrigger value="subscription" className="no-blur">Plans & Subscription</TabsTrigger>
+            <TabsTrigger value="addons" className="no-blur">Add-ons</TabsTrigger>
+            <TabsTrigger value="billing" className="no-blur">Billing</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="subscription" className="space-y-4">
-            {/* Admin Controls Section */}
-            {!isGuestMode && user && (
-              <div className="bg-[#151830] border border-[#252a47] rounded-md p-4 shadow-lg mb-4">
-                <p className="text-gray-400 text-sm">You already have admin privileges.</p>
-              </div>
-            )}
-            
+          <TabsContent value="subscription" className="space-y-4 mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Current Subscription Card */}
-              <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden">
+              <Card className="shadow-xl overflow-hidden solid-card">
                 <CardHeader>
-                  <CardTitle className="text-white">Current Plan</CardTitle>
-                  <CardDescription className="text-gray-400">Your active subscription details</CardDescription>
+                  <CardTitle className="no-blur">Current Plan</CardTitle>
+                  <CardDescription className="no-blur">Your active subscription details</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {isLoadingSubscription ? (
                     <div className="flex justify-center py-6">
-                      <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
+                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
                     </div>
                   ) : subscription ? (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-gray-400">Plan</p>
-                          <p className="text-xl font-bold text-white capitalize">
+                          <p className="text-sm font-medium text-muted-foreground no-blur">Plan</p>
+                          <p className="text-xl font-bold text-foreground capitalize no-blur">
                             {subscription.planType.replace('_', ' ')}
                           </p>
                         </div>
                         <Badge
                           className={cn(
-                            "bg-gradient-to-r rounded-full px-3 text-xs font-medium",
+                            "rounded-full px-3 text-xs font-medium",
                             subscription.status === 'active' 
-                              ? "from-green-500 to-emerald-600 text-white" 
-                              : "from-red-500 to-red-600 text-white"
+                              ? "bg-success text-success-foreground"
+                              : "bg-destructive text-destructive-foreground"
                           )}
                         >
                           {subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
                         </Badge>
                       </div>
                       
-                      <div className="h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent my-3" />
+                      <div className="h-px bg-border my-3" />
                       
                       <div>
-                        <p className="text-sm font-medium text-gray-400">Started</p>
-                        <p className="text-white">{formatDate(subscription.startDate)}</p>
+                        <p className="text-sm font-medium text-muted-foreground no-blur">Started</p>
+                        <p className="text-foreground no-blur">{formatDate(subscription.startDate)}</p>
                       </div>
                       
                       {subscription.endDate && (
                         <div>
-                          <p className="text-sm font-medium text-gray-400">Expires</p>
-                          <p className="text-white">{formatDate(subscription.endDate)}</p>
+                          <p className="text-sm font-medium text-muted-foreground no-blur">Expires</p>
+                          <p className="text-foreground no-blur">{formatDate(subscription.endDate)}</p>
                         </div>
                       )}
                       
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium text-gray-400">Auto-renew</p>
+                          <p className="text-sm font-medium text-muted-foreground no-blur">Auto-renew</p>
                           <Switch
                             id="auto-renew"
                             checked={subscription.autoRenew}
-                            className="data-[state=checked]:bg-indigo-600"
                             onCheckedChange={() => {
-                              toast({
-                                title: 'Coming Soon',
-                                description: 'Auto-renew toggle will be available in the next update'
-                              });
+                              toast({ title: 'Coming Soon', description: 'Auto-renew toggle will be available soon' });
                             }}
                           />
                         </div>
@@ -349,16 +328,16 @@ export default function SubscriptionPage() {
                     </div>
                   ) : (
                     <div className="py-6 text-center">
-                      <p className="mb-4 text-gray-400">You don't have an active subscription.</p>
+                      <p className="mb-4 text-muted-foreground no-blur">You don't have an active subscription.</p>
                     </div>
                   )}
                 </CardContent>
-                <CardFooter className="flex flex-col gap-2 border-t border-[#252a47]">
+                <CardFooter className="flex flex-col gap-2 border-t border-border pt-4">
                   {subscription ? (
                     <>
                       <Button
-                        variant="outline"
-                        className="w-full bg-transparent border border-gray-700 hover:bg-gray-800 text-white"
+                        variant="destructive"
+                        className="w-full"
                         disabled={cancelSubscriptionMutation.isPending}
                         onClick={handleCancelSubscription}
                       >
@@ -369,7 +348,7 @@ export default function SubscriptionPage() {
                       </Button>
                       <Button
                         variant="default"
-                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white border-0 cosmic-btn-glow"
+                        className="w-full"
                         onClick={() => setActivePlanDialog(true)}
                       >
                         Upgrade Plan
@@ -382,42 +361,43 @@ export default function SubscriptionPage() {
               </Card>
 
               {/* Starter Plan Card */}
-              <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden">
+              <Card className="shadow-xl overflow-hidden solid-card">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-white">Starter</CardTitle>
-                      <CardDescription className="text-gray-400">Essentials for job seekers</CardDescription>
+                      <CardTitle className="no-blur">Starter</CardTitle>
+                      <CardDescription className="no-blur">Essentials for job seekers</CardDescription>
                     </div>
                     <div className="text-right">
-                      <span className="text-2xl font-bold text-white">$9.99</span>
-                      <span className="text-sm text-gray-400">/month</span>
+                      <span className="text-2xl font-bold text-foreground no-blur">$9.99</span>
+                      <span className="text-sm text-muted-foreground no-blur">/month</span>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="pb-4 min-h-[200px]">
                   <ul className="space-y-3 mt-3 text-sm">
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">Create up to 3 custom resumes</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">Create up to 3 custom resumes</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">Basic AI suggestions</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">Basic AI suggestions</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">Job match recommendations</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">Job match recommendations</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">Application tracking</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">Application tracking</span>
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter className="border-t border-[#252a47] ">
+                <CardFooter className="border-t border-border pt-4">
                   <Button 
-                    className="w-full cosmic-btn-glow"
+                    className="w-full"
+                    variant="default"
                     onClick={() => {
                       setSelectedPlan("starter");
                       setActivePlanDialog(true);
@@ -429,46 +409,47 @@ export default function SubscriptionPage() {
               </Card>
 
               {/* Pro Plan Card */}
-              <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden">
+              <Card className="shadow-xl overflow-hidden border-primary/50 ring-1 ring-primary/30 solid-card">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-white">Pro</CardTitle>
-                      <CardDescription className="text-gray-400">Advanced features for professionals</CardDescription>
+                      <CardTitle className="no-blur">Pro</CardTitle>
+                      <CardDescription className="no-blur">Advanced features for professionals</CardDescription>
                     </div>
                     <div className="text-right">
-                      <span className="text-2xl font-bold text-white">$19.99</span>
-                      <span className="text-sm text-gray-400">/month</span>
+                      <span className="text-2xl font-bold text-foreground no-blur">$19.99</span>
+                      <span className="text-sm text-muted-foreground no-blur">/month</span>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="pb-4 min-h-[200px]">
                   <ul className="space-y-3 mt-3 text-sm">
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">Unlimited custom resumes</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">Unlimited custom resumes</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">Advanced AI tailoring</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">Advanced AI tailoring</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">Priority job matching</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">Priority job matching</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">Interview AI assistance</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">Interview AI assistance</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">3 cover letter templates</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">3 cover letter templates</span>
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter className="border-t border-[#252a47] ">
+                <CardFooter className="border-t border-border pt-4">
                   <Button 
-                    className="w-full cosmic-btn-glow"
+                    className="w-full"
+                    variant="default"
                     onClick={() => {
                       setSelectedPlan("pro");
                       setActivePlanDialog(true);
@@ -480,46 +461,47 @@ export default function SubscriptionPage() {
               </Card>
 
               {/* Career Builder Plan Card */}
-              <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden">
+              <Card className="shadow-xl overflow-hidden solid-card">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-white">Career Builder</CardTitle>
-                      <CardDescription className="text-gray-400">Complete career development package</CardDescription>
+                      <CardTitle className="no-blur">Career Builder</CardTitle>
+                      <CardDescription className="no-blur">Complete career development package</CardDescription>
                     </div>
                     <div className="text-right">
-                      <span className="text-2xl font-bold text-white">$29.99</span>
-                      <span className="text-sm text-gray-400">/month</span>
+                      <span className="text-2xl font-bold text-foreground no-blur">$29.99</span>
+                      <span className="text-sm text-muted-foreground no-blur">/month</span>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="pb-4 min-h-[200px]">
                   <ul className="space-y-3 mt-3 text-sm">
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">Everything in Pro plan</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">Everything in Pro plan</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">LinkedIn profile optimizations</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">LinkedIn profile optimizations</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">Personal branding assistance</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">Personal branding assistance</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">Unlimited cover letters</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">Unlimited cover letters</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">Job application prioritization</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">Job application prioritization</span>
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter className="border-t border-[#252a47] ">
+                <CardFooter className="border-t border-border pt-4">
                   <Button 
-                    className="w-full cosmic-btn-glow"
+                    className="w-full"
+                    variant="default"
                     onClick={() => {
                       setSelectedPlan("career_builder");
                       setActivePlanDialog(true);
@@ -532,30 +514,28 @@ export default function SubscriptionPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="addons" className="space-y-4">
+          <TabsContent value="addons" className="space-y-4 mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
               {/* Current Add-ons */}
-              <Card className="col-span-1 md:col-span-2 border-0 bg-[#151830] text-white shadow-xl overflow-hidden">
+              <Card className="col-span-1 md:col-span-2 shadow-xl overflow-hidden solid-card">
                 <CardHeader>
-                  <CardTitle className="text-white">Your Add-ons</CardTitle>
-                  <CardDescription className="text-gray-400">Your active add-on products</CardDescription>
+                  <CardTitle className="no-blur">Your Add-ons</CardTitle>
+                  <CardDescription className="no-blur">Your active add-on products</CardDescription>
                 </CardHeader>
                 <CardContent className="min-h-[150px]">
                   {isLoadingAddons ? (
-                    <div className="flex justify-center py-6">
-                      <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
-                    </div>
+                    <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto my-8" />
                   ) : addons && addons.length > 0 ? (
                     <ul className="space-y-3">
                       {addons.map((addon) => (
-                        <li key={addon.id} className="flex justify-between items-center p-3 bg-[#0f1229]/80 rounded-md border border-[#252a47]">
+                        <li key={addon.id} className="flex justify-between items-center p-3 bg-muted/30 rounded-md border border-border">
                           <div>
-                            <p className="font-medium text-white">{getAddonName(addon.addonType)}</p>
-                            <p className="text-sm text-gray-400">
+                            <p className="font-medium text-foreground no-blur">{getAddonName(addon.addonType)}</p>
+                            <p className="text-sm text-muted-foreground no-blur">
                               Purchased on {formatDate(addon.createdAt)}
                             </p>
                           </div>
-                          <Badge className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-0 rounded-full px-3 text-xs">
+                          <Badge variant="secondary">
                             {addon.expiresAt ? `Expires ${formatDate(addon.expiresAt)}` : 'Lifetime'}
                           </Badge>
                         </li>
@@ -563,9 +543,9 @@ export default function SubscriptionPage() {
                     </ul>
                   ) : (
                     <div className="py-6 text-center">
-                      <p className="mb-4 text-gray-400">You don't have any add-ons yet.</p>
+                      <p className="mb-4 text-muted-foreground no-blur">You don't have any add-ons yet.</p>
                       <Button 
-                        className="bg-transparent hover:bg-[#252a47] text-white border border-[#353e65]"
+                        variant="outline"
                         onClick={() => document.getElementById("add-ons-section")?.scrollIntoView({ behavior: "smooth" })}
                       >
                         <PlusCircleIcon className="w-4 h-4 mr-2" />
@@ -577,44 +557,46 @@ export default function SubscriptionPage() {
               </Card>
               
               {/* Add-on Cards */}
-              <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden" id="add-ons-section">
+              <Card className="shadow-xl overflow-hidden solid-card" id="add-ons-section">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-white">Cover Letter Pack</CardTitle>
-                      <CardDescription className="text-gray-400">Professional cover letter templates</CardDescription>
+                      <CardTitle className="no-blur">Cover Letter Pack</CardTitle>
+                      <CardDescription className="no-blur">Professional cover letter templates</CardDescription>
                     </div>
                     <div className="text-right">
-                      <span className="text-2xl font-bold text-white">$4.99</span>
-                      <span className="text-sm text-gray-400">/month</span>
+                      <span className="text-2xl font-bold text-foreground no-blur">$4.99</span>
+                      <span className="text-sm text-muted-foreground no-blur">/month</span>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="pb-4 min-h-[150px]">
                   <ul className="space-y-3 mt-3 text-sm">
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">5 Premium cover letter templates</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">5 Premium cover letter templates</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">AI-powered customization</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">AI-powered customization</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">Job-specific tailoring</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">Job-specific tailoring</span>
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter className="border-t border-[#252a47] ">
+                <CardFooter className="border-t border-border pt-4">
                   <Button 
-                    className="w-full cosmic-btn-glow"
+                    className="w-full"
+                    variant="outline"
                     onClick={() => {
                       setSelectedAddon("cover_letter_pack");
                       handlePurchaseAddon();
                     }}
+                    disabled={createAddonMutation.isPending}
                   >
-                    {createAddonMutation.isPending && selectedAddon === "cover_letter_pack" && (
+                    {createAddonMutation.isPending && (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     )}
                     Purchase
@@ -622,44 +604,46 @@ export default function SubscriptionPage() {
                 </CardFooter>
               </Card>
               
-              <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden">
+              <Card className="shadow-xl overflow-hidden solid-card">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-white">Interview Prep</CardTitle>
-                      <CardDescription className="text-gray-400">AI-powered interview preparation</CardDescription>
+                      <CardTitle className="no-blur">Interview Prep</CardTitle>
+                      <CardDescription className="no-blur">AI-powered interview preparation</CardDescription>
                     </div>
                     <div className="text-right">
-                      <span className="text-2xl font-bold text-white">$7.99</span>
-                      <span className="text-sm text-gray-400">/month</span>
+                      <span className="text-2xl font-bold text-foreground no-blur">$7.99</span>
+                      <span className="text-sm text-muted-foreground no-blur">/month</span>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="pb-4 min-h-[150px]">
                   <ul className="space-y-3 mt-3 text-sm">
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">200+ practice interview questions</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">200+ practice interview questions</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">AI feedback on responses</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">AI feedback on responses</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">Industry-specific preparation</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">Industry-specific preparation</span>
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter className="border-t border-[#252a47] ">
+                <CardFooter className="border-t border-border pt-4">
                   <Button 
-                    className="w-full cosmic-btn-glow"
+                    className="w-full"
+                    variant="outline"
                     onClick={() => {
                       setSelectedAddon("interview_prep");
                       handlePurchaseAddon();
                     }}
+                    disabled={createAddonMutation.isPending}
                   >
-                    {createAddonMutation.isPending && selectedAddon === "interview_prep" && (
+                    {createAddonMutation.isPending && (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     )}
                     Purchase
@@ -667,44 +651,46 @@ export default function SubscriptionPage() {
                 </CardFooter>
               </Card>
               
-              <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden">
+              <Card className="shadow-xl overflow-hidden solid-card">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-white">Premium Filters</CardTitle>
-                      <CardDescription className="text-gray-400">Advanced job search filters</CardDescription>
+                      <CardTitle className="no-blur">Premium Filters</CardTitle>
+                      <CardDescription className="no-blur">Advanced job search filters</CardDescription>
                     </div>
                     <div className="text-right">
-                      <span className="text-2xl font-bold text-white">$3.99</span>
-                      <span className="text-sm text-gray-400">/month</span>
+                      <span className="text-2xl font-bold text-foreground no-blur">$3.99</span>
+                      <span className="text-sm text-muted-foreground no-blur">/month</span>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="pb-4 min-h-[150px]">
                   <ul className="space-y-3 mt-3 text-sm">
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">Salary range filters</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">Salary range filters</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">Company size & type filters</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">Company size & type filters</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckIcon className="w-4 h-4 mr-2 text-indigo-400" />
-                      <span className="text-gray-300">Custom algorithm matching</span>
+                      <CheckIcon className="w-4 h-4 mr-2 text-success" />
+                      <span className="text-muted-foreground no-blur">Custom algorithm matching</span>
                     </li>
                   </ul>
                 </CardContent>
-                <CardFooter className="border-t border-[#252a47] ">
+                <CardFooter className="border-t border-border pt-4">
                   <Button 
-                    className="w-full cosmic-btn-glow"
+                    className="w-full"
+                    variant="outline"
                     onClick={() => {
                       setSelectedAddon("premium_filters");
                       handlePurchaseAddon();
                     }}
+                    disabled={createAddonMutation.isPending}
                   >
-                    {createAddonMutation.isPending && selectedAddon === "premium_filters" && (
+                    {createAddonMutation.isPending && (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     )}
                     Purchase
@@ -714,51 +700,49 @@ export default function SubscriptionPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="billing" className="space-y-4">
-            <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden">
+          <TabsContent value="billing" className="space-y-4 mt-6">
+            <Card className="shadow-xl overflow-hidden solid-card">
               <CardHeader>
-                <CardTitle className="text-white">Payment History</CardTitle>
-                <CardDescription className="text-gray-400">Your recent payments and transactions</CardDescription>
+                <CardTitle className="no-blur">Payment History</CardTitle>
+                <CardDescription className="no-blur">Your recent payments and transactions</CardDescription>
               </CardHeader>
               <CardContent>
                 {isLoadingPayments ? (
-                  <div className="flex justify-center py-6">
-                    <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
-                  </div>
+                  <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto my-8" />
                 ) : payments && payments.length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="text-left border-b border-[#252a47]">
-                          <th className="px-4 py-2 text-sm font-medium text-gray-400">Date</th>
-                          <th className="px-4 py-2 text-sm font-medium text-gray-400">Description</th>
-                          <th className="px-4 py-2 text-sm font-medium text-gray-400 text-right">Amount</th>
-                          <th className="px-4 py-2 text-sm font-medium text-gray-400 text-right">Status</th>
+                        <tr className="text-left border-b border-border">
+                          <th className="px-4 py-2 text-sm font-medium text-muted-foreground no-blur">Date</th>
+                          <th className="px-4 py-2 text-sm font-medium text-muted-foreground no-blur">Description</th>
+                          <th className="px-4 py-2 text-sm font-medium text-muted-foreground text-right no-blur">Amount</th>
+                          <th className="px-4 py-2 text-sm font-medium text-muted-foreground text-right no-blur">Status</th>
                         </tr>
                       </thead>
                       <tbody>
                         {payments.map((payment) => (
-                          <tr key={payment.id} className="border-t border-[#252a47] hover:bg-[#1a1f3a]">
-                            <td className="px-4 py-3 text-sm text-gray-300">
+                          <tr key={payment.id} className="border-t border-border hover:bg-muted/50">
+                            <td className="px-4 py-3 text-sm text-muted-foreground no-blur">
                               {formatDate(payment.createdAt)}
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-300">
+                            <td className="px-4 py-3 text-sm text-foreground no-blur">
                               {payment.itemType === 'subscription'
                                 ? 'Subscription Plan'
                                 : payment.itemType === 'addon'
                                 ? 'Add-on Purchase'
                                 : 'Payment'}
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-300 text-right">
+                            <td className="px-4 py-3 text-sm text-foreground text-right no-blur">
                               ${parseFloat(payment.amount).toFixed(2)} {payment.currency}
                             </td>
                             <td className="px-4 py-3 text-right">
                               <Badge
                                 className={cn(
-                                  "bg-gradient-to-r rounded-full px-3 text-xs font-medium",
+                                  "rounded-full px-3 text-xs font-medium",
                                   payment.status === 'completed' 
-                                    ? "from-green-500 to-emerald-600 text-white" 
-                                    : "from-red-500 to-red-600 text-white"
+                                    ? "bg-success text-success-foreground"
+                                    : "bg-destructive text-destructive-foreground"
                                 )}
                               >
                                 {payment.status.charAt(0).toUpperCase() + payment.status.slice(1)}
@@ -771,28 +755,29 @@ export default function SubscriptionPage() {
                   </div>
                 ) : (
                   <div className="py-6 text-center">
-                    <p className="text-gray-400">No payment history available.</p>
+                    <p className="text-muted-foreground no-blur">No payment history available.</p>
                   </div>
                 )}
               </CardContent>
             </Card>
 
-            <Card className="cosmic-card border-0 text-white shadow-xl overflow-hidden">
+            <Card className="shadow-xl overflow-hidden mt-6 solid-card">
               <CardHeader>
-                <CardTitle className="text-white">Payment Methods</CardTitle>
-                <CardDescription className="text-gray-400">Manage your payment options</CardDescription>
+                <CardTitle className="no-blur">Payment Methods</CardTitle>
+                <CardDescription className="no-blur">Manage your payment options</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="py-6 text-center">
-                  <p className="mb-4 text-gray-400">No payment methods saved.</p>
+                  <p className="mb-4 text-muted-foreground no-blur">No payment methods saved.</p>
                   <Button 
-                    className="cosmic-btn-glow"
+                    variant="default"
                     onClick={() => {
                       toast({
                         title: "Coming Soon",
                         description: "Payment method management will be available in the next update."
                       });
                     }}
+                    disabled
                   >
                     <CreditCardIcon className="w-4 h-4 mr-2" />
                     Add Payment Method
@@ -805,22 +790,22 @@ export default function SubscriptionPage() {
         
         {/* Active Plan Purchase Dialog */}
         <Dialog open={activePlanDialog} onOpenChange={setActivePlanDialog}>
-          <DialogContent className="bg-card/90 backdrop-blur-xl border-white/10 shadow-xl text-white max-w-md">
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-white text-xl">Subscribe to {selectedPlan.replace('_', ' ')} Plan</DialogTitle>
-              <DialogDescription className="text-gray-400">
+              <DialogTitle className="text-foreground text-xl">Subscribe to {selectedPlan.replace('_', ' ')} Plan</DialogTitle>
+              <DialogDescription className="text-muted-foreground">
                 Complete your subscription purchase
               </DialogDescription>
             </DialogHeader>
             
             <div className="space-y-4 py-4">
-              <div className="flex justify-between items-center p-4 rounded-md bg-[#0f1229]/80 border border-[#252a47]">
+              <div className="flex justify-between items-center p-4 rounded-md bg-muted/50 border border-border">
                 <div>
-                  <p className="font-medium capitalize text-white">{selectedPlan.replace('_', ' ')} Plan</p>
-                  <p className="text-sm text-gray-400">Monthly subscription</p>
+                  <p className="font-medium capitalize text-foreground no-blur">{selectedPlan.replace('_', ' ')} Plan</p>
+                  <p className="text-sm text-muted-foreground no-blur">Monthly subscription</p>
                 </div>
                 <div>
-                  <p className="font-bold text-lg text-white">
+                  <p className="font-bold text-lg text-foreground no-blur">
                     {selectedPlan === 'starter' ? '$9.99' : 
                      selectedPlan === 'pro' ? '$19.99' : '$29.99'}
                   </p>
@@ -832,24 +817,22 @@ export default function SubscriptionPage() {
                   <Switch
                     id="auto-renew-option"
                     checked={autoRenew}
-                    className="data-[state=checked]:bg-indigo-600"
                     onCheckedChange={setAutoRenew}
                   />
-                  <Label htmlFor="auto-renew-option" className="text-gray-300">Auto-renew subscription</Label>
+                  <Label htmlFor="auto-renew-option" className="text-muted-foreground no-blur">Auto-renew subscription</Label>
                 </div>
               </div>
             </div>
             
-            <DialogFooter className="border-t border-[#252a47] ">
+            <DialogFooter className="border-t border-border pt-4">
               <Button
-                className="cosmic-btn-glow !bg-transparent"
                 variant="outline"
                 onClick={() => setActivePlanDialog(false)}
               >
                 Cancel
               </Button>
               <Button 
-                className="cosmic-btn-glow"
+                variant="default"
                 onClick={handlePurchasePlan}
                 disabled={createSubscriptionMutation.isPending}
               >

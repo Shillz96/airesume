@@ -76,6 +76,52 @@ const initialResume: Resume = {
   template: 'professional'
 };
 
+// Types for API responses
+interface ResumeApiResponse {
+  id: string;
+  title: string;
+  content: {
+    personalInfo?: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      phone?: string;
+      headline?: string;
+      summary?: string;
+    };
+    experience?: Array<{
+      id?: string;
+      title: string;
+      company: string;
+      startDate: string;
+      endDate: string;
+      description: string;
+    }>;
+    education?: Array<{
+      id?: string;
+      degree: string;
+      institution: string;
+      startDate: string;
+      endDate: string;
+      description: string;
+    }>;
+    skills?: Array<{
+      id?: string;
+      name: string;
+      proficiency: number;
+      category?: string;
+    }>;
+    projects?: Array<{
+      id?: string;
+      title: string;
+      description: string;
+      technologies: string[];
+      link?: string;
+    }>;
+  };
+  template?: string;
+}
+
 /**
  * Custom hook to manage resume data loading, saving, and updating
  */
@@ -121,11 +167,22 @@ export function useResumeData() {
               localStorage.removeItem('editingResume');
             }
           } catch (parseError) {
-            console.error('Error parsing stored resume data:', parseError);
+            // Silent error handling with user feedback
+            toast({
+              title: 'Session Recovery Failed',
+              description: 'Unable to recover your last editing session. Starting fresh.',
+              variant: 'default',
+            });
+            localStorage.removeItem('editingResume');
           }
         }
       } catch (e) {
-        console.error('Error parsing resume ID from URL', e);
+        // Silent error handling with user feedback
+        toast({
+          title: 'Invalid Resume ID',
+          description: 'The resume ID in the URL is invalid. Please check the URL.',
+          variant: 'destructive',
+        });
       }
     }
 
@@ -140,7 +197,7 @@ export function useResumeData() {
   }, [location, toast]);
 
   // Fetch resume data if resumeId exists
-  const { data: fetchedResume, error: fetchError } = useQuery({
+  const { data: fetchedResume, error: fetchError } = useQuery<ResumeApiResponse>({
     queryKey: ['/api/resumes', resumeId],
     enabled: !!resumeId,
   });
@@ -150,10 +207,10 @@ export function useResumeData() {
     if (fetchedResume) {
       try {
         // The API returns resume data with a nested 'content' object
-        const content = fetchedResume.content || {};
+        const content = fetchedResume.content;
         
         // Ensure we have complete data structure for all fields
-        const completeResume = {
+        const completeResume: Resume = {
           id: fetchedResume.id,
           title: fetchedResume.title || 'Untitled Resume',
           personalInfo: {
@@ -164,19 +221,19 @@ export function useResumeData() {
             headline: content.personalInfo?.headline || '',
             summary: content.personalInfo?.summary || ''
           },
-          experience: Array.isArray(content.experience) ? content.experience.map((exp: any) => ({
+          experience: Array.isArray(content.experience) ? content.experience.map((exp) => ({
             ...exp,
             id: exp.id || crypto.randomUUID(), // Ensure each experience has an ID
           })) : [],
-          education: Array.isArray(content.education) ? content.education.map((edu: any) => ({
+          education: Array.isArray(content.education) ? content.education.map((edu) => ({
             ...edu,
             id: edu.id || crypto.randomUUID(), // Ensure each education has an ID
           })) : [],
-          skills: Array.isArray(content.skills) ? content.skills.map((skill: any) => ({
+          skills: Array.isArray(content.skills) ? content.skills.map((skill) => ({
             ...skill,
             id: skill.id || crypto.randomUUID(), // Ensure each skill has an ID
           })) : [],
-          projects: Array.isArray(content.projects) ? content.projects.map((project: any) => ({
+          projects: Array.isArray(content.projects) ? content.projects.map((project) => ({
             ...project,
             id: project.id || crypto.randomUUID(), // Ensure each project has an ID
           })) : [],
@@ -184,18 +241,25 @@ export function useResumeData() {
         };
         
         // Force a complete state update by creating a brand new object
-        setResume(completeResume as Resume);
+        setResume(completeResume);
         
         toast({
           title: 'Resume Loaded',
           description: `"${completeResume.title}" has been loaded for editing`,
         });
       } catch (error) {
-        console.error('Error processing resume data:', error);
+        // Silent error handling with user feedback
         toast({
           title: 'Error Loading Resume',
-          description: 'There was a problem loading your resume data.',
+          description: 'There was a problem loading your resume data. Please try refreshing the page.',
           variant: 'destructive',
+        });
+        
+        // Set a basic resume structure to prevent UI errors
+        setResume({
+          ...initialResume,
+          id: fetchedResume.id,
+          title: fetchedResume.title || 'Untitled Resume',
         });
       }
     }
@@ -212,71 +276,73 @@ export function useResumeData() {
     }
   }, [fetchError, toast]);
 
-  // Save Resume Mutation
-  const saveMutation = useMutation({
-    mutationFn: async (resumeData: Resume) => {
-      setIsLoading(true);
+  // Save resume data
+  const { mutate: saveResumeMutation, isPending: isSaving } = useMutation<ResumeApiResponse, Error, Resume>({
+    mutationFn: async (data: Resume) => {
       try {
-        // Determine if we're creating a new resume or updating an existing one
-        const method = resumeData.id ? 'PATCH' : 'POST';
-        const endpoint = resumeData.id 
-          ? `/api/resumes/${resumeData.id}` 
-          : '/api/resumes';
-        
-        // Convert the resume state to the API expected format
-        const apiResumeData = {
-          title: resumeData.title,
-          content: {
-            personalInfo: resumeData.personalInfo,
-            experience: resumeData.experience,
-            education: resumeData.education,
-            skills: resumeData.skills,
-            projects: resumeData.projects
-          },
-          template: resumeData.template
-        };
-        
-        const result = await apiRequest(endpoint, {
-          method,
-          body: JSON.stringify(apiResumeData),
+        const response = await apiRequest('POST', '/api/resumes', {
+          body: JSON.stringify(data)
         });
         
-        setIsDirty(false);
-        return result;
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        return response.json();
       } catch (error) {
-        console.error('Error saving resume:', error);
-        throw error;
-      } finally {
-        setIsLoading(false);
+        // Silent error handling with user feedback
+        toast({
+          title: 'Error Saving Resume',
+          description: 'Failed to save your resume. Please try again.',
+          variant: 'destructive',
+        });
+        throw error; // Re-throw to trigger error handling in onError
       }
     },
     onSuccess: (data) => {
-      // Update the resume with the response data (in case of new resume creation)
-      if (data && data.id) {
-        setResumeId(data.id);
-        setResume(prev => ({ ...prev, id: data.id }));
-        
-        // Update the URL without page reload
-        const url = new URL(window.location.href);
-        url.searchParams.set('id', data.id);
-        window.history.pushState({}, '', url.toString());
-      }
-      
+      queryClient.invalidateQueries({ queryKey: ['/api/resumes'] });
+      setIsDirty(false);
       toast({
         title: 'Resume Saved',
         description: 'Your resume has been saved successfully.',
       });
       
-      // Invalidate the resumes query to refresh list views
-      queryClient.invalidateQueries({ queryKey: ['/api/resumes'] });
+      // Store the resume ID in localStorage for recovery
+      if (data.id) {
+        setResumeId(data.id);
+        try {
+          localStorage.setItem('lastSavedResumeId', data.id);
+        } catch (storageError) {
+          // Silent error handling - not critical
+          toast({
+            title: 'Session Storage Failed',
+            description: 'Unable to store resume ID for recovery. Your resume is still saved.',
+            variant: 'default',
+          });
+        }
+      }
     },
     onError: (error) => {
-      console.error('Mutation error:', error);
+      // Silent error handling with user feedback
       toast({
-        title: 'Error Saving Resume',
-        description: 'Failed to save your resume. Please try again.',
+        title: 'Save Failed',
+        description: 'Unable to save your resume. Please check your connection and try again.',
         variant: 'destructive',
       });
+      
+      // Try to store current state in localStorage for recovery
+      try {
+        if (resumeId) {
+          localStorage.setItem('editingResume', JSON.stringify(resume));
+        }
+      } catch (storageError) {
+        // Silent error handling - not critical
+        toast({
+          title: 'Backup Failed',
+          description: 'Unable to create a backup of your changes.',
+          variant: 'default',
+        });
+      }
     }
   });
 
@@ -389,18 +455,13 @@ export function useResumeData() {
     return newProject.id;
   };
 
-  // Save the resume
-  const saveResume = () => {
-    saveMutation.mutate(resume);
-  };
-
   return {
     resume,
     setResume,
     resumeId,
     activeSection,
     setActiveSection,
-    isLoading: isLoading || saveMutation.isPending,
+    isLoading: isLoading || isSaving,
     isDirty,
     updatePersonalInfo,
     updateExperienceList,
@@ -413,6 +474,6 @@ export function useResumeData() {
     addEducation,
     addSkill,
     addProject,
-    saveResume
+    saveResume: () => saveResumeMutation(resume)
   };
 }

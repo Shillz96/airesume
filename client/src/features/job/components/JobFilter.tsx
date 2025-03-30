@@ -1,8 +1,9 @@
 import React from 'react';
 import { Search, MapPin, BriefcaseBusiness, Filter, GraduationCap, Wifi, DollarSign, Globe } from 'lucide-react';
-import { Button } from '@/ui/core/Button';
+import { Button } from '@/components/ui/button';
 import { JobFilterValues } from '../types';
 import { cn } from '@/lib/utils';
+import { Card } from "@/components/ui/card";
 
 interface JobFilterProps {
   initialValues?: JobFilterValues;
@@ -49,11 +50,11 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
   };
 
   return (
-    <div className="cosmic-card border border-white/10 rounded-lg p-4 mb-6">
+    <Card className="solid-card p-4 mb-6">
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Job Title Search */}
-          <div className="relative">
+          <div className="relative no-blur">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-4 w-4 text-primary" />
             </div>
@@ -63,7 +64,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
               value={values.title}
               onChange={handleChange}
               className={cn(
-                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 bg-card/90",
+                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 no-blur",
                 "focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
               )}
               placeholder="Job title or keyword"
@@ -81,7 +82,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
               value={values.location}
               onChange={handleChange}
               className={cn(
-                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 bg-card/90",
+                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 no-blur",
                 "focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
               )}
               placeholder="City, state, or zip"
@@ -98,7 +99,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
               value={values.country}
               onChange={handleChange}
               className={cn(
-                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 bg-card/90",
+                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 no-blur",
                 "focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary",
                 "appearance-none"
               )}
@@ -123,7 +124,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
               value={values.type}
               onChange={handleChange}
               className={cn(
-                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 bg-card/90",
+                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 no-blur",
                 "focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary",
                 "appearance-none"
               )}
@@ -147,7 +148,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
               value={values.experience}
               onChange={handleChange}
               className={cn(
-                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 bg-card/90",
+                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 no-blur",
                 "focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary",
                 "appearance-none"
               )}
@@ -171,7 +172,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
               value={values.remote}
               onChange={handleChange}
               className={cn(
-                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 bg-card/90",
+                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 no-blur",
                 "focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary",
                 "appearance-none"
               )}
@@ -193,7 +194,7 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
               value={values.salary}
               onChange={handleChange}
               className={cn(
-                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 bg-card/90",
+                "w-full pl-10 py-2 pr-4 rounded-md border border-white/10 no-blur",
                 "focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary",
                 "appearance-none"
               )}
@@ -214,21 +215,20 @@ export default function JobFilter({ initialValues, onFilter }: JobFilterProps) {
               type="button"
               variant="outline"
               onClick={handleReset}
-              className="px-4 cosmic-btn-glow !bg-transparent"
+              className="px-4"
             >
               Reset
             </Button>
-            <Button
-              type="submit"
-              iconLeft={<Filter className="h-4 w-4" />}
-              className="px-4 cosmic-btn-glow"
-            >
-              Apply Filters
-            </Button>
+            <div className="col-span-full md:col-span-1 flex items-end">
+              <Button type="submit" variant="secondary" className="w-full gap-2">
+                <Filter size={16} />
+                Apply Filters
+              </Button>
+            </div>
           </div>
         </div>
       </form>
-    </div>
+    </Card>
   );
 }
 

@@ -1,9 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { CreditCard, CheckCircle, AlertCircle, Calendar, Sparkles, Zap } from 'lucide-react';
-import { Button } from '@/ui/core/Button';
+import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/ui/core/Card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/use-auth';
 import { format } from 'date-fns';
 import gsap from 'gsap';
@@ -65,18 +65,19 @@ export default function SubscriptionStatus() {
         </h2>
         
         <div ref={cardRef}>
-          <Card className="cosmic-card border border-white/10 bg-black/30 hover:border-blue-500/50 transition-all duration-300">
+          <Card className="solid-card shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-white">Subscription Status</CardTitle>
-              <CardDescription className="text-gray-300">Sign in to view your subscription details</CardDescription>
+              <CardTitle className="text-lg text-card-foreground no-blur">Subscription Status</CardTitle>
+              <CardDescription className="text-muted-foreground no-blur">Sign in to view your subscription details</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-300">You need to be logged in to view your subscription information.</p>
+              <p className="text-muted-foreground no-blur">You need to be logged in to view your subscription information.</p>
             </CardContent>
             <CardFooter>
               <Button 
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                variant="default"
                 onClick={() => window.location.href = "/auth"}
+                className="w-full"
               >
                 Sign In
               </Button>
@@ -99,10 +100,10 @@ export default function SubscriptionStatus() {
         </h2>
         
         <div ref={cardRef}>
-          <Card className="cosmic-card border border-white/10 bg-black/30 hover:border-blue-500/50 transition-all duration-300">
+          <Card className="solid-card shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-white">Subscription Status</CardTitle>
-              <CardDescription className="text-gray-300">Loading your subscription details...</CardDescription>
+              <CardTitle className="text-lg text-white no-blur">Subscription Status</CardTitle>
+              <CardDescription className="text-gray-300 no-blur">Loading your subscription details...</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-center h-32">
@@ -127,13 +128,13 @@ export default function SubscriptionStatus() {
         </h2>
         
         <div ref={cardRef}>
-          <Card className="cosmic-card border border-white/10 bg-black/30 hover:border-blue-500/50 transition-all duration-300">
+          <Card className="solid-card shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-white">Subscription Status</CardTitle>
-              <CardDescription className="text-gray-300">There was an error retrieving your subscription</CardDescription>
+              <CardTitle className="text-lg text-white no-blur">Subscription Status</CardTitle>
+              <CardDescription className="text-gray-300 no-blur">There was an error retrieving your subscription</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center space-x-2 text-red-400">
+              <div className="flex items-center space-x-2 text-red-400 no-blur">
                 <AlertCircle className="h-5 w-5" />
                 <span>Failed to load subscription details. Please try again later.</span>
               </div>
@@ -141,8 +142,8 @@ export default function SubscriptionStatus() {
             <CardFooter>
               <Button 
                 onClick={() => window.location.reload()}
-                variant="outline"
-                className="w-full border-white/10 text-gray-200 hover:bg-white/10 hover:text-white"
+                variant="default"
+                className="w-full"
               >
                 Retry
               </Button>
@@ -201,12 +202,12 @@ export default function SubscriptionStatus() {
       </h2>
       
       <div ref={cardRef}>
-        <Card className="cosmic-card border border-white/10 bg-black/30 hover:border-blue-500/50 transition-all duration-300">
+        <Card className="solid-card shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-lg text-white">Subscription Status</CardTitle>
-                <CardDescription className="text-gray-300">Your current plan and status</CardDescription>
+                <CardTitle className="text-lg text-white no-blur">Subscription Status</CardTitle>
+                <CardDescription className="text-gray-300 no-blur">Your current plan and status</CardDescription>
               </div>
               <div className={`rounded-full px-3 py-1 text-xs font-medium border ${isActive ? 'bg-green-900/60 text-green-300 border-green-700' : 'bg-amber-900/60 text-amber-300 border-amber-700'}`}>
                 {isActive ? 'Active' : 'Inactive'}
@@ -214,18 +215,18 @@ export default function SubscriptionStatus() {
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className={`rounded-lg p-4 bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-white/10 flex items-center space-x-3`}>
-              <div className="p-2 bg-white/5 rounded-full">
+            <div className={`rounded-lg p-4 solid-card flex items-center space-x-3 shadow-inner`}>
+              <div className="p-2 bg-gray-800/50 rounded-full">
                 {plan.icon}
               </div>
-              <div>
+              <div className="no-blur">
                 <h3 className={`font-medium ${plan.color}`}>{plan.title}</h3>
                 <p className="text-sm text-gray-300">{plan.description}</p>
               </div>
             </div>
             
-            <div className="space-y-3">
-              <div className="flex justify-between items-center py-2 border-b border-white/10">
+            <div className="space-y-3 no-blur">
+              <div className="flex justify-between items-center py-2 border-b border-white/10 dark:border-gray-700/30">
                 <div className="flex items-center space-x-2">
                   <Calendar className="h-4 w-4 text-blue-400" />
                   <span className="text-sm text-gray-300">Start Date</span>
@@ -233,7 +234,7 @@ export default function SubscriptionStatus() {
                 <span className="text-sm font-medium text-white">{startDate}</span>
               </div>
               
-              <div className="flex justify-between items-center py-2 border-b border-white/10">
+              <div className="flex justify-between items-center py-2 border-b border-white/10 dark:border-gray-700/30">
                 <div className="flex items-center space-x-2">
                   <Calendar className="h-4 w-4 text-blue-400" />
                   <span className="text-sm text-gray-300">End Date</span>
@@ -241,7 +242,7 @@ export default function SubscriptionStatus() {
                 <span className="text-sm font-medium text-white">{endDate}</span>
               </div>
               
-              <div className="flex justify-between items-center py-2 border-b border-white/10">
+              <div className="flex justify-between items-center py-2 border-b border-white/10 dark:border-gray-700/30">
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="h-4 w-4 text-blue-400" />
                   <span className="text-sm text-gray-300">Auto Renewal</span>

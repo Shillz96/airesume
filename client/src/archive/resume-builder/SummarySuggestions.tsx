@@ -161,7 +161,7 @@ export default function SummarySuggestions({
       {summaries.length === 0 ? (
         <div className="space-y-4 py-3">
           <div className="text-center">
-            <h4 className="cosmic-text-gradient text-sm font-medium mb-2">
+            <h4 className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-sm font-medium mb-2">
               Choose Summary Length
             </h4>
             <div className="flex space-x-2 mb-4">

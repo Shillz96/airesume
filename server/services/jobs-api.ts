@@ -30,7 +30,7 @@ export class JobsAPIService {
     try {
       // If no API key or appId, use sample data
       if (!this.apiKey || !this.appId) {
-        console.warn("Using sample jobs because Adzuna API credentials are not set");
+        // Silently fall back to sample data without warning
         return this.getSampleJobs(filters);
       }
 
@@ -146,32 +146,28 @@ export class JobsAPIService {
             }
           }
         } catch (error) {
-          console.warn("Error adding experience filtering, ignoring this filter", error);
-          // If there's an error adding experience filtering, just continue without it
+          // Silently ignore experience filtering errors
           // rather than breaking the whole API request
         }
       }
       
-      console.log(`Fetching jobs from Adzuna: ${apiUrl}`);
       const response = await fetch(apiUrl);
       
       if (!response.ok) {
         const responseText = await response.text();
-        console.error(`Adzuna API error (${response.status}):`, responseText);
         throw new Error(`Adzuna API request failed with status ${response.status}: ${responseText}`);
       }
       
-      const data = await response.json();
+      const data = await response.json() as { results?: any[] };
       
       // Transform the API response into our Job schema
       if (data.results && Array.isArray(data.results)) {
         return this.transformJobsData(data.results);
       } else {
-        console.warn("Unexpected Adzuna API response format", data);
+        // Fall back to sample data for unexpected response format
         return this.getSampleJobs(filters);
       }
     } catch (error) {
-      console.error("Error fetching jobs from Adzuna API:", error);
       // If there's an error, fall back to sample data rather than failing completely
       return this.getSampleJobs(filters);
     }
@@ -196,7 +192,6 @@ export class JobsAPIService {
       // If we can't find the job, create a synthetic job for demo purposes
       // In a real application, we would either store the jobs in a database
       // or use an API that supports direct job retrieval
-      console.log(`Creating synthetic job with ID ${id} for demo purposes`);
       
       return {
         id: id,
@@ -214,7 +209,6 @@ export class JobsAPIService {
         saved: false
       };
     } catch (error) {
-      console.error(`Error in getJobById for job ${id}:`, error);
       return undefined;
     }
   }

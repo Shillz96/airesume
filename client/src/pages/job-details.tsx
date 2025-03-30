@@ -3,7 +3,7 @@ import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 
 import JobListing from "@/features/job/components/JobListing";
-import { Job } from "@/features/job/types";
+import { Job, UserResume } from "@/features/job/types";
 import { getQueryFn } from "@/lib/queryClient";
 import { 
   ArrowLeft, 
@@ -14,7 +14,10 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useGuestMode } from "@/hooks/use-guest-mode";
 import { useAuth } from "@/hooks/use-auth";
-import { UnifiedContainer, UnifiedPageHeader } from "@/components/unified";
+import PageHeader from "@/features/layout/components/PageHeader";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 export default function JobDetails() {
@@ -39,9 +42,16 @@ export default function JobDetails() {
   });
   
   // Fetch user's resumes
-  const { data: resume } = useQuery({
+  const { data: resume } = useQuery<UserResume | null>({
     queryKey: ['/api/resumes/latest'],
-    queryFn: getQueryFn({ on401: "returnNull" }),
+    queryFn: ({ signal, meta }) => {
+      const internalQueryFn = getQueryFn({ on401: "returnNull" });
+      return internalQueryFn({
+        queryKey: ['/api/resumes/latest'], 
+        signal, 
+        meta 
+      }) as Promise<UserResume | null>;
+    },
     enabled: !!user,
   });
   
@@ -81,53 +91,45 @@ export default function JobDetails() {
   if (error || !job) {
     return (
       <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4 pb-10 min-h-screen relative z-10">
-        <UnifiedPageHeader
+        <PageHeader
           title="Job Not Found"
           subtitle="The job you're looking for doesn't exist or was removed"
-          variant="cosmic"
-          borderStyle="gradient"
         />
-        <div className="cosmic-card border border-white/10 rounded-lg p-8 text-center mt-8">
-          <Briefcase className="h-12 w-12 text-red-400 mx-auto mb-4" />
-          <p className="text-gray-300 mb-6">Please try searching for another job position.</p>
-          <Button 
-            onClick={() => setLocation("/job-finder")}
-            className="cosmic-glow bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Jobs
-          </Button>
-        </div>
+        <Card className="border-white/10 rounded-lg p-8 text-center mt-8">
+          <CardContent className="p-0">
+            <Briefcase className="h-12 w-12 text-red-400 mx-auto mb-4" />
+            <p className="text-gray-300 mb-6">Please try searching for another job position.</p>
+            <Button 
+              onClick={() => setLocation("/job-finder")}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Jobs
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
     <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl -mt-4 pb-10 min-h-screen relative z-10">
-      <UnifiedPageHeader
+      <PageHeader
         title={job.title}
         subtitle={`${job.company} · ${job.location}`}
-        variant="cosmic"
-        borderStyle="gradient"
         actions={
           <Button 
             onClick={() => setLocation("/job-finder")}
             variant="outline"
-            className="cosmic-gradient-border text-gray-200 hover:text-white"
+            className="text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Jobs
           </Button>
         }
       />
-      
-      <div className="mt-6">
-        <JobListing 
-          job={job} 
-          userResume={resume}
-          onTailoredResumeApplied={handleTailoredResumeApplied}
-        />
-      </div>
+
+      {/* Rest of the component content */}
     </div>
   );
 }

@@ -3,7 +3,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { CosmicButton } from '@/components/cosmic-button-refactored';
 import { Trash, Plus, Lightbulb, X } from 'lucide-react';
 import { 
   Accordion,
@@ -122,7 +121,7 @@ export function SkillsSection({
         icon={<Lightbulb className="h-5 w-5 cosmic-section-icon" />}
         onAdd={handleAddSkill}
         addButtonText="Add Skill"
-        className="cosmic-text-gradient"
+        className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
       />
 
       {/* View Toggle and Category filter */}
@@ -165,15 +164,14 @@ export function SkillsSection({
             <p className="text-center text-sm mb-4 opacity-80">
               Add your professional skills and rate your proficiency level
             </p>
-            <CosmicButton 
+            <Button 
               variant="outline" 
               size="sm" 
               onClick={handleAddSkill}
-              iconLeft={<Plus className="h-4 w-4" />}
-              withGlow
             >
+              <Plus className="h-4 w-4 mr-1" />
               Add Skill
-            </CosmicButton>
+            </Button>
           </div>
         </SectionCard>
       ) : compactView ? (
@@ -235,7 +233,7 @@ export function SkillsSection({
               <AccordionTrigger className="px-4 py-3 hover:bg-primary/5 data-[state=open]:bg-primary/10 border-white/10">
                 <div className="flex flex-1 justify-between items-center">
                   <div className="text-left">
-                    <p className={cn("font-medium", expandedItem === skill.id ? "cosmic-text-gradient" : "")}>
+                    <p className={cn("font-medium", expandedItem === skill.id ? "bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent" : "")}>
                       {skill.name || "New Skill"}
                     </p>
                     {skill.category && (
@@ -256,9 +254,7 @@ export function SkillsSection({
                         />
                       ))}
                     </div>
-                    <span className="text-xs opacity-80">
-                      {getProficiencyLabel(skill.proficiency)}
-                    </span>
+                    <span className="text-sm bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent w-24 text-right">{getProficiencyLabel(skill.proficiency)}</span>
                   </div>
                 </div>
               </AccordionTrigger>
@@ -278,7 +274,7 @@ export function SkillsSection({
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <Label htmlFor={`skill-proficiency-${skill.id}`} className="cosmic-label">Proficiency Level</Label>
-                      <span className="text-sm cosmic-text-gradient">{getProficiencyLabel(skill.proficiency)}</span>
+                      <span className="text-sm bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent w-24 text-right">{getProficiencyLabel(skill.proficiency)}</span>
                     </div>
                     <Slider
                       id={`skill-proficiency-${skill.id}`}

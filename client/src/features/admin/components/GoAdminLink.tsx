@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from "@/ui/core/Button";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
 

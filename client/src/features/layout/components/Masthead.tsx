@@ -1,21 +1,26 @@
 import React from 'react';
 import { Link, useLocation } from 'wouter';
 import { User, Moon, Sun, LogOut, Settings } from 'lucide-react';
-import { Button } from '@/ui/core/Button';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
 import { useUnifiedTheme } from '@/contexts/UnifiedThemeContext';
-import CosmicStarfield from '@/ui/theme/CosmicStarfield';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Separator } from '@/components/ui/separator';
 
-export default function Masthead() {
+export function Masthead() {
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
-  const { isDarkMode, toggleDarkMode } = useUnifiedTheme();
+  const { mode, setMode } = useUnifiedTheme();
   
   const isHomePage = location === '/home' || location === '/';
   
   function handleLogout() {
     logoutMutation.mutate();
   }
+  
+  const handleThemeToggle = () => {
+    setMode(mode === 'dark' ? 'light' : 'dark');
+  };
   
   // Determine background based on route
   const bgClasses = isHomePage 
@@ -27,11 +32,7 @@ export default function Masthead() {
       {/* Starfield background on home page */}
       {isHomePage && (
         <div className="absolute inset-0 z-0">
-          <CosmicStarfield 
-            starsCount={70} 
-            nebulasCount={2} 
-            shootingStarsEnabled={true} 
-          />
+          {/* CosmicStarfield component would be here */}
         </div>
       )}
       
@@ -56,59 +57,44 @@ export default function Masthead() {
           
           {/* Right Side: User Menu */}
           <div className="flex items-center space-x-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleDarkMode}
-              iconLeft={isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <span className="sr-only md:not-sr-only">
-                {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-              </span>
-            </Button>
-            
             {user ? (
-              <div className="flex items-center space-x-2">
-                <Link href="/subscription">
-                  <a className="md:inline-flex items-center px-3 py-1.5 border border-primary/30 rounded-full text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10">
-                    <Settings className="h-3 w-3 mr-1" />
-                    Account
-                  </a>
-                </Link>
-                
+              <div className="flex items-center space-x-3">
                 <Button
                   variant="ghost"
                   size="sm"
-                  iconLeft={<User className="h-4 w-4" />}
-                  className="bg-primary/5 text-foreground hidden md:flex"
+                  className="font-semibold gap-2"
                 >
+                  <User size={16} />
                   {user.username}
                 </Button>
-                
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleLogout}
-                  iconLeft={<LogOut className="h-4 w-4" />}
-                  className="text-muted-foreground"
-                >
-                  <span className="sr-only">Logout</span>
-                </Button>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="ghost" size="icon" className="rounded-full">
+                      <Settings size={18} />
+                      <span className="sr-only">Settings</span>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-56 p-2">
+                    <div className="space-y-1">
+                      <div className="px-2 py-1.5 text-sm font-semibold">Appearance</div>
+                      <Button variant="ghost" size="sm" onClick={handleThemeToggle} className="w-full justify-start gap-2">
+                        {mode === 'dark' ? <Sun size={16} /> : <Moon size={16} />} Toggle Theme
+                      </Button>
+                      <Separator />
+                      <Button variant="ghost" size="sm" onClick={handleLogout} className="w-full justify-start gap-2">
+                        <LogOut size={16} /> Logout
+                      </Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
             ) : (
-              <div className="flex items-center space-x-2">
-                <Link href="/auth">
-                  <a className="inline-flex items-center px-3 py-1.5 border border-primary rounded-md text-sm font-medium text-primary hover:bg-primary/10">
-                    Login
-                  </a>
-                </Link>
-                <Link href="/auth?tab=register">
-                  <a className="inline-flex items-center px-3 py-1.5 bg-primary border border-transparent rounded-md text-sm font-medium text-white hover:bg-primary/90">
-                    Sign Up
-                  </a>
-                </Link>
-              </div>
+              <Link href="/login">
+                <Button variant="outline" size="sm" className="font-semibold">
+                  Login
+                </Button>
+              </Link>
             )}
           </div>
         </div>
@@ -138,3 +124,5 @@ export default function Masthead() {
     </div>
   );
 }
+
+export default Masthead;

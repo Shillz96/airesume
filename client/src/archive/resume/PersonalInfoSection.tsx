@@ -40,7 +40,7 @@ export function PersonalInfoSection({
         <SectionCard withHoverEffect={true} className="mb-6">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="cosmic-text-gradient font-medium text-lg">Import from Existing Resume</h4>
+              <h4 className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent font-medium text-lg">Import from Existing Resume</h4>
               <p className="text-sm text-white/70 mt-1">
                 Upload your existing resume to extract your information automatically
               </p>

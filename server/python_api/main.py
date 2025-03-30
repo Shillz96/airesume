@@ -15,13 +15,7 @@ from .routes import jobs  # Import the jobs router
 # Load environment variables
 load_dotenv()
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
+# Initialize FastAPI app
 app = FastAPI(title="AllHire Resume Upload API")
 
 # Get CORS settings from environment
@@ -36,6 +30,21 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+@app.on_event("startup")
+async def startup_event():
+    try:
+        # Create database tables
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database tables created successfully")
+    except Exception as e:
+        logger.error(f"Error creating database tables: {str(e)}")
+        # Don't raise the exception - let the app start anyway
+        # The migrations should handle table creation
 
 # Include routers
 app.include_router(jobs.router)

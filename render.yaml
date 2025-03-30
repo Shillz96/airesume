@@ -19,13 +19,15 @@ services:
         value: https://airesume-frontend.onrender.com
       - key: SECRET_KEY
         generateValue: true
+      - key: PORT
+        value: 10000
     autoDeploy: true
 
   - type: web
     name: airesume-frontend
     env: static
-    buildCommand: npm install && npm run build
-    staticPublishPath: ./dist
+    buildCommand: cd client && npm install && npm run build
+    staticPublishPath: ./client/dist
     envVars:
       - key: VITE_API_BASE_URL
         value: https://airesume-backend.onrender.com
@@ -34,4 +36,5 @@ services:
 databases:
   - name: airesume-db
     databaseName: airesume
-    user: airesume 
+    user: airesume
+    plan: free 

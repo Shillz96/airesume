@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from typing import List
 import json
 from dotenv import load_dotenv
+import sqlalchemy
 
 from . import models, schemas, crud
 from .database import engine, Base, get_db
@@ -38,11 +39,20 @@ logger = logging.getLogger(__name__)
 @app.on_event("startup")
 async def startup_event():
     try:
-        # Create database tables
-        Base.metadata.create_all(bind=engine)
-        logger.info("Database tables created successfully")
+        # Check if tables exist first
+        inspector = sqlalchemy.inspect(engine)
+        existing_tables = inspector.get_table_names()
+        
+        if not existing_tables:
+            # Only create tables if none exist
+            logger.info("No existing tables found. Creating database tables...")
+            Base.metadata.create_all(bind=engine)
+            logger.info("Database tables created successfully")
+        else:
+            logger.info(f"Found existing tables: {', '.join(existing_tables)}")
+            
     except Exception as e:
-        logger.error(f"Error creating database tables: {str(e)}")
+        logger.error(f"Error during startup: {str(e)}")
         # Don't raise the exception - let the app start anyway
         # The migrations should handle table creation
 

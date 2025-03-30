@@ -11,13 +11,12 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy Python application code
-COPY python_api/ ./python_api/
-COPY models/ ./models/
-COPY routes/ ./routes/
+# Copy all Python application code
+COPY . .
 
-# Set Python path
+# Set Python path and environment variables
 ENV PYTHONPATH=/app
+ENV PORT=8000
 
 # Command to run the application using Gunicorn
-CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "python_api.main:app", "--bind", "0.0.0.0:${PORT:-8000}"] 
+CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "python_api.main:app", "--bind", "0.0.0.0:${PORT}"] 
